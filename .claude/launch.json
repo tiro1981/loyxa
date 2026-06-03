@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "BiznesOnline",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3333"],
+      "port": 3333
+    },
+    {
+      "name": "Webilova",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3334", "--directory", "/Users/tiro/Desktop/webilova"],
+      "port": 3334
+    }
+  ]
+}

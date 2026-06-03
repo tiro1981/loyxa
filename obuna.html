@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obuna bo'lish — BiznesOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="logo-text">BiznesOnline</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html#home" class="nav-link">Bosh sahifa</a></li>
+                <li><a href="index.html#apps" class="nav-link">Ilovalar</a></li>
+                <li><a href="index.html#contact" class="nav-link">Bog'lanish</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="kirish.html" class="btn btn-outline btn-sm">Kirish</a>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SUBSCRIBE PAGE -->
+    <main class="subscribe-page">
+        <div class="container subscribe-container">
+
+            <div class="subscribe-header">
+                <h1>Obunani sotib oling 🚀</h1>
+                <p>Subdomen tanlang va obunani faollashtiring</p>
+            </div>
+
+            <!-- PROGRESS BAR -->
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-circle"><span class="step-num">1</span></div>
+                    <div class="step-label">Subdomen</div>
+                </div>
+                <div class="progress-line" id="line1"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle"><span class="step-num">2</span></div>
+                    <div class="step-label">Tasdiqlash</div>
+                </div>
+            </div>
+
+            <!-- FORM CARD -->
+            <form class="form-card" id="subscribeForm" novalidate>
+
+                <!-- STEP 1: SUBDOMEN -->
+                <div class="form-step active" data-step="1">
+                    <h2>Subdomen tanlang</h2>
+                    <p class="step-desc">Biznesingizning veb-manzilini tanlang yoki o'zingiz kiriting</p>
+
+                    <div class="subdomain-suggestions" id="subdomainSuggestions">
+                        <!-- JS bilan to'ldiriladi -->
+                    </div>
+
+                    <div class="subdomain-divider">
+                        <span>yoki o'zingiz kiriting</span>
+                    </div>
+
+                    <div class="subdomain-custom-wrap">
+                        <div class="subdomain-input-row">
+                            <input type="text" id="customSubdomainInput" class="form-input" placeholder="mening-biznesim" maxlength="40">
+                            <span class="subdomain-dot-uz">.biznesonline.uz</span>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" id="applyCustomSubdomain">
+                            <i class="fa-solid fa-check"></i> Qo'llash
+                        </button>
+                        <div class="subdomain-error" id="subdomainError" style="display:none">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span id="subdomainErrorMsg">Subdomen kamida 3 ta belgi bo'lishi kerak</span>
+                        </div>
+                    </div>
+
+                    <div class="selected-subdomain-info" id="selectedSubdomainInfo" style="display:none">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>
+                            <strong>Tanlangan manzil:</strong>
+                            <span id="selectedSubdomainDisplay"></span>.biznesonline.uz
+                        </div>
+                    </div>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-outline btn-prev" disabled>
+                            <i class="fa-solid fa-arrow-left"></i> Orqaga
+                        </button>
+                        <button type="button" class="btn btn-primary btn-next">
+                            Keyingi <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: TASDIQLASH -->
+                <div class="form-step" data-step="2">
+                    <h2>Tasdiqlang va sotib oling</h2>
+                    <p class="step-desc">Ma'lumotlarni tekshiring va obunani rasmiylashtiring</p>
+
+                    <div class="summary-list" id="summaryList"></div>
+
+                    <div class="terms-row">
+                        <input type="checkbox" id="termsCheck" name="terms">
+                        <label for="termsCheck">
+                            Men <a href="#">Foydalanish shartlari</a> va <a href="#">Maxfiylik siyosati</a> bilan tanishib chiqdim va roziman
+                        </label>
+                    </div>
+
+                    <div class="form-nav">
+                        <button type="button" class="btn btn-outline btn-prev">
+                            <i class="fa-solid fa-arrow-left"></i> Orqaga
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fa-solid fa-cart-shopping"></i> Obunani sotib olish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUCCESS STEP -->
+                <div class="form-step" data-step="3">
+                    <div style="text-align:center; padding:20px 0;">
+                        <div style="width:96px; height:96px; background:var(--primary-light); color:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:42px; margin:0 auto 24px;">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h2 style="font-size:28px; margin-bottom:12px;">Ilovangiz tayyor! 🎉</h2>
+                        <p style="color:var(--gray-600); font-size:16px; margin-bottom:24px; max-width:520px; margin-left:auto; margin-right:auto;">
+                            Tabriklaymiz! Obuna muvaffaqiyatli faollashtirildi.
+                            Endi siz <strong>ilova admin paneliga</strong> kirib, biznesingizni boshqarishingiz mumkin.
+                        </p>
+
+                        <div class="success-info-box" id="successInfoBox"></div>
+
+                        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:28px;">
+                            <a href="#" class="btn btn-primary btn-lg" id="goToAppAdminBtn">
+                                <i class="fa-solid fa-gauge-high"></i> Ilova admin paneliga o'tish
+                            </a>
+                            <a href="index.html" class="btn btn-outline btn-lg">
+                                Bosh sahifa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/obuna.js"></script>
+</body>
+</html>

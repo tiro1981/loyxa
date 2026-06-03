@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sayt Admin Paneli — BiznesOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-side-head">
+            <a href="index.html" class="logo logo-light">
+                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="logo-text">BiznesOnline</span>
+            </a>
+            <span class="admin-badge"><i class="fa-solid fa-shield-halved"></i> SAYT ADMIN</span>
+        </div>
+
+        <nav class="admin-nav">
+            <div class="admin-nav-section">
+                <span class="admin-nav-title">Asosiy</span>
+                <button class="admin-link active" data-section="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+                </button>
+                <button class="admin-link" data-section="clients">
+                    <i class="fa-solid fa-users"></i> <span>Mijozlar</span>
+                </button>
+                <button class="admin-link" data-section="apps">
+                    <i class="fa-solid fa-mobile-screen"></i> <span>Ilovalar</span>
+                </button>
+            </div>
+
+            <div class="admin-nav-section">
+                <span class="admin-nav-title">Moliya</span>
+                <button class="admin-link" data-section="payments">
+                    <i class="fa-solid fa-sack-dollar"></i> <span>To'lovlar</span>
+                </button>
+                <button class="admin-link" data-section="revenue">
+                    <i class="fa-solid fa-chart-line"></i> <span>Daromad</span>
+                </button>
+            </div>
+
+            <div class="admin-nav-section">
+                <span class="admin-nav-title">Sayt</span>
+                <button class="admin-link" data-section="settings">
+                    <i class="fa-solid fa-gear"></i> <span>Sozlamalar</span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="admin-side-foot">
+            <div class="admin-profile">
+                <div class="aav" id="adminAvatar">A</div>
+                <div class="ap-info">
+                    <strong id="adminName">Admin</strong>
+                    <span>Bosh administrator</span>
+                </div>
+                <button class="logout-btn" id="adminLogout" title="Chiqish">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="admin-overlay" id="adminOverlay"></div>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <button class="menu-toggle" id="adminMenuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Mijoz, ID yoki email orqali qidirish..." id="adminSearch">
+            </div>
+            <div class="topbar-actions">
+                <button class="topbar-icon" title="Bildirishnomalar">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="dot"></span>
+                </button>
+                <button class="topbar-icon" title="Yordam">
+                    <i class="fa-solid fa-circle-question"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+
+            <!-- ============ DASHBOARD ============ -->
+            <section class="admin-section active" id="sec-dashboard">
+                <div class="admin-head">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>BiznesOnline saytining umumiy holati</p>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn btn-outline btn-sm" id="exportData"><i class="fa-solid fa-download"></i> Export</button>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <span class="kpi-label">Faol mijozlar</span>
+                            <strong class="kpi-value" id="kpiActiveClients">0</strong>
+                            <small><i class="fa-solid fa-arrow-up"></i> Hammasi faollashtirilgan</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card orange">
+                        <div class="kpi-icon"><i class="fa-solid fa-user-clock"></i></div>
+                        <div>
+                            <span class="kpi-label">Nofaol mijozlar</span>
+                            <strong class="kpi-value" id="kpiPending">0</strong>
+                            <small>To'xtatilgan yoki bloklangan</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div>
+                            <span class="kpi-label">Oylik daromad</span>
+                            <strong class="kpi-value" id="kpiRevenue">0 so'm</strong>
+                            <small>Joriy oy uchun</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <div>
+                            <span class="kpi-label">Faol ilovalar</span>
+                            <strong class="kpi-value" id="kpiApps">0</strong>
+                            <small>Hozir foydalanilmoqda</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid-2">
+                    <div class="adm-panel">
+                        <div class="adm-panel-head">
+                            <div>
+                                <h3>So'nggi mijozlar</h3>
+                                <p>Obuna sotib olgan mijozlar</p>
+                            </div>
+                            <button class="link-btn" data-goto="clients">Hammasi <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Biznes</th>
+                                        <th>Ilova</th>
+                                        <th>Sana</th>
+                                        <th>Holat</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashRecentRequests"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="adm-panel">
+                        <div class="adm-panel-head">
+                            <div>
+                                <h3>Ilovalar taqsimoti</h3>
+                                <p>Mijozlar tanlagan ilova turlari</p>
+                            </div>
+                        </div>
+                        <div class="distrib" id="appDistrib"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ CLIENTS ============ -->
+            <section class="admin-section" id="sec-clients">
+                <div class="admin-head">
+                    <div>
+                        <h1>Mijozlar</h1>
+                        <p>Faol obunadagi barcha mijozlar ro'yxati</p>
+                    </div>
+                </div>
+
+                <div class="adm-panel">
+                    <div class="table-wrap">
+                        <table class="adm-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Biznes</th>
+                                    <th>Ilova</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                    <th>Narx / oy</th>
+                                    <th>Holat</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ APPS (ILOVALAR) ============ -->
+            <section class="admin-section" id="sec-apps">
+                <div class="admin-head">
+                    <div>
+                        <h1>Ilovalar</h1>
+                        <p>Saytda ko'rinadigan ilovalar — logo, rasmlar, nom va tavsifni tahrirlang</p>
+                    </div>
+                    <button class="btn btn-primary" id="addAppBtn">
+                        <i class="fa-solid fa-plus"></i> Yangi ilova qo'shish
+                    </button>
+                </div>
+
+                <div class="apps-admin-grid" id="appsAdminGrid"></div>
+            </section>
+
+            <!-- ============ PAYMENTS ============ -->
+            <section class="admin-section" id="sec-payments">
+                <div class="admin-head">
+                    <div>
+                        <h1>To'lovlar</h1>
+                        <p>Mijozlarning oylik obuna to'lovlari</p>
+                    </div>
+                </div>
+
+                <div class="adm-panel">
+                    <div class="table-wrap">
+                        <table class="adm-table">
+                            <thead>
+                                <tr>
+                                    <th>Mijoz</th>
+                                    <th>Ilova</th>
+                                    <th>Oylik narx</th>
+                                    <th>Sana</th>
+                                    <th>Holat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ REVENUE ============ -->
+            <section class="admin-section" id="sec-revenue">
+                <div class="admin-head">
+                    <div>
+                        <h1>Daromad</h1>
+                        <p>Sayt umumiy daromad statistikasi</p>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div>
+                            <span class="kpi-label">Joriy oy daromadi</span>
+                            <strong class="kpi-value" id="revMonthly">0 so'm</strong>
+                        </div>
+                    </div>
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div>
+                            <span class="kpi-label">Yillik prognoz</span>
+                            <strong class="kpi-value" id="revYearly">0 so'm</strong>
+                        </div>
+                    </div>
+                    <div class="kpi-card orange">
+                        <div class="kpi-icon"><i class="fa-solid fa-coins"></i></div>
+                        <div>
+                            <span class="kpi-label">O'rtacha narx</span>
+                            <strong class="kpi-value" id="revAvg">0 so'm</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adm-panel">
+                    <div class="adm-panel-head">
+                        <div>
+                            <h3>Mijozlardan oylik daromad</h3>
+                            <p>Har bir mijozning aylanma to'lovi</p>
+                        </div>
+                    </div>
+                    <div class="rev-bars" id="revBars"></div>
+                </div>
+            </section>
+
+            <!-- ============ SETTINGS ============ -->
+            <section class="admin-section" id="sec-settings">
+                <div class="admin-head">
+                    <div>
+                        <h1>Sozlamalar</h1>
+                        <p>Sayt va administrator profilini boshqarish</p>
+                    </div>
+                </div>
+
+                <div class="d-grid-2">
+                    <div class="adm-panel">
+                        <h3 class="panel-title">Admin profil</h3>
+                        <div class="adm-form">
+                            <label>Ism<input type="text" id="setAdmName"></label>
+                            <label>Foydalanuvchi nomi<input type="text" id="setAdmUser"></label>
+                            <label>Yangi parol<input type="password" id="setAdmPass" placeholder="Bo'sh qoldirsangiz o'zgarmaydi"></label>
+                            <button class="btn btn-primary" id="saveAdmin">Saqlash</button>
+                        </div>
+                    </div>
+
+                    <div class="adm-panel">
+                        <h3 class="panel-title">Sayt sozlamalari</h3>
+                        <div class="adm-form">
+                            <label>Sayt nomi<input type="text" id="setSiteName" value="BiznesOnline"></label>
+                            <label>Aloqa telefoni<input type="text" id="setSitePhone" value="+998 90 123 45 67"></label>
+                            <label>Aloqa email<input type="email" id="setSiteEmail" value="info@biznesonline.uz"></label>
+                            <button class="btn btn-primary" id="saveSite">Saqlash</button>
+                        </div>
+                    </div>
+
+                    <div class="adm-panel danger">
+                        <h3 class="panel-title">Xavfli amallar</h3>
+                        <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px;">Barcha so'rov va mijoz ma'lumotlarini tiklash (demo uchun).</p>
+                        <button class="btn btn-danger" id="resetData">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Ma'lumotlarni tiklash
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ============ CLIENT EDIT MODAL ============ -->
+    <div class="adm-modal" id="clientModal">
+        <div class="adm-modal-box">
+            <div class="adm-modal-head">
+                <h3>Mijoz ma'lumotlari</h3>
+                <button class="adm-close" data-close="clientModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="adm-modal-body">
+                <form id="clientEditForm">
+                    <input type="hidden" id="editClientId">
+                    <div class="adm-form-grid">
+                        <label class="adm-label">Biznes nomi<input type="text" id="editBusinessName"></label>
+                        <label class="adm-label">Email<input type="email" id="editEmail"></label>
+                        <label class="adm-label">Telefon<input type="text" id="editPhone"></label>
+                        <label class="adm-label">Oylik narx (so'm)<input type="number" id="editPrice"></label>
+                        <label class="adm-label">Holat
+                            <select id="editStatus">
+                                <option value="active">Faol</option>
+                                <option value="paused">To'xtatilgan</option>
+                                <option value="blocked">Bloklangan</option>
+                            </select>
+                        </label>
+                        <label class="adm-label">Yangi parol (ixtiyoriy)<input type="text" id="editPassword" placeholder="o'zgartirish uchun"></label>
+                    </div>
+                    <div class="adm-modal-acts">
+                        <button type="button" class="btn btn-outline" data-close="clientModal">Bekor qilish</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Saqlash</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ APP EDIT MODAL ============ -->
+    <div class="adm-modal" id="appModal">
+        <div class="adm-modal-box lg">
+            <div class="adm-modal-head">
+                <h3 id="appModalTitle">Yangi ilova qo'shish</h3>
+                <button class="adm-close" data-close="appModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="adm-modal-body">
+                <form id="appForm">
+                    <input type="hidden" id="appId">
+
+                    <!-- LOGO YUKLASH -->
+                    <div class="field-block">
+                        <label class="field-title">Ilova logotipi</label>
+                        <div class="logo-uploader">
+                            <div class="logo-preview" id="appLogoPreview">
+                                <i class="fa-solid fa-image"></i>
+                                <span>Logo</span>
+                            </div>
+                            <div class="logo-controls">
+                                <input type="file" id="appLogoFile" accept="image/*" hidden>
+                                <input type="hidden" id="appLogoData">
+                                <button type="button" class="btn btn-outline btn-sm" id="appLogoPick">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Logo tanlash
+                                </button>
+                                <button type="button" class="btn btn-outline btn-sm" id="appLogoClear">
+                                    <i class="fa-solid fa-trash"></i> O'chirish
+                                </button>
+                                <p class="field-hint">PNG, JPG, WEBP — kvadrat shaklda tavsiya etiladi. Max 2MB.</p>
+                            </div>
+                        </div>
+                        <label class="adm-label" style="margin-top:12px;">
+                            Yoki emoji (logo bo'lmasa)
+                            <input type="text" id="appLogoEmoji" maxlength="4" placeholder="🍔">
+                        </label>
+                    </div>
+
+                    <!-- NOM VA TAVSIF -->
+                    <div class="adm-form-grid">
+                        <label class="adm-label">
+                            Ilova nomi
+                            <input type="text" id="appName" placeholder="Masalan: Fast Food Ilovasi" required>
+                        </label>
+                        <label class="adm-label">
+                            Slug (URL uchun, faqat lotin)
+                            <input type="text" id="appSlug" placeholder="fastfood" required>
+                        </label>
+                    </div>
+
+                    <label class="adm-label" style="margin-top:12px;">
+                        Qisqa tavsif
+                        <textarea id="appDesc" rows="3" placeholder="Bu ilova nima uchun mo'ljallangan..." required></textarea>
+                    </label>
+
+                    <!-- IMKONIYATLAR -->
+                    <div class="field-block">
+                        <label class="field-title">Imkoniyatlar (har biri yangi qator)</label>
+                        <textarea id="appFeatures" rows="5" placeholder="Onlayn menyu
+Buyurtma berish tizimi
+Yetkazib berish"></textarea>
+                    </div>
+
+                    <!-- URL'LAR -->
+                    <div class="adm-form-grid">
+                        <label class="adm-label">
+                            Demo URL (ilovaga link)
+                            <input type="text" id="appDemoUrl" placeholder="app/index.html">
+                        </label>
+                        <label class="adm-label">
+                            Admin URL (ilova boshqaruvi)
+                            <input type="text" id="appAdminUrl" placeholder="app/admin.html">
+                        </label>
+                    </div>
+
+                    <!-- NARX -->
+                    <div class="adm-form-grid" style="margin-top:10px;">
+                        <label class="adm-label">
+                            Oylik obuna narxi (so'm)
+                            <input type="number" id="appPrice" placeholder="Masalan: 150000" min="0">
+                        </label>
+                        <label class="adm-label">
+                            Narx tavsifi (ixtiyoriy)
+                            <input type="text" id="appPriceLabel" placeholder="oyiga / 1 yilga va h.k.">
+                        </label>
+                    </div>
+
+                    <!-- HOLAT -->
+                    <div class="adm-form-grid" style="margin-top:10px;">
+                        <label class="check-row-line">
+                            <input type="checkbox" id="appActive" checked>
+                            <span>Saytda ko'rinishi</span>
+                        </label>
+                        <label class="check-row-line">
+                            <input type="checkbox" id="appPopular">
+                            <span><i class="fa-solid fa-fire" style="color:#F59E0B;"></i> "Mashhur" sifatida belgilash</span>
+                        </label>
+                    </div>
+
+                    <div class="adm-modal-acts">
+                        <button type="button" class="btn btn-outline" data-close="appModal">Bekor qilish</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Saqlash</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ CONFIRM MODAL ============ -->
+    <div class="adm-modal" id="confirmModal">
+        <div class="adm-modal-box sm">
+            <div class="confirm-ic"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3 id="confirmTitle">Tasdiqlash</h3>
+            <p id="confirmText">Haqiqatan ham bajarmoqchimisiz?</p>
+            <div class="adm-modal-acts center">
+                <button class="btn btn-outline" data-close="confirmModal">Bekor</button>
+                <button class="btn btn-danger" id="confirmYes">Ha, davom etish</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

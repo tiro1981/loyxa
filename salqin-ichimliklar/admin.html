@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="admin.title">Salqin · Admin panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-lang-switch">
+      <div class="lang-switch">
+        <button id="loginLangBtn" class="icon-btn icon-btn-lg" data-i18n-title="nav.language">
+          <span id="loginLangFlag">🇺🇿</span><span id="loginLangCode" class="lang-code">UZ</span>
+        </button>
+        <div id="loginLangMenu" class="lang-menu hidden">
+          <button data-lang="uz"><span>🇺🇿</span> O'zbekcha</button>
+          <button data-lang="ru"><span>🇷🇺</span> Русский</button>
+          <button data-lang="en"><span>🇬🇧</span> English</button>
+        </div>
+      </div>
+    </div>
+    <form id="loginForm" class="login-card">
+      <div class="login-logo"><span>❄</span> Salqin Admin</div>
+      <h2 data-i18n="admin.login.title">Panelga kirish</h2>
+      <p class="muted">Login: <code>admin</code> · Parol: <code>admin123</code></p>
+      <label><span data-i18n="admin.login.user">Login</span><input name="login" required autocomplete="username" /></label>
+      <label><span data-i18n="admin.login.password">Parol</span><input name="password" type="password" required autocomplete="current-password" /></label>
+      <button class="btn btn-primary btn-block" type="submit" data-i18n="btn.login">Kirish</button>
+      <a href="index.html" class="back-link" data-i18n="admin.back_to_shop">← Do'kon sahifasiga qaytish</a>
+    </form>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="app hidden">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">❄</span>
+        <div><div class="brand-name">Salqin</div><div class="brand-sub" data-i18n="admin.brand.sub">Admin panel</div></div>
+      </div>
+      <nav class="menu">
+        <a class="menu-item active" data-page="dashboard"><span class="i">▦</span> <span data-i18n="admin.menu.dashboard">Dashboard</span></a>
+        <a class="menu-item" data-page="products"><span class="i">▤</span> <span data-i18n="admin.menu.products">Mahsulotlar</span></a>
+        <a class="menu-item" data-page="orders"><span class="i">▣</span> <span data-i18n="admin.menu.orders">Buyurtmalar</span> <span id="newOrdersBadge" class="m-badge hidden">0</span></a>
+        <a class="menu-item" data-page="chat"><span class="i">💬</span> <span>Chat</span> <span id="chatBadge" class="m-badge hidden">0</span></a>
+        <a class="menu-item" data-page="users"><span class="i">◉</span> <span data-i18n="admin.menu.users">Foydalanuvchilar</span></a>
+        <a class="menu-item" data-page="finance"><span class="i">$</span> <span data-i18n="admin.menu.finance">Moliya</span></a>
+        <a class="menu-item" data-page="bot"><span class="i">✈</span> <span>Telegram Bot</span> <span id="botSideBadge" class="m-badge hidden" style="background:#0088cc">●</span></a>
+      </nav>
+      <div class="sidebar-foot">
+        <a href="index.html" class="menu-item" data-i18n="admin.to_shop">← Do'konga</a>
+        <a id="logoutBtn" class="menu-item" data-i18n="admin.logout">⏻ Chiqish</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle" data-i18n="admin.menu.dashboard">Dashboard</h1>
+          <p id="pageSub" class="muted" data-i18n="admin.page.dashboard.sub">Umumiy ko'rsatkichlar va statistika</p>
+        </div>
+        <div class="topbar-right">
+          <div class="lang-switch">
+            <button id="langBtn" class="icon-btn icon-btn-lg" data-i18n-title="nav.language">
+              <span id="langFlag">🇺🇿</span><span id="langCode" class="lang-code">UZ</span>
+            </button>
+            <div id="langMenu" class="lang-menu hidden">
+              <button data-lang="uz"><span>🇺🇿</span> O'zbekcha</button>
+              <button data-lang="ru"><span>🇷🇺</span> Русский</button>
+              <button data-lang="en"><span>🇬🇧</span> English</button>
+            </div>
+          </div>
+          <span class="dot-status"></span>
+          <span class="muted" data-i18n="common.online">Online</span>
+          <span class="sep"></span>
+          <span class="admin-chip">A</span>
+        </div>
+      </header>
+
+      <!-- PAGES -->
+      <section id="page-dashboard" class="page">
+        <div class="stat-grid">
+          <div class="stat-card grad-1">
+            <div class="stat-label" data-i18n="stat.today">Bugungi tushum</div>
+            <div id="statToday" class="stat-value">0</div>
+            <div class="stat-sub" id="statTodaySub">+<span id="statTodayCount">0</span> buyurtma</div>
+          </div>
+          <div class="stat-card grad-2">
+            <div class="stat-label" data-i18n="stat.week">Haftalik</div>
+            <div id="statWeek" class="stat-value">0</div>
+            <div class="stat-sub" data-i18n="stat.week.sub">so'nggi 7 kun</div>
+          </div>
+          <div class="stat-card grad-3">
+            <div class="stat-label" data-i18n="stat.month">Oylik</div>
+            <div id="statMonth" class="stat-value">0</div>
+            <div class="stat-sub" data-i18n="stat.month.sub">joriy oy</div>
+          </div>
+          <div class="stat-card grad-4">
+            <div class="stat-label" data-i18n="stat.product_user">Mahsulot · Mijoz</div>
+            <div id="statProducts" class="stat-value">0</div>
+            <div class="stat-sub" id="statUsersSub"><span id="statUsers">0</span> ro'yxatdan o'tgan</div>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h3 data-i18n="panel.revenue7">Tushum dinamikasi (7 kun)</h3>
+              <span class="muted" data-i18n="panel.currency">so'm</span>
+            </div>
+            <div class="chart"><canvas id="chartRevenue" height="220"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="panel.top">Eng ko'p sotilgan</h3></div>
+            <div id="topProducts" class="top-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3 data-i18n="panel.recent">So'nggi buyurtmalar</h3>
+            <a data-page="orders" class="link" data-i18n="panel.view_all">Barchasini ko'rish →</a>
+          </div>
+          <div id="recentOrders"></div>
+        </div>
+      </section>
+
+      <section id="page-products" class="page hidden">
+        <div class="panel-head row">
+          <div class="search">
+            <input id="productSearch" type="search" data-i18n-ph="prod.search" placeholder="Mahsulot qidirish..." />
+          </div>
+          <button id="addProductBtn" class="btn btn-primary" data-i18n="prod.new">+ Yangi mahsulot</button>
+        </div>
+        <div class="panel">
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="prod.col.img">Rasm</th>
+                <th data-i18n="prod.col.name">Nomi</th>
+                <th data-i18n="prod.col.cat">Kategoriya</th>
+                <th data-i18n="prod.col.price">Narx</th>
+                <th data-i18n="prod.col.discount">Chegirma</th>
+                <th data-i18n="prod.col.final">Yakuniy</th>
+                <th data-i18n="prod.col.stock">Stock</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="productsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="page-orders" class="page hidden">
+        <div class="panel-head row">
+          <div class="filter-chips" id="orderFilters">
+            <button class="chip active" data-status="all" data-i18n="common.all">Barchasi</button>
+            <button class="chip" data-status="yangi" data-i18n="status.yangi">Yangi</button>
+            <button class="chip" data-status="tayyorlanmoqda" data-i18n="status.tayyorlanmoqda">Tayyorlanmoqda</button>
+            <button class="chip" data-status="yetkazilmoqda" data-i18n="status.yetkazilmoqda">Yetkazilmoqda</button>
+            <button class="chip" data-status="bajarildi" data-i18n="status.bajarildi">Bajarildi</button>
+            <button class="chip" data-status="bekor" data-i18n="status.bekor">Bekor qilingan</button>
+          </div>
+        </div>
+        <div class="panel">
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="ord.col.id">#</th>
+                <th data-i18n="ord.col.customer">Mijoz</th>
+                <th data-i18n="ord.col.phone">Telefon</th>
+                <th data-i18n="ord.col.product">Mahsulot</th>
+                <th data-i18n="ord.col.sum">Summa</th>
+                <th data-i18n="ord.col.date">Sana</th>
+                <th data-i18n="ord.col.status">Holat</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="page-chat" class="page hidden">
+        <div class="chat-layout">
+          <div class="chat-sidebar panel">
+            <div class="chat-sidebar-head">
+              <h4>Chatlar</h4>
+              <span id="chatTotalBadge" class="m-badge hidden">0</span>
+            </div>
+            <div id="chatUserList" class="chat-user-list"></div>
+          </div>
+          <div class="chat-main panel">
+            <div id="chatMainHead" class="chat-main-head">
+              <span class="muted">Chatni tanlang</span>
+            </div>
+            <div id="adminChatMessages" class="admin-chat-msgs">
+              <div class="admin-chat-empty">Foydalanuvchini tanlang</div>
+            </div>
+            <form id="adminChatForm" class="admin-chat-form hidden">
+              <input id="adminChatInput" type="text" placeholder="Javob yozing..." autocomplete="off" />
+              <button type="submit" class="btn btn-primary">Yuborish</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-users" class="page hidden">
+        <div class="panel">
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="user.col.name">Ism</th>
+                <th data-i18n="user.col.phone">Telefon</th>
+                <th data-i18n="user.col.address">Manzil</th>
+                <th data-i18n="user.col.orders">Buyurtmalar</th>
+                <th data-i18n="user.col.spent">Umumiy sarflagan</th>
+                <th data-i18n="user.col.joined">Ro'yxatdan o'tgan</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ TELEGRAM BOT ============ -->
+      <section id="page-bot" class="page hidden">
+        <!-- Bot status card -->
+        <div class="bot-status-card" id="botStatusCard">
+          <div class="bot-status-head">
+            <div class="bot-icon-wrap">✈</div>
+            <div class="bot-status-info">
+              <span class="bot-status-label" id="botStatusLabel">Ulanmagan</span>
+              <h2 id="botStatusTitle">Bot ulanish kutmoqda</h2>
+              <p id="botStatusDesc">Quyidagi qadamlarni bajaring va botingizni ulang</p>
+            </div>
+            <div class="bot-status-indicator" id="botStatusIndicator">
+              <span class="bot-dot"></span>
+              <span id="botIndicatorText">Offline</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bot ID kartochka -->
+        <div class="bot-id-card">
+          <div class="bot-id-head">
+            <div>
+              <span class="bot-id-tag">🔑 SIZNING UNIKAL BOT ID</span>
+              <h3>Botga ulanish uchun bu ID ni nusxalab oling</h3>
+              <p>Botga <code>/start</code> yuborganingizda u sizdan shu ID ni so'raydi</p>
+            </div>
+          </div>
+          <div class="bot-id-display">
+            <input type="text" id="botIdInput" readonly>
+            <button type="button" class="bot-copy-btn" id="copyBotIdBtn">
+              📋 <span>Nusxalash</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Qadamlar -->
+        <div class="bot-steps-grid">
+          <div class="bot-step-card" data-step="1">
+            <div class="bot-step-num">1</div>
+            <div class="bot-step-icon">✈</div>
+            <h4>Botni oching</h4>
+            <p>Telegram'da botimizni qidiring va <code>/start</code> tugmasini bosing</p>
+            <a href="https://t.me/BiznesOnlineOrdersBot" target="_blank" rel="noopener" class="bot-step-link">
+              ✈ @BiznesOnlineOrdersBot
+            </a>
+          </div>
+
+          <div class="bot-step-card" data-step="2">
+            <div class="bot-step-num">2</div>
+            <div class="bot-step-icon">🆔</div>
+            <h4>ID ni yuboring</h4>
+            <p>Yuqoridagi <strong>Bot ID</strong> ni nusxalab botga yuboring</p>
+          </div>
+
+          <div class="bot-step-card" data-step="3">
+            <div class="bot-step-num">3</div>
+            <div class="bot-step-icon">📢</div>
+            <h4>Kanal yuboring</h4>
+            <p>Buyurtmalar yuboriladigan kanal username yoki ID sini yuboring (masalan: <code>@mening_kanalim</code>)</p>
+          </div>
+
+          <div class="bot-step-card" data-step="4">
+            <div class="bot-step-num">4</div>
+            <div class="bot-step-icon">🛡</div>
+            <h4>Botni admin qiling</h4>
+            <p>Kanalingizga botni <strong>admin</strong> sifatida qo'shing — yozish huquqi bilan</p>
+          </div>
+
+          <div class="bot-step-card success" data-step="5">
+            <div class="bot-step-num">✓</div>
+            <div class="bot-step-icon">✅</div>
+            <h4>Tayyor!</h4>
+            <p>Bot kanalingizga <strong>"Muvaffaqiyatli ulandi"</strong> habarini yuboradi va har bir yangi buyurtma avtomatik kanalga keladi</p>
+          </div>
+        </div>
+
+        <!-- Ulangan kanal info -->
+        <div class="bot-connected-card" id="botConnectedCard" style="display:none">
+          <div class="bot-connected-head">
+            <span style="font-size:24px">✅</span>
+            <div>
+              <h3>Kanal ulangan</h3>
+              <p>Yangi buyurtmalar shu kanalga yuboriladi</p>
+            </div>
+          </div>
+          <div class="bot-connected-info">
+            <div class="bot-info-row">
+              <span>Kanal</span>
+              <strong id="botChannelName">—</strong>
+            </div>
+            <div class="bot-info-row">
+              <span>Ulangan vaqt</span>
+              <strong id="botConnectedAt">—</strong>
+            </div>
+            <div class="bot-info-row">
+              <span>Yuborilgan buyurtmalar</span>
+              <strong id="botSentCount">0</strong>
+            </div>
+          </div>
+          <div class="bot-connected-actions">
+            <button type="button" class="btn btn-ghost" id="botTestBtn">📨 Test habar yuborish</button>
+            <button type="button" class="btn btn-ghost danger" id="botDisconnectBtn">🔌 Uzish</button>
+          </div>
+        </div>
+
+        <!-- Demo simulyator -->
+        <div class="bot-sim-card">
+          <div class="bot-sim-head">
+            <span>🧪</span>
+            <strong>Demo simulyatori</strong>
+            <small>Faqat localStorage'da</small>
+          </div>
+          <p class="bot-sim-desc">
+            ⚠️ <strong>Diqqat:</strong> Bu faqat <em>UI sinov</em> uchun — haqiqiy Telegram'ga habar yubormaydi.
+            Haqiqiy ulanish uchun yuqoridagi 5 qadamni Telegram'da bajaring.
+          </p>
+          <div class="bot-sim-form">
+            <input type="text" id="botChannelInput" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
+            <button type="button" class="btn btn-primary" id="botSimConnectBtn">🔌 Ulanish (demo)</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-finance" class="page hidden">
+        <div class="stat-grid">
+          <div class="stat-card grad-1">
+            <div class="stat-label" data-i18n="stat.f.today">Bugungi</div>
+            <div id="fToday" class="stat-value">0</div>
+          </div>
+          <div class="stat-card grad-2">
+            <div class="stat-label" data-i18n="stat.week">Haftalik</div>
+            <div id="fWeek" class="stat-value">0</div>
+          </div>
+          <div class="stat-card grad-3">
+            <div class="stat-label" data-i18n="stat.month">Oylik</div>
+            <div id="fMonth" class="stat-value">0</div>
+          </div>
+          <div class="stat-card grad-4">
+            <div class="stat-label" data-i18n="stat.f.total">Umumiy</div>
+            <div id="fTotal" class="stat-value">0</div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="panel.revenue_count">Tushum (7 kun)</h3></div>
+            <div class="chart"><canvas id="fChartRevenue" height="240"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="panel.orders_count">Buyurtmalar soni (7 kun)</h3></div>
+            <div class="chart"><canvas id="fChartCount" height="240"></canvas></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- PRODUCT MODAL -->
+  <div id="productModal" class="modal">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" data-close="product">✕</button>
+      <h3 id="productModalTitle" data-i18n="prod.modal.new">Yangi mahsulot</h3>
+      <form id="productForm" class="form">
+        <input type="hidden" name="id" />
+        <div class="grid-2">
+          <label><span data-i18n="prod.name">Nomi</span><input name="name" required /></label>
+          <label><span data-i18n="prod.category">Kategoriya</span>
+            <div class="cat-wrap">
+              <select id="categorySelect" name="categorySelect" required></select>
+              <button type="button" id="addCategoryBtn" class="icon-btn" data-i18n-title="prod.new_cat.title">+</button>
+            </div>
+            <div id="newCategoryWrap" class="hidden" style="margin-top:8px">
+              <input id="newCategoryInput" type="text" data-i18n-ph="prod.new_cat.ph" placeholder="Yangi kategoriya nomi" />
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <button type="button" id="saveCategoryBtn" class="btn btn-primary btn-sm" data-i18n="common.save">Saqlash</button>
+                <button type="button" id="cancelCategoryBtn" class="btn btn-ghost btn-sm" data-i18n="common.cancel">Bekor qilish</button>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="grid-3">
+          <label><span data-i18n="prod.price">Narxi (so'm)</span><input name="price" type="number" min="0" required /></label>
+          <label><span data-i18n="prod.discount">Chegirma (%)</span><input name="discount" type="number" min="0" max="100" value="0" /></label>
+          <label><span data-i18n="prod.stock">Stock</span><input name="stock" type="number" min="0" required value="0" /></label>
+        </div>
+        <label>
+          <span data-i18n="prod.image">Rasm yuklash</span>
+          <input id="productImage" type="file" accept="image/*" />
+          <div class="img-hint">
+            <div class="img-hint-row">
+              <span class="hint-tag">📐 <span data-i18n="prod.img.hint.size">Tavsiya etilgan</span></span>
+              <span data-i18n-html="prod.img.hint.size.val"><b>500 × 500 px</b> (kvadrat, 1:1)</span>
+            </div>
+            <div class="img-hint-row">
+              <span class="hint-tag">📦 <span data-i18n="prod.img.hint.format">Format</span></span>
+              <span data-i18n="prod.img.hint.format.val">PNG / JPG / WebP · maksimum 2 MB</span>
+            </div>
+            <div class="img-hint-row">
+              <span class="hint-tag">🎨 <span data-i18n="prod.img.hint.tip">Maslahat</span></span>
+              <span data-i18n="prod.img.hint.tip.val">Oq yoki shaffof fon · markazlashtirilgan</span>
+            </div>
+          </div>
+        </label>
+        <div class="preview">
+          <div class="preview-frame" id="previewFrame">
+            <img id="productImgPreview" alt="" />
+            <div class="preview-placeholder" data-i18n="prod.img.select">Rasm tanlang</div>
+          </div>
+          <div id="imgMeta" class="img-meta hidden"></div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" data-i18n="common.save">Saqlash</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ORDER MODAL -->
+  <div id="orderModal" class="modal">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" data-close="order">✕</button>
+      <h3 data-i18n="ord.detail.title">Buyurtma tafsiloti</h3>
+      <div id="orderDetails"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <script src="db.js?v=2"></script>
+  <script src="i18n.js"></script>
+  <script src="telegram.js"></script>
+  <script src="admin.js?v=2"></script>
+</body>
+</html>

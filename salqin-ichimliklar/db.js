@@ -1,0 +1,487 @@
+// Salqin Ichimliklar — umumiy ma'lumotlar bazasi (localStorage)
+// Foydalanuvchi va admin paneli orasida bir xil ma'lumotlardan foydalanadi.
+
+const DB = (() => {
+  const KEYS = {
+    products: 'si_products',
+    orders: 'si_orders',
+    users: 'si_users',
+    cart: 'si_cart',
+    session: 'si_session',
+    adminSession: 'si_admin_session',
+    settings: 'si_settings',
+    seenStatuses: 'si_seen_statuses',
+    theme: 'si_theme',
+    chat: 'si_chat',
+  };
+
+  const ADMIN = { login: 'admin', password: 'admin123' };
+
+  const read = (k, fallback) => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? JSON.parse(v) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+  const write = (k, v) => {
+    const json = JSON.stringify(v);
+    try {
+      localStorage.setItem(k, json);
+    } catch (err) {
+      // Test rejimi: kvota tugaganda ham ilova ishlab tursin.
+      // Asosan si_orders va si_chat shishadi — eski yarmini olib tashlab qaytadan urinish.
+      const isQuota = err && (err.name === 'QuotaExceededError' || err.code === 22 || /quota/i.test(err.message || ''));
+      if (!isQuota) throw err;
+      console.warn('[DB] kvota oshib ketdi, eski yozuvlar tozalanmoqda:', k);
+      try {
+        if (Array.isArray(v) && v.length > 4) {
+          const trimmed = v.slice(0, Math.floor(v.length / 2));
+          localStorage.setItem(k, JSON.stringify(trimmed));
+          return;
+        }
+        // Boshqa ko'p joy egallaydigan kalitlarni tozalash
+        ['si_chat', 'si_orders', 'si_bot_feed', 'si_seen_statuses'].forEach(key => {
+          if (key !== k) localStorage.removeItem(key);
+        });
+        localStorage.setItem(k, json);
+      } catch (err2) {
+        console.error('[DB] kvota tozalashdan keyin ham yozib bo\'lmadi:', err2);
+        throw err2;
+      }
+    }
+  };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // ============================================================
+  // Realistik SVG illyustratsiyalar — fotosurat uslubidagi stakanlar
+  // ============================================================
+  function svgGlass(opts) {
+    const { liquid, type = 'glass', label = '', garnish = 'none' } = opts;
+
+    const garnishMarkup = {
+      orange: `
+        <g transform='translate(135,40)'>
+          <circle r='28' fill='#fb923c' stroke='#c2410c' stroke-width='1.5'/>
+          <circle r='22' fill='#fdba74'/>
+          <g stroke='#fb923c' stroke-width='1.5'>
+            <line x1='-20' y1='0' x2='20' y2='0'/>
+            <line x1='0' y1='-20' x2='0' y2='20'/>
+            <line x1='-14' y1='-14' x2='14' y2='14'/>
+            <line x1='-14' y1='14' x2='14' y2='-14'/>
+          </g>
+        </g>`,
+      lemon: `
+        <g transform='translate(135,40)'>
+          <ellipse rx='26' ry='22' fill='#facc15' stroke='#a16207' stroke-width='1.5'/>
+          <ellipse rx='20' ry='16' fill='#fde047'/>
+        </g>`,
+      apple: `
+        <g transform='translate(135,40)'>
+          <circle r='25' fill='#84cc16'/>
+          <circle r='25' fill='url(#shineG)' opacity='.4'/>
+          <path d='M 0 -25 Q 4 -32 10 -30' stroke='#65a30d' stroke-width='3' fill='none' stroke-linecap='round'/>
+          <path d='M 10 -28 Q 18 -36 14 -22' fill='#65a30d'/>
+        </g>`,
+      lime: `
+        <g transform='translate(135,40)'>
+          <circle r='25' fill='#22c55e' stroke='#15803d' stroke-width='1.5'/>
+          <circle r='19' fill='#4ade80'/>
+        </g>`,
+      cherry: `
+        <g transform='translate(135,38)'>
+          <circle cx='-8' cy='4' r='10' fill='#dc2626'/>
+          <circle cx='8' cy='6' r='10' fill='#b91c1c'/>
+          <path d='M-8 -6 Q 0 -22 12 -16' stroke='#15803d' stroke-width='2' fill='none'/>
+        </g>`,
+      none: ''
+    }[garnish] || '';
+
+    // Stakan/shisha shakli
+    let containerMarkup = '';
+    if (type === 'glass') {
+      // Sharbat stakani — apelsin sharbati kabi
+      containerMarkup = `
+        <path d='M 60 50 L 65 230 Q 65 250 85 250 L 165 250 Q 185 250 185 230 L 190 50 Z'
+              fill='url(#liquidG)' stroke='#0f172a' stroke-width='2'/>
+        <path d='M 60 50 L 190 50' stroke='#0f172a' stroke-width='3' fill='none'/>
+        <path d='M 64 50 L 70 230 Q 70 245 85 245' stroke='rgba(255,255,255,.7)' stroke-width='3' fill='none'/>
+        <ellipse cx='80' cy='80' rx='6' ry='25' fill='rgba(255,255,255,.5)'/>
+        <line x1='110' y1='30' x2='130' y2='180' stroke='#fbbf24' stroke-width='6' stroke-linecap='round'/>
+        <line x1='110' y1='30' x2='105' y2='15' stroke='#fbbf24' stroke-width='6' stroke-linecap='round'/>`;
+    } else if (type === 'bottle') {
+      // Shisha — gazli ichimliklar uchun
+      containerMarkup = `
+        <rect x='105' y='20' width='40' height='20' fill='#1e293b' rx='3'/>
+        <path d='M 95 40 L 95 60 Q 80 75 80 95 L 80 235 Q 80 255 100 255 L 150 255 Q 170 255 170 235 L 170 95 Q 170 75 155 60 L 155 40 Z'
+              fill='url(#liquidG)' stroke='#0f172a' stroke-width='2'/>
+        <ellipse cx='95' cy='130' rx='4' ry='40' fill='rgba(255,255,255,.5)'/>
+        <rect x='90' y='150' width='70' height='40' fill='rgba(255,255,255,.92)' rx='2'/>
+        <text x='125' y='177' text-anchor='middle' fill='${liquid}' font-family='Arial Black' font-weight='900' font-size='14'>${label}</text>`;
+    } else if (type === 'can') {
+      // Banka — energetik
+      containerMarkup = `
+        <ellipse cx='125' cy='40' rx='45' ry='8' fill='#94a3b8'/>
+        <rect x='80' y='40' width='90' height='210' fill='url(#liquidG)' stroke='#0f172a' stroke-width='2'/>
+        <ellipse cx='125' cy='250' rx='45' ry='8' fill='#475569'/>
+        <ellipse cx='95' cy='130' rx='4' ry='60' fill='rgba(255,255,255,.4)'/>
+        <rect x='85' y='100' width='80' height='60' fill='rgba(255,255,255,.92)' rx='3'/>
+        <text x='125' y='138' text-anchor='middle' fill='${liquid}' font-family='Arial Black' font-weight='900' font-size='16'>${label}</text>`;
+    } else if (type === 'water') {
+      // Suv shishasi
+      containerMarkup = `
+        <rect x='110' y='20' width='30' height='20' fill='#0ea5e9' rx='3'/>
+        <path d='M 95 40 Q 95 55 85 70 L 85 240 Q 85 255 105 255 L 145 255 Q 165 255 165 240 L 165 70 Q 155 55 155 40 Z'
+              fill='url(#liquidG)' stroke='#0f172a' stroke-width='2' opacity='.85'/>
+        <ellipse cx='95' cy='150' rx='5' ry='60' fill='rgba(255,255,255,.6)'/>
+        <rect x='90' y='130' width='70' height='40' fill='rgba(255,255,255,.95)' rx='2'/>
+        <text x='125' y='157' text-anchor='middle' fill='#0ea5e9' font-family='Arial Black' font-weight='900' font-size='13'>${label}</text>`;
+    }
+
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 280'>
+        <defs>
+          <linearGradient id='liquidG' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0' stop-color='${liquid}' stop-opacity='.95'/>
+            <stop offset='.5' stop-color='${liquid}' stop-opacity='1'/>
+            <stop offset='1' stop-color='${liquid}' stop-opacity='.75'/>
+          </linearGradient>
+          <radialGradient id='shineG' cx='30%' cy='30%' r='70%'>
+            <stop offset='0' stop-color='#fff' stop-opacity='.7'/>
+            <stop offset='1' stop-color='#fff' stop-opacity='0'/>
+          </radialGradient>
+        </defs>
+        ${containerMarkup}
+        ${garnishMarkup}
+      </svg>
+    `);
+  }
+
+  // Eski API saqlanib qoldi — fallback uchun
+  function svgDrink(color, label) {
+    return svgGlass({ liquid: color, type: 'bottle', label });
+  }
+
+  // ----- Seed boshlang'ich ma'lumotlar -----
+  function seed() {
+    if (!localStorage.getItem(KEYS.products)) {
+      const demo = [
+        { name: 'Coca-Cola 1L',     category: 'Gazli',     price: 14000, discount: 10, stock: 50,  img: svgGlass({ liquid: '#7c2d12', type: 'bottle', label: 'COLA' }) },
+        { name: 'Pepsi 1L',         category: 'Gazli',     price: 13500, discount: 0,  stock: 40,  img: svgGlass({ liquid: '#1e3a8a', type: 'bottle', label: 'PEPSI' }) },
+        { name: 'Fanta 1L',         category: 'Gazli',     price: 13000, discount: 5,  stock: 35,  img: svgGlass({ liquid: '#ea580c', type: 'bottle', label: 'FANTA' }) },
+        { name: 'Sprite 1L',        category: 'Gazli',     price: 13000, discount: 0,  stock: 30,  img: svgGlass({ liquid: '#16a34a', type: 'bottle', label: 'SPRITE' }) },
+        { name: 'Apelsin sharbati', category: 'Sharbat',   price: 18000, discount: 15, stock: 25,  img: svgGlass({ liquid: '#f97316', type: 'glass',  garnish: 'orange' }) },
+        { name: 'Olma sharbati',    category: 'Sharbat',   price: 17000, discount: 0,  stock: 22,  img: svgGlass({ liquid: '#84cc16', type: 'glass',  garnish: 'apple' }) },
+        { name: 'Hayot suvi 1.5L',  category: 'Suv',       price: 5000,  discount: 0,  stock: 100, img: svgGlass({ liquid: '#bae6fd', type: 'water',  label: 'HAYOT' }) },
+        { name: 'Nestea limon',     category: 'Choy',      price: 12000, discount: 0,  stock: 28,  img: svgGlass({ liquid: '#ca8a04', type: 'bottle', label: 'NESTEA' }) },
+        { name: 'Red Bull',         category: 'Energetik', price: 25000, discount: 0,  stock: 18,  img: svgGlass({ liquid: '#1e3a8a', type: 'can',    label: 'BULL' }) },
+        { name: 'Adrenaline Rush',  category: 'Energetik', price: 22000, discount: 10, stock: 20,  img: svgGlass({ liquid: '#6d28d9', type: 'can',    label: 'RUSH' }) },
+        { name: 'Mojito kokteyl',   category: 'Kokteyl',   price: 22000, discount: 0,  stock: 15,  img: svgGlass({ liquid: '#86efac', type: 'glass',  garnish: 'lime' }) },
+        { name: 'Limonad',          category: 'Sharbat',   price: 12000, discount: 0,  stock: 30,  img: svgGlass({ liquid: '#fde68a', type: 'glass',  garnish: 'lemon' }) },
+      ].map(p => ({ id: uid(), createdAt: Date.now(), ...p }));
+      write(KEYS.products, demo);
+    }
+    if (!localStorage.getItem(KEYS.orders))   write(KEYS.orders, []);
+    if (!localStorage.getItem(KEYS.users))    write(KEYS.users, []);
+    if (!localStorage.getItem(KEYS.settings)) write(KEYS.settings, { shopName: 'Salqin', currency: "so'm" });
+  }
+
+  // ----- Mahsulotlar -----
+  const products = {
+    all: () => read(KEYS.products, []),
+    get: (id) => products.all().find(p => p.id === id),
+    add: (p) => {
+      const list = products.all();
+      const item = { id: uid(), createdAt: Date.now(), ...p };
+      list.unshift(item);
+      write(KEYS.products, list);
+      return item;
+    },
+    update: (id, patch) => {
+      const list = products.all().map(p => p.id === id ? { ...p, ...patch } : p);
+      write(KEYS.products, list);
+    },
+    remove: (id) => write(KEYS.products, products.all().filter(p => p.id !== id)),
+    categoriesOnly: () => {
+      const set = new Set(products.all().map(p => p.category).filter(Boolean));
+      return Array.from(set);
+    },
+    categories: () => ['Barchasi', ...products.categoriesOnly()],
+    finalPrice: (p) => Math.round(p.price * (1 - (p.discount || 0) / 100)),
+  };
+
+  // ----- Foydalanuvchilar -----
+  const users = {
+    all: () => read(KEYS.users, []),
+    get: (id) => users.all().find(u => u.id === id),
+    findByPhone: (phone) => users.all().find(u => u.phone === phone),
+    register: ({ name, phone, password, address = '' }) => {
+      if (users.findByPhone(phone)) throw new Error('Bu telefon raqami avval ro\'yxatdan o\'tgan');
+      const list = users.all();
+      const u = { id: uid(), name, phone, password, address, createdAt: Date.now() };
+      list.push(u);
+      write(KEYS.users, list);
+      return u;
+    },
+    login: (phone, password) => {
+      const u = users.findByPhone(phone);
+      if (!u || u.password !== password) throw new Error('Telefon yoki parol noto\'g\'ri');
+      write(KEYS.session, { userId: u.id, at: Date.now() });
+      return u;
+    },
+    logout: () => localStorage.removeItem(KEYS.session),
+    current: () => {
+      const s = read(KEYS.session, null);
+      return s ? users.get(s.userId) : null;
+    },
+    update: (id, patch) => {
+      const list = users.all().map(u => u.id === id ? { ...u, ...patch } : u);
+      write(KEYS.users, list);
+    },
+    remove: (id) => write(KEYS.users, users.all().filter(u => u.id !== id)),
+  };
+
+  // ----- Savat -----
+  const cart = {
+    all: () => read(KEYS.cart, []),
+    count: () => cart.all().reduce((s, i) => s + i.qty, 0),
+    total: () => cart.all().reduce((s, i) => s + i.qty * products.finalPrice(products.get(i.productId) || { price: 0 }), 0),
+    add: (productId, qty = 1) => {
+      const list = cart.all();
+      const ex = list.find(i => i.productId === productId);
+      if (ex) ex.qty += qty;
+      else list.push({ productId, qty });
+      write(KEYS.cart, list);
+    },
+    setQty: (productId, qty) => {
+      let list = cart.all().map(i => i.productId === productId ? { ...i, qty } : i);
+      list = list.filter(i => i.qty > 0);
+      write(KEYS.cart, list);
+    },
+    remove: (productId) => write(KEYS.cart, cart.all().filter(i => i.productId !== productId)),
+    clear: () => write(KEYS.cart, []),
+  };
+
+  // ----- Buyurtmalar -----
+  const orders = {
+    all: () => read(KEYS.orders, []),
+    byUser: (userId) => orders.all().filter(o => o.userId === userId),
+    place: ({ userId, name, phone, address, note, payment, paymentMeta }) => {
+      const items = cart.all().map(i => {
+        const p = products.get(i.productId);
+        return {
+          productId: p.id,
+          name: p.name,
+          qty: i.qty,
+          price: p.price,
+          discount: p.discount || 0,
+          finalPrice: products.finalPrice(p),
+          // Diqqat: rasm bu yerda saqlanmaydi — localStorage kvotasini tejash uchun
+          // ko'rinish vaqtida productId orqali products dan olinadi.
+        };
+      });
+      if (!items.length) throw new Error('Savat bo\'sh');
+      const total = items.reduce((s, i) => s + i.qty * i.finalPrice, 0);
+      const now = Date.now();
+      const order = {
+        id: uid(),
+        userId, name, phone, address, note, payment,
+        paymentMeta: paymentMeta || null,
+        items, total,
+        status: 'yangi',
+        statusHistory: [{ status: 'yangi', at: now }],
+        createdAt: now,
+      };
+      const list = orders.all();
+      list.unshift(order);
+      write(KEYS.orders, list);
+
+      // Stockdan ayirish
+      items.forEach(i => {
+        const p = products.get(i.productId);
+        if (p) products.update(p.id, { stock: Math.max(0, (p.stock || 0) - i.qty) });
+      });
+
+      cart.clear();
+      return order;
+    },
+    update: (id, patch) => {
+      const list = orders.all().map(o => {
+        if (o.id !== id) return o;
+        const next = { ...o, ...patch };
+        if (patch.status && patch.status !== o.status) {
+          next.statusHistory = [...(o.statusHistory || []), { status: patch.status, at: Date.now() }];
+        }
+        return next;
+      });
+      write(KEYS.orders, list);
+    },
+    remove: (id) => write(KEYS.orders, orders.all().filter(o => o.id !== id)),
+  };
+
+  // ----- Bildirishnomalar (status o'zgarishlari foydalanuvchi ko'rmaganlar) -----
+  const notifications = {
+    seenMap: () => read(KEYS.seenStatuses, {}),
+    // Foydalanuvchi uchun yangi status o'zgarishlari ro'yxati
+    forUser: (userId) => {
+      if (!userId) return [];
+      const seen = notifications.seenMap();
+      const out = [];
+      orders.byUser(userId).forEach(o => {
+        (o.statusHistory || []).forEach(h => {
+          if (h.status === 'yangi') return;
+          const key = `${o.id}:${h.status}`;
+          if (!seen[key]) {
+            out.push({ orderId: o.id, status: h.status, at: h.at, key });
+          }
+        });
+      });
+      return out.sort((a, b) => b.at - a.at);
+    },
+    markAllSeen: (userId) => {
+      const seen = notifications.seenMap();
+      orders.byUser(userId).forEach(o => {
+        (o.statusHistory || []).forEach(h => {
+          if (h.status !== 'yangi') seen[`${o.id}:${h.status}`] = Date.now();
+        });
+      });
+      write(KEYS.seenStatuses, seen);
+    },
+  };
+
+  // ----- Admin -----
+  const admin = {
+    login: (l, p) => {
+      if (l === ADMIN.login && p === ADMIN.password) {
+        write(KEYS.adminSession, { at: Date.now() });
+        return true;
+      }
+      throw new Error('Admin login yoki parol noto\'g\'ri');
+    },
+    logout: () => localStorage.removeItem(KEYS.adminSession),
+    isAuthed: () => !!read(KEYS.adminSession, null),
+  };
+
+  // ----- Statistika -----
+  const stats = {
+    revenueIn: (from, to) => orders.all()
+      .filter(o => o.status !== 'bekor' && o.createdAt >= from && o.createdAt <= to)
+      .reduce((s, o) => s + o.total, 0),
+    countIn: (from, to) => orders.all()
+      .filter(o => o.createdAt >= from && o.createdAt <= to).length,
+    today() {
+      const d = new Date(); d.setHours(0, 0, 0, 0);
+      return this.revenueIn(d.getTime(), Date.now());
+    },
+    week() {
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - 6);
+      return this.revenueIn(d.getTime(), Date.now());
+    },
+    month() {
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(1);
+      return this.revenueIn(d.getTime(), Date.now());
+    },
+    last7Days() {
+      const arr = [];
+      const today = new Date(); today.setHours(0,0,0,0);
+      for (let i = 6; i >= 0; i--) {
+        const day = new Date(today); day.setDate(today.getDate() - i);
+        const next = new Date(day); next.setDate(day.getDate() + 1);
+        arr.push({
+          label: day.toLocaleDateString('uz-UZ', { weekday: 'short', day: '2-digit' }),
+          revenue: this.revenueIn(day.getTime(), next.getTime() - 1),
+          count: this.countIn(day.getTime(), next.getTime() - 1),
+        });
+      }
+      return arr;
+    },
+    topProducts(limit = 5) {
+      const tally = {};
+      orders.all().forEach(o => {
+        if (o.status === 'bekor') return;
+        o.items.forEach(i => {
+          if (!tally[i.productId]) tally[i.productId] = { name: i.name, qty: 0, revenue: 0 };
+          tally[i.productId].qty += i.qty;
+          tally[i.productId].revenue += i.qty * i.finalPrice;
+        });
+      });
+      return Object.values(tally).sort((a, b) => b.qty - a.qty).slice(0, limit);
+    },
+  };
+
+  // ----- Chat (foydalanuvchi <-> admin) -----
+  const chat = {
+    all: () => read(KEYS.chat, []),
+    byUser: (userId) => chat.all().filter(m => m.userId === userId),
+    send: (userId, userName, text, from = 'user') => {
+      const list = chat.all();
+      const msg = { id: uid(), userId, userName, text, from, at: Date.now(), seen: false };
+      list.push(msg);
+      write(KEYS.chat, list);
+      return msg;
+    },
+    unreadForAdmin: () => chat.all().filter(m => m.from === 'user' && !m.seen).length,
+    unreadForUser: (userId) => chat.all().filter(m => m.userId === userId && m.from === 'admin' && !m.seen).length,
+    markSeenByAdmin: (userId) => {
+      const list = chat.all().map(m => m.userId === userId && m.from === 'user' ? { ...m, seen: true } : m);
+      write(KEYS.chat, list);
+    },
+    markSeenByUser: (userId) => {
+      const list = chat.all().map(m => m.userId === userId && m.from === 'admin' ? { ...m, seen: true } : m);
+      write(KEYS.chat, list);
+    },
+    users: () => {
+      const msgs = chat.all();
+      const map = {};
+      msgs.forEach(m => {
+        if (!map[m.userId]) map[m.userId] = { userId: m.userId, userName: m.userName, lastMsg: m, unread: 0 };
+        map[m.userId].lastMsg = m;
+        if (m.from === 'user' && !m.seen) map[m.userId].unread++;
+      });
+      return Object.values(map).sort((a, b) => b.lastMsg.at - a.lastMsg.at);
+    },
+  };
+
+  // ----- O'zbekiston viloyatlari va tumanlari -----
+  const regions = {
+    "Toshkent shahri": ["Bektemir","Chilonzor","Mirobod","Mirzo Ulug'bek","Olmazor","Sergeli","Shayhontohur","Uchtepa","Yakkasaroy","Yashnobod","Yunusobod"],
+    "Toshkent viloyati": ["Angren","Bekobod","Olmaliq","Chirchiq","Ohangaron","Nurafshon","Yangiyo'l","Bo'ka","Bo'stonliq","Chinoz","Qibray","Oqqo'rg'on","Parkent","Piskent","Toshkent tumani","Zangiota","Yuqorichirchiq","O'rtachirchiq","Quyichirchiq"],
+    "Andijon viloyati": ["Andijon","Xonobod","Asaka","Baliqchi","Bo'z","Buloqboshi","Izboskan","Jalolquduq","Marhamat","Oltinko'l","Paxtaobod","Shahrixon","Ulug'nor","Xo'jaobod","Qo'rg'ontepa"],
+    "Buxoro viloyati": ["Buxoro","Kogon","G'ijduvon","Jondor","Olot","Peshku","Qorako'l","Qorovulbozor","Romitan","Shofirkon","Vobkent"],
+    "Farg'ona viloyati": ["Farg'ona","Marg'ilon","Quvasoy","Qo'qon","Beshariq","Bog'dod","Dang'ara","Furqat","Oltiariq","Quva","Rishton","So'x","Toshloq","Uchko'prik","O'zbekiston","Yozyovon"],
+    "Jizzax viloyati": ["Jizzax","Arnasoy","Baxmal","Do'stlik","Forish","G'allaorol","Mirzacho'l","Paxtakor","Yangiobod","Zafarobod","Zaamin","Zarbdor"],
+    "Xorazm viloyati": ["Urganch","Xiva","Bog'ot","Gurlan","Qo'shko'pir","Shovot","Xazarasp","Xonqa","Yangiariq","Yangibozor","Tuproqqal'a"],
+    "Namangan viloyati": ["Namangan","Chortoq","Chust","Kosonsoy","Mingbuloq","Norin","Pop","To'raqo'rg'on","Uchqo'rg'on","Yangiqo'rg'on"],
+    "Navoiy viloyati": ["Navoiy","Zarafshon","Karmana","Konimex","Navbahor","Nurota","Qiziltepa","Tomdi","Uchquduq","Xatirchi"],
+    "Qashqadaryo viloyati": ["Qarshi","Shahrisabz","Chiroqchi","Dehqonobod","G'uzor","Kasbi","Kitob","Koson","Mirishkor","Muborak","Nishon","Yakkabog'","Qamashi"],
+    "Samarqand viloyati": ["Samarqand","Kattaqo'rg'on","Bulung'ur","Ishtixon","Jomboy","Narpay","Nurobod","Oqdaryo","Pastdarg'om","Payariq","Paxtachi","Qo'shrabot","Toyloq","Urgut"],
+    "Sirdaryo viloyati": ["Guliston","Yangiyer","Boyovut","Oqoltin","Sardoba","Sayxunobod","Sirdaryo","Xovos","Mirzaobod"],
+    "Surxondaryo viloyati": ["Termiz","Angor","Bandixon","Boysun","Denov","Jarqo'rg'on","Kizirik","Muzrabot","Oltinsoy","Sariosiyo","Sherobod","Sho'rchi","Uzun","Qumqo'rg'on"],
+    "Qoraqalpog'iston": ["Nukus","Mo'ynoq","Amudaryo","Beruniy","Chimboy","Ellikqal'a","Kegeyli","Qanliko'l","Qo'ng'irot","Shumanay","Taxtako'pir","To'rtko'l","Xo'jayli"],
+  };
+
+  // ----- Mavzu -----
+  const theme = {
+    get: () => localStorage.getItem(KEYS.theme) || 'dark',
+    set: (t) => localStorage.setItem(KEYS.theme, t),
+    toggle: () => { const t = theme.get() === 'light' ? 'dark' : 'light'; theme.set(t); return t; },
+  };
+
+  // ----- Formatlash yordamchilari -----
+  const fmt = {
+    money: (n) => new Intl.NumberFormat('uz-UZ').format(Math.round(n || 0)) + " so'm",
+    date: (ts) => new Date(ts).toLocaleString('uz-UZ', { dateStyle: 'medium', timeStyle: 'short' }),
+    dateOnly: (ts) => new Date(ts).toLocaleDateString('uz-UZ'),
+    timeAgo: (ts) => {
+      const s = Math.round((Date.now() - ts) / 1000);
+      if (s < 60) return 'hozir';
+      if (s < 3600) return Math.floor(s / 60) + ' daqiqa oldin';
+      if (s < 86400) return Math.floor(s / 3600) + ' soat oldin';
+      return Math.floor(s / 86400) + ' kun oldin';
+    },
+  };
+
+  seed();
+  return { products, users, cart, orders, notifications, admin, stats, chat, regions, theme, fmt, svgDrink, svgGlass };
+})();

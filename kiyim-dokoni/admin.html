@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
+    <title>Admin Panel — Moda Style</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e2e">
+    <meta name="application-name" content="Moda Admin">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Moda Admin">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css?v=3">
+</head>
+<body>
+
+    <!-- ============ ADMIN LAYOUT ============ -->
+    <div class="admin-app" id="adminApp">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="brand">
+                    <div class="logo-mark">M</div>
+                    <div class="brand-text">
+                        <strong>Moda Style</strong>
+                        <small>Admin Panel</small>
+                    </div>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">×</button>
+            </div>
+
+            <nav class="side-nav">
+                <div class="nav-label">Asosiy</div>
+                <button class="nav-link active" data-page="dashboard"><span class="ni">📊</span> Dashboard</button>
+                <button class="nav-link" data-page="products"><span class="ni">📦</span> Mahsulotlar</button>
+                <button class="nav-link" data-page="orders"><span class="ni">🛍️</span> Buyurtmalar<span class="nav-badge" id="navOrdersBadge">0</span></button>
+                <button class="nav-link" data-page="customers"><span class="ni">👥</span> Mijozlar</button>
+                <button class="nav-link" data-page="messages"><span class="ni">💬</span> Habarlar<span class="nav-badge" id="navMsgBadge">0</span></button>
+
+                <div class="nav-label">Sozlash</div>
+                <button class="nav-link" data-page="categories"><span class="ni">📂</span> Kategoriyalar</button>
+                <button class="nav-link" data-page="coupons"><span class="ni">🏷️</span> Kuponlar</button>
+                <button class="nav-link" data-page="reports"><span class="ni">📈</span> Hisobot</button>
+                <button class="nav-link" data-page="settings"><span class="ni">⚙️</span> Sozlamalar</button>
+
+                <div class="nav-label">Integratsiya</div>
+                <button class="nav-link" data-page="bot"><span class="ni">✈️</span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
+            </nav>
+
+            <div class="sidebar-bot">
+                <div class="side-user">
+                    <div class="avatar">A</div>
+                    <div class="su-info">
+                        <strong>Administrator</strong>
+                        <small>Boshqaruvchi</small>
+                    </div>
+                </div>
+                <a href="index.html" class="logout" id="logoutBtn"><span>🏠</span> Saytga qaytish</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+
+            <!-- HEADER -->
+            <header class="topbar">
+                <button class="hamburger" id="hamburger">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+
+                <div class="topbar-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="globalSearch" placeholder="Qidirish...">
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="t-icon" id="darkToggle" title="Tema">🌙</button>
+
+                    <div class="dropdown">
+                        <button class="t-icon" id="notifBtn" title="Bildirishnomalar">
+                            🔔
+                            <span class="t-badge" id="notifBadge">0</span>
+                        </button>
+                        <div class="dd-menu" id="notifMenu">
+                            <div class="dd-head">Bildirishnomalar</div>
+                            <div id="notifList" class="dd-list"></div>
+                            <div class="dd-foot">Barchasini ko'rish</div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="user-chip" id="userBtn">
+                            <div class="avatar sm">A</div>
+                            <div class="uc-text">
+                                <strong>Admin</strong>
+                                <small>Boshqaruvchi</small>
+                            </div>
+                            <span class="caret">▾</span>
+                        </button>
+                        <div class="dd-menu right" id="userMenu">
+                            <a class="dd-item">👤 Profil</a>
+                            <a class="dd-item">⚙️ Sozlamalar</a>
+                            <div class="dd-sep"></div>
+                            <a class="dd-item" href="index.html">🏠 Saytga qaytish</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ============ DASHBOARD ============ -->
+            <section class="page active" data-page="dashboard">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-head">
+                            <span class="stat-icon" style="background:#ede9fe;color:#6c63ff">💰</span>
+                            <span class="trend up">+12.5%</span>
+                        </div>
+                        <div class="stat-val" id="kpiRevenue">0 so'm</div>
+                        <div class="stat-label">Jami savdo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-head">
+                            <span class="stat-icon" style="background:#fef3c7;color:#d97706">🛍️</span>
+                            <span class="trend up">+8.2%</span>
+                        </div>
+                        <div class="stat-val" id="kpiOrders">0</div>
+                        <div class="stat-label">Buyurtmalar (bugun: <span id="kpiOrdersToday">0</span>)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-head">
+                            <span class="stat-icon" style="background:#dcfce7;color:#16a34a">👥</span>
+                            <span class="trend up">+5.1%</span>
+                        </div>
+                        <div class="stat-val" id="kpiCustomers">0</div>
+                        <div class="stat-label">Mijozlar (yangi: <span id="kpiCustomersNew">0</span>)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-head">
+                            <span class="stat-icon" style="background:#fce7f3;color:#db2777">📦</span>
+                            <span class="trend down">-2.4%</span>
+                        </div>
+                        <div class="stat-val" id="kpiProducts">0</div>
+                        <div class="stat-label">Mahsulotlar (aktiv: <span id="kpiProductsActive">0</span>)</div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h3>Haftalik savdo</h3>
+                            <div class="panel-tabs">
+                                <button class="pt active">Hafta</button>
+                                <button class="pt">Oy</button>
+                                <button class="pt">Yil</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="weeklyChart" class="chart"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-head"><h3>Kategoriyalar</h3></div>
+                        <div class="panel-body">
+                            <div id="donutChart" class="donut-wrap"></div>
+                            <div id="donutLegend" class="donut-legend"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h3>So'nggi buyurtmalar</h3>
+                            <button class="link" data-go="orders">Barchasini ko'rish →</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead><tr><th>№</th><th>Mijoz</th><th>Mahsulot</th><th>Summa</th><th>Holat</th><th>Sana</th></tr></thead>
+                                <tbody id="recentOrders"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-head"><h3>Top mahsulotlar</h3></div>
+                        <div class="panel-body" id="topProducts"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ PRODUCTS ============ -->
+            <section class="page" data-page="products">
+                <div class="page-toolbar">
+                    <div class="filters">
+                        <div class="search-input">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="text" id="pSearch" placeholder="Mahsulot qidirish...">
+                        </div>
+                        <select id="pCatFilter" class="select"><option value="all">Barcha kategoriya</option></select>
+                        <select id="pStatusFilter" class="select">
+                            <option value="all">Barcha holat</option>
+                            <option value="active">Aktiv</option>
+                            <option value="archive">Arxiv</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="addProductBtn">+ Yangi mahsulot</button>
+                </div>
+
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width:60px">Rasm</th>
+                                    <th>Nomi</th>
+                                    <th>Kategoriya</th>
+                                    <th>Narxi</th>
+                                    <th>Zaxira</th>
+                                    <th>Holat</th>
+                                    <th style="width:140px">Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="productsPagination"></div>
+                </div>
+            </section>
+
+            <!-- ============ ORDERS ============ -->
+            <section class="page" data-page="orders">
+                <div class="tab-bar" id="orderTabs">
+                    <button class="tab active" data-status="all">Barchasi <span class="tab-count" id="cntAll">0</span></button>
+                    <button class="tab" data-status="yangi">Yangi <span class="tab-count" id="cntNew">0</span></button>
+                    <button class="tab" data-status="jarayonda">Jarayonda <span class="tab-count" id="cntProc">0</span></button>
+                    <button class="tab" data-status="yetkazilmoqda">Yetkazilmoqda <span class="tab-count" id="cntShip">0</span></button>
+                    <button class="tab" data-status="yetkazildi">Yakunlangan <span class="tab-count" id="cntDone">0</span></button>
+                    <button class="tab" data-status="bekor">Bekor <span class="tab-count" id="cntCancel">0</span></button>
+                </div>
+
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Sana</th>
+                                    <th>Mijoz</th>
+                                    <th>Mahsulotlar</th>
+                                    <th>Summa</th>
+                                    <th>To'lov</th>
+                                    <th>Holat</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ CUSTOMERS ============ -->
+            <section class="page" data-page="customers">
+                <div class="page-toolbar">
+                    <div class="filters">
+                        <div class="search-input">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="text" id="cSearch" placeholder="Mijoz qidirish...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mijoz</th>
+                                    <th>Email</th>
+                                    <th>Telefon</th>
+                                    <th>Buyurtmalar</th>
+                                    <th>Jami sarflagan</th>
+                                    <th>Ro'yxatdan o'tgan</th>
+                                    <th>Holat</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ CATEGORIES ============ -->
+            <section class="page" data-page="categories">
+                <div class="page-toolbar">
+                    <h2 class="t-sm">Kategoriyalar</h2>
+                    <button class="btn btn-primary" id="addCatBtn">+ Yangi kategoriya</button>
+                </div>
+                <div class="cat-grid" id="catGrid"></div>
+            </section>
+
+            <!-- ============ COUPONS ============ -->
+            <section class="page" data-page="coupons">
+                <div class="page-toolbar">
+                    <h2 class="t-sm">Chegirma kuponlari</h2>
+                    <button class="btn btn-primary" id="addCouponBtn">+ Yangi kupon</button>
+                </div>
+                <div class="panel">
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr><th>Kod</th><th>Turi</th><th>Miqdor</th><th>Max</th><th>Ishlatilgan</th><th>Muddat</th><th>Holat</th><th>Amallar</th></tr>
+                            </thead>
+                            <tbody id="couponsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ REPORTS ============ -->
+            <section class="page" data-page="reports">
+                <div class="page-toolbar">
+                    <div class="filters">
+                        <button class="rng-btn" data-range="today">Bugun</button>
+                        <button class="rng-btn active" data-range="week">Hafta</button>
+                        <button class="rng-btn" data-range="month">Oy</button>
+                        <button class="rng-btn" data-range="year">Yil</button>
+                        <input type="date" class="select" id="reportFrom">
+                        <input type="date" class="select" id="reportTo">
+                    </div>
+                    <div class="filters">
+                        <button class="btn btn-ghost" id="exportCsvBtn">📄 Excel (CSV)</button>
+                        <button class="btn btn-ghost" id="exportPdfBtn">🖨️ PDF (chop)</button>
+                    </div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#ede9fe;color:#6c63ff">💰</span></div><div class="stat-val" id="rpRevenue">0</div><div class="stat-label">Davr savdosi</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fef3c7;color:#d97706">🛍️</span></div><div class="stat-val" id="rpOrders">0</div><div class="stat-label">Buyurtmalar</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#dcfce7;color:#16a34a">📊</span></div><div class="stat-val" id="rpAvg">0</div><div class="stat-label">O'rtacha chek</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fce7f3;color:#db2777">📦</span></div><div class="stat-val" id="rpSold">0</div><div class="stat-label">Sotilgan dona</div></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h3>Savdo dinamikasi</h3></div>
+                    <div class="panel-body"><div id="lineChart" class="chart"></div></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h3>Top 10 mahsulot</h3></div>
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead><tr><th>#</th><th>Mahsulot</th><th>Kategoriya</th><th>Sotilgan</th><th>Daromad</th></tr></thead>
+                            <tbody id="reportTopTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ MESSAGES (Chat with users) ============ -->
+            <section class="page" data-page="messages">
+                <div class="messages-layout">
+                    <aside class="msg-sidebar">
+                        <div class="msg-search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="text" id="msgSearch" placeholder="Mijozni qidirish...">
+                        </div>
+                        <div class="msg-threads" id="msgThreads"></div>
+                    </aside>
+                    <main class="msg-main" id="msgMain">
+                        <div class="msg-empty" id="msgEmpty">
+                            <div class="emp-ico">💬</div>
+                            <h4>Suhbatni tanlang</h4>
+                            <p>Chap tomondan mijoz suhbatini tanlang</p>
+                        </div>
+                        <div class="msg-conversation" id="msgConversation" style="display:none">
+                            <header class="msg-conv-head">
+                                <button class="msg-back" id="msgBack" aria-label="Orqaga">‹</button>
+                                <div class="msg-conv-avatar" id="msgConvAvatar">U</div>
+                                <div class="msg-conv-info">
+                                    <strong id="msgConvName">Mijoz</strong>
+                                    <small id="msgConvPhone">—</small>
+                                </div>
+                                <button class="msg-conv-del" id="msgConvDel" aria-label="O'chirish">🗑</button>
+                            </header>
+                            <div class="msg-conv-body" id="msgConvBody"></div>
+                            <form class="msg-conv-input" id="msgConvForm">
+                                <input type="text" id="msgConvInput" placeholder="Javob yozing..." autocomplete="off" maxlength="500">
+                                <button type="submit" class="msg-send" aria-label="Yuborish">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </main>
+                </div>
+            </section>
+
+            <!-- ============ SETTINGS ============ -->
+            <section class="page" data-page="settings">
+                <div class="settings-tabs">
+                    <button class="st-tab active" data-stab="store">Do'kon ma'lumotlari</button>
+                    <button class="st-tab" data-stab="payment">To'lov</button>
+                    <button class="st-tab" data-stab="shipping">Yetkazib berish</button>
+                    <button class="st-tab" data-stab="notif">Bildirishnomalar</button>
+                </div>
+
+                <div class="panel">
+                    <div class="settings-pane active" data-stab="store">
+                        <div class="form form-grid">
+                            <div class="form-row"><label>Do'kon nomi</label><input type="text" id="stName"></div>
+                            <div class="form-row"><label>Telefon</label><input type="text" id="stPhone"></div>
+                            <div class="form-row"><label>Email</label><input type="email" id="stEmail"></div>
+                            <div class="form-row"><label>Ish vaqti</label><input type="text" id="stHours"></div>
+                            <div class="form-row full"><label>Manzil</label><input type="text" id="stAddress"></div>
+                            <div class="form-row full"><label>Logotip (URL)</label><input type="url" id="stLogo" placeholder="https://..."></div>
+                            <div class="form-row full"><button class="btn btn-primary" id="saveStoreBtn">Saqlash</button></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-pane" data-stab="payment">
+                        <div class="pay-list" id="payList"></div>
+                        <button class="btn btn-primary" id="savePayBtn">Saqlash</button>
+                    </div>
+
+                    <div class="settings-pane" data-stab="shipping">
+                        <div id="shipList"></div>
+                        <button class="btn btn-ghost" id="addZoneBtn">+ Zona qo'shish</button>
+                        <button class="btn btn-primary" id="saveShipBtn" style="margin-left:8px">Saqlash</button>
+                    </div>
+
+                    <div class="settings-pane" data-stab="notif">
+                        <div class="pay-list" id="notifSettings"></div>
+                        <button class="btn btn-primary" id="saveNotifBtn">Saqlash</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h3>Xavfli zona</h3></div>
+                    <div class="panel-body" style="display:flex;gap:10px;flex-wrap:wrap">
+                        <button class="btn btn-ghost" id="resetDataBtn">Demo ma'lumotlarni tiklash</button>
+                        <button class="btn btn-danger" id="clearDataBtn">Barcha ma'lumotlarni o'chirish</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ TELEGRAM BOT ============ -->
+            <section class="page" data-page="bot">
+                <!-- Status card -->
+                <div class="bot-status-card" id="botStatusCard">
+                    <div class="bot-status-head">
+                        <div class="bot-icon-wrap">✈️</div>
+                        <div class="bot-status-info">
+                            <span class="bot-status-label" id="botStatusLabel">Ulanmagan</span>
+                            <h2 id="botStatusTitle">Bot ulanish kutmoqda</h2>
+                            <p id="botStatusDesc">Quyidagi qadamlarni bajaring va botingizni ulang</p>
+                        </div>
+                        <div class="bot-status-indicator" id="botStatusIndicator">
+                            <span class="bot-dot"></span>
+                            <span id="botIndicatorText">Offline</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bot ID -->
+                <div class="bot-id-card">
+                    <div class="bot-id-head">
+                        <div>
+                            <span class="bot-id-tag">🔑 SIZNING UNIKAL BOT ID</span>
+                            <h3>Botga ulanish uchun bu ID ni nusxalab oling</h3>
+                            <p>Botga <code>/start</code> yuborganingizda u sizdan shu ID ni so'raydi</p>
+                        </div>
+                    </div>
+                    <div class="bot-id-display">
+                        <input type="text" id="botIdInput" readonly>
+                        <button type="button" class="bot-copy-btn" id="copyBotIdBtn">📋 <span>Nusxalash</span></button>
+                    </div>
+                </div>
+
+                <!-- Qadamlar -->
+                <div class="bot-steps-grid">
+                    <div class="bot-step-card" data-step="1">
+                        <div class="bot-step-num">1</div>
+                        <div class="bot-step-icon">✈️</div>
+                        <h4>Botni oching</h4>
+                        <p>Telegram'da botimizni qidiring va <code>/start</code> tugmasini bosing</p>
+                        <a href="https://t.me/BiznesOnlineOrdersBot" target="_blank" rel="noopener" class="bot-step-link">✈️ @BiznesOnlineOrdersBot</a>
+                    </div>
+                    <div class="bot-step-card" data-step="2">
+                        <div class="bot-step-num">2</div>
+                        <div class="bot-step-icon">🆔</div>
+                        <h4>ID ni yuboring</h4>
+                        <p>Yuqoridagi <strong>Bot ID</strong> ni nusxalab botga yuboring</p>
+                    </div>
+                    <div class="bot-step-card" data-step="3">
+                        <div class="bot-step-num">3</div>
+                        <div class="bot-step-icon">📢</div>
+                        <h4>Kanal yuboring</h4>
+                        <p>Buyurtmalar yuboriladigan kanal username yoki ID sini yuboring (masalan: <code>@mening_kanalim</code>)</p>
+                    </div>
+                    <div class="bot-step-card" data-step="4">
+                        <div class="bot-step-num">4</div>
+                        <div class="bot-step-icon">🛡️</div>
+                        <h4>Botni admin qiling</h4>
+                        <p>Kanalingizga botni <strong>admin</strong> sifatida qo'shing — yozish huquqi bilan</p>
+                    </div>
+                    <div class="bot-step-card success" data-step="5">
+                        <div class="bot-step-num">✓</div>
+                        <div class="bot-step-icon">✅</div>
+                        <h4>Tayyor!</h4>
+                        <p>Bot kanalingizga <strong>"Muvaffaqiyatli ulandi"</strong> habarini yuboradi va har bir yangi buyurtma avtomatik kanalga keladi</p>
+                    </div>
+                </div>
+
+                <!-- Ulangan kanal info -->
+                <div class="bot-connected-card" id="botConnectedCard" style="display:none">
+                    <div class="bot-connected-head">
+                        <span style="font-size:24px">✅</span>
+                        <div>
+                            <h3>Kanal ulangan</h3>
+                            <p>Yangi buyurtmalar shu kanalga yuboriladi</p>
+                        </div>
+                    </div>
+                    <div class="bot-connected-info">
+                        <div class="bot-info-row"><span>Kanal</span><strong id="botChannelName">—</strong></div>
+                        <div class="bot-info-row"><span>Ulangan vaqt</span><strong id="botConnectedAt">—</strong></div>
+                        <div class="bot-info-row"><span>Yuborilgan buyurtmalar</span><strong id="botSentCount">0</strong></div>
+                    </div>
+                    <div class="bot-connected-actions">
+                        <button type="button" class="btn btn-ghost" id="botTestBtn">📨 Test habar yuborish</button>
+                        <button type="button" class="btn btn-danger" id="botDisconnectBtn">🔌 Uzish</button>
+                    </div>
+                </div>
+
+                <!-- Demo simulyator -->
+                <div class="bot-sim-card">
+                    <div class="bot-sim-head">
+                        <span>🧪</span>
+                        <strong>Demo simulyatori</strong>
+                        <small>Faqat localStorage'da</small>
+                    </div>
+                    <p class="bot-sim-desc">
+                        ⚠️ <strong>Diqqat:</strong> Bu faqat <em>UI sinov</em> uchun — haqiqiy Telegram'ga habar yubormaydi.
+                        Haqiqiy ulanish uchun yuqoridagi 5 qadamni Telegram'da bajaring.
+                    </p>
+                    <div class="bot-sim-form">
+                        <input type="text" id="botChannelInput" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
+                        <button type="button" class="btn btn-primary" id="botSimConnectBtn">🔌 Ulanish (demo)</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ============ MODALS ============ -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <!-- Product Form -->
+    <div class="modal" id="productModal">
+        <div class="modal-inner modal-lg">
+            <div class="modal-head">
+                <h3 id="productFormTitle">Yangi mahsulot</h3>
+                <button class="modal-x" data-close-modal>×</button>
+            </div>
+            <form id="productForm" class="form form-grid">
+                <input type="hidden" id="pId">
+                <div class="form-row full"><label>Nomi *</label><input type="text" id="pName" required></div>
+                <div class="form-row"><label>Kategoriya *</label><select id="pCat" required></select></div>
+                <div class="form-row"><label>Holat</label>
+                    <label class="switch"><input type="checkbox" id="pActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label>
+                </div>
+                <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required min="0"></div>
+                <div class="form-row"><label>Eski narx (ixtiyoriy)</label><input type="number" id="pOld" min="0"></div>
+                <div class="form-row"><label>Zaxira *</label><input type="number" id="pStock" required min="0" value="10"></div>
+                <div class="form-row"><label>Rasm URL *</label><input type="url" id="pImage" required></div>
+                <div class="form-row full">
+                    <label>O'lchamlar</label>
+                    <div class="check-row" id="pSizes">
+                        <label><input type="checkbox" value="XS"><span>XS</span></label>
+                        <label><input type="checkbox" value="S"><span>S</span></label>
+                        <label><input type="checkbox" value="M"><span>M</span></label>
+                        <label><input type="checkbox" value="L"><span>L</span></label>
+                        <label><input type="checkbox" value="XL"><span>XL</span></label>
+                        <label><input type="checkbox" value="XXL"><span>XXL</span></label>
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <label>Ranglar</label>
+                    <div class="color-row" id="pColors">
+                        <input type="color" value="#000000">
+                        <input type="color" value="#ffffff">
+                        <input type="color" value="#6c63ff">
+                        <button type="button" class="btn-mini" id="addColorBtn">+ Rang</button>
+                    </div>
+                </div>
+                <div class="form-row full">
+                    <label>Rasm yuklash (drag & drop)</label>
+                    <div class="drop-zone" id="dropZone">
+                        <div>📤</div>
+                        <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+                </div>
+                <div class="form-row full"><label>Tavsif</label><textarea id="pDesc" rows="3"></textarea></div>
+                <div class="form-row full" style="display:flex;gap:10px;justify-content:flex-end">
+                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Detail -->
+    <div class="modal" id="orderModal">
+        <div class="modal-inner modal-md">
+            <div class="modal-head">
+                <h3>Buyurtma tafsiloti</h3>
+                <button class="modal-x" data-close-modal>×</button>
+            </div>
+            <div id="orderModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Customer Detail -->
+    <div class="modal" id="customerModal">
+        <div class="modal-inner modal-md">
+            <div class="modal-head">
+                <h3>Mijoz profili</h3>
+                <button class="modal-x" data-close-modal>×</button>
+            </div>
+            <div id="customerModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Category Form -->
+    <div class="modal" id="catModal">
+        <div class="modal-inner">
+            <div class="modal-head">
+                <h3 id="catModalTitle">Yangi kategoriya</h3>
+                <button class="modal-x" data-close-modal>×</button>
+            </div>
+            <form id="catForm" class="form">
+                <input type="hidden" id="catId">
+                <div class="form-row"><label>Nomi</label><input type="text" id="catName" required></div>
+                <div class="form-row"><label>Ikona (emoji)</label>
+                    <div class="emoji-pick" id="emojiPick">
+                        <button type="button" data-emoji="👔">👔</button>
+                        <button type="button" data-emoji="👗">👗</button>
+                        <button type="button" data-emoji="🧒">🧒</button>
+                        <button type="button" data-emoji="👟">👟</button>
+                        <button type="button" data-emoji="👜">👜</button>
+                        <button type="button" data-emoji="🧥">🧥</button>
+                        <button type="button" data-emoji="👒">👒</button>
+                        <button type="button" data-emoji="🧢">🧢</button>
+                        <button type="button" data-emoji="🕶️">🕶️</button>
+                        <button type="button" data-emoji="⌚">⌚</button>
+                    </div>
+                    <input type="text" id="catIcon" required placeholder="Yoki o'zingiz yozing">
+                </div>
+                <div class="form-row"><label>Tavsif</label><textarea id="catDesc" rows="2"></textarea></div>
+                <div class="form-row"><label class="switch"><input type="checkbox" id="catActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
+                <div style="display:flex;gap:10px;justify-content:flex-end">
+                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Coupon Form -->
+    <div class="modal" id="couponModal">
+        <div class="modal-inner">
+            <div class="modal-head">
+                <h3 id="couponModalTitle">Yangi kupon</h3>
+                <button class="modal-x" data-close-modal>×</button>
+            </div>
+            <form id="couponForm" class="form form-grid">
+                <input type="hidden" id="cpId">
+                <div class="form-row full"><label>Kod</label><input type="text" id="cpCode" required style="text-transform:uppercase"></div>
+                <div class="form-row"><label>Turi</label><select id="cpType"><option value="percent">Foiz (%)</option><option value="fixed">Belgilangan summa</option></select></div>
+                <div class="form-row"><label>Miqdor</label><input type="number" id="cpValue" required min="0"></div>
+                <div class="form-row"><label>Max foydalanish</label><input type="number" id="cpMax" required min="1" value="100"></div>
+                <div class="form-row"><label>Amal qilish muddati</label><input type="date" id="cpExpires" required></div>
+                <div class="form-row full"><label class="switch"><input type="checkbox" id="cpActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
+                <div class="form-row full" style="display:flex;gap:10px;justify-content:flex-end">
+                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm dialog -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-inner modal-sm">
+            <h3 id="confirmTitle">Tasdiqlash</h3>
+            <p id="confirmMsg" style="color:var(--text-muted);margin-bottom:16px"></p>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button class="btn btn-ghost" id="confirmCancel">Bekor qilish</button>
+                <button class="btn btn-danger" id="confirmOk">Ha, davom etish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js?v=3"></script>
+    <script src="admin.js?v=3"></script>
+</body>
+</html>

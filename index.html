@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun zamonaviy SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar.">
+    <title>BiznesOnline — Biznesingizni Online ga oling</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <script>
+        try {
+            const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
+            if (_s && _s.type === 'client') window.location.replace('dashboard.html');
+        } catch {}
+    </script>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="logo-text">BiznesOnline</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="nav-link active" data-i18n="nav.home">Bosh sahifa</a></li>
+                <li><a href="#apps" class="nav-link" data-i18n="nav.apps">Ilovalar</a></li>
+                <li><a href="#how" class="nav-link" data-i18n="nav.how">Qanday ishlaydi</a></li>
+                <li><a href="#reviews" class="nav-link" data-i18n="nav.reviews">Sharhlar</a></li>
+                <li><a href="#contact" class="nav-link" data-i18n="nav.contact">Bog'lanish</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle-btn" data-theme-toggle aria-label="Theme toggle" title="Tungi rejim">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button class="settings-trigger" data-settings-open aria-label="Settings" title="Sozlamalar">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <a href="kirish.html" class="btn btn-ghost btn-sm" data-i18n="nav.login">Kirish</a>
+                <a href="kirish.html?tab=register" class="btn btn-primary btn-sm" data-i18n="nav.register">Ro'yxatdan o'tish</a>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="container hero-container">
+            <div class="hero-content reveal">
+                <span class="hero-badge"><i class="fa-solid fa-circle-check"></i> <span data-i18n="hero.badge">O'zbekiston #1 biznes platforma</span></span>
+                <h1 class="hero-title">
+                    <span data-i18n="hero.title_1">Biznesingizni</span> <span class="text-accent" data-i18n="hero.title_online">Online</span> <span data-i18n="hero.title_2">ga oling —</span><br>
+                    <span class="text-primary" data-i18n="hero.title_sub">Oylik obuna</span> <span data-i18n="hero.title_3">bilan</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food yoki kafe — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Obuna narxi siz bilan kelishilgan holda, individual tarzda belgilanadi.</p>
+                <div class="hero-buttons">
+                    <a href="obuna.html" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-rocket"></i> <span data-i18n="hero.btn_subscribe">Obuna bo'lish</span>
+                    </a>
+                    <a href="#apps" class="btn btn-outline btn-lg">
+                        <i class="fa-solid fa-grid-2"></i> <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
+                    </a>
+                </div>
+                <div class="hero-trust">
+                    <div class="trust-avatars">
+                        <div class="avatar" style="background:#16A34A">D</div>
+                        <div class="avatar" style="background:#F59E0B">M</div>
+                        <div class="avatar" style="background:#0F172A">S</div>
+                        <div class="avatar" style="background:#EF4444">A</div>
+                    </div>
+                    <div class="trust-text">
+                        <strong data-i18n="hero.trust_count">200+ biznes</strong> <span data-i18n="hero.trust_text">bizga ishonadi</span>
+                        <div class="trust-stars">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.9 / 5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual reveal">
+                <div class="hero-card hero-card-1">
+                    <div class="hc-header">
+                        <span class="hc-dot red"></span>
+                        <span class="hc-dot yellow"></span>
+                        <span class="hc-dot green"></span>
+                    </div>
+                    <div class="hc-body">
+                        <div class="hc-row">
+                            <div class="hc-icon green"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div>
+                                <div class="hc-title">Yangi buyurtma</div>
+                                <div class="hc-sub">Burger + Cola — 45,000 so'm</div>
+                            </div>
+                        </div>
+                        <div class="hc-row">
+                            <div class="hc-icon yellow"><i class="fa-solid fa-star"></i></div>
+                            <div>
+                                <div class="hc-title">5 yulduzli sharh</div>
+                                <div class="hc-sub">"Juda mazali, tez yetkazib berildi!"</div>
+                            </div>
+                        </div>
+                        <div class="hc-row">
+                            <div class="hc-icon primary"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <div class="hc-title">Bugungi daromad</div>
+                                <div class="hc-sub">+18% — 1,250,000 so'm</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-card hero-card-2">
+                    <div class="hc-mini">
+                        <i class="fa-solid fa-bell"></i>
+                        <div>
+                            <strong>+5 buyurtma</strong>
+                            <span>oxirgi soatda</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-blob"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATS BAR -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item reveal">
+                    <div class="stat-icon"><i class="fa-solid fa-store"></i></div>
+                    <div class="stat-number" data-target="200">0</div>
+                    <div class="stat-label">Faol biznes</div>
+                </div>
+                <div class="stat-item reveal">
+                    <div class="stat-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="stat-number" data-target="3">0</div>
+                    <div class="stat-label">Ilova turi</div>
+                </div>
+                <div class="stat-item reveal">
+                    <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
+                    <div class="stat-number">99.9<span>%</span></div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-item reveal">
+                    <div class="stat-icon"><i class="fa-solid fa-headset"></i></div>
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Yordam xizmati</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- APPS SECTION -->
+    <section class="apps-section" id="apps">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-tag" data-i18n="apps.tag">ILOVALAR</span>
+                <h2 class="section-title" data-i18n="apps.title">Biznesingizga mos ilovani tanlang</h2>
+                <p class="section-subtitle" data-i18n="apps.subtitle">Har bir ilova tayyor — faqat ma'lumotlaringizni kiriting va ishga tushiring</p>
+            </div>
+
+            <div class="apps-grid" id="appsGrid">
+                <!-- Ilovalar JS bilan dinamik render qilinadi (admin panelidan boshqariladi) -->
+            </div>
+
+            <div class="custom-price-note reveal">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>Har bir biznes uchun obuna narxi <strong>individual tarzda</strong> belgilanadi. So'rov yuborganingizdan so'ng administrator siz bilan bog'lanib, sizga mos narxni taklif qiladi.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section" id="how">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-tag" data-i18n="how.tag">QANDAY ISHLAYDI</span>
+                <h2 class="section-title" data-i18n="how.title">3 ta oddiy qadam</h2>
+                <p class="section-subtitle" data-i18n="how.subtitle">5 daqiqada biznesingizni online ga olib chiqing</p>
+            </div>
+            <div class="how-grid">
+                <div class="how-step reveal">
+                    <div class="how-number">01</div>
+                    <div class="how-icon"><i class="fa-solid fa-mouse-pointer"></i></div>
+                    <h3>Ilovangizni tanlang</h3>
+                    <p>Do'kon, fast food yoki kafe — biznesingizga mos ilovani tanlang</p>
+                </div>
+                <div class="how-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="how-step reveal">
+                    <div class="how-number">02</div>
+                    <div class="how-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <h3>Ma'lumotlaringizni kiriting</h3>
+                    <p>Biznes nomi, manzil, telefon va mahsulotlaringizni qo'shing</p>
+                </div>
+                <div class="how-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="how-step reveal">
+                    <div class="how-number">03</div>
+                    <div class="how-icon"><i class="fa-solid fa-globe"></i></div>
+                    <h3>Biznesingiz online!</h3>
+                    <p><code>sizning-biznes.biznesonline.uz</code> da ishga tushadi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="reviews-section" id="reviews">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="section-tag" data-i18n="reviews.tag">SHARHLAR</span>
+                <h2 class="section-title" data-i18n="reviews.title">Mijozlarimiz nima deyishadi</h2>
+                <p class="section-subtitle" data-i18n="reviews.subtitle">200+ biznes egasi bizni tanladi</p>
+            </div>
+            <div class="reviews-grid">
+                <div class="review-card reveal">
+                    <div class="review-stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"2 kunda online bo'ldik, buyurtmalar 40% oshdi. Endi mijozlar QR kod orqali to'g'ridan-to'g'ri buyurtma berishadi."</p>
+                    <div class="review-author">
+                        <div class="avatar avatar-lg" style="background:#16A34A">D</div>
+                        <div>
+                            <div class="author-name">Davron Karimov</div>
+                            <div class="author-role">"Toshkent Burger" egasi</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card reveal">
+                    <div class="review-stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"Juda qulay, o'zim boshqaraman. Texnik bilim kerak emas — menyuni o'zgartirish 1 daqiqada."</p>
+                    <div class="review-author">
+                        <div class="avatar avatar-lg" style="background:#F59E0B">M</div>
+                        <div>
+                            <div class="author-name">Malika Yusupova</div>
+                            <div class="author-role">"Coffee Time" egasi</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card reveal">
+                    <div class="review-stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"Narx arzon, sifat a'lo. Mahalla do'konim uchun bundan yaxshi yechim topa olmasdim."</p>
+                    <div class="review-author">
+                        <div class="avatar avatar-lg" style="background:#0F172A">S</div>
+                        <div>
+                            <div class="author-name">Sardor Aliyev</div>
+                            <div class="author-role">"Mahalla Do'kon" egasi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-card reveal">
+                <div class="cta-content">
+                    <h2 data-i18n="cta.title">Bugun boshlang — ertaga mijozlaringiz ko'paysin</h2>
+                    <p>So'rov yuboring — administrator siz bilan bog'lanib obunani faollashtiradi.</p>
+                    <div class="cta-buttons">
+                        <a href="obuna.html" class="btn btn-light btn-lg">
+                            <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Hozir boshlash</span>
+                        </a>
+                        <a href="tel:+998901234567" class="btn btn-ghost btn-lg">
+                            <i class="fa-solid fa-phone"></i> +998 90 123-45-67
+                        </a>
+                    </div>
+                </div>
+                <div class="cta-decor">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="index.html" class="logo logo-light">
+                        <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                        <span class="logo-text">BiznesOnline</span>
+                    </a>
+                    <p class="footer-desc">O'zbekistondagi kichik bizneslar uchun zamonaviy va arzon SaaS platforma. Biznesingizni online ga oling.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Sahifalar</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Bosh sahifa</a></li>
+                        <li><a href="#apps">Ilovalar</a></li>
+                        <li><a href="#reviews">Sharhlar</a></li>
+                        <li><a href="obuna.html">Obuna bo'lish</a></li>
+                        <li><a href="kirish.html">Kirish</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Yordam</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Hujjatlar</a></li>
+                        <li><a href="#">Video darslar</a></li>
+                        <li><a href="#">Texnik yordam</a></li>
+                        <li><a href="#">Maxfiylik siyosati</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Bog'lanish</h4>
+                    <ul class="footer-contacts">
+                        <li><i class="fa-solid fa-phone"></i> +998 90 123-45-67</li>
+                        <li><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</li>
+                        <li><i class="fa-solid fa-location-dot"></i> Toshkent, Mirzo Ulug'bek tumani</li>
+                        <li><i class="fa-solid fa-clock"></i> Dush-Shanba, 9:00 - 18:00</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 BiznesOnline. Barcha huquqlar himoyalangan.</p>
+                <p>O'zbekistonda ❤️ bilan yaratildi</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop" aria-label="Yuqoriga">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- APP DETAIL MODAL -->
+    <div class="app-detail-overlay" id="appDetailModal">
+        <div class="app-detail-box">
+            <button class="app-detail-close" id="appDetailClose" aria-label="Yopish">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="app-detail-inner" id="appDetailContent"></div>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('appDetailModal');
+            const closeBtn = document.getElementById('appDetailClose');
+            if (closeBtn) closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+            if (modal) modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

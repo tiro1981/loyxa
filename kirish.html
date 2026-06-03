@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish — BiznesOnline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <script>
+        try {
+            const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
+            if (_s && _s.type === 'client') window.location.replace('dashboard.html');
+        } catch {}
+    </script>
+</head>
+<body class="auth-body">
+
+    <div class="auth-wrap">
+        <!-- LEFT SIDE -->
+        <div class="auth-side">
+            <a href="index.html" class="logo logo-light">
+                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="logo-text">BiznesOnline</span>
+            </a>
+            <div class="auth-side-content">
+                <h1>Biznesingizni online ga oling</h1>
+                <p>Sizning shaxsiy ilovangiz va boshqaruv dashbordingiz — bir joyda. Tizimga kiring va biznesingizni boshqarishni boshlang.</p>
+                <ul class="auth-side-list">
+                    <li><i class="fa-solid fa-circle-check"></i> Shaxsiy ilova va dashbord</li>
+                    <li><i class="fa-solid fa-circle-check"></i> Real vaqtda statistika</li>
+                    <li><i class="fa-solid fa-circle-check"></i> 24/7 qo'llab-quvvatlash</li>
+                </ul>
+            </div>
+            <div class="auth-side-decor">
+                <div class="decor-circle c1"></div>
+                <div class="decor-circle c2"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE — Form -->
+        <div class="auth-main">
+            <a href="index.html" class="back-home">
+                <i class="fa-solid fa-arrow-left"></i> Bosh sahifa
+            </a>
+
+            <div class="auth-card">
+                <!-- ROLE TABS -->
+                <div class="role-tabs">
+                    <button class="role-tab active" data-role="client">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <div>
+                            <strong>Kirish</strong>
+                            <span>Mijoz</span>
+                        </div>
+                    </button>
+                    <button class="role-tab" data-role="register">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <div>
+                            <strong>Ro'yxatdan o'tish</strong>
+                            <span>Yangi hisob</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- CLIENT FORM -->
+                <form class="auth-form active" id="clientForm" data-role="client">
+                    <h2>Mijoz kabinetiga kirish</h2>
+                    <p class="auth-sub">Ilova va dashbordingizga kirish uchun ma'lumotlarni kiriting</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Email yoki telefon</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="text" name="login" placeholder="biznes@gmail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Parol</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" name="password" placeholder="••••••••" required>
+                            <button type="button" class="eye-btn" data-toggle><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="auth-row">
+                        <label class="check-row">
+                            <input type="checkbox" checked> Meni eslab qol
+                        </label>
+                        <a href="#" class="forgot-link">Parolni unutdingizmi?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                        <i class="fa-solid fa-right-to-bracket"></i> Kirish
+                    </button>
+
+                    <div class="auth-divider"><span>yoki</span></div>
+
+                    <p class="auth-foot">
+                        Hali hisobingiz yo'qmi?
+                        <a href="#" data-switch-role="register">Ro'yxatdan o'ting</a>
+                    </p>
+
+                    <div class="demo-hint">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Demo: <code>mijoz@demo.uz</code> / <code>demo123</code>
+                    </div>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form class="auth-form" id="registerForm" data-role="register">
+                    <h2>Yangi hisob yaratish</h2>
+                    <p class="auth-sub">Ma'lumotlaringizni kiriting va dashbordingizga kiring. Ilovani keyin sotib olishingiz mumkin.</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Biznes nomi</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-store"></i>
+                            <input type="text" name="businessName" placeholder="Masalan: Toshkent Burger" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" name="email" placeholder="biznes@gmail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" name="phone" placeholder="+998 90 123 45 67" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Parol</label>
+                        <div class="auth-input">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" name="password" placeholder="Kamida 6 ta belgi" required minlength="6">
+                            <button type="button" class="eye-btn" data-toggle><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="auth-row">
+                        <label class="check-row">
+                            <input type="checkbox" id="termsRegister" required>
+                            <span>Foydalanish shartlariga roziman</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                        <i class="fa-solid fa-user-plus"></i> Ro'yxatdan o'tish
+                    </button>
+
+                    <div class="auth-divider"><span>yoki</span></div>
+
+                    <p class="auth-foot">
+                        Hisobingiz bormi?
+                        <a href="#" data-switch-role="client">Kirish</a>
+                    </p>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

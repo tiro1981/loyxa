@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/bot/.venv/bin/python3",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/bot/.venv/lib/python3.14/site-packages"
+  ],
+  "python.terminal.activateEnvironment": true
+}
