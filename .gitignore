@@ -1,0 +1,45 @@
+# macOS tizim fayllari
+.DS_Store
+**/.DS_Store
+
+# IDE/Editor sozlamalari
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python (bot uchun)
+bot/.venv/
+bot/venv/
+bot/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node (agar keyinchalik ishlatsangiz)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Maxfiy ma'lumotlar (TOKEN, parol va h.k.)
+.env
+.env.local
+*.key
+*.pem
+bot/.env
+bot/config.json
+bot/secrets.json
+
+# Log fayllar
+*.log
+logs/
+
+# Bot ma'lumotlar bazasi (foydalanuvchi ma'lumoti)
+bot/bot-db.json
+
+# Build natijalari
+dist/
+build/
+.cache/
