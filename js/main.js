@@ -296,13 +296,9 @@ function renderApps() {
             ? `<img src="${app.logo}" alt="${escapeHtmlMain(app.name)}" class="app-logo-img">`
             : `<span class="app-logo-emoji">${app.logoEmoji || '📱'}</span>`;
 
-        const priceBlock = app.price
-            ? `<div class="app-price-tag"><span class="price-num">${fmtMain(app.price)}</span><span class="price-lbl">so'm / ${escapeHtmlMain(app.priceLabel || 'oyiga')}</span></div>`
-            : `<div class="app-price app-price-custom"><i class="fa-solid fa-handshake"></i><span>Narx kelishiladi</span></div>`;
+        const freeBlock = `<div class="app-free-tag"><i class="fa-solid fa-gift"></i> <span>Bepul foydalanish</span></div>`;
 
-        const buyBtn = app.price
-            ? `<a href="obuna.html?app=${encodeURIComponent(app.slug || 'app')}&price=${app.price}" class="btn btn-primary btn-block"><i class="fa-solid fa-cart-shopping"></i> Obunani sotib olish</a>`
-            : `<a href="obuna.html?app=${encodeURIComponent(app.slug || 'app')}" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> So'rov yuborish</a>`;
+        const getBtn = `<button type="button" class="btn btn-primary btn-block" onclick="boGetApp('${escapeHtmlMain(app.id)}')"><i class="fa-solid fa-circle-down"></i> Ilovani olish</button>`;
 
         return `
             <div class="app-card reveal ${app.popular ? 'popular' : ''}" data-app-id="${escapeHtmlMain(app.id)}" style="cursor:pointer;">
@@ -310,10 +306,10 @@ function renderApps() {
                 <div class="app-icon-wrap">${logoBlock}</div>
                 <h3 class="app-title">${escapeHtmlMain(app.name)}</h3>
                 <p class="app-desc">${escapeHtmlMain(app.desc)}</p>
-                ${priceBlock}
+                ${freeBlock}
                 <div class="app-card-actions" onclick="event.stopPropagation()">
                     ${app.demoUrl ? `<a href="${app.demoUrl}" target="_blank" class="btn btn-outline btn-block"><i class="fa-solid fa-eye"></i> Demo versiyasi</a>` : ''}
-                    ${buyBtn}
+                    ${getBtn}
                 </div>
             </div>
         `;
@@ -358,18 +354,11 @@ function showAppDetailModal(app) {
         `<li><i class="fa-solid fa-check"></i> ${escapeHtmlMain(f)}</li>`
     ).join('');
 
-    const priceSection = app.price
-        ? `<div class="detail-price-wrap">
-               <span class="detail-price-num">${fmtMain(app.price)}</span>
-               <span class="detail-price-lbl">so'm / ${escapeHtmlMain(app.priceLabel || 'oyiga')}</span>
-           </div>`
-        : `<div class="app-price app-price-custom" style="margin-bottom:0">
-               <i class="fa-solid fa-handshake"></i><span>Narx individual tarzda belgilanadi</span>
+    const priceSection = `<div class="app-free-tag" style="margin-bottom:0">
+               <i class="fa-solid fa-gift"></i><span>Mutlaqo bepul</span>
            </div>`;
 
-    const buyBtn = app.price
-        ? `<a href="obuna.html?app=${encodeURIComponent(app.slug || 'app')}&price=${app.price}" class="btn btn-primary btn-lg" style="flex:1"><i class="fa-solid fa-cart-shopping"></i> Obunani sotib olish</a>`
-        : `<a href="obuna.html?app=${encodeURIComponent(app.slug || 'app')}" class="btn btn-primary btn-lg" style="flex:1"><i class="fa-solid fa-paper-plane"></i> So'rov yuborish</a>`;
+    const buyBtn = `<button type="button" class="btn btn-primary btn-lg" style="flex:1" onclick="boGetApp('${escapeHtmlMain(app.id)}')"><i class="fa-solid fa-circle-down"></i> Ilovani olish</button>`;
 
     document.getElementById('appDetailContent').innerHTML = `
         <div class="detail-app-header">
@@ -393,7 +382,7 @@ function showAppDetailModal(app) {
 
         <div class="detail-app-footer">
             <div class="detail-price-block">
-                <span class="detail-price-title">Obuna narxi</span>
+                <span class="detail-price-title">Narxi</span>
                 ${priceSection}
             </div>
             <div class="detail-app-actions">
@@ -406,6 +395,55 @@ function showAppDetailModal(app) {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
+
+/* ===== ILOVANI BEPUL OLISH (ro'yxatdan o'tish shart) ===== */
+function boAssignApp(clientId, app) {
+    try {
+        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const me = subs.find(s => s.id === clientId);
+        if (!me) return false;
+        me.app = app.slug || app.id;
+        me.appId = app.id;
+        me.appName = app.name;
+        me.appUrl = app.demoUrl || null;
+        me.adminUrl = app.adminUrl || null;
+        me.slug = app.slug || null;
+        me.logoEmoji = app.logoEmoji || null;
+        me.price = 0;
+        me.status = 'active';
+        me.activatedAt = new Date().toISOString();
+        if (!me.subdomain) {
+            me.subdomain = (me.businessName || 'biznes').toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'biznes';
+        }
+        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        return true;
+    } catch (e) { console.error('boAssignApp', e); return false; }
+}
+
+window.boGetApp = function (appId) {
+    // Dashboard'da bo'lsa — to'g'ridan-to'g'ri subdomen modali (obuna bo'lishdan oldin)
+    if (typeof window.BO_subscribe === 'function') { window.BO_subscribe(appId); return; }
+
+    let apps = [];
+    try { apps = JSON.parse(localStorage.getItem('bo_apps') || '[]'); } catch {}
+    const app = apps.find(a => a.id === appId);
+    if (!app) return;
+    const slug = encodeURIComponent(app.slug || app.id);
+
+    let session = null;
+    try { session = JSON.parse(localStorage.getItem('bo_session') || 'null'); } catch {}
+
+    // Ro'yxatdan o'tmagan — avval ro'yxatdan o'tkazamiz (ilova eslab qolinadi)
+    if (!session || session.type !== 'client') {
+        window.showToast && window.showToast('Obuna bo\'lish uchun avval ro\'yxatdan o\'ting', 'info');
+        setTimeout(() => { window.location.href = 'kirish.html?tab=register&app=' + slug; }, 600);
+        return;
+    }
+
+    // Ro'yxatdan o'tgan — dashboard'da subdomen so'raladi
+    window.location.href = 'dashboard.html?subscribe=' + slug;
+};
 
 /* ===== UZS FORMATTER (main uchun) ===== */
 function fmtMain(n) {

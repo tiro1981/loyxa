@@ -193,12 +193,14 @@ function toast(msg, type = 'success') {
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('kitob_bot_config') || 'null');
-        if (!cfg || !cfg.connected || !cfg.channel) return;
-        const BOT_HTTP = localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344';
-        fetch(`${BOT_HTTP}/orders/${cfg.botId}`, {
+        if (!cfg || !cfg.token) return;
+        const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
+        const BOT_HTTP = (localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, '');
+        fetch(`${BOT_HTTP}/store-bot/order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                clientId: SHOP_KEY,
                 order: {
                     id: String(order.id),
                     userName: order.name,

@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="stylesheet" href="css/dashboard.css?v=7">
+    <link rel="stylesheet" href="css/settings.css?v=7">
 </head>
 <body class="dash-body">
 
@@ -38,7 +38,7 @@
                     <i class="fa-solid fa-grip"></i> <span data-i18n="dash.apps">Ilovalar</span>
                 </a>
                 <a href="#" class="side-link" data-view="subscription">
-                    <i class="fa-solid fa-credit-card"></i> <span data-i18n="dash.subscription">Obuna</span>
+                    <i class="fa-solid fa-layer-group"></i> <span data-i18n="dash.subscription">Obuna</span>
                 </a>
             </div>
 
@@ -85,13 +85,19 @@
                 <button class="icon-btn" data-theme-toggle title="Tungi rejim" aria-label="Theme toggle">
                     <i class="fa-solid fa-moon"></i>
                 </button>
-                <button class="icon-btn" data-settings-open title="Sozlamalar" aria-label="Settings">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
-                <button class="icon-btn" title="Bildirishnomalar">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge-dot"></span>
-                </button>
+                <div class="notif-wrap">
+                    <button class="icon-btn" id="notifBtn" title="Bildirishnomalar" aria-label="Bildirishnomalar">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+                    </button>
+                    <div class="notif-panel" id="notifPanel">
+                        <div class="notif-panel-head">
+                            <h4><i class="fa-solid fa-bell"></i> Bildirishnomalar</h4>
+                            <button class="notif-readall" id="notifReadAll">Hammasini o'qish</button>
+                        </div>
+                        <div class="notif-list" id="notifList"></div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -109,7 +115,7 @@
                     <div class="no-sub-hero-body">
                         <span class="no-sub-tag" data-i18n="dash.no_sub_tag">XUSH KELIBSIZ!</span>
                         <h2 id="noSubGreeting" data-i18n="dash.no_sub_title">Biznesingizni online ga olib chiqing</h2>
-                        <p data-i18n="dash.no_sub_desc">Hali bironta ilovaga obuna emassiz. Pastdagi ilovalardan birini tanlang va biznesingiz uchun veb-ilova hamda boshqaruv dashbordini bir necha daqiqada ishga tushiring.</p>
+                        <p data-i18n="dash.no_sub_desc">Hali ilova tanlamagansiz. Pastdagi ilovalardan birini tanlang va biznesingiz uchun veb-ilova hamda boshqaruv dashbordini bir necha daqiqada bepul ishga tushiring.</p>
                         <div class="no-sub-hero-actions">
                             <button class="btn btn-light btn-lg" data-view-trigger="marketplace">
                                 <i class="fa-solid fa-grip"></i> <span data-i18n="dash.no_sub_btn">Ilovalarni ko'rish</span>
@@ -164,208 +170,65 @@
             </div>
 
             <!-- =================================================== -->
-            <!-- ACTIVE SUBSCRIPTION STATE — ilova sotib olganlar -->
+            <!-- ACTIVE STATE — obuna bo'lgan ilovalar (Bosh sahifa)  -->
             <!-- =================================================== -->
             <div class="active-sub-wrap" id="activeSubWrap" style="display:none;">
-
-            <!-- SUBSCRIPTION BANNER -->
-            <div class="subscr-banner reveal">
-                <div class="sb-left">
-                    <div class="sb-app-icon" id="sbAppIcon">🍔</div>
+                <div class="myapps-head reveal">
                     <div>
-                        <span class="sb-label">Sizning ilovangiz</span>
-                        <h2 id="sbAppName">Fast Food Ilovasi</h2>
-                        <div class="sb-meta">
-                            <span class="sb-status"><i class="fa-solid fa-circle"></i> <span id="sbStatus">Faol obuna</span></span>
-                            <span><i class="fa-solid fa-tag"></i> <span id="sbPrice">99 000</span> so'm / oy</span>
-                        </div>
+                        <h2>Mening ilovalarim</h2>
+                        <p>Obuna bo'lgan web ilovalaringiz — oching, boshqaring yoki to'xtating</p>
                     </div>
-                </div>
-                <div class="sb-actions">
-                    <a href="#" id="sbAppLink" class="btn btn-light btn-lg">
-                        <i class="fa-solid fa-mobile-screen"></i> Ilovani ochish
-                    </a>
-                    <a href="#" id="sbAdminLink" class="btn btn-outline-light btn-lg">
-                        <i class="fa-solid fa-sliders"></i> Ilova boshqaruvi
-                    </a>
-                </div>
-            </div>
-
-            <!-- ILOVA / DASHBORD AJRATILGANINI KO'RSATUVCHI EXPLANATION -->
-            <div class="info-strip reveal">
-                <div class="info-strip-item">
-                    <div class="is-icon green"><i class="fa-solid fa-mobile-screen"></i></div>
-                    <div>
-                        <strong>Ilova</strong>
-                        <span>Mijozlar uchun veb-ilovangiz — <code>app/index.html</code></span>
-                    </div>
-                </div>
-                <div class="info-strip-item">
-                    <div class="is-icon orange"><i class="fa-solid fa-sliders"></i></div>
-                    <div>
-                        <strong>Ilova boshqaruvi</strong>
-                        <span>Sizning ilovangiz uchun alohida dashbord — <code>app/admin.html</code></span>
-                    </div>
-                </div>
-                <div class="info-strip-item">
-                    <div class="is-icon blue"><i class="fa-solid fa-house"></i></div>
-                    <div>
-                        <strong>Mijoz dashbordi (siz hozir bu yerdasiz)</strong>
-                        <span>Obuna holati va sayt bilan aloqa</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STAT CARDS -->
-            <div class="stat-cards">
-                <div class="stat-card reveal">
-                    <div class="stat-card-head">
-                        <div class="stat-card-icon green">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value">Faol</div>
-                    <div class="stat-card-label">Obuna holati</div>
-                </div>
-
-                <div class="stat-card reveal">
-                    <div class="stat-card-head">
-                        <div class="stat-card-icon yellow">
-                            <i class="fa-solid fa-sack-dollar"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value" id="statPrice">99 000</div>
-                    <div class="stat-card-label">Oylik to'lov (so'm)</div>
-                </div>
-
-                <div class="stat-card reveal">
-                    <div class="stat-card-head">
-                        <div class="stat-card-icon blue">
-                            <i class="fa-solid fa-calendar-day"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value" id="statDays">28</div>
-                    <div class="stat-card-label">Keyingi to'lovgacha (kun)</div>
-                </div>
-
-                <div class="stat-card reveal">
-                    <div class="stat-card-head">
-                        <div class="stat-card-icon purple">
-                            <i class="fa-solid fa-globe"></i>
-                        </div>
-                    </div>
-                    <div class="stat-card-value" style="font-size:16px;" id="statDomain">biznes.uz</div>
-                    <div class="stat-card-label">Subdomeningiz</div>
-                </div>
-            </div>
-
-            <!-- QUICK ACTIONS -->
-            <div class="quick-actions reveal">
-                <div class="qa-head">
-                    <h3 data-i18n="dash.quick_actions">Tezkor harakatlar</h3>
-                    <p data-i18n="dash.quick_desc">Ilovangiz va dashbordingizga tezkor kirish</p>
-                </div>
-                <div class="qa-grid">
-                    <a class="qa-btn" href="#" id="qaAppLink">
-                        <div class="qa-icon green"><i class="fa-solid fa-mobile-screen"></i></div>
-                        <span>Ilovani ochish (mijozlar ko'rinishi)</span>
-                    </a>
-                    <a class="qa-btn" href="#" id="qaAdminLink">
-                        <div class="qa-icon yellow"><i class="fa-solid fa-sliders"></i></div>
-                        <span>Ilova boshqaruvi (menyu, buyurtmalar)</span>
-                    </a>
-                    <button class="qa-btn" data-action="renew">
-                        <div class="qa-icon blue"><i class="fa-solid fa-rotate"></i></div>
-                        <span>Obunani yangilash</span>
-                    </button>
-                    <button class="qa-btn" data-action="support">
-                        <div class="qa-icon purple"><i class="fa-solid fa-headset"></i></div>
-                        <span>Adminga yozish</span>
+                    <button class="btn btn-primary" data-view-trigger="marketplace">
+                        <i class="fa-solid fa-plus"></i> Yangi ilova qo'shish
                     </button>
                 </div>
+                <div class="subs-grid" id="homeSubsGrid">
+                    <!-- JS: obuna kartalari -->
+                </div>
             </div>
 
-            <!-- SUBSCRIPTION DETAIL + ABOUT APP -->
-            <div class="dash-grid">
-
-                <!-- OBUNA TAFSILOTI -->
-                <div class="panel reveal">
-                    <div class="panel-head">
-                        <div>
-                            <h3>Obuna tafsilotlari</h3>
-                            <p>Sizning obuna ma'lumotlaringiz</p>
-                        </div>
-                        <span class="trend-pill up"><i class="fa-solid fa-circle-check"></i> Faol</span>
+            <!-- =================================================== -->
+            <!-- OBUNA (SUBSCRIPTIONS MANAGER) VIEW                   -->
+            <!-- =================================================== -->
+            <div class="subscription-wrap" id="subscriptionWrap" style="display:none;">
+                <div class="myapps-head reveal">
+                    <div>
+                        <h2>Obunalarim</h2>
+                        <p>Faol obunalaringiz. Har bir ilova uchun alohida subdomen.</p>
                     </div>
+                    <button class="btn btn-primary" data-view-trigger="marketplace">
+                        <i class="fa-solid fa-plus"></i> Yangi obuna
+                    </button>
+                </div>
+                <div class="subs-grid" id="subsGrid">
+                    <!-- JS: obuna kartalari -->
+                </div>
+            </div>
 
-                    <div class="subscr-list">
-                        <div class="sl-row">
-                            <span>Mijoz ID</span>
-                            <strong id="detClientId">CL-001</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Biznes nomi</span>
-                            <strong id="detBusinessName">Demo Burger</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Tanlangan ilova</span>
-                            <strong id="detApp">🍔 Fast Food</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Subdomen</span>
-                            <strong id="detDomain" style="color:var(--primary)">demo-burger.biznesonline.uz</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Oylik narx</span>
-                            <strong id="detPrice" style="color:var(--primary)">99 000 so'm</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Faollashtirilgan</span>
-                            <strong id="detActivatedAt">—</strong>
-                        </div>
-                        <div class="sl-row">
-                            <span>Keyingi to'lov</span>
-                            <strong id="detNextPay">—</strong>
-                        </div>
+            <!-- =================================================== -->
+            <!-- QO'LLAB-QUVVATLASH (SUPPORT) VIEW                    -->
+            <!-- =================================================== -->
+            <div class="support-wrap" id="supportWrap" style="display:none;">
+                <div class="support-head reveal">
+                    <div class="support-head-ic"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <h2>Qo'llab-quvvatlash</h2>
+                        <p>Savol yoki muammoingizni yozing — administrator javob beradi. Javoblar yuqoridagi <i class="fa-solid fa-bell"></i> bildirishnomada chiqadi.</p>
                     </div>
                 </div>
 
-                <!-- ILOVA ENTRY POINTS -->
-                <div class="panel reveal app-entries-panel">
-                    <div class="panel-head">
-                        <div>
-                            <h3>Ilovangizga kirish</h3>
-                            <p>Ilova va uning boshqaruv dashbordi</p>
-                        </div>
+                <div class="support-chat reveal">
+                    <div class="support-thread" id="supportThread">
+                        <!-- JS dinamik to'ldiradi -->
                     </div>
-
-                    <a href="#" id="entryAppLink" class="entry-card green">
-                        <div class="entry-ic"><i class="fa-solid fa-mobile-screen"></i></div>
-                        <div class="entry-body">
-                            <h4>Mijozlar ilovasi</h4>
-                            <p>Mijozlaringiz ko'radigan veb-ilova</p>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square arr"></i>
-                    </a>
-
-                    <a href="#" id="entryAdminLink" class="entry-card orange">
-                        <div class="entry-ic"><i class="fa-solid fa-sliders"></i></div>
-                        <div class="entry-body">
-                            <h4>Ilova boshqaruvi</h4>
-                            <p>Menyu, buyurtmalar, statistikani boshqarish</p>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square arr"></i>
-                    </a>
-
-                    <div class="warn-strip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>Ushbu sahifa — <strong>Mijoz dashbordi</strong>. Ilovangizdagi buyurtmalar, mahsulotlar va statistika <strong>"Ilova boshqaruvi"</strong> dashbordida.</span>
-                    </div>
+                    <form class="support-form" id="supportForm">
+                        <textarea id="supportInput" rows="1" placeholder="Xabaringizni yozing..." required></textarea>
+                        <button type="submit" class="support-send" title="Yuborish" aria-label="Yuborish">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
                 </div>
-
             </div>
-
-            </div> <!-- /.active-sub-wrap -->
 
         </div>
     </main>
@@ -380,12 +243,40 @@
         </div>
     </div>
 
+    <!-- SUBDOMAIN MODAL (obuna bo'lishdan oldin) -->
+    <div class="app-detail-overlay" id="subdomainModal">
+        <div class="subdomain-box">
+            <button class="app-detail-close" id="subdomainClose" aria-label="Yopish">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="subdomain-inner">
+                <div class="subdomain-app">
+                    <span class="subdomain-app-ic" id="sdAppIcon">📱</span>
+                    <div>
+                        <span class="subdomain-tag">OBUNA BO'LISH</span>
+                        <h3 id="sdAppName">Ilova</h3>
+                    </div>
+                </div>
+                <p class="subdomain-desc">Ushbu ilova uchun <strong>subdomen</strong> tanlang — bu sizning veb-ilovangiz manzili bo'ladi. Har bir ilova uchun alohida subdomen.</p>
+                <label class="subdomain-label">Subdomen</label>
+                <div class="subdomain-input">
+                    <input type="text" id="sdInput" placeholder="masalan-dokon" autocomplete="off" maxlength="30" spellcheck="false">
+                    <span class="subdomain-suffix">.biznesonline.uz</span>
+                </div>
+                <p class="subdomain-hint" id="sdHint">3–30 ta belgi: kichik harflar, raqamlar va "-"</p>
+                <button class="btn btn-primary btn-block btn-lg" id="sdConfirm">
+                    <i class="fa-solid fa-circle-check"></i> Obuna bo'lish
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/settings.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/settings.js?v=7"></script>
+    <script src="js/main.js?v=7"></script>
+    <script src="js/dashboard.js?v=7"></script>
     <script>
         // App detail modal yopish
         document.addEventListener('DOMContentLoaded', () => {

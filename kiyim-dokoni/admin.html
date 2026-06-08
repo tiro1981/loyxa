@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=3">
+    <link rel="stylesheet" href="admin.css?v=4">
 </head>
 <body>
 
@@ -459,107 +459,56 @@
 
             <!-- ============ TELEGRAM BOT ============ -->
             <section class="page" data-page="bot">
-                <!-- Status card -->
-                <div class="bot-status-card" id="botStatusCard">
-                    <div class="bot-status-head">
-                        <div class="bot-icon-wrap">✈️</div>
-                        <div class="bot-status-info">
-                            <span class="bot-status-label" id="botStatusLabel">Ulanmagan</span>
-                            <h2 id="botStatusTitle">Bot ulanish kutmoqda</h2>
-                            <p id="botStatusDesc">Quyidagi qadamlarni bajaring va botingizni ulang</p>
-                        </div>
-                        <div class="bot-status-indicator" id="botStatusIndicator">
-                            <span class="bot-dot"></span>
-                            <span id="botIndicatorText">Offline</span>
-                        </div>
+                <div class="bot2-topbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+                    <div><h2 style="margin:0">Telegram Bot</h2><p style="margin:2px 0 0;color:var(--text-muted,#6b7280);font-size:13px">O'z botingizni ulang — yangi buyurtmalar Telegram kanalingizga avtomatik yuboriladi</p></div>
+                    <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
+                </div>
+
+                <!-- 1) BOTNI ULASH -->
+                <div class="bot2-card">
+                    <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
+                    <label class="bot2-label" for="bot2Token">Bot tokeni</label>
+                    <div class="bot2-token">
+                        <input type="password" id="bot2Token" placeholder="123456789:AAE-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+                        <button type="button" class="bot2-eye" id="bot2Eye" aria-label="Ko'rsatish">👁</button>
+                    </div>
+                    <p class="bot2-hint">Telegram → <b>@BotFather</b> → <code>/newbot</code> → tokenni nusxalab joylang.</p>
+                    <div class="bot2-actions">
+                        <button type="button" class="btn btn-primary" id="bot2ConnectBtn">✈️ Botni ulash</button>
+                        <button type="button" class="btn btn-danger" id="bot2DisconnectBtn" style="display:none">🔌 Botni uzish</button>
+                    </div>
+                    <div class="bot2-connected" id="bot2BotInfo" style="display:none">
+                        <span class="bot2-av">✈️</span>
+                        <div class="bot2-meta"><div class="bot2-name" id="bot2Username">@bot</div><div class="bot2-sub">Faol — buyurtmalarni yuboradi</div></div>
+                        <a href="#" target="_blank" rel="noopener" class="btn btn-ghost" id="bot2OpenLink">Ochish</a>
                     </div>
                 </div>
 
-                <!-- Bot ID -->
-                <div class="bot-id-card">
-                    <div class="bot-id-head">
-                        <div>
-                            <span class="bot-id-tag">🔑 SIZNING UNIKAL BOT ID</span>
-                            <h3>Botga ulanish uchun bu ID ni nusxalab oling</h3>
-                            <p>Botga <code>/start</code> yuborganingizda u sizdan shu ID ni so'raydi</p>
-                        </div>
+                <!-- 2) BUYURTMA KANALI -->
+                <div class="bot2-card">
+                    <div class="bot2-card-head"><span class="bot2-ic">📢</span><div><h3>2. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div></div>
+                    <div class="bot2-steps-mini">
+                        <span><b>1.</b> Botni kanalingizga <b>admin</b> qiling (yozish huquqi bilan)</span>
+                        <span><b>2.</b> Kanal username yoki ID sini yozib <b>Ulash</b> bosing</span>
                     </div>
-                    <div class="bot-id-display">
-                        <input type="text" id="botIdInput" readonly>
-                        <button type="button" class="bot-copy-btn" id="copyBotIdBtn">📋 <span>Nusxalash</span></button>
+                    <div class="bot2-channel-row">
+                        <input type="text" id="bot2Channel" class="bot2-input" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
+                        <button type="button" class="btn btn-primary" id="bot2ChannelBtn">🔌 Ulash</button>
                     </div>
-                </div>
-
-                <!-- Qadamlar -->
-                <div class="bot-steps-grid">
-                    <div class="bot-step-card" data-step="1">
-                        <div class="bot-step-num">1</div>
-                        <div class="bot-step-icon">✈️</div>
-                        <h4>Botni oching</h4>
-                        <p>Telegram'da botimizni qidiring va <code>/start</code> tugmasini bosing</p>
-                        <a href="https://t.me/BiznesOnlineOrdersBot" target="_blank" rel="noopener" class="bot-step-link">✈️ @BiznesOnlineOrdersBot</a>
-                    </div>
-                    <div class="bot-step-card" data-step="2">
-                        <div class="bot-step-num">2</div>
-                        <div class="bot-step-icon">🆔</div>
-                        <h4>ID ni yuboring</h4>
-                        <p>Yuqoridagi <strong>Bot ID</strong> ni nusxalab botga yuboring</p>
-                    </div>
-                    <div class="bot-step-card" data-step="3">
-                        <div class="bot-step-num">3</div>
-                        <div class="bot-step-icon">📢</div>
-                        <h4>Kanal yuboring</h4>
-                        <p>Buyurtmalar yuboriladigan kanal username yoki ID sini yuboring (masalan: <code>@mening_kanalim</code>)</p>
-                    </div>
-                    <div class="bot-step-card" data-step="4">
-                        <div class="bot-step-num">4</div>
-                        <div class="bot-step-icon">🛡️</div>
-                        <h4>Botni admin qiling</h4>
-                        <p>Kanalingizga botni <strong>admin</strong> sifatida qo'shing — yozish huquqi bilan</p>
-                    </div>
-                    <div class="bot-step-card success" data-step="5">
-                        <div class="bot-step-num">✓</div>
-                        <div class="bot-step-icon">✅</div>
-                        <h4>Tayyor!</h4>
-                        <p>Bot kanalingizga <strong>"Muvaffaqiyatli ulandi"</strong> habarini yuboradi va har bir yangi buyurtma avtomatik kanalga keladi</p>
+                    <div class="bot2-connected" id="bot2ChannelInfo" style="display:none">
+                        <span class="bot2-av ok">✅</span>
+                        <div class="bot2-meta"><div class="bot2-name" id="bot2ChannelName">—</div><div class="bot2-sub"><span id="bot2SentCount">0</span> ta buyurtma yuborilgan</div></div>
+                        <button type="button" class="btn btn-ghost" id="bot2ChannelTest">📨 Test</button>
+                        <button type="button" class="btn btn-danger" id="bot2ChannelDisc">🔌 Uzish</button>
                     </div>
                 </div>
 
-                <!-- Ulangan kanal info -->
-                <div class="bot-connected-card" id="botConnectedCard" style="display:none">
-                    <div class="bot-connected-head">
-                        <span style="font-size:24px">✅</span>
-                        <div>
-                            <h3>Kanal ulangan</h3>
-                            <p>Yangi buyurtmalar shu kanalga yuboriladi</p>
-                        </div>
-                    </div>
-                    <div class="bot-connected-info">
-                        <div class="bot-info-row"><span>Kanal</span><strong id="botChannelName">—</strong></div>
-                        <div class="bot-info-row"><span>Ulangan vaqt</span><strong id="botConnectedAt">—</strong></div>
-                        <div class="bot-info-row"><span>Yuborilgan buyurtmalar</span><strong id="botSentCount">0</strong></div>
-                    </div>
-                    <div class="bot-connected-actions">
-                        <button type="button" class="btn btn-ghost" id="botTestBtn">📨 Test habar yuborish</button>
-                        <button type="button" class="btn btn-danger" id="botDisconnectBtn">🔌 Uzish</button>
-                    </div>
-                </div>
-
-                <!-- Demo simulyator -->
-                <div class="bot-sim-card">
-                    <div class="bot-sim-head">
-                        <span>🧪</span>
-                        <strong>Demo simulyatori</strong>
-                        <small>Faqat localStorage'da</small>
-                    </div>
-                    <p class="bot-sim-desc">
-                        ⚠️ <strong>Diqqat:</strong> Bu faqat <em>UI sinov</em> uchun — haqiqiy Telegram'ga habar yubormaydi.
-                        Haqiqiy ulanish uchun yuqoridagi 5 qadamni Telegram'da bajaring.
-                    </p>
-                    <div class="bot-sim-form">
-                        <input type="text" id="botChannelInput" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
-                        <button type="button" class="btn btn-primary" id="botSimConnectBtn">🔌 Ulanish (demo)</button>
-                    </div>
+                <!-- 3) MIJOZLARGA XABAR -->
+                <div class="bot2-card">
+                    <div class="bot2-card-head"><span class="bot2-ic">📨</span><div><h3>3. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div></div>
+                    <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
+                    <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
+                    <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
                 </div>
             </section>
 
@@ -586,7 +535,6 @@
                 <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required min="0"></div>
                 <div class="form-row"><label>Eski narx (ixtiyoriy)</label><input type="number" id="pOld" min="0"></div>
                 <div class="form-row"><label>Zaxira *</label><input type="number" id="pStock" required min="0" value="10"></div>
-                <div class="form-row"><label>Rasm URL *</label><input type="url" id="pImage" required></div>
                 <div class="form-row full">
                     <label>O'lchamlar</label>
                     <div class="check-row" id="pSizes">
@@ -608,11 +556,16 @@
                     </div>
                 </div>
                 <div class="form-row full">
-                    <label>Rasm yuklash (drag & drop)</label>
+                    <label>Rasmlar (5 tagacha) *</label>
+                    <div class="img-previews" id="pImagesPreview"></div>
+                    <div class="img-url-add">
+                        <input type="url" id="pImageUrl" placeholder="Rasm URL kiriting...">
+                        <button type="button" class="btn-mini" id="addImageUrlBtn">+ URL qo'shish</button>
+                    </div>
                     <div class="drop-zone" id="dropZone">
                         <div>📤</div>
-                        <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
-                        <input type="file" id="fileInput" accept="image/*" hidden>
+                        <p>Rasmlarni bu yerga tashlang yoki <span>tanlash uchun bosing</span> — 5 tagacha</p>
+                        <input type="file" id="fileInput" accept="image/*" multiple hidden>
                     </div>
                 </div>
                 <div class="form-row full"><label>Tavsif</label><textarea id="pDesc" rows="3"></textarea></div>
@@ -719,7 +672,7 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js?v=3"></script>
-    <script src="admin.js?v=3"></script>
+    <script src="script.js?v=8"></script>
+    <script src="admin.js?v=8"></script>
 </body>
 </html>

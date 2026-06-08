@@ -2,6 +2,7 @@
 (() => {
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = DB.esc; // XSS himoyasi — dinamik matnlar uchun
 
   let activeCategory = 'all';
   let searchTerm = '';
@@ -75,7 +76,7 @@
     const cats = DB.products.categoriesOnly();
     wrap.innerHTML =
       `<button class="chip ${activeCategory === 'all' ? 'active' : ''}" data-cat="all">${t('common.all')}</button>` +
-      cats.map(c => `<button class="chip ${c === activeCategory ? 'active' : ''}" data-cat="${c}">${c}</button>`).join('');
+      cats.map(c => `<button class="chip ${c === activeCategory ? 'active' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
     wrap.onclick = (e) => {
       const btn = e.target.closest('.chip');
       if (!btn) return;
@@ -103,11 +104,11 @@
         <article class="card">
           <div class="card-img ${isPhoto ? 'card-img-photo' : 'card-img-svg'}">
             ${hasDiscount ? `<span class="discount-tag">-${p.discount}%</span>` : ''}
-            <img src="${p.img}" alt="${p.name}" />
+            <img src="${esc(p.img)}" alt="${esc(p.name)}" />
           </div>
           <div class="card-body">
-            <span class="card-cat">${p.category}</span>
-            <span class="card-name">${p.name}</span>
+            <span class="card-cat">${esc(p.category)}</span>
+            <span class="card-name">${esc(p.name)}</span>
             <div class="card-price-row">
               <span class="card-price-main">${DB.fmt.money(final)}</span>
               ${hasDiscount ? `<span class="card-price-old">${DB.fmt.money(p.price)}</span>` : ''}
@@ -154,9 +155,9 @@
       const final = DB.products.finalPrice(p);
       return `
         <div class="cart-row">
-          <img src="${p.img}" alt="" />
+          <img src="${esc(p.img)}" alt="" />
           <div>
-            <div class="name">${p.name}</div>
+            <div class="name">${esc(p.name)}</div>
             <div class="price">${DB.fmt.money(final)} × ${i.qty}</div>
             <div class="qty" style="margin-top:6px">
               <button data-dec="${p.id}">−</button>
@@ -217,83 +218,22 @@
     });
     const total = items.reduce((s, i) => s + i.sum, 0);
     $('#checkoutSummary').innerHTML =
-      items.map(i => `<div class="l"><span>${i.name} × ${i.qty}</span><b>${DB.fmt.money(i.sum)}</b></div>`).join('') +
+      items.map(i => `<div class="l"><span>${esc(i.name)} × ${i.qty}</span><b>${DB.fmt.money(i.sum)}</b></div>`).join('') +
       `<div class="l total"><span>${t('pay.summary.total')}</span><span>${DB.fmt.money(total)}</span></div>`;
   }
 
   // ---------- TO'LOV ----------
-  $$('input[name="payment"]').forEach(r => {
-    r.addEventListener('change', () => {
-      const v = r.value;
-      $('#payCardFields').classList.toggle('hidden', v !== 'karta');
-      $('#payClickFields').classList.toggle('hidden', v !== 'click');
-      $('#codeWrap').classList.add('hidden');
-      $('#smsCode').value = '';
-    });
-  });
-
-  $('#cardNumber').addEventListener('input', (e) => {
-    let v = e.target.value.replace(/\D/g, '').slice(0, 16);
-    e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
-    $('#cpNumber').textContent = (v.padEnd(16, '•')).match(/.{1,4}/g).join(' ');
-  });
-  $('#cardExpiry').addEventListener('input', (e) => {
-    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
-    if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
-    e.target.value = v;
-    $('#cpExpiry').textContent = v || 'MM/YY';
-  });
-  $('#cardCvv').addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
-  });
-
-  $('#sendCodeBtn').addEventListener('click', () => {
-    const phone = $('#clickPhone').value.trim();
-    if (!phone || phone.replace(/\D/g, '').length < 9) return toast(t('pay.err.phone_valid'), 'error');
-    $('#codeWrap').classList.remove('hidden');
-    toast(t('pay.click.sent'), 'success');
-  });
-
-  function validatePayment(formData) {
-    const type = formData.get('payment');
-    if (type === 'karta') {
-      const num = (formData.get('cardNumber') || '').replace(/\s/g, '');
-      const exp = formData.get('cardExpiry') || '';
-      const cvv = formData.get('cardCvv') || '';
-      if (num.length !== 16) return t('pay.err.card_num');
-      if (!/^\d{2}\/\d{2}$/.test(exp)) return t('pay.err.expiry');
-      const mm = parseInt(exp.split('/')[0], 10);
-      if (mm < 1 || mm > 12) return t('pay.err.month');
-      if (cvv.length < 3) return t('pay.err.cvv');
-      return null;
-    }
-    if (type === 'click') {
-      const phone = (formData.get('clickPhone') || '').replace(/\D/g, '');
-      const code = formData.get('smsCode') || '';
-      if (phone.length < 9) return t('pay.err.phone');
-      if (!code || code.length !== 4) return t('pay.err.code');
-      return null;
-    }
-    return null;
-  }
+  // Karta raqami/CVV/SMS yig'ish olib tashlandi — haqiqiy to'lov provayderi
+  // (Payme/Click merchant API) ulanmaguncha faqat to'lov turi tanlanadi.
 
   $('#checkoutForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const f = e.target;
     const fd = new FormData(f);
-    const err = validatePayment(fd);
-    if (err) return toast(err, 'error');
 
     try {
       const user = DB.users.current();
       const payment = fd.get('payment');
-      let paymentMeta = null;
-      if (payment === 'karta') {
-        const num = (fd.get('cardNumber') || '').replace(/\s/g, '');
-        paymentMeta = { cardLast4: num.slice(-4), expiry: fd.get('cardExpiry') };
-      } else if (payment === 'click') {
-        paymentMeta = { phone: fd.get('clickPhone') };
-      }
 
       const order = DB.orders.place({
         userId: user ? user.id : null,
@@ -301,15 +241,11 @@
         phone: f.phone.value.trim(),
         address: f.address.value.trim(),
         note: f.note.value.trim(),
-        payment, paymentMeta,
+        payment,
+        paymentMeta: null,
       });
       checkoutModal.classList.remove('open');
       f.reset();
-      $('#payCardFields').classList.add('hidden');
-      $('#payClickFields').classList.add('hidden');
-      $('#codeWrap').classList.add('hidden');
-      $('#cpNumber').textContent = '•••• •••• •••• ••••';
-      $('#cpExpiry').textContent = 'MM/YY';
 
       renderCart();
       updateBadges();
@@ -320,38 +256,6 @@
           if (r && r.error) console.warn('[Telegram] send failed:', r.error);
         });
       }
-
-      // Admin panelida ulangan Telegram botga buyurtmani yuborish (port 3344)
-      try {
-        const botCfg = JSON.parse(localStorage.getItem('si_bot_config') || 'null');
-        if (botCfg && botCfg.connected && botCfg.channel) {
-          const BOT_HTTP = localStorage.getItem('si_bot_http_url') || 'http://localhost:3344';
-          fetch(`${BOT_HTTP}/orders/${botCfg.botId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              order: {
-                id: order.id.slice(-6).toUpperCase(),
-                userName: order.name,
-                phone: order.phone,
-                address: order.address,
-                items: (order.items || []).map(i => ({ name: i.name, qty: i.qty, price: i.finalPrice })),
-                total: order.total,
-              }
-            })
-          })
-            .then(r => r.json().catch(() => ({ ok: false })))
-            .then(res => {
-              if (res && res.ok) {
-                botCfg.sentCount = (botCfg.sentCount || 0) + 1;
-                localStorage.setItem('si_bot_config', JSON.stringify(botCfg));
-              } else {
-                console.warn('[bot] yuborilmadi:', res?.error);
-              }
-            })
-            .catch(err => console.warn('[bot] HTTP xato (3344):', err.message));
-        }
-      } catch (e) { console.warn('bot notify error:', e); }
       showPage('orders');
     } catch (err) {
       toast(err.message, 'error');
@@ -409,12 +313,12 @@
             <span class="order-item-date">${DB.fmt.date(o.createdAt)}</span>
           </div>
           <div class="order-products">
-            ${o.items.slice(0, 6).map(i => { const p = DB.products.get(i.productId); const src = (p && p.img) || i.img || ''; return `<img class="order-mini-img" src="${src}" alt="${i.name}" title="${i.name} × ${i.qty}"/>`; }).join('')}
+            ${o.items.slice(0, 6).map(i => { const p = DB.products.get(i.productId); const src = (p && p.img) || i.img || ''; return `<img class="order-mini-img" src="${esc(src)}" alt="${esc(i.name)}" title="${esc(i.name)} × ${i.qty}"/>`; }).join('')}
             ${o.items.length > 6 ? `<span class="muted" style="align-self:center">+${o.items.length - 6}</span>` : ''}
           </div>
           ${renderTimeline(o)}
           <div class="order-summary-row">
-            <span class="muted">${o.items.reduce((s,i)=>s+i.qty,0)} ${t('orders.pieces')} · ${o.payment}</span>
+            <span class="muted">${o.items.reduce((s,i)=>s+i.qty,0)} ${t('orders.pieces')} · ${esc(o.payment)}</span>
             <span class="order-total">${DB.fmt.money(o.total)}</span>
           </div>
         </div>`;
@@ -540,8 +444,8 @@
         <div class="ph-photo">
           <span class="ph-initial">${initial}</span>
         </div>
-        <div class="ph-name">${displayName}</div>
-        <div class="ph-sub">${displaySub}</div>
+        <div class="ph-name">${esc(displayName)}</div>
+        <div class="ph-sub">${esc(displaySub)}</div>
       </div>
 
       <div class="profile-stats">
@@ -579,7 +483,7 @@
     const chatSub = chatUnread > 0 ? `${chatUnread} ta yangi xabar` : t('profile.row.chat.sub');
 
     const rows = [
-      row('address',   'green',  iconPin,   t('profile.row.addresses'),  u ? (u.address || t('profile.row.address.empty')) : t('profile.row.addresses.sub')),
+      row('address',   'green',  iconPin,   t('profile.row.addresses'),  u ? (esc(u.address) || t('profile.row.address.empty')) : t('profile.row.addresses.sub')),
       row('payment',   'orange', iconCard,  t('profile.row.payment'),    t('profile.row.payment.sub')),
       row('theme',     'dark',   iconMoon,  t('profile.row.darkmode'),   t('profile.row.darkmode.sub'),
         `<label class="pr-switch"><input type="checkbox" data-pr="theme" ${isDark ? 'checked' : ''}/><span class="pr-slider"></span></label>`),
@@ -664,7 +568,7 @@
     const pre = $('#addrPreview');
     if (parts.length >= 2) {
       pre.classList.remove('hidden');
-      pre.innerHTML = '<b>Manzil:</b> ' + parts.join(', ');
+      pre.innerHTML = '<b>Manzil:</b> ' + esc(parts.join(', '));
     } else {
       pre.classList.add('hidden');
     }
@@ -788,8 +692,8 @@
     }
     wrap.innerHTML = msgs.map(m => {
       const time = new Date(m.at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-      return `<div class="chat-bubble ${m.from}">
-        ${m.text}
+      return `<div class="chat-bubble ${m.from === 'admin' ? 'admin' : 'user'}">
+        ${esc(m.text)}
         <span class="cb-time">${time}</span>
       </div>`;
     }).join('');

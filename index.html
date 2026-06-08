@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="stylesheet" href="css/settings.css?v=7">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -33,6 +33,8 @@
                 <li><a href="#how" class="nav-link" data-i18n="nav.how">Qanday ishlaydi</a></li>
                 <li><a href="#reviews" class="nav-link" data-i18n="nav.reviews">Sharhlar</a></li>
                 <li><a href="#contact" class="nav-link" data-i18n="nav.contact">Bog'lanish</a></li>
+                <li class="nav-auth"><a href="kirish.html" class="btn btn-soft btn-block" data-i18n="nav.login">Kirish</a></li>
+                <li class="nav-auth"><a href="kirish.html?tab=register" class="btn btn-primary btn-block" data-i18n="nav.register">Ro'yxatdan o'tish</a></li>
             </ul>
             <div class="nav-actions">
                 <button class="theme-toggle-btn" data-theme-toggle aria-label="Theme toggle" title="Tungi rejim">
@@ -41,7 +43,7 @@
                 <button class="settings-trigger" data-settings-open aria-label="Settings" title="Sozlamalar">
                     <i class="fa-solid fa-gear"></i>
                 </button>
-                <a href="kirish.html" class="btn btn-ghost btn-sm" data-i18n="nav.login">Kirish</a>
+                <a href="kirish.html" class="btn btn-soft btn-sm" data-i18n="nav.login">Kirish</a>
                 <a href="kirish.html?tab=register" class="btn btn-primary btn-sm" data-i18n="nav.register">Ro'yxatdan o'tish</a>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span><span></span><span></span>
@@ -58,12 +60,12 @@
                 <span class="hero-badge"><i class="fa-solid fa-circle-check"></i> <span data-i18n="hero.badge">O'zbekiston #1 biznes platforma</span></span>
                 <h1 class="hero-title">
                     <span data-i18n="hero.title_1">Biznesingizni</span> <span class="text-accent" data-i18n="hero.title_online">Online</span> <span data-i18n="hero.title_2">ga oling —</span><br>
-                    <span class="text-primary" data-i18n="hero.title_sub">Oylik obuna</span> <span data-i18n="hero.title_3">bilan</span>
+                    <span class="text-primary" data-i18n="hero.title_sub">Bepul</span> <span data-i18n="hero.title_3">va bir necha daqiqada</span>
                 </h1>
-                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food yoki kafe — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Obuna narxi siz bilan kelishilgan holda, individual tarzda belgilanadi.</p>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food, kafe yoki kitob do'koni — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Ro'yxatdan o'ting va ilovani mutlaqo bepul oling.</p>
                 <div class="hero-buttons">
-                    <a href="obuna.html" class="btn btn-primary btn-lg">
-                        <i class="fa-solid fa-rocket"></i> <span data-i18n="hero.btn_subscribe">Obuna bo'lish</span>
+                    <a href="kirish.html?tab=register" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-rocket"></i> <span data-i18n="hero.btn_subscribe">Bepul boshlash</span>
                     </a>
                     <a href="#apps" class="btn btn-outline btn-lg">
                         <i class="fa-solid fa-grid-2"></i> <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
@@ -176,8 +178,8 @@
             </div>
 
             <div class="custom-price-note reveal">
-                <i class="fa-solid fa-circle-info"></i>
-                <p>Har bir biznes uchun obuna narxi <strong>individual tarzda</strong> belgilanadi. So'rov yuborganingizdan so'ng administrator siz bilan bog'lanib, sizga mos narxni taklif qiladi.</p>
+                <i class="fa-solid fa-gift"></i>
+                <p>Barcha ilovalar — <strong>mutlaqo bepul</strong>. Ilovani olish uchun shunchaki <strong>ro'yxatdan o'ting</strong> va biznesingiz uchun veb-ilovani bir necha daqiqada ishga tushiring.</p>
             </div>
         </div>
     </section>
@@ -279,10 +281,10 @@
             <div class="cta-card reveal">
                 <div class="cta-content">
                     <h2 data-i18n="cta.title">Bugun boshlang — ertaga mijozlaringiz ko'paysin</h2>
-                    <p>So'rov yuboring — administrator siz bilan bog'lanib obunani faollashtiradi.</p>
+                    <p>Ro'yxatdan o'ting va ilovangizni bepul oling — bir necha daqiqada online bo'ling.</p>
                     <div class="cta-buttons">
-                        <a href="obuna.html" class="btn btn-light btn-lg">
-                            <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Hozir boshlash</span>
+                        <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
+                            <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Bepul boshlash</span>
                         </a>
                         <a href="tel:+998901234567" class="btn btn-ghost btn-lg">
                             <i class="fa-solid fa-phone"></i> +998 90 123-45-67
@@ -318,33 +320,24 @@
                     <ul class="footer-links">
                         <li><a href="#home">Bosh sahifa</a></li>
                         <li><a href="#apps">Ilovalar</a></li>
+                        <li><a href="#how">Qanday ishlaydi</a></li>
                         <li><a href="#reviews">Sharhlar</a></li>
-                        <li><a href="obuna.html">Obuna bo'lish</a></li>
+                        <li><a href="kirish.html?tab=register">Ro'yxatdan o'tish</a></li>
                         <li><a href="kirish.html">Kirish</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Yordam</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Hujjatlar</a></li>
-                        <li><a href="#">Video darslar</a></li>
-                        <li><a href="#">Texnik yordam</a></li>
-                        <li><a href="#">Maxfiylik siyosati</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>Bog'lanish</h4>
                     <ul class="footer-contacts">
-                        <li><i class="fa-solid fa-phone"></i> +998 90 123-45-67</li>
-                        <li><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</li>
+                        <li><a href="tel:+998901234567"><i class="fa-solid fa-phone"></i> +998 90 123-45-67</a></li>
+                        <li><a href="mailto:info@biznesonline.uz"><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</a></li>
                         <li><i class="fa-solid fa-location-dot"></i> Toshkent, Mirzo Ulug'bek tumani</li>
                         <li><i class="fa-solid fa-clock"></i> Dush-Shanba, 9:00 - 18:00</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 BiznesOnline. Barcha huquqlar himoyalangan.</p>
+                <p>© 2026 BiznesOnline. Barcha huquqlar himoyalangan.</p>
                 <p>O'zbekistonda ❤️ bilan yaratildi</p>
             </div>
         </div>
@@ -368,8 +361,8 @@
         </div>
     </div>
 
-    <script src="js/settings.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/settings.js?v=7"></script>
+    <script src="js/main.js?v=7"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('appDetailModal');

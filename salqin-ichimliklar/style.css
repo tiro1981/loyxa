@@ -1401,3 +1401,8 @@ body.on-profile #pageProfile { padding-top: 14px; }
   padding: 0; border-radius: 13px; flex-shrink: 0;
 }
 .chat-send svg { margin: 0; }
+
+/* ===== To'lov usuli — faqat Naqd faol, qolganlari "Tez orada" (rangsiz) ===== */
+.pay-opt.pay-soon { cursor: not-allowed; }
+.pay-opt.pay-soon .pay-card { opacity: .55; filter: grayscale(1); }
+.pay-opt.pay-soon input:disabled + .pay-card { box-shadow: none; }

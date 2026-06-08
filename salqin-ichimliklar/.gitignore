@@ -1,0 +1,14 @@
+# OS / IDE
+.DS_Store
+.idea/
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Maxfiy sozlamalar — serverda qo'lda yarating
+bot/.env
+.env

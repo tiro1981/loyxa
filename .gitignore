@@ -38,6 +38,10 @@ logs/
 
 # Bot ma'lumotlar bazasi (foydalanuvchi ma'lumoti)
 bot/bot-db.json
+bot/bot-users.json
+# Do'kon botlari konfiguratsiyasi — bot TOKEN larini saqlaydi (maxfiy!)
+bot/store-bots.json
+bot/store-bot-users.json
 
 # Build natijalari
 dist/

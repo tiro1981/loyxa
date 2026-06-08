@@ -2379,3 +2379,24 @@ a:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
+
+/* ===== To'lov usuli — faqat Naqd faol, qolganlari "Tez orada" (rangsiz) ===== */
+.pay-opt.pay-soon { cursor: not-allowed; }
+.pay-opt.pay-soon span {
+    opacity: .55;
+    filter: grayscale(1);
+    flex-wrap: wrap;
+}
+.soon-tag {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    background: var(--surface-2, #e5e7eb);
+    color: var(--text-2, #6b7280);
+    padding: 2px 7px;
+    border-radius: 100px;
+    white-space: nowrap;
+    border: 1px solid rgba(0,0,0,.06);
+}

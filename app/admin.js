@@ -117,6 +117,7 @@ function goTo(section) {
   if (section === 'users') renderUsers();
   if (section === 'messages') renderMessages();
   if (section === 'bot') renderBot();
+  if (section === 'qr') renderQR();
   if (section === 'dashboard') renderDashboard();
 }
 
@@ -949,64 +950,63 @@ setInterval(() => {
 // ============ TELEGRAM BOT MENU ============
 // ============================================================
 
-// Har bir mijoz uchun unikal Bot ID generatsiya qilish
-function getOrCreateBotId() {
-  let cfg = DB.get('tb_bot_config', null);
-  if (!cfg || !cfg.botId) {
-    // CLIENT_ID + tasodifiy 5 ta belgi
-    const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-    const botId = `BOT-${(CLIENT_ID || 'DEMO').replace(/[^A-Z0-9]/gi, '')}-${suffix}`;
-    cfg = cfg || {};
-    cfg.botId = botId;
-    cfg.createdAt = new Date().toISOString();
-    cfg.connected = false;
-    cfg.channel = null;
-    cfg.connectedAt = null;
-    cfg.sentCount = 0;
-    DB.set('tb_bot_config', cfg);
-  }
-  return cfg;
+// ====== Do'kon boti — token asosida (yagona bot) ======
+const APP_SLUG = 'fastfood';
+const SHOP_KEY = (CLIENT_ID || 'demo') + '__' + APP_SLUG;
+function getBotApi() { return (localStorage.getItem('bo_bot_api') || 'http://localhost:3344').replace(/\/+$/, ''); }
+function getBotCfg() { return DB.get('tb_bot_config', null) || {}; }
+function saveBotCfg(cfg) { DB.set('tb_bot_config', cfg); }
+function _shopName() { try { return (DB.get('tb_settings', {}) || {}).restaurantName || (_clientInfo && _clientInfo.businessName) || null; } catch { return null; } }
+
+function botErr(err) {
+  const m = String((err && err.message) || err || '');
+  if (/Failed to fetch|NetworkError|load failed|ERR_/i.test(m))
+    return "Bot serveriga ulanib bo'lmadi — «cd bot && python3 bot.py» ishlab turibdimi? (" + getBotApi() + ')';
+  return m || 'Xato';
 }
 
 function renderBot() {
-  const cfg = getOrCreateBotId();
+  const cfg = getBotCfg();
+  const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
+  set('bot2Token', cfg.token || '');
+  setBotConnectedUI(!!cfg.connected, cfg.username);
+  setChannelUI(cfg);
+  refreshBotStatus();
+}
 
-  // Bot ID
-  const idInput = document.getElementById('botIdInput');
-  if (idInput) idInput.value = cfg.botId;
+function setBotConnectedUI(connected, username) {
+  const pill = document.getElementById('bot2Status');
+  if (pill) { pill.className = 'bot2-status ' + (connected ? 'on' : 'off'); pill.innerHTML = '<i class="fa-solid fa-circle"></i> ' + (connected ? 'Ulangan' : 'Ulanmagan'); }
+  const side = document.getElementById('botBadge'); if (side) side.style.display = connected ? '' : 'none';
+  const c = document.getElementById('bot2ConnectBtn'); if (c) c.style.display = connected ? 'none' : '';
+  const d = document.getElementById('bot2DisconnectBtn'); if (d) d.style.display = connected ? '' : 'none';
+  const box = document.getElementById('bot2BotInfo'); if (box) box.style.display = connected ? '' : 'none';
+  const un = document.getElementById('bot2Username'); if (un) un.textContent = username || '@bot';
+  const link = document.getElementById('bot2OpenLink'); if (link) { const u = String(username || '').replace(/^@/, ''); link.href = u ? ('https://t.me/' + u) : '#'; }
+  const t = document.getElementById('bot2Token'); if (t) t.readOnly = connected;
+}
+function setChannelUI(cfg) {
+  const info = document.getElementById('bot2ChannelInfo'); if (info) info.style.display = cfg.channel ? '' : 'none';
+  setText('bot2ChannelName', cfg.channel || '—');
+  setText('bot2SentCount', String(cfg.sentCount || 0));
+  setText('bot2UserCount', String(cfg.userCount || 0));
+}
 
-  // Status card
-  const statusCard = document.getElementById('botStatusCard');
-  const statusLabel = document.getElementById('botStatusLabel');
-  const statusTitle = document.getElementById('botStatusTitle');
-  const statusDesc = document.getElementById('botStatusDesc');
-  const indicator = document.getElementById('botStatusIndicator');
-  const indicatorText = document.getElementById('botIndicatorText');
-  const connectedCard = document.getElementById('botConnectedCard');
-  const sideBadge = document.getElementById('botBadge');
-
-  if (cfg.connected && cfg.channel) {
-    statusCard?.classList.add('connected');
-    if (statusLabel) statusLabel.textContent = 'Ulangan';
-    if (statusTitle) statusTitle.textContent = 'Bot faol ishlamoqda';
-    if (statusDesc) statusDesc.textContent = `Yangi buyurtmalar ${cfg.channel} kanaliga yuborilmoqda`;
-    if (indicatorText) indicatorText.textContent = 'Online';
-    if (connectedCard) connectedCard.style.display = '';
-    if (sideBadge) sideBadge.style.display = '';
-
-    // Fill connected info
-    setText('botChannelName', cfg.channel);
-    setText('botConnectedAt', formatDate(cfg.connectedAt));
-    setText('botSentCount', String(cfg.sentCount || 0));
-  } else {
-    statusCard?.classList.remove('connected');
-    if (statusLabel) statusLabel.textContent = 'Ulanmagan';
-    if (statusTitle) statusTitle.textContent = 'Bot ulanish kutmoqda';
-    if (statusDesc) statusDesc.textContent = 'Quyidagi qadamlarni bajaring va botingizni ulang';
-    if (indicatorText) indicatorText.textContent = 'Offline';
-    if (connectedCard) connectedCard.style.display = 'none';
-    if (sideBadge) sideBadge.style.display = 'none';
-  }
+async function refreshBotStatus() {
+  try {
+    const res = await fetch(getBotApi() + '/store-bot/status?clientId=' + encodeURIComponent(SHOP_KEY));
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) return;
+    const cfg = getBotCfg();
+    cfg.connected = !!data.connected;
+    cfg.username = data.username || cfg.username;
+    cfg.channel = data.channel || null;
+    cfg.sentCount = data.sentCount || 0;
+    cfg.userCount = data.userCount || 0;
+    saveBotCfg(cfg);
+    setBotConnectedUI(cfg.connected, cfg.username);
+    setChannelUI(cfg);
+  } catch (e) { /* server o'chiq — lokal holat saqlanadi */ }
 }
 
 function setText(id, val) {
@@ -1019,151 +1019,136 @@ function formatDate(iso) {
   catch { return '—'; }
 }
 
-// ============ BOT ID NUSXALASH ============
-document.addEventListener('click', (e) => {
-  const copyBtn = e.target.closest('#copyBotIdBtn');
-  if (!copyBtn) return;
-  const idInput = document.getElementById('botIdInput');
-  if (!idInput) return;
-  navigator.clipboard.writeText(idInput.value).then(() => {
-    copyBtn.classList.add('copied');
-    toast('Bot ID nusxalandi', 'success');
-    setTimeout(() => copyBtn.classList.remove('copied'), 1800);
-  }).catch(() => {
-    // Fallback
-    idInput.select();
-    document.execCommand('copy');
-    toast('Bot ID nusxalandi', 'success');
-  });
-});
-
-// ============ DEMO SIMULATOR: KANAL ULASH ============
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#botSimConnectBtn');
+// ====== AMALLAR ======
+function _btnBusy(btn, on, txt) {
   if (!btn) return;
-  const input = document.getElementById('botChannelInput');
-  let channel = (input?.value || '').trim();
-  if (!channel) {
-    toast('Kanal username yoki ID kiriting', 'error');
-    return;
-  }
-  // Normalize @username
-  if (!channel.startsWith('@') && !channel.startsWith('-')) channel = '@' + channel;
-
-  const cfg = getOrCreateBotId();
-  cfg.connected = true;
-  cfg.channel = channel;
-  cfg.connectedAt = new Date().toISOString();
-  cfg.sentCount = (cfg.sentCount || 0);
-  DB.set('tb_bot_config', cfg);
-
-  toast(`Bot ${channel} kanaliga ulandi! 🎉`, 'success');
-  renderBot();
-
-  // Simulyatsiya: muvaffaqiyatli ulanish habarini "kanal feed" ga qo'shamiz
-  pushBotFeed({
-    type: 'system',
-    text: `✅ ${cfg.botId} muvaffaqiyatli ulandi! Endi yangi buyurtmalar shu yerga keladi.`,
-    time: new Date().toISOString()
-  });
-});
-
-// ============ TEST HABAR ============
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#botTestBtn');
-  if (!btn) return;
-  const cfg = DB.get('tb_bot_config', {});
-  if (!cfg.connected) { toast('Avval botni ulang', 'error'); return; }
-
-  pushBotFeed({
-    type: 'test',
-    text: `🧪 Test habar — ${cfg.channel} ulanishi to'g'ri ishlamoqda.`,
-    time: new Date().toISOString()
-  });
-  cfg.sentCount = (cfg.sentCount || 0) + 1;
-  DB.set('tb_bot_config', cfg);
-  toast('Test habar yuborildi', 'success');
-  renderBot();
-});
-
-// ============ UZISH ============
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#botDisconnectBtn');
-  if (!btn) return;
-  if (!confirm('Botni kanaldan uzasizmi? Yangi buyurtmalar yuborilmaydi.')) return;
-  const cfg = getOrCreateBotId();
-  cfg.connected = false;
-  cfg.channel = null;
-  cfg.connectedAt = null;
-  DB.set('tb_bot_config', cfg);
-  toast('Bot uzildi', 'info');
-  renderBot();
-});
-
-// ============ BOT FEED (demo log) ============
-// Botning kanalga yuborgan habarlarini saqlaymiz — keyinchalik ko'rsatish mumkin
-function pushBotFeed(msg) {
-  const feed = DB.get('tb_bot_feed', []);
-  feed.push(msg);
-  // Faqat oxirgi 50 ta habarni saqlaymiz
-  if (feed.length > 50) feed.shift();
-  DB.set('tb_bot_feed', feed);
+  btn.disabled = on;
+  if (on) { btn.dataset._t = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (txt || 'Yuborilmoqda...'); }
+  else if (btn.dataset._t) { btn.innerHTML = btn.dataset._t; delete btn.dataset._t; }
 }
 
-// ============ BUYURTMA → KANAL ============
-// Yangi buyurtma yaratilganda chaqirish uchun global helper
+// 1) Botni ulash (token)
+async function connectBot() {
+  const tokenEl = document.getElementById('bot2Token');
+  const token = (tokenEl?.value || getBotCfg().token || '').trim();
+  if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri. @BotFather dan to'liq nusxa oling.", 'error'); tokenEl?.focus(); return; }
+  const payload = { clientId: SHOP_KEY, shopName: _shopName() || "Do'kon", token };
+  const btn = document.getElementById('bot2ConnectBtn');
+  _btnBusy(btn, true, 'Ulanmoqda...');
+  try {
+    const res = await fetch(getBotApi() + '/store-bot/connect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Ulanmadi');
+    const cfg = getBotCfg();
+    Object.assign(cfg, { token, username: data.username, connected: true });
+    saveBotCfg(cfg);
+    setBotConnectedUI(true, data.username);
+    toast('Bot ulandi! ' + (data.username || '') + ' 🎉', 'success');
+    refreshBotStatus();
+  } catch (err) { toast(botErr(err), 'error'); }
+  finally { _btnBusy(btn, false); }
+}
+
+async function disconnectBot() {
+  if (!confirm('Botni uzasizmi? Buyurtmalar kanalga yuborilmaydi.')) return;
+  try {
+    await fetch(getBotApi() + '/store-bot/disconnect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY }) }).then(r => r.json().catch(() => ({})));
+  } catch (e) {}
+  const cfg = getBotCfg(); cfg.connected = false; cfg.channel = null; saveBotCfg(cfg);
+  setBotConnectedUI(false); setChannelUI(cfg);
+  toast('Bot uzildi', 'info');
+}
+
+// 2) Kanalga ulash / uzish / test
+async function connectChannel() {
+  let channel = (document.getElementById('bot2Channel')?.value || '').trim();
+  if (!channel) { toast('Kanal username yoki ID kiriting', 'error'); return; }
+  if (!getBotCfg().connected) { toast('Avval botni ulang', 'error'); return; }
+  const btn = document.getElementById('bot2ChannelBtn');
+  _btnBusy(btn, true, 'Ulanmoqda...');
+  try {
+    const res = await fetch(getBotApi() + '/store-bot/set-channel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, channel }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Ulanmadi');
+    const cfg = getBotCfg(); cfg.channel = data.channel; saveBotCfg(cfg); setChannelUI(cfg);
+    toast('Kanal ulandi: ' + data.channel + ' 🎉', 'success');
+  } catch (err) { toast(botErr(err), 'error'); }
+  finally { _btnBusy(btn, false); }
+}
+async function disconnectChannel() {
+  if (!confirm('Kanalni uzasizmi? Buyurtmalar yuborilmaydi.')) return;
+  try {
+    await fetch(getBotApi() + '/store-bot/set-channel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, clear: true }) }).then(r => r.json().catch(() => ({})));
+  } catch (e) {}
+  const cfg = getBotCfg(); cfg.channel = null; saveBotCfg(cfg); setChannelUI(cfg);
+  toast('Kanal uzildi', 'info');
+}
+async function testChannel() {
+  if (!getBotCfg().channel) { toast('Avval kanal ulang', 'error'); return; }
+  const btn = document.getElementById('bot2ChannelTest');
+  _btnBusy(btn, true, 'Yuborilmoqda...');
+  try {
+    const res = await fetch(getBotApi() + '/store-bot/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, order: { id: 'TEST', userName: 'Test mijoz', phone: '+998 90 000 00 00', address: 'Sinov manzil', items: [{ name: 'Sinov mahsulot', qty: 1, price: 10000 }], total: 10000 } }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Yuborilmadi');
+    const cfg = getBotCfg(); cfg.sentCount = data.sentCount || (cfg.sentCount || 0) + 1; saveBotCfg(cfg); setChannelUI(cfg);
+    toast('Test habar kanalga yuborildi ✅', 'success');
+  } catch (err) { toast(botErr(err), 'error'); }
+  finally { _btnBusy(btn, false); }
+}
+
+// 3) Mijozlarga ommaviy xabar (broadcast)
+async function sendBroadcast() {
+  const ta = document.getElementById('bot2BroadcastText');
+  const text = (ta?.value || '').trim();
+  if (!text) { toast('Xabar matnini kiriting', 'error'); return; }
+  if (!getBotCfg().connected) { toast('Avval botni ulang', 'error'); return; }
+  const btn = document.getElementById('bot2BroadcastBtn');
+  const resEl = document.getElementById('bot2BroadcastResult');
+  _btnBusy(btn, true, 'Yuborilmoqda...');
+  try {
+    const res = await fetch(getBotApi() + '/store-bot/broadcast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, text }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Yuborilmadi');
+    if (resEl) resEl.textContent = `✅ Yuborildi: ${data.sent} / ${data.total} ta` + (data.failed ? ` (xato: ${data.failed})` : '');
+    if (ta) ta.value = '';
+    toast(data.total ? `Yuborildi: ${data.sent} ta` : 'Hali hech kim botga /start yozmagan', data.total ? 'success' : 'info');
+  } catch (err) { if (resEl) resEl.textContent = ''; toast(botErr(err), 'error'); }
+  finally { _btnBusy(btn, false); }
+}
+
+// ====== Event wiring (bot bo'limi) ======
+document.getElementById('bot2Eye')?.addEventListener('click', () => {
+  const t = document.getElementById('bot2Token'); if (!t) return;
+  const hidden = t.type === 'password'; t.type = hidden ? 'text' : 'password';
+  document.getElementById('bot2Eye').innerHTML = hidden ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+});
+document.getElementById('bot2ConnectBtn')?.addEventListener('click', connectBot);
+document.getElementById('bot2DisconnectBtn')?.addEventListener('click', disconnectBot);
+document.getElementById('bot2ChannelBtn')?.addEventListener('click', connectChannel);
+document.getElementById('bot2ChannelTest')?.addEventListener('click', testChannel);
+document.getElementById('bot2ChannelDisc')?.addEventListener('click', disconnectChannel);
+document.getElementById('bot2BroadcastBtn')?.addEventListener('click', sendBroadcast);
+
+// ============ BUYURTMA → KANAL (do'kon boti orqali) ============
+// Yangi buyurtma yaratilganda chaqiriladigan global helper
 window.notifyBotNewOrder = function (order) {
   try {
-    const cfg = DB.get('tb_bot_config', null);
-    if (!cfg || !cfg.connected || !cfg.channel) return;
-
-    const settings = DB.get('tb_settings', {});
-    const restName = settings.restaurantName || 'Restoran';
-
-    const itemsText = (order.items || []).map(it =>
-      `   • ${it.name} × ${it.qty} = ${fmtMoney(it.price * it.qty)} so'm`
-    ).join('\n');
-
-    const msg = [
-      `🔔 YANGI BUYURTMA — ${restName}`,
-      ``,
-      `📦 Buyurtma: ${order.id}`,
-      `👤 Mijoz: ${order.userName || 'Anonim'}`,
-      `📞 Tel: ${order.phone || '—'}`,
-      `📍 Manzil: ${order.address || '—'}`,
-      ``,
-      `🛒 Mahsulotlar:`,
-      itemsText || '   (bo\'sh)',
-      ``,
-      `💰 Jami: ${fmtMoney(order.total)} so'm`,
-      `⏱  Vaqt: ${formatDate(order.createdAt)}`
-    ].join('\n');
-
-    pushBotFeed({ type: 'order', text: msg, time: new Date().toISOString(), orderId: order.id });
-
-    cfg.sentCount = (cfg.sentCount || 0) + 1;
-    DB.set('tb_bot_config', cfg);
-
-    // Haqiqiy Telegram botga POST yuborish
-    const BOT_HTTP = (typeof window !== 'undefined' && window.BOT_HTTP_URL) || 'http://localhost:3344';
-    fetch(`${BOT_HTTP}/orders/${cfg.botId}`, {
+    const cfg = getBotCfg();
+    if (!cfg.connected || !cfg.channel) return;
+    fetch(getBotApi() + '/store-bot/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order })
+      body: JSON.stringify({ clientId: SHOP_KEY, order })
     })
-      .then(r => r.json().catch(() => ({ ok: false, error: 'Invalid JSON' })))
+      .then(r => r.json().catch(() => ({ ok: false })))
       .then(res => {
         if (res && res.ok) {
-          toast(`📨 Buyurtma ${cfg.channel} ga yuborildi`, 'success');
-        } else {
-          toast(`⚠️ Bot xatosi: ${res?.error || 'noma\'lum'}`, 'error');
-          console.error('[bot] POST natijasi:', res);
+          const c = getBotCfg(); c.sentCount = res.sentCount || (c.sentCount || 0) + 1; saveBotCfg(c);
+          setChannelUI(c);
         }
       })
-      .catch(err => {
-        toast(`⚠️ Bot serveri ulanmagan (port 3344)`, 'error');
-        console.error('[bot] HTTP xato:', err.message, '— `cd bot && python3 bot.py` orqali ishga tushiring');
-      });
+      .catch(err => { console.warn('[bot] order yuborilmadi:', err.message); });
   } catch (err) {
     console.error('notifyBotNewOrder error:', err);
   }
@@ -1193,3 +1178,79 @@ setInterval(() => {
     console.error('bot watcher error:', err);
   }
 }, 2500);
+
+// ============================================================
+// ============ QR KOD ============
+// ============================================================
+function qrStoreUrl() {
+  const saved = DB.get('tb_store_url', null);
+  if (saved) return saved;
+  try { return new URL('index.html', location.href).href.split('?')[0]; }
+  catch { return location.origin; }
+}
+function qrApiSrc(url, size) {
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size + '&margin=10&qzone=1&data=' + encodeURIComponent(url);
+}
+function qrShopName() {
+  const s = DB.get('tb_settings', {});
+  return (s && s.restaurantName) || 'Restoran';
+}
+function renderQR() {
+  const url = qrStoreUrl();
+  const input = document.getElementById('qrUrlInput');
+  if (input) input.value = url;
+  const sn = document.getElementById('qrStoreName');
+  if (sn) sn.textContent = qrShopName();
+  const img = document.getElementById('qrImage');
+  const loading = document.getElementById('qrLoading');
+  if (img) {
+    if (loading) { loading.style.display = 'block'; loading.textContent = 'QR yuklanmoqda…'; }
+    img.style.display = 'none';
+    img.onload = () => { img.style.display = 'block'; if (loading) loading.style.display = 'none'; };
+    img.onerror = () => { if (loading) loading.textContent = '⚠️ QR yuklanmadi (internet kerak)'; };
+    img.src = qrApiSrc(url, 320);
+  }
+}
+// QR tugmalari — delegatsiya
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#qrSaveBtn')) {
+    let v = (document.getElementById('qrUrlInput').value || '').trim();
+    if (!v) { toast('URL kiriting', 'error'); return; }
+    if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
+    DB.set('tb_store_url', v);
+    toast('QR kod yangilandi', 'success');
+    renderQR();
+  }
+  if (e.target.closest('#qrCopyBtn')) {
+    navigator.clipboard.writeText(qrStoreUrl()).then(() => toast('Havola nusxalandi', 'success')).catch(() => toast('Nusxalab bo\'lmadi', 'error'));
+  }
+  if (e.target.closest('#qrOpenBtn')) { window.open(qrStoreUrl(), '_blank'); }
+  if (e.target.closest('#qrDownloadBtn')) {
+    (async () => {
+      try {
+        const res = await fetch(qrApiSrc(qrStoreUrl(), 600));
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'qr-kod.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+        toast('QR kod yuklab olindi', 'success');
+      } catch { window.open(qrApiSrc(qrStoreUrl(), 600), '_blank'); }
+    })();
+  }
+  if (e.target.closest('#qrPrintBtn')) {
+    const url = qrStoreUrl();
+    const w = window.open('', '_blank', 'width=480,height=680');
+    if (!w) { toast('Chop etish oynasi bloklandi', 'error'); return; }
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR Kod</title></head>'
+      + '<body style="font-family:system-ui,sans-serif;text-align:center;padding:40px;color:#0f172a">'
+      + '<h2 style="margin:0 0 4px">' + qrShopName() + '</h2>'
+      + '<p style="margin:0 0 18px;color:#64748b">Veb-ilovamizni oching</p>'
+      + '<img src="' + qrApiSrc(url, 400) + '" style="width:320px;height:320px"/>'
+      + '<p style="margin-top:18px;font-size:18px">📷 Telefon kamerasi bilan skaner qiling</p>'
+      + '<p style="color:#64748b;word-break:break-all;font-size:12px">' + url + '</p>'
+      + '</body></html>');
+    w.document.close();
+    setTimeout(() => { try { w.focus(); w.print(); } catch (er) {} }, 700);
+  }
+});

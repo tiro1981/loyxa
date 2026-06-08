@@ -2,6 +2,39 @@
 // Kirish sahifasi: client va admin alohida login
 'use strict';
 
+// Telefon raqamni faqat raqamlarga keltirish (taqqoslash uchun)
+const digits = (s) => String(s || '').replace(/\D/g, '');
+
+/* Ilovani bepul biriktirish (URL ?app=slug bo'lsa) */
+function assignAppByParam(clientId) {
+    try {
+        const slug = new URLSearchParams(window.location.search).get('app');
+        if (!slug) return false;
+        const apps = JSON.parse(localStorage.getItem('bo_apps') || '[]');
+        const app = apps.find(a => a.slug === slug || a.id === slug);
+        if (!app) return false;
+        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const me = subs.find(s => s.id === clientId);
+        if (!me) return false;
+        me.app = app.slug || app.id;
+        me.appId = app.id;
+        me.appName = app.name;
+        me.appUrl = app.demoUrl || null;
+        me.adminUrl = app.adminUrl || null;
+        me.slug = app.slug || null;
+        me.logoEmoji = app.logoEmoji || null;
+        me.price = 0;
+        me.status = 'active';
+        me.activatedAt = new Date().toISOString();
+        if (!me.subdomain) {
+            me.subdomain = (me.businessName || 'biznes').toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'biznes';
+        }
+        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        return true;
+    } catch (e) { console.error('assignAppByParam', e); return false; }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- ROLE TABS ---------- */
@@ -53,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!subs.find(s => s.email === 'mijoz@demo.uz')) {
             subs.push({
                 id: 'CL-001',
+                username: 'demo',
                 businessName: 'Demo Burger',
                 businessType: 'fastfood',
                 app: 'fastfood',
@@ -84,12 +118,16 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const login = clientForm.login.value.trim();
             const password = clientForm.password.value;
+            const loginDigits = digits(login);
 
             try {
                 const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
-                const user = subs.find(s =>
-                    (s.email === login || s.phone === login) && s.password === password
-                );
+                // Telefon (raqamlar bo'yicha) yoki foydalanuvchi nomi (katta-kichik harf farqsiz)
+                const user = subs.find(s => {
+                    const byPhone = loginDigits.length >= 7 && digits(s.phone) === loginDigits;
+                    const byUsername = s.username && s.username.toLowerCase() === login.toLowerCase();
+                    return (byPhone || byUsername) && s.password === password;
+                });
 
                 if (!user) {
                     window.showToast && window.showToast("Login yoki parol noto'g'ri", 'error');
@@ -109,13 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'client',
                     clientId: user.id,
                     id: user.id,
+                    username: user.username,
                     email: user.email,
                     businessName: user.businessName,
                     app: user.app,
                     loggedAt: Date.now()
                 }));
+                // Agar ?app= bo'lsa — dashboard'da subdomen so'rab obuna qilamiz
+                const appParam = new URLSearchParams(window.location.search).get('app');
                 window.showToast && window.showToast('Xush kelibsiz, ' + user.businessName + '!', 'success');
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+                setTimeout(() => {
+                    window.location.href = appParam ? ('dashboard.html?subscribe=' + encodeURIComponent(appParam)) : 'dashboard.html';
+                }, 800);
             } catch (err) {
                 console.error(err);
                 window.showToast && window.showToast('Xato yuz berdi', 'error');
@@ -144,22 +187,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const businessName = registerForm.businessName.value.trim();
-            const email = registerForm.email.value.trim();
+            const username = registerForm.username.value.trim();
             const phone = registerForm.phone.value.trim();
             const password = registerForm.password.value;
+            const passwordConfirm = registerForm.passwordConfirm.value;
             const termsOk = document.getElementById('termsRegister')?.checked;
 
-            if (!businessName || businessName.length < 2) {
-                window.showToast && window.showToast("Biznes nomini kiriting", 'error');
+            if (username.length < 3) {
+                window.showToast && window.showToast("Foydalanuvchi nomi kamida 3 ta belgidan iborat bo'lsin", 'error');
                 return;
             }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                window.showToast && window.showToast("To'g'ri email kiriting", 'error');
+            if (/\s/.test(username)) {
+                window.showToast && window.showToast("Foydalanuvchi nomida bo'sh joy bo'lmasin", 'error');
+                return;
+            }
+            if (digits(phone).length < 9) {
+                window.showToast && window.showToast("To'g'ri telefon raqam kiriting", 'error');
                 return;
             }
             if (password.length < 6) {
                 window.showToast && window.showToast("Parol kamida 6 ta belgidan iborat bo'lishi kerak", 'error');
+                return;
+            }
+            if (password !== passwordConfirm) {
+                window.showToast && window.showToast("Parollar mos kelmadi", 'error');
                 return;
             }
             if (!termsOk) {
@@ -170,9 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
 
-                // Email band emasligini tekshirish
-                if (subs.find(s => s.email === email)) {
-                    window.showToast && window.showToast("Bu email ro'yxatdan o'tgan. Kirishni urinib ko'ring.", 'error');
+                // Foydalanuvchi nomi band emasligini tekshirish (katta-kichik harf farqsiz)
+                if (subs.find(s => s.username && s.username.toLowerCase() === username.toLowerCase())) {
+                    window.showToast && window.showToast("Bu foydalanuvchi nomi band. Boshqasini tanlang.", 'error');
+                    return;
+                }
+                // Telefon band emasligini tekshirish
+                if (subs.find(s => digits(s.phone) === digits(phone))) {
+                    window.showToast && window.showToast("Bu telefon raqam ro'yxatdan o'tgan. Kirishni urinib ko'ring.", 'error');
                     return;
                 }
 
@@ -181,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const newClient = {
                     id: clientId,
-                    businessName,
-                    email,
+                    username,
+                    businessName: username,   // ko'rsatish uchun (dashboard/admin) — username bilan bir xil
                     phone,
                     password,
                     // App hali tanlanmagan — bo'sh
@@ -191,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     appId: null,
                     price: null,
                     subdomain: null,
-                    // Status: 'registered' — ro'yxatdan o'tgan, lekin obuna yo'q
+                    // Status: 'registered' — ro'yxatdan o'tgan, lekin ilova tanlanmagan
                     status: 'registered',
                     createdAt: now
                 };
@@ -203,13 +259,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'client',
                     clientId: clientId,
                     id: clientId,
-                    email,
-                    businessName,
+                    username,
+                    businessName: username,
                     loggedAt: Date.now()
                 }));
 
+                // Agar ?app= bilan kelgan bo'lsa — dashboard'da subdomen so'rab obuna qilamiz
+                const appParam = new URLSearchParams(window.location.search).get('app');
                 window.showToast && window.showToast("Ro'yxatdan o'tdingiz! Xush kelibsiz.", 'success');
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+                setTimeout(() => {
+                    window.location.href = appParam ? ('dashboard.html?subscribe=' + encodeURIComponent(appParam)) : 'dashboard.html';
+                }, 800);
             } catch (err) {
                 console.error(err);
                 window.showToast && window.showToast("Xatolik yuz berdi", 'error');

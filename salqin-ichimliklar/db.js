@@ -13,9 +13,76 @@ const DB = (() => {
     seenStatuses: 'si_seen_statuses',
     theme: 'si_theme',
     chat: 'si_chat',
+    adminCreds: 'si_admin_creds',
   };
 
-  const ADMIN = { login: 'admin', password: 'admin123' };
+  // ---------- SHA-256 (sinxron, sof JS — crypto.subtle HTTPS talab qilgani uchun) ----------
+  function sha256(ascii) {
+    function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
+    const mathPow = Math.pow, maxWord = mathPow(2, 32);
+    let result = '', i, j;
+    const words = [], asciiBitLength = ascii.length * 8;
+    let hash = sha256.h = sha256.h || [];
+    const k = sha256.k = sha256.k || [];
+    let primeCounter = k.length;
+    const isComposite = {};
+    for (let candidate = 2; primeCounter < 64; candidate++) {
+      if (!isComposite[candidate]) {
+        for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+        hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+        k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+      }
+    }
+    ascii += '\x80';
+    while (ascii.length % 64 - 56) ascii += '\x00';
+    for (i = 0; i < ascii.length; i++) {
+      j = ascii.charCodeAt(i);
+      if (j >> 8) return ''; // faqat ASCII; boshqa belgilar oldindan UTF-8 ga aylantiriladi
+      words[i >> 2] |= j << ((3 - i) % 4) * 8;
+    }
+    words[words.length] = ((asciiBitLength / maxWord) | 0);
+    words[words.length] = (asciiBitLength);
+    for (j = 0; j < words.length;) {
+      const w = words.slice(j, j += 16);
+      const oldHash = hash.slice(0, 8);
+      for (i = 0; i < 64; i++) {
+        const w15 = w[i - 15], w2 = w[i - 2];
+        const a = hash[0], e = hash[4];
+        const temp1 = hash[7]
+          + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+          + ((e & hash[5]) ^ ((~e) & hash[6]))
+          + k[i]
+          + (w[i] = (i < 16) ? w[i] : (
+              w[i - 16]
+              + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+              + w[i - 7]
+              + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+            ) | 0);
+        const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+          + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+        hash = [(temp1 + temp2) | 0].concat(hash.slice(0, 7));
+        hash[4] = (hash[4] + temp1) | 0;
+      }
+      for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+    }
+    for (i = 0; i < 8; i++) {
+      for (j = 3; j + 1; j--) {
+        const b = (hash[i] >> (j * 8)) & 255;
+        result += ((b < 16) ? 0 : '') + b.toString(16);
+      }
+    }
+    return result;
+  }
+  // UTF-8 qo'llab-quvvatlash uchun o'rab olamiz
+  const hashPass = (s) => sha256(unescape(encodeURIComponent(String(s ?? ''))));
+
+  // ---------- HTML escape (XSS himoyasi) ----------
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  const ADMIN_DEFAULT_LOGIN = 'admin';
+  const ADMIN_DEFAULT_HASH = () => hashPass('admin123');
 
   const read = (k, fallback) => {
     try {
@@ -37,7 +104,10 @@ const DB = (() => {
       console.warn('[DB] kvota oshib ketdi, eski yozuvlar tozalanmoqda:', k);
       try {
         if (Array.isArray(v) && v.length > 4) {
-          const trimmed = v.slice(0, Math.floor(v.length / 2));
+          // si_chat push bilan to'ladi (eng yangilari oxirida) — oxirgi yarmini saqlaymiz.
+          // Boshqalari (orders) unshift bilan to'ladi (eng yangilari boshida) — birinchi yarmi saqlanadi.
+          const half = Math.floor(v.length / 2);
+          const trimmed = k === KEYS.chat ? v.slice(-half) : v.slice(0, half);
           localStorage.setItem(k, JSON.stringify(trimmed));
           return;
         }
@@ -219,14 +289,27 @@ const DB = (() => {
     register: ({ name, phone, password, address = '' }) => {
       if (users.findByPhone(phone)) throw new Error('Bu telefon raqami avval ro\'yxatdan o\'tgan');
       const list = users.all();
-      const u = { id: uid(), name, phone, password, address, createdAt: Date.now() };
+      // Parol ochiq matnda saqlanmaydi — faqat SHA-256 hash
+      const u = { id: uid(), name, phone, passHash: hashPass(password), address, createdAt: Date.now() };
       list.push(u);
       write(KEYS.users, list);
       return u;
     },
     login: (phone, password) => {
       const u = users.findByPhone(phone);
-      if (!u || u.password !== password) throw new Error('Telefon yoki parol noto\'g\'ri');
+      const ok = u && (u.passHash
+        ? u.passHash === hashPass(password)
+        : u.password === password); // eski (ochiq matnli) yozuvlar uchun
+      if (!ok) throw new Error('Telefon yoki parol noto\'g\'ri');
+      // Eski yozuvni hashlangan ko'rinishga migratsiya qilamiz
+      if (!u.passHash) {
+        const list = users.all().map(x => {
+          if (x.id !== u.id) return x;
+          const { password: _omit, ...rest } = x;
+          return { ...rest, passHash: hashPass(password) };
+        });
+        write(KEYS.users, list);
+      }
       write(KEYS.session, { userId: u.id, at: Date.now() });
       return u;
     },
@@ -351,14 +434,26 @@ const DB = (() => {
   };
 
   // ----- Admin -----
+  // Eslatma: bu himoya faqat client-side (localStorage). Jiddiy himoya uchun
+  // admin.html ni server darajasida (nginx basic auth / backend auth) yoping.
   const admin = {
+    _creds: () => read(KEYS.adminCreds, null) || { login: ADMIN_DEFAULT_LOGIN, hash: ADMIN_DEFAULT_HASH() },
     login: (l, p) => {
-      if (l === ADMIN.login && p === ADMIN.password) {
+      const c = admin._creds();
+      if (l === c.login && hashPass(p) === c.hash) {
         write(KEYS.adminSession, { at: Date.now() });
         return true;
       }
       throw new Error('Admin login yoki parol noto\'g\'ri');
     },
+    changePassword: (oldPass, newPass) => {
+      const c = admin._creds();
+      if (hashPass(oldPass) !== c.hash) throw new Error('Joriy parol noto\'g\'ri');
+      if (!newPass || newPass.length < 6) throw new Error('Yangi parol kamida 6 belgidan iborat bo\'lsin');
+      write(KEYS.adminCreds, { login: c.login, hash: hashPass(newPass) });
+      return true;
+    },
+    isDefaultPassword: () => admin._creds().hash === ADMIN_DEFAULT_HASH(),
     logout: () => localStorage.removeItem(KEYS.adminSession),
     isAuthed: () => !!read(KEYS.adminSession, null),
   };
@@ -483,5 +578,5 @@ const DB = (() => {
   };
 
   seed();
-  return { products, users, cart, orders, notifications, admin, stats, chat, regions, theme, fmt, svgDrink, svgGlass };
+  return { products, users, cart, orders, notifications, admin, stats, chat, regions, theme, fmt, esc, svgDrink, svgGlass };
 })();

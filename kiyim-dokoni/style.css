@@ -2340,3 +2340,68 @@ a:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
+
+/* ===== To'lov usuli — faqat Naqd faol, qolganlari "Tez orada" (rangsiz) ===== */
+.pay-opt.pay-soon { cursor: not-allowed; }
+.pay-opt.pay-soon span {
+    opacity: .55;
+    filter: grayscale(1);
+    flex-wrap: wrap;
+}
+.soon-tag {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    background: var(--surface-2, #e5e7eb);
+    color: var(--text-2, #6b7280);
+    padding: 2px 7px;
+    border-radius: 100px;
+    white-space: nowrap;
+    border: 1px solid rgba(0,0,0,.06);
+}
+
+/* ===== Mahsulot rasm galereyasi (swipe) ===== */
+.pd-slider {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    cursor: grab;
+}
+.pd-slider:active { cursor: grabbing; }
+.pd-slider::-webkit-scrollbar { display: none; }
+.pd-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+}
+.pd-slide img { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; user-select: none; }
+.pd-dots {
+    position: absolute;
+    bottom: 12px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.28);
+    padding: 6px 10px; border-radius: 100px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.pd-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    transition: all 0.25s ease; cursor: pointer;
+}
+.pd-dot.active { background: #fff; width: 20px; border-radius: 100px; }
+.pd-count {
+    position: absolute;
+    top: 14px; left: 14px;
+    background: rgba(0,0,0,0.5);
+    color: #fff; font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 100px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    z-index: 2;
+}

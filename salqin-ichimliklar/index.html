@@ -6,10 +6,12 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#070c15" />
   <title data-i18n="app.title">Salqin — Sovuq ichimliklar do'koni</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body class="app">
   <!-- TOP BAR -->
@@ -81,60 +83,26 @@
                 <div><b data-i18n="pay.cash">Naqd</b><small data-i18n="pay.cash.sub">Kuryerga to'lov</small></div>
               </div>
             </label>
-            <label class="pay-opt">
-              <input type="radio" name="payment" value="karta" />
+            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi">
+              <input type="radio" name="payment" value="karta" disabled />
               <div class="pay-card">
                 <div class="pay-icon">💳</div>
-                <div><b data-i18n="pay.card">Karta</b><small data-i18n="pay.card.sub">Uzcard / Humo</small></div>
+                <div><b data-i18n="pay.card">Karta</b><small>Tez orada qo'shiladi</small></div>
               </div>
             </label>
-            <label class="pay-opt">
-              <input type="radio" name="payment" value="click" />
+            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi">
+              <input type="radio" name="payment" value="click" disabled />
               <div class="pay-card">
                 <div class="pay-icon">📲</div>
-                <div><b data-i18n="pay.click">Click / Payme</b><small data-i18n="pay.click.sub">Mobil to'lov</small></div>
+                <div><b data-i18n="pay.click">Click / Payme</b><small>Tez orada qo'shiladi</small></div>
               </div>
             </label>
           </div>
         </div>
 
-        <div id="payCardFields" class="pay-fields hidden">
-          <label><span data-i18n="pay.card.number">Karta raqami</span>
-            <input id="cardNumber" name="cardNumber" inputmode="numeric" maxlength="19"
-                   placeholder="0000 0000 0000 0000" autocomplete="cc-number" />
-          </label>
-          <div class="grid-2">
-            <label><span data-i18n="pay.card.expiry">Amal qilish muddati</span>
-              <input id="cardExpiry" name="cardExpiry" inputmode="numeric" maxlength="5"
-                     placeholder="MM/YY" autocomplete="cc-exp" />
-            </label>
-            <label><span data-i18n="pay.card.cvv">CVV</span>
-              <input id="cardCvv" name="cardCvv" inputmode="numeric" maxlength="4"
-                     placeholder="•••" autocomplete="cc-csc" />
-            </label>
-          </div>
-          <div class="card-preview">
-            <div class="cp-row1"><span class="cp-chip"></span><span class="cp-brand">UZCARD</span></div>
-            <div class="cp-number" id="cpNumber">•••• •••• •••• ••••</div>
-            <div class="cp-row2">
-              <div><small data-i18n="pay.card.valid">Amal qiladi</small><b id="cpExpiry">MM/YY</b></div>
-              <div><small data-i18n="pay.card.owner">Egasi</small><b data-i18n="pay.card.owner.name">SALQIN MIJOZI</b></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="payClickFields" class="pay-fields hidden">
-          <label><span data-i18n="pay.click.phone">Click/Payme telefon raqami</span>
-            <input id="clickPhone" name="clickPhone" inputmode="tel"
-                   placeholder="+998 90 000 00 00" autocomplete="tel" />
-          </label>
-          <button id="sendCodeBtn" type="button" class="btn btn-ghost btn-block" data-i18n="pay.click.send">SMS kod yuborish</button>
-          <label class="hidden" id="codeWrap"><span data-i18n="pay.click.code">SMS tasdiq kodi</span>
-            <input id="smsCode" name="smsCode" inputmode="numeric" maxlength="4" data-i18n-ph="pay.click.code.ph" placeholder="4 xonali kod" />
-            <small class="hint" data-i18n="pay.click.hint">Demo: ixtiyoriy 4 raqam kiriting</small>
-          </label>
-        </div>
-
+        <!-- Karta raqami/CVV/SMS maydonlari olib tashlandi:
+             haqiqiy to'lov integratsiyasisiz karta ma'lumotlarini yig'ish xavfli.
+             To'lov yetkazib berishda tanlangan usul orqali amalga oshiriladi. -->
         <div class="summary" id="checkoutSummary"></div>
         <button class="btn btn-primary btn-block" type="submit" data-i18n="btn.confirm">Tasdiqlash</button>
       </form>
@@ -269,9 +237,9 @@
   <!-- TOAST -->
   <div id="toast" class="toast"></div>
 
-  <script src="db.js?v=2"></script>
-  <script src="i18n.js"></script>
-  <script src="telegram.js"></script>
-  <script src="script.js?v=2"></script>
+  <script src="db.js?v=3"></script>
+  <script src="i18n.js?v=3"></script>
+  <script src="telegram.js?v=4"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

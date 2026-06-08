@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tasty Bite - Fast Food</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -219,7 +219,7 @@
           <div class="mi-icon orange"><i class="fa-solid fa-credit-card"></i></div>
           <div class="mi-text">
             <h4>To'lov usullari</h4>
-            <p>Karta va naqd to'lovlar</p>
+            <p>Naqd pul (karta tez orada)</p>
           </div>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
@@ -356,8 +356,28 @@
           <h3>To'lov usullari</h3>
           <button class="icon-btn" data-close="paymentModal"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="paymentList"></div>
-        <button class="btn-outline block" id="newPaymentBtn"><i class="fa-solid fa-plus"></i> Karta qo'shish</button>
+        <div class="pay-method-list">
+          <div class="pay-method active">
+            <span class="pm-emoji">💵</span>
+            <div class="pm-text"><b>Naqd pul</b><small>Kuryerga yoki olib ketishda to'lov</small></div>
+            <i class="fa-solid fa-circle-check pm-ok"></i>
+          </div>
+          <div class="pay-method pay-soon">
+            <span class="pm-emoji">💳</span>
+            <div class="pm-text"><b>Karta (Uzcard / Humo)</b><small>Tez orada qo'shiladi</small></div>
+            <span class="soon-tag">Tez orada</span>
+          </div>
+          <div class="pay-method pay-soon">
+            <span class="pm-emoji">⚡</span>
+            <div class="pm-text"><b>Click</b><small>Tez orada qo'shiladi</small></div>
+            <span class="soon-tag">Tez orada</span>
+          </div>
+          <div class="pay-method pay-soon">
+            <span class="pm-emoji">📱</span>
+            <div class="pm-text"><b>Payme</b><small>Tez orada qo'shiladi</small></div>
+            <span class="soon-tag">Tez orada</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -474,7 +494,7 @@
         <div class="faq">
           <details open><summary>Buyurtma qanday beriladi?</summary><p>Taomni tanlab savatga qo'shing, so'ng "Buyurtma berish" tugmasini bosing.</p></details>
           <details><summary>Yetkazib berish vaqti qancha?</summary><p>O'rtacha 30-45 daqiqa, manzilga qarab o'zgaradi.</p></details>
-          <details><summary>To'lov turlari?</summary><p>Naqd, Uzcard, Humo, Click va Payme orqali to'lash mumkin.</p></details>
+          <details><summary>To'lov turlari?</summary><p>Hozircha faqat naqd pul orqali to'lanadi. Karta, Click va Payme tez orada qo'shiladi.</p></details>
           <details><summary>Buyurtmani bekor qilish</summary><p>Tayyorlanmaguncha buyurtmani bekor qilishingiz mumkin.</p></details>
         </div>
         <div class="contact-row">
@@ -506,6 +526,6 @@
 
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>

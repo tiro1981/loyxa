@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -396,9 +396,9 @@
         <label>To'lov turi</label>
         <div class="pay-options" id="payOptions">
             <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd</span></label>
-            <label class="pay-opt"><input type="radio" name="payment" value="uzcard"><span><b>💳</b> Uzcard / Humo</span></label>
-            <label class="pay-opt"><input type="radio" name="payment" value="click"><span><b>⚡</b> Click</span></label>
-            <label class="pay-opt"><input type="radio" name="payment" value="payme"><span><b>📱</b> Payme</span></label>
+            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="uzcard" disabled><span><b>💳</b> Uzcard / Humo <em class="soon-tag">Tez orada</em></span></label>
+            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="click" disabled><span><b>⚡</b> Click <em class="soon-tag">Tez orada</em></span></label>
+            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="payme" disabled><span><b>📱</b> Payme <em class="soon-tag">Tez orada</em></span></label>
         </div>
         <div class="order-sum" id="orderSum"></div>
     </form>
@@ -438,6 +438,6 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=7"></script>
 </body>
 </html>

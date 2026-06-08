@@ -36,10 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (section === 'dashboard') renderDashboard();
         if (section === 'clients') renderClients();
+        if (section === 'messages') renderMessages();
         if (section === 'apps') renderAppsAdmin();
         if (section === 'payments') renderPayments();
         if (section === 'revenue') renderRevenue();
         if (section === 'settings') loadSettings();
+        // Bot bo'limidan chiqilsa — pollingni to'xtatish
+        if (section === 'bot') renderBot(); else stopBotPolling();
 
         // Mobile: yon panelni yopish
         document.getElementById('adminSidebar').classList.remove('open');
@@ -55,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('adminSidebar').classList.remove('open');
         document.getElementById('adminOverlay').classList.remove('show');
     });
+
+    /* ---------- TOPBAR BELL → XABARLAR ---------- */
+    document.getElementById('adminNotifBtn')?.addEventListener('click', () => goTo('messages'));
 
     /* ---------- LOGOUT ---------- */
     document.getElementById('adminLogout').addEventListener('click', () => {
@@ -207,6 +213,159 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ====================================================
+       ============ XABARLAR (mijozlar bilan) =============
+       ==================================================== */
+    function getMessages() {
+        try { return JSON.parse(localStorage.getItem('bo_messages') || '[]'); } catch { return []; }
+    }
+    function saveMessages(arr) { localStorage.setItem('bo_messages', JSON.stringify(arr)); }
+
+    function getConversations() {
+        const byClient = {};
+        getMessages().forEach(m => {
+            if (!byClient[m.clientId]) byClient[m.clientId] = { clientId: m.clientId, clientName: m.clientName || m.clientId, messages: [] };
+            byClient[m.clientId].messages.push(m);
+            if (m.clientName) byClient[m.clientId].clientName = m.clientName;
+        });
+        const clients = getClients();
+        return Object.values(byClient).map(c => {
+            c.messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            const sub = clients.find(s => s.id === c.clientId);
+            if (sub) c.clientName = sub.businessName;
+            c.last = c.messages[c.messages.length - 1];
+            c.unread = c.messages.filter(m => m.from === 'client' && !m.read).length;
+            return c;
+        }).sort((a, b) => new Date(b.last.createdAt) - new Date(a.last.createdAt));
+    }
+    function totalUnreadMsgs() {
+        return getMessages().filter(m => m.from === 'client' && !m.read).length;
+    }
+    function updateMsgBadges() {
+        const n = totalUnreadMsgs();
+        setBadge('msgNavBadge', n);
+        const dot = document.getElementById('adminNotifDot');
+        if (dot) dot.style.display = n > 0 ? 'block' : 'none';
+    }
+
+    let activeConvoId = null;
+
+    function renderMessages() {
+        renderConvoList();
+        if (activeConvoId) renderConversation(activeConvoId);
+        updateMsgBadges();
+    }
+
+    function renderConvoList() {
+        const list = document.getElementById('msgConvos');
+        if (!list) return;
+        const convos = getConversations();
+        if (!convos.length) {
+            list.innerHTML = `<div class="adm-empty" style="padding:36px 16px"><i class="fa-regular fa-comments"></i><h3>Xabar yo'q</h3><p>Mijozlar yozsa shu yerda chiqadi</p></div>`;
+            return;
+        }
+        list.innerHTML = convos.map(c => `
+            <button class="msg-convo ${c.clientId === activeConvoId ? 'active' : ''}" data-convo="${escapeHtml(c.clientId)}">
+                <div class="aav msg-convo-av">${(c.clientName || 'M')[0].toUpperCase()}</div>
+                <div class="msg-convo-info">
+                    <div class="msg-convo-top">
+                        <strong>${escapeHtml(c.clientName)}</strong>
+                        <span class="msg-convo-time">${timeAgo(c.last.createdAt)}</span>
+                    </div>
+                    <div class="msg-convo-preview">
+                        ${c.last.from === 'admin' ? '<i class="fa-solid fa-reply"></i> ' : ''}${escapeHtml(c.last.text)}
+                    </div>
+                </div>
+                ${c.unread ? `<span class="msg-convo-badge">${c.unread}</span>` : ''}
+            </button>
+        `).join('');
+        list.querySelectorAll('[data-convo]').forEach(b =>
+            b.addEventListener('click', () => openConversation(b.dataset.convo)));
+    }
+
+    function openConversation(clientId) {
+        activeConvoId = clientId;
+        // Mijoz xabarlarini o'qildi deb belgilash
+        const all = getMessages();
+        let changed = false;
+        all.forEach(m => { if (m.clientId === clientId && m.from === 'client' && !m.read) { m.read = true; changed = true; } });
+        if (changed) saveMessages(all);
+        renderConvoList();
+        renderConversation(clientId);
+        updateMsgBadges();
+    }
+
+    function renderConversation(clientId) {
+        const convo = getConversations().find(c => c.clientId === clientId);
+        const emptyEl = document.getElementById('msgPanelEmpty');
+        const convEl = document.getElementById('msgConversation');
+        if (!convo) { if (emptyEl) emptyEl.style.display = ''; if (convEl) convEl.style.display = 'none'; return; }
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (convEl) convEl.style.display = 'flex';
+
+        const sub = getClients().find(s => s.id === clientId);
+        document.getElementById('msgConvHead').innerHTML = `
+            <div class="aav">${(convo.clientName || 'M')[0].toUpperCase()}</div>
+            <div class="msg-conv-head-info">
+                <strong>${escapeHtml(convo.clientName)}</strong>
+                <div class="msg-conv-sub">${escapeHtml(clientId)}${sub && sub.email ? ' · ' + escapeHtml(sub.email) : ''}</div>
+            </div>`;
+        const thread = document.getElementById('msgConvThread');
+        thread.innerHTML = convo.messages.map(m => `
+            <div class="msg-row ${m.from === 'admin' ? 'me' : 'them'}">
+                <div class="msg-bubble">
+                    <p>${escapeHtml(m.text)}</p>
+                    <span class="msg-meta">${m.from === 'admin' ? 'Siz (admin)' : escapeHtml(convo.clientName)} · ${timeAgo(m.createdAt)}</span>
+                </div>
+            </div>
+        `).join('');
+        thread.scrollTop = thread.scrollHeight;
+    }
+
+    // Javob yuborish
+    const msgReplyForm = document.getElementById('msgReplyForm');
+    const msgReplyInput = document.getElementById('msgReplyInput');
+    function autoGrowReply(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+    if (msgReplyInput) {
+        msgReplyInput.addEventListener('input', () => autoGrowReply(msgReplyInput));
+        msgReplyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); msgReplyForm.requestSubmit(); }
+        });
+    }
+    if (msgReplyForm) msgReplyForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!activeConvoId) return;
+        const text = msgReplyInput.value.trim();
+        if (!text) return;
+        const convo = getConversations().find(c => c.clientId === activeConvoId);
+        const all = getMessages();
+        all.push({
+            id: 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1e4),
+            clientId: activeConvoId,
+            clientName: convo ? convo.clientName : activeConvoId,
+            from: 'admin',
+            text,
+            createdAt: new Date().toISOString(),
+            read: false
+        });
+        saveMessages(all);
+        msgReplyInput.value = '';
+        autoGrowReply(msgReplyInput);
+        renderConversation(activeConvoId);
+        renderConvoList();
+        window.showToast && window.showToast('Javob yuborildi — mijozga bildirishnoma bordi', 'success');
+    });
+
+    // Boshqa tabda (mijoz) o'zgarsa — jonli yangilash
+    window.addEventListener('storage', (e) => {
+        if (e.key !== 'bo_messages') return;
+        updateMsgBadges();
+        if (document.getElementById('sec-messages')?.classList.contains('active')) {
+            renderConvoList();
+            if (activeConvoId) renderConversation(activeConvoId);
+        }
+    });
+
     /* ---------- PAYMENTS ---------- */
     function renderPayments() {
         const clients = getClients().filter(c => c.status === 'active');
@@ -267,6 +426,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (site.name) document.getElementById('setSiteName').value = site.name;
         if (site.phone) document.getElementById('setSitePhone').value = site.phone;
         if (site.email) document.getElementById('setSiteEmail').value = site.email;
+        const botApiEl = document.getElementById('setBotApi');
+        if (botApiEl) botApiEl.value = localStorage.getItem('bo_bot_api') || '';
+        const botTokenEl = document.getElementById('setBotToken');
+        if (botTokenEl) botTokenEl.value = localStorage.getItem('bo_bot_token') || '';
     }
     document.getElementById('saveAdmin').addEventListener('click', () => {
         const a = JSON.parse(localStorage.getItem('bo_admin') || '{}');
@@ -285,6 +448,12 @@ document.addEventListener('DOMContentLoaded', () => {
             phone: document.getElementById('setSitePhone').value.trim(),
             email: document.getElementById('setSiteEmail').value.trim()
         }));
+        const botApi = (document.getElementById('setBotApi')?.value || '').trim().replace(/\/+$/, '');
+        if (botApi) localStorage.setItem('bo_bot_api', botApi);
+        else localStorage.removeItem('bo_bot_api');
+        const botToken = (document.getElementById('setBotToken')?.value || '').trim();
+        if (botToken) localStorage.setItem('bo_bot_token', botToken);
+        else localStorage.removeItem('bo_bot_token');
         window.showToast && window.showToast('Sayt sozlamalari saqlandi', 'success');
     });
     document.getElementById('resetData').addEventListener('click', () => {
@@ -295,10 +464,140 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    /* ====================================================
+       ============ TELEGRAM BOT PANELI ===================
+       ==================================================== */
+    function getBotApi() {
+        return (localStorage.getItem('bo_bot_api') || 'http://localhost:3344').replace(/\/+$/, '');
+    }
+
+    let botPollTimer = null;
+    let botReqSeq = 0; // eng oxirgi so'rov natijasini ko'rsatish uchun (race oldini olish)
+    function stopBotPolling() {
+        if (botPollTimer) { clearInterval(botPollTimer); botPollTimer = null; }
+    }
+
+    function setBotStatus(state, text) {
+        const el = document.getElementById('botStatus');
+        if (el) { el.className = 'bot-status ' + state; el.innerHTML = `<span class="bot-status-dot"></span> ${text}`; }
+        const dot = document.getElementById('botNavDot');
+        if (dot) dot.style.display = state === 'online' ? 'inline-block' : 'none';
+        const apiLabel = document.getElementById('botApiLabel');
+        if (apiLabel) apiLabel.textContent = getBotApi();
+    }
+
+    async function fetchBotStats() {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), 4000);
+        try {
+            const res = await fetch(getBotApi() + '/bot/stats', { signal: controller.signal });
+            clearTimeout(t);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json();
+        } catch (e) {
+            clearTimeout(t);
+            return null;
+        }
+    }
+
+    async function renderBot() {
+        // Bo'limda turganimizda har 15 soniyada yangilab turish
+        if (!botPollTimer) botPollTimer = setInterval(renderBot, 15000);
+
+        // Faqat onlayn bo'lmaganda "tekshirilmoqda" ko'rsatamiz (har 15s da miltillamasligi uchun)
+        const statusEl = document.getElementById('botStatus');
+        if (!statusEl || !statusEl.classList.contains('online')) setBotStatus('checking', 'Tekshirilmoqda...');
+
+        const myReq = ++botReqSeq;
+        const stats = await fetchBotStats();
+        // Eskirgan (kechikkan) so'rov natijasini chizmaymiz
+        if (myReq !== botReqSeq) return;
+
+        if (!stats || !stats.ok) {
+            setBotStatus('offline', 'Bot oflayn');
+            ['botTotalUsers', 'botActiveUsers', 'botConnections'].forEach(id => {
+                const e = document.getElementById(id); if (e) e.textContent = '—';
+            });
+            const tb = document.getElementById('botUsersTbody');
+            if (tb) tb.innerHTML = `<tr><td colspan="4"><div class="adm-empty"><i class="fa-brands fa-telegram"></i><h3>Bot ulanmagan</h3><p>Botni ishga tushiring: <code>cd bot &amp;&amp; python3 bot.py</code></p></div></td></tr>`;
+            return;
+        }
+
+        setBotStatus('online', 'Bot onlayn');
+        const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        set('botTotalUsers', stats.total || 0);
+        set('botActiveUsers', stats.active || 0);
+        set('botConnections', stats.connections || 0);
+
+        const tbody = document.getElementById('botUsersTbody');
+        if (!tbody) return;
+        const users = stats.users || [];
+        if (!users.length) {
+            tbody.innerHTML = `<tr><td colspan="4"><div class="adm-empty"><i class="fa-solid fa-user-slash"></i><h3>Hozircha foydalanuvchi yo'q</h3><p>Kimdir botga /start yozsa shu yerda ko'rinadi</p></div></td></tr>`;
+            return;
+        }
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div class="aav" style="width:32px;height:32px;font-size:13px">${escapeHtml((u.firstName || '?')[0].toUpperCase())}</div>
+                        <div>
+                            <strong>${escapeHtml(u.firstName || '—')}</strong>
+                            <div style="font-size:11px;color:var(--gray-500)">ID: ${escapeHtml(String(u.id || ''))}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${u.username ? '@' + escapeHtml(u.username) : '<span style="color:var(--gray-400)">—</span>'}</td>
+                <td>${timeAgo(u.lastSeen)}</td>
+                <td>${u.active ? '<span class="pill active">Faol</span>' : '<span class="pill paused">Nofaol</span>'}</td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('botRefresh')?.addEventListener('click', renderBot);
+
+    document.getElementById('botBroadcastBtn')?.addEventListener('click', () => {
+        const ta = document.getElementById('botBroadcastText');
+        const text = (ta.value || '').trim();
+        const resEl = document.getElementById('botBroadcastResult');
+        if (!text) { window.showToast && window.showToast('Xabar matnini kiriting', 'error'); return; }
+        confirmAction('Ommaviy xabar yuborilsinmi?', 'Xabar botdagi BARCHA foydalanuvchilarga boradi.', async () => {
+            const btn = document.getElementById('botBroadcastBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yuborilmoqda...';
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                const tok = localStorage.getItem('bo_bot_token');
+                if (tok) headers['X-Admin-Token'] = tok;
+                const res = await fetch(getBotApi() + '/bot/broadcast', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Xato');
+                resEl.style.display = 'block';
+                resEl.className = 'bot-broadcast-result ok';
+                resEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Yuborildi: <strong>${data.sent}</strong> ta · Xato: ${data.failed} ta · Jami: ${data.total} ta`;
+                ta.value = '';
+                window.showToast && window.showToast('Broadcast yuborildi', 'success');
+                renderBot();
+            } catch (e) {
+                resEl.style.display = 'block';
+                resEl.className = 'bot-broadcast-result err';
+                resEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Yuborilmadi — bot oflayn yoki xato: ${escapeHtml(String(e.message || e))}`;
+                window.showToast && window.showToast('Broadcast yuborilmadi — bot ishlab turibdimi?', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Hammaga yuborish';
+            }
+        });
+    });
+
     /* ---------- EXPORT ---------- */
     document.getElementById('exportData').addEventListener('click', () => {
         const data = {
-            requests: getRequests(),
+            messages: getMessages(),
             clients: getClients(),
             exportedAt: new Date().toISOString()
         };
@@ -341,6 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- INITIAL RENDER ---------- */
     renderDashboard();
+    updateMsgBadges();
 
     // ====== HELPERS ======
     function getClients() { return JSON.parse(localStorage.getItem('bo_subscriptions') || '[]'); }
@@ -373,6 +673,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const d = new Date(iso);
             return d.toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric' });
         } catch { return '—'; }
+    }
+    function timeAgo(iso) {
+        try {
+            const d = new Date(iso), now = new Date();
+            const s = Math.floor((now - d) / 1000);
+            if (s < 60) return 'hozir';
+            const m = Math.floor(s / 60); if (m < 60) return m + ' daq';
+            const h = Math.floor(m / 60); if (h < 24) return h + ' soat';
+            const days = Math.floor(h / 24); if (days < 7) return days + ' kun';
+            return d.toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' });
+        } catch { return ''; }
     }
     function escapeHtml(s) {
         if (!s) return '';

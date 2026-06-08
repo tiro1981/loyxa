@@ -4,7 +4,7 @@
              cache-first for static images.
    ============================================ */
 
-const CACHE_NAME = 'moda-style-v2';
+const CACHE_NAME = 'moda-style-v3';
 const SHELL = [
     './',
     './index.html',
@@ -40,8 +40,14 @@ self.addEventListener('fetch', e => {
     if (req.method !== 'GET') return;
 
     const url = new URL(req.url);
-    const sameOrigin = url.origin === location.origin;
-    const isHtmlCssJs = sameOrigin && /\.(html|css|js|json)(\?.*)?$|^\/$/i.test(url.pathname);
+
+    // API / bot-server so'rovlari HECH QACHON keshlanmasin — har doim to'g'ridan-to'g'ri
+    // tarmoqqa. Aks holda cache-first SW `/store-bot/status` javobini muzlatib qo'yadi va
+    // bot ulangach ham panel "Ulanmagan" bo'lib qoladi. (Cross-origin bot serveri yoki
+    // same-origin /store-bot|/bot|/orders endpointlari — ikkalasini ham chetlab o'tamiz.)
+    if (url.origin !== location.origin || /\/(store-bot|bot|orders)(\/|$)/.test(url.pathname)) return;
+
+    const isHtmlCssJs = /\.(html|css|js|json)(\?.*)?$|^\/$/i.test(url.pathname);
 
     if (isHtmlCssJs) {
         // Network-first — always try fresh, fall back to cache when offline.

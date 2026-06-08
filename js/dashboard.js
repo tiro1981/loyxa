@@ -25,50 +25,74 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    /* ---------- OBUNA HOLATINI ANIQLASH ---------- */
-    // Mijozning faol obunasi bormi?
-    const hasActiveSubscription = !!(client.app && client.status === 'active');
+    /* ---------- OBUNALAR (ko'p-ilova model) ---------- */
+    function persistClient() {
+        try {
+            const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            const idx = subs.findIndex(s => s.id === resolvedClientId);
+            if (idx >= 0) { subs[idx] = client; localStorage.setItem('bo_subscriptions', JSON.stringify(subs)); }
+        } catch (e) { console.error('persistClient', e); }
+    }
 
-    const noSubWrap     = document.getElementById('noSubWrap');
-    const marketplaceWrap = document.getElementById('marketplaceWrap');
-    const activeSubWrap = document.getElementById('activeSubWrap');
-    const subOnlyLinks  = document.querySelectorAll('.side-link-subonly');
+    // Eski bitta-ilova modelidan ko'p-ilova (subscriptions[]) ga migratsiya
+    if (!Array.isArray(client.subscriptions)) {
+        if (client.app && client.status === 'active') {
+            client.subscriptions = [{
+                id: 'sub-' + (client.appId || client.app || Date.now()),
+                appId: client.appId || null,
+                slug: client.slug || client.app || null,
+                name: client.appName || 'Ilova',
+                logoEmoji: client.logoEmoji || null,
+                logo: client.logo || null,
+                demoUrl: client.appUrl || null,
+                adminUrl: client.adminUrl || null,
+                subdomain: client.subdomain || null,
+                status: 'active',
+                activatedAt: client.activatedAt || client.createdAt
+            }];
+        } else {
+            client.subscriptions = [];
+        }
+        persistClient();
+    }
+
+    function activeSubs() { return (client.subscriptions || []).filter(s => s.status !== 'cancelled'); }
+    let hasActiveSubscription = activeSubs().length > 0;
+
+    const noSubWrap        = document.getElementById('noSubWrap');
+    const marketplaceWrap  = document.getElementById('marketplaceWrap');
+    const activeSubWrap    = document.getElementById('activeSubWrap');
+    const subscriptionWrap = document.getElementById('subscriptionWrap');
+    const supportWrap      = document.getElementById('supportWrap');
+
+    function hideAllViews() {
+        [noSubWrap, marketplaceWrap, activeSubWrap, subscriptionWrap, supportWrap]
+            .forEach(w => { if (w) w.style.display = 'none'; });
+    }
 
     function showView(view) {
-        // Hidden vs visible — view ga qarab
+        hideAllViews();
         if (view === 'marketplace') {
-            noSubWrap.style.display = 'none';
             marketplaceWrap.style.display = 'block';
-            activeSubWrap.style.display = 'none';
             renderMarketplace();
-        } else if (view === 'home') {
-            marketplaceWrap.style.display = 'none';
-            if (hasActiveSubscription) {
-                noSubWrap.style.display = 'none';
+        } else if (view === 'subscription') {
+            subscriptionWrap.style.display = 'block';
+            renderSubscriptions(document.getElementById('subsGrid'));
+        } else if (view === 'support') {
+            supportWrap.style.display = 'block';
+            renderSupportThread();
+            markAdminMessagesRead();
+            updateNotifBadge();
+        } else { // 'home' (standart)
+            if (activeSubs().length > 0) {
                 activeSubWrap.style.display = 'block';
+                renderSubscriptions(document.getElementById('homeSubsGrid'));
             } else {
-                activeSubWrap.style.display = 'none';
                 noSubWrap.style.display = 'block';
                 renderNoSubApps();
             }
-        } else if (view === 'app' && hasActiveSubscription) {
-            openInNewTab(appUrl);
-        } else if (view === 'subscription') {
-            // Obuna bo'limi — agar obuna bo'lsa active wrap, bo'lmasa marketplace
-            if (hasActiveSubscription) {
-                showView('home');
-            } else {
-                showView('marketplace');
-            }
-        } else {
-            window.showToast?.(`Bu bo'lim tez orada qo'shiladi`, 'info');
         }
     }
-
-    // Obuna yo'q bo'lsa "Mening ilovam" linkini yashirish
-    subOnlyLinks.forEach(link => {
-        link.style.display = hasActiveSubscription ? '' : 'none';
-    });
 
     /* ---------- APP / ADMIN URL LAR (nisbiy yo'l) ---------- */
     // Chrome / Safari / Android Studio / VS Code Live Server da bir xil ishlashi uchun
@@ -76,8 +100,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // dashboard.html — root da, app fayllari — ./app/ ichida.
     const cid = encodeURIComponent(resolvedClientId);
     const base = location.href.replace(/[^\/]*(\?.*)?$/, '');
-    const appUrl   = base + 'app/index.html?client=' + cid;
-    const adminUrl = base + 'app/admin.html?client=' + cid;
+    // Mijoz tanlagan ilovaning o'z URL'lari (bo'lmasa — eski fast food ilovasi)
+    const buildUrl = (rel, fallback) => {
+        const r = rel || fallback;
+        const sep = r.includes('?') ? '&' : '?';
+        return base + r + sep + 'client=' + cid;
+    };
+    // Har bir obuna uchun ilova / boshqaruv URL'lari
+    function subAppUrl(sub)   { return buildUrl(sub.demoUrl,  'app/index.html'); }
+    function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'app/admin.html'); }
 
     function openInNewTab(url) {
         // window.open ba'zi browserlarda pop-up blocker tomonidan to'silishi mumkin —
@@ -90,26 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         a.remove();
     }
-
-    const setupLink = (id, url) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.href = url;
-        el.target = '_blank';
-        el.rel = 'noopener';
-        // Safari/Chrome da href="#" eski qiymati cache bo'lib qolmasligi uchun
-        // qo'shimcha click handler — yangi tabda ochadi.
-        el.addEventListener('click', (e) => {
-            e.preventDefault();
-            openInNewTab(url);
-        });
-    };
-    setupLink('sbAppLink',     appUrl);
-    setupLink('sbAdminLink',   adminUrl);
-    setupLink('qaAppLink',     appUrl);
-    setupLink('qaAdminLink',   adminUrl);
-    setupLink('entryAppLink',  appUrl);
-    setupLink('entryAdminLink', adminUrl);
 
     /* ---------- TODAY DATE ---------- */
     const dateEl = document.getElementById('todayDate');
@@ -129,27 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setText('welcomeTitle',  `Salom, ${client.businessName}! 👋`);
     setText('noSubGreeting', `Salom, ${client.businessName}! Biznesingizni online ga olib chiqing`);
     setText('clientName',    client.businessName);
-    setText('clientId',      hasActiveSubscription ? client.id : 'Mijoz');
+    setText('clientId',      'Mijoz');
     setText('clientAvatar',  (client.businessName || 'B')[0].toUpperCase());
-
-    if (hasActiveSubscription) {
-        setText('sbAppIcon',  appIcons[client.app] || '📱');
-        setText('sbAppName',  client.appName || appNames[client.app] || 'Ilovangiz');
-        setText('sbPrice',    fmt(client.price));
-        setText('sbStatus',   client.status === 'active' ? 'Faol obuna' : client.status);
-
-        setText('statPrice',  fmt(client.price));
-        setText('statDays',   daysUntilNext(client.activatedAt || client.createdAt));
-        setText('statDomain', (client.subdomain || 'biznes') + '.biznesonline.uz');
-
-        setText('detClientId',      client.id);
-        setText('detBusinessName',  client.businessName);
-        setText('detApp',           (appIcons[client.app] || '') + ' ' + (appNames[client.app] || client.appName || ''));
-        setText('detDomain',        (client.subdomain || 'biznes') + '.biznesonline.uz');
-        setText('detPrice',         client.price ? fmt(client.price) + " so'm" : '—');
-        setText('detActivatedAt',   formatDate(client.activatedAt || client.createdAt));
-        setText('detNextPay',       formatDate(nextPayDate(client.activatedAt || client.createdAt)));
-    }
 
     /* ---------- SIDEBAR TOGGLE ---------- */
     const sidebar  = document.getElementById('sidebar');
@@ -165,9 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.side-link').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
+            const view = link.dataset.view;
+            // data-view yo'q (masalan "Sozlamalar") — bu panel ochadi, view emas
+            if (!view) {
+                if (window.innerWidth <= 992) close();
+                return;
+            }
             document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            const view = link.dataset.view;
             showView(view);
             if (window.innerWidth <= 992) close();
         });
@@ -214,17 +211,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<img src="${app.logo}" alt="${escapeHtml(app.name)}" class="mp-app-logo">`
                 : `<span class="mp-app-emoji">${app.logoEmoji || '📱'}</span>`;
 
-            const priceBlock = app.price
-                ? `<div class="mp-app-price"><strong>${fmt(app.price)}</strong> so'm <span>/ ${escapeHtml(app.priceLabel || 'oyiga')}</span></div>`
-                : `<div class="mp-app-price mp-app-price-custom"><i class="fa-solid fa-handshake"></i> Narx kelishiladi</div>`;
+            const priceBlock = `<div class="mp-app-price mp-app-price-free"><i class="fa-solid fa-gift"></i> Bepul foydalanish</div>`;
 
             const features = (app.features || []).slice(0, 3).map(f =>
                 `<li><i class="fa-solid fa-check"></i> ${escapeHtml(f)}</li>`
             ).join('');
-
-            const buyHref = app.price
-                ? `obuna.html?app=${encodeURIComponent(app.slug || 'app')}&price=${app.price}`
-                : `obuna.html?app=${encodeURIComponent(app.slug || 'app')}`;
 
             return `
                 <div class="mp-app-card ${app.popular ? 'popular' : ''}" data-app-id="${escapeHtml(app.id)}">
@@ -236,13 +227,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${priceBlock}
                     <div class="mp-app-actions" onclick="event.stopPropagation()">
                         ${app.demoUrl ? `<a href="${app.demoUrl}" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-eye"></i> Demo</a>` : ''}
-                        <a href="${buyHref}" class="btn btn-primary btn-sm">
-                            <i class="fa-solid fa-cart-shopping"></i> Obuna
-                        </a>
+                        ${isSubscribedTo(app.id)
+                            ? `<button type="button" class="btn btn-sm btn-subscribed" disabled><i class="fa-solid fa-circle-check"></i> Obuna bo'lingan</button>`
+                            : `<button type="button" class="btn btn-primary btn-sm" data-subscribe="${escapeHtml(app.id)}"><i class="fa-solid fa-bolt"></i> Obuna bo'lish</button>`}
                     </div>
                 </div>
             `;
         }).join('');
+
+        // "Obuna bo'lish" — subdomen modalini ochadi
+        container.querySelectorAll('[data-subscribe]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const app = apps.find(a => a.id === btn.dataset.subscribe);
+                if (app) openSubdomainModal(app);
+            });
+        });
 
         // Karta ustiga bosish → detal modal
         container.querySelectorAll('.mp-app-card[data-app-id]').forEach(card => {
@@ -255,6 +255,189 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    /* ====================================================
+       ============ OBUNA TIZIMI (ko'p-ilova) =============
+       ==================================================== */
+    function isSubscribedTo(appId) {
+        return activeSubs().some(s => s.appId === appId);
+    }
+    function normalizeSubdomain(v) {
+        return String(v || '').toLowerCase().trim()
+            .replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 30);
+    }
+    function isValidSubdomain(sd) {
+        return /^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$/.test(sd); // 3–30, boshida/oxirida "-" yo'q
+    }
+    function subdomainTaken(sd) {
+        try {
+            const all = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            return all.some(c => (c.subscriptions || []).some(s =>
+                s.status !== 'cancelled' && s.subdomain && s.subdomain.toLowerCase() === sd));
+        } catch { return false; }
+    }
+
+    /* ---------- SUBDOMEN MODAL ---------- */
+    let pendingApp = null;
+    const sdModal = document.getElementById('subdomainModal');
+    const sdInput = document.getElementById('sdInput');
+    const sdHint  = document.getElementById('sdHint');
+    function setSdHint(msg, type) {
+        if (!sdHint) return;
+        sdHint.textContent = msg;
+        sdHint.className = 'subdomain-hint' + (type ? ' ' + type : '');
+    }
+    function openSubdomainModal(app) {
+        if (isSubscribedTo(app.id)) {
+            window.showToast?.('Siz bu ilovaga allaqachon obuna bo\'lgansiz', 'info');
+            return;
+        }
+        pendingApp = app;
+        document.getElementById('sdAppIcon').textContent = app.logoEmoji || '📱';
+        document.getElementById('sdAppName').textContent = app.name;
+        let suggested = normalizeSubdomain(client.businessName || app.slug || 'dokon');
+        if (subdomainTaken(suggested)) suggested = normalizeSubdomain(suggested + '-' + (activeSubs().length + 1));
+        sdInput.value = suggested;
+        setSdHint('3–30 ta belgi: kichik harflar, raqamlar va "-"', '');
+        sdModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => sdInput.focus(), 60);
+    }
+    function closeSubdomainModal() {
+        sdModal.classList.remove('show');
+        document.body.style.overflow = '';
+        pendingApp = null;
+    }
+    sdInput?.addEventListener('input', () => {
+        const sd = normalizeSubdomain(sdInput.value);
+        if (sdInput.value !== sd) sdInput.value = sd;
+        if (!sd) { setSdHint('Subdomen kiriting', 'err'); return; }
+        if (!isValidSubdomain(sd)) { setSdHint('Kamida 3 ta belgi kerak', 'err'); return; }
+        if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); return; }
+        setSdHint('✓ ' + sd + '.biznesonline.uz — bo\'sh', 'ok');
+    });
+    sdInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('sdConfirm').click(); } });
+    document.getElementById('subdomainClose')?.addEventListener('click', closeSubdomainModal);
+    sdModal?.addEventListener('click', (e) => { if (e.target === sdModal) closeSubdomainModal(); });
+    document.getElementById('sdConfirm')?.addEventListener('click', () => {
+        if (!pendingApp) return;
+        const sd = normalizeSubdomain(sdInput.value);
+        if (!isValidSubdomain(sd)) { setSdHint('To\'g\'ri subdomen kiriting (3–30 belgi)', 'err'); sdInput.focus(); return; }
+        if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); sdInput.focus(); return; }
+        subscribeToApp(pendingApp, sd);
+    });
+
+    function subscribeToApp(app, subdomain) {
+        const sub = {
+            id: 'sub-' + Date.now() + '-' + Math.floor(Math.random() * 1e4),
+            appId: app.id,
+            slug: app.slug || app.id,
+            name: app.name,
+            logoEmoji: app.logoEmoji || null,
+            logo: app.logo || null,
+            demoUrl: app.demoUrl || null,
+            adminUrl: app.adminUrl || null,
+            subdomain: subdomain,
+            status: 'active',
+            activatedAt: new Date().toISOString()
+        };
+        if (!Array.isArray(client.subscriptions)) client.subscriptions = [];
+        client.subscriptions.push(sub);
+        persistClient();
+        hasActiveSubscription = true;
+        closeSubdomainModal();
+        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 (${subdomain}.biznesonline.uz)`, 'success');
+        document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === 'subscription'));
+        showView('subscription');
+    }
+
+    /* ---------- OBUNA KARTALARI ---------- */
+    function renderSubscriptions(container) {
+        if (!container) return;
+        const subs = activeSubs();
+        if (!subs.length) {
+            container.innerHTML = `
+                <div class="ns-empty" style="grid-column:1/-1">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h3>Hali obunangiz yo'q</h3>
+                    <p>"Ilovalar" bo'limidan birorta web ilovaga obuna bo'ling</p>
+                    <button class="btn btn-primary" data-view-trigger="marketplace" style="margin-top:14px"><i class="fa-solid fa-grip"></i> Ilovalarni ko'rish</button>
+                </div>`;
+            wireViewTriggers(container);
+            return;
+        }
+        container.innerHTML = subs.map(sub => `
+            <div class="sub-card reveal visible" data-sub="${escapeHtml(sub.id)}">
+                <div class="sub-card-top">
+                    <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
+                    <div class="sub-card-info">
+                        <h3>${escapeHtml(sub.name)}</h3>
+                        <span class="sub-domain"><i class="fa-solid fa-globe"></i> ${escapeHtml(sub.subdomain || 'biznes')}.biznesonline.uz</span>
+                    </div>
+                    <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
+                </div>
+                <div class="sub-meta-row">
+                    <span><i class="fa-solid fa-gift"></i> Bepul</span>
+                    <span><i class="fa-solid fa-calendar-day"></i> ${formatDate(sub.activatedAt)}</span>
+                </div>
+                <div class="sub-actions">
+                    <button class="btn btn-primary btn-sm" data-open="${escapeHtml(sub.id)}"><i class="fa-solid fa-mobile-screen"></i> Ilovani ochish</button>
+                    <button class="btn btn-outline btn-sm" data-admin="${escapeHtml(sub.id)}"><i class="fa-solid fa-sliders"></i> Ilova boshqaruvi</button>
+                    <button class="btn btn-ghost-danger btn-sm" data-cancel="${escapeHtml(sub.id)}"><i class="fa-solid fa-circle-xmark"></i> Obunani to'xtatish</button>
+                </div>
+            </div>
+        `).join('');
+
+        const findSub = (id) => activeSubs().find(s => s.id === id);
+        container.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => { const s = findSub(b.dataset.open); if (s) openInNewTab(subAppUrl(s)); }));
+        container.querySelectorAll('[data-admin]').forEach(b => b.addEventListener('click', () => { const s = findSub(b.dataset.admin); if (s) openInNewTab(subAdminUrl(s)); }));
+        container.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', () => cancelSubscription(b.dataset.cancel)));
+    }
+
+    function cancelSubscription(subId) {
+        const sub = (client.subscriptions || []).find(s => s.id === subId);
+        if (!sub) return;
+        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?\n\nSubdomen "${sub.subdomain}.biznesonline.uz" bo'shaydi.`)) return;
+        client.subscriptions = client.subscriptions.filter(s => s.id !== subId);
+        persistClient();
+        hasActiveSubscription = activeSubs().length > 0;
+        window.showToast?.('Obuna to\'xtatildi', 'info');
+        renderSubscriptions(document.getElementById('subsGrid'));
+        renderSubscriptions(document.getElementById('homeSubsGrid'));
+        if (activeSubs().length === 0) {
+            document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === 'home'));
+            showView('home');
+        }
+    }
+
+    function wireViewTriggers(scope) {
+        (scope || document).querySelectorAll('[data-view-trigger]').forEach(btn => {
+            if (btn._wired) return; btn._wired = true;
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.viewTrigger;
+                document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === target));
+                showView(target);
+            });
+        });
+    }
+
+    // Detail modal va landing sahifa "Obuna bo'lish" tugmasi shu orqali subdomen so'raydi
+    window.BO_subscribe = function (appId) {
+        const app = getApps().find(a => a.id === appId);
+        if (!app) return;
+        document.getElementById('appDetailModal')?.classList.remove('show');
+        document.body.style.overflow = '';
+        openSubdomainModal(app);
+    };
+
+    // URL ?subscribe=<slug> — landing/ro'yxatdan o'tishdan keyin subdomen modalini ochadi
+    (function handleSubscribeParam() {
+        const slug = new URLSearchParams(location.search).get('subscribe');
+        history.replaceState(null, '', location.pathname);
+        if (!slug) return;
+        const app = getApps().find(a => a.slug === slug || a.id === slug);
+        if (app && !isSubscribedTo(app.id)) setTimeout(() => openSubdomainModal(app), 450);
+    })();
 
     function renderMarketplace() {
         renderAppCards(document.getElementById('marketplaceGrid'));
@@ -277,8 +460,17 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- QUICK ACTIONS ---------- */
     document.querySelectorAll('button.qa-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const msgs = { renew: 'Obunani yangilash uchun administrator bilan bog\'laning', support: 'Qo\'llab-quvvatlash tez orada qo\'shiladi' };
-            window.showToast?.(msgs[btn.dataset.action] || 'Tez orada', 'info');
+            const action = btn.dataset.action;
+            if (action === 'support') {
+                // Qo'llab-quvvatlash view ga o'tish
+                document.querySelectorAll('.side-link').forEach(l =>
+                    l.classList.toggle('active', l.dataset.view === 'support'));
+                showView('support');
+            } else if (action === 'renew') {
+                window.showToast?.('Ilovangiz bepul va muddatsiz — yangilash shart emas ✅', 'info');
+            } else {
+                window.showToast?.('Tez orada', 'info');
+            }
         });
     });
 
@@ -290,10 +482,168 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    /* ---------- ICON BUTTONS ---------- */
-    document.querySelectorAll('.icon-btn').forEach(btn => {
-        btn.addEventListener('click', () => window.showToast?.(`${btn.title || 'Funksiya'} tez orada`, 'info'));
+    /* ====================================================
+       ====== XABARLAR / BILDIRISHNOMA (admin bilan) ======
+       ==================================================== */
+    const MESSAGES_KEY = 'bo_messages';
+    function getMessages() {
+        try { return JSON.parse(localStorage.getItem(MESSAGES_KEY) || '[]'); } catch { return []; }
+    }
+    function saveMessages(arr) { localStorage.setItem(MESSAGES_KEY, JSON.stringify(arr)); }
+    function myMessages() {
+        return getMessages()
+            .filter(m => m.clientId === resolvedClientId)
+            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    function unreadAdminCount() {
+        return myMessages().filter(m => m.from === 'admin' && !m.read).length;
+    }
+    function markAdminMessagesRead() {
+        const all = getMessages();
+        let changed = false;
+        all.forEach(m => {
+            if (m.clientId === resolvedClientId && m.from === 'admin' && !m.read) { m.read = true; changed = true; }
+        });
+        if (changed) saveMessages(all);
+    }
+
+    // Birinchi marta — administratordan xush kelibsiz xabari (bildirishnoma ko'rinsin)
+    (function seedWelcomeMessage() {
+        const all = getMessages();
+        if (!all.some(m => m.clientId === resolvedClientId)) {
+            all.push({
+                id: 'msg-' + Date.now(),
+                clientId: resolvedClientId,
+                clientName: client.businessName,
+                from: 'admin',
+                text: `Assalomu alaykum, ${client.businessName}! BiznesOnline platformasiga xush kelibsiz. 👋 Savol yoki muammoingiz bo'lsa, shu yerdan yozing — administrator javob beradi.`,
+                createdAt: new Date().toISOString(),
+                read: false
+            });
+            saveMessages(all);
+        }
+    })();
+
+    /* ---------- BILDIRISHNOMA (qo'ng'iroq) ---------- */
+    const notifBtn   = document.getElementById('notifBtn');
+    const notifPanel = document.getElementById('notifPanel');
+    const notifList  = document.getElementById('notifList');
+    const notifBadge = document.getElementById('notifBadge');
+
+    function updateNotifBadge() {
+        if (!notifBadge) return;
+        const unread = unreadAdminCount();
+        if (unread > 0) { notifBadge.style.display = ''; notifBadge.textContent = unread > 9 ? '9+' : String(unread); }
+        else notifBadge.style.display = 'none';
+    }
+    function renderNotifList() {
+        if (!notifList) return;
+        const msgs = myMessages().filter(m => m.from === 'admin').reverse(); // eng yangisi tepada
+        if (!msgs.length) {
+            notifList.innerHTML = `<div class="notif-empty"><i class="fa-regular fa-bell"></i><p>Hozircha bildirishnoma yo'q</p></div>`;
+            return;
+        }
+        notifList.innerHTML = msgs.map(m => `
+            <div class="notif-item ${m.read ? '' : 'unread'}">
+                <div class="notif-item-ic"><i class="fa-solid fa-headset"></i></div>
+                <div class="notif-item-body">
+                    <p>${escapeHtml(m.text)}</p>
+                    <span class="notif-time">${timeAgo(m.createdAt)}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+    notifBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (notifPanel.classList.contains('show')) { notifPanel.classList.remove('show'); return; }
+        renderNotifList();                 // joriy holatni (o'qilmaganlar ajratilgan) ko'rsatish
+        notifPanel.classList.add('show');
+        markAdminMessagesRead();           // ochilganda o'qildi deb belgilash
+        updateNotifBadge();                // badge ni tozalash
     });
+    document.getElementById('notifReadAll')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        markAdminMessagesRead();
+        updateNotifBadge();
+        renderNotifList();
+    });
+    // Bildirishnomani bossa — qo'llab-quvvatlash view ga o'tish
+    notifList?.addEventListener('click', (e) => {
+        if (!e.target.closest('.notif-item')) return;
+        notifPanel.classList.remove('show');
+        document.querySelectorAll('.side-link').forEach(l =>
+            l.classList.toggle('active', l.dataset.view === 'support'));
+        showView('support');
+    });
+    // Tashqariga bosilganda yopish
+    document.addEventListener('click', (e) => {
+        if (notifPanel?.classList.contains('show') && !e.target.closest('.notif-wrap')) {
+            notifPanel.classList.remove('show');
+        }
+    });
+
+    /* ---------- QO'LLAB-QUVVATLASH (chat) ---------- */
+    const supportThread = document.getElementById('supportThread');
+    const supportForm   = document.getElementById('supportForm');
+    const supportInput  = document.getElementById('supportInput');
+
+    function renderSupportThread() {
+        if (!supportThread) return;
+        const msgs = myMessages();
+        if (!msgs.length) {
+            supportThread.innerHTML = `<div class="support-empty"><i class="fa-regular fa-comments"></i><p>Hali xabar yo'q. Birinchi xabaringizni yozing.</p></div>`;
+            return;
+        }
+        supportThread.innerHTML = msgs.map(m => `
+            <div class="msg-row ${m.from === 'client' ? 'me' : 'them'}">
+                <div class="msg-bubble">
+                    <p>${escapeHtml(m.text)}</p>
+                    <span class="msg-meta">${m.from === 'client' ? 'Siz' : 'Administrator'} · ${timeAgo(m.createdAt)}</span>
+                </div>
+            </div>
+        `).join('');
+        supportThread.scrollTop = supportThread.scrollHeight;
+    }
+    function autoGrowSupport(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+    supportInput?.addEventListener('input', () => autoGrowSupport(supportInput));
+    supportInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); supportForm.requestSubmit(); }
+    });
+    supportForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = supportInput.value.trim();
+        if (!text) return;
+        const all = getMessages();
+        all.push({
+            id: 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1e4),
+            clientId: resolvedClientId,
+            clientName: client.businessName,
+            clientApp: client.app || null,
+            from: 'client',
+            text,
+            createdAt: new Date().toISOString(),
+            read: false
+        });
+        saveMessages(all);
+        supportInput.value = '';
+        autoGrowSupport(supportInput);
+        renderSupportThread();
+        window.showToast?.('Xabaringiz administratorga yuborildi ✅', 'success');
+    });
+
+    // Boshqa tabda (admin) o'zgarsa — jonli yangilash
+    window.addEventListener('storage', (e) => {
+        if (e.key !== MESSAGES_KEY) return;
+        updateNotifBadge();
+        if (notifPanel?.classList.contains('show')) renderNotifList();
+        if (supportWrap && supportWrap.style.display !== 'none') renderSupportThread();
+    });
+
+    // Dastlabki badge
+    updateNotifBadge();
 
     /* ---------- HELPERS ---------- */
     function fmt(n) { return ((n || 0).toLocaleString('uz-UZ')).replace(/,/g, ' '); }
@@ -305,6 +655,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!iso) return '—';
         try { return new Date(iso).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric' }); }
         catch { return '—'; }
+    }
+    function timeAgo(iso) {
+        try {
+            const d = new Date(iso), now = new Date();
+            const s = Math.floor((now - d) / 1000);
+            if (s < 60) return 'hozir';
+            const m = Math.floor(s / 60); if (m < 60) return m + ' daqiqa oldin';
+            const h = Math.floor(m / 60); if (h < 24) return h + ' soat oldin';
+            const days = Math.floor(h / 24); if (days < 7) return days + ' kun oldin';
+            return d.toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' });
+        } catch { return ''; }
     }
     function nextPayDate(activatedAt) {
         if (!activatedAt) return null;

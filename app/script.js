@@ -87,8 +87,13 @@ function setNotifs(v) { DB.set(userKey('notif'), v); }
 // ========== AUTH ==========
 const authOverlay = $('authOverlay');
 function checkAuth() {
-  if (!currentUser) authOverlay.classList.add('show');
-  else { authOverlay.classList.remove('show'); initUserUI(); }
+  // Login/ro'yxatdan o'tish talab qilinmaydi — foydalanuvchi to'g'ridan-to'g'ri kiradi (mehmon sifatida)
+  if (!currentUser) {
+    currentUser = { id: 'guest', name: 'Mehmon', email: '', phone: '', orders: 0, status: 'active', joinDate: new Date().toISOString() };
+    DB.set('tb_current_user', currentUser);
+  }
+  if (authOverlay) authOverlay.classList.remove('show');
+  initUserUI();
 }
 
 document.querySelectorAll('.auth-tab').forEach(btn => {
@@ -485,35 +490,26 @@ $('checkoutBtn').addEventListener('click', () => {
   navigateTo('orders');
 });
 
-/* ===== Telegram bot'ga buyurtmani yuborish ===== */
+/* ===== Telegram bot'ga buyurtmani yuborish (do'kon boti orqali) ===== */
 function sendOrderToBot(order) {
   try {
     const cfg = DB.get('tb_bot_config', null);
-    if (!cfg || !cfg.botId) {
-      console.warn('[bot] tb_bot_config topilmadi — admin panel "Telegram Bot" menyusini oching, Bot ID generatsiya qilinadi');
-      return;
-    }
-    const BOT_HTTP = window.BOT_HTTP_URL || 'http://localhost:3344';
-    // POST har doim yuboriladi — bot tomoni o'zi tekshiradi (ulanganmi yo'qmi)
-    fetch(`${BOT_HTTP}/orders/${cfg.botId}`, {
+    if (!cfg || !cfg.token) return; // bot hali ulanmagan
+    const SHOP_KEY = (CLIENT_ID || 'demo') + '__fastfood';
+    const BOT_HTTP = (localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || 'http://localhost:3344').replace(/\/+$/, '');
+    fetch(`${BOT_HTTP}/store-bot/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order })
-    }).then(r => r.json().catch(() => ({ ok: false, error: 'Invalid JSON' }))).then(res => {
+      body: JSON.stringify({ clientId: SHOP_KEY, order })
+    }).then(r => r.json().catch(() => ({ ok: false }))).then(res => {
       if (res && res.ok) {
         console.log('[bot] ✅ Buyurtma kanalga yuborildi:', order.id);
-        try {
-          const c = DB.get('tb_bot_config', {});
-          c.sentCount = (c.sentCount || 0) + 1;
-          DB.set('tb_bot_config', c);
-        } catch {}
-      } else if (res && res.error === 'Bot not connected') {
-        console.warn('[bot] ⚠️ Bot Telegram\'da ulanmagan. Telegram\'da @BiznesOnlineOrderbot ga /start yuboring va Bot ID ni yuboring:', cfg.botId);
+        try { const c = DB.get('tb_bot_config', {}); c.sentCount = res.sentCount || (c.sentCount || 0) + 1; DB.set('tb_bot_config', c); } catch {}
       } else {
-        console.error('[bot] yuborilmadi:', res);
+        console.warn('[bot] yuborilmadi:', res && res.error);
       }
     }).catch(err => {
-      console.error('[bot] HTTP xato:', err.message, '— bot.py ishlamayapti (cd bot && python3 bot.py)');
+      console.warn('[bot] HTTP xato:', err.message, '— bot.py ishlamayapti (cd bot && python3 bot.py)');
     });
   } catch (err) {
     console.error('[bot] sendOrderToBot error:', err);
@@ -644,12 +640,14 @@ $('addressForm').addEventListener('submit', (e) => {
   showToast('Manzil saqlandi');
 });
 
-// ========== PAYMENT CRUD ==========
-$('paymentBtn').addEventListener('click', () => { renderPayments(); openModal('paymentModal'); });
-$('newPaymentBtn').addEventListener('click', () => openPaymentForm());
+// ========== PAYMENT METHODS ==========
+// Faqat naqd pul faol — karta/Click/Payme "tez orada". Modal statik (renderPayments shart emas).
+$('paymentBtn').addEventListener('click', () => openModal('paymentModal'));
+$('newPaymentBtn')?.addEventListener('click', () => openPaymentForm());
 
 function renderPayments() {
   const list = $('paymentList');
+  if (!list) return;
   const pays = getPays();
   if (pays.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:30px 10px;color:var(--text-sub)"><i class="fa-solid fa-credit-card" style="font-size:40px;opacity:.25"></i><p style="margin-top:10px;font-size:13px">Kartalar yo\'q</p></div>';

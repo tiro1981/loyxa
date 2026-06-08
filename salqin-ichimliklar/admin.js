@@ -2,6 +2,7 @@
 (() => {
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = DB.esc; // XSS himoyasi — dinamik matnlar uchun
 
   // ---------- I18N ----------
   I18N.applyDOM();
@@ -154,7 +155,7 @@
       ? top.map((p, i) => `
           <div class="top-row">
             <span class="rank">${i + 1}</span>
-            <div><div class="name">${p.name}</div><div class="meta">${t('panel.sold', { n: p.qty })}</div></div>
+            <div><div class="name">${esc(p.name)}</div><div class="meta">${t('panel.sold', { n: p.qty })}</div></div>
             <span class="rev">${DB.fmt.money(p.revenue)}</span>
           </div>`).join('')
       : `<div class="empty-row" style="padding:20px 0">${t('panel.top.empty')}</div>`;
@@ -169,7 +170,7 @@
         <tbody>${recent.map(o => `
           <tr>
             <td><b>#${o.id.slice(-5).toUpperCase()}</b></td>
-            <td>${o.name}</td>
+            <td>${esc(o.name)}</td>
             <td>${DB.fmt.money(o.total)}</td>
             <td>${DB.fmt.date(o.createdAt)}</td>
             <td><span class="status ${o.status}">${t('status.' + o.status)}</span></td>
@@ -201,9 +202,9 @@
     }
     tbody.innerHTML = list.map(p => `
       <tr>
-        <td><img class="cell-img" src="${p.img}" alt="" /></td>
-        <td><b>${p.name}</b></td>
-        <td>${p.category}</td>
+        <td><img class="cell-img" src="${esc(p.img)}" alt="" /></td>
+        <td><b>${esc(p.name)}</b></td>
+        <td>${esc(p.category)}</td>
         <td>${DB.fmt.money(p.price)}</td>
         <td>${p.discount ? p.discount + '%' : '—'}</td>
         <td><b style="color:var(--primary)">${DB.fmt.money(DB.products.finalPrice(p))}</b></td>
@@ -243,10 +244,10 @@
     const all = Array.from(new Set([...fromProducts, ...customCategories])).sort();
     const sel = $('#categorySelect');
     sel.innerHTML = all.length
-      ? all.map(c => `<option value="${c}" ${c === selected ? 'selected' : ''}>${c}</option>`).join('')
+      ? all.map(c => `<option value="${esc(c)}" ${c === selected ? 'selected' : ''}>${esc(c)}</option>`).join('')
       : `<option value="" disabled selected>${t('prod.new_cat.title')} →</option>`;
     if (selected && !all.includes(selected)) {
-      sel.insertAdjacentHTML('afterbegin', `<option value="${selected}" selected>${selected}</option>`);
+      sel.insertAdjacentHTML('afterbegin', `<option value="${esc(selected)}" selected>${esc(selected)}</option>`);
     }
   }
 
@@ -380,8 +381,8 @@
     tbody.innerHTML = list.map(o => `
       <tr>
         <td><b>#${o.id.slice(-5).toUpperCase()}</b></td>
-        <td>${o.name}</td>
-        <td>${o.phone}</td>
+        <td>${esc(o.name)}</td>
+        <td>${esc(o.phone)}</td>
         <td>${t('ord.items.summary', { count: o.items.length, qty: o.items.reduce((s,i)=>s+i.qty,0) })}</td>
         <td><b>${DB.fmt.money(o.total)}</b></td>
         <td>${DB.fmt.date(o.createdAt)}</td>
@@ -409,19 +410,19 @@
         <div class="head">
           <div><b>${t('ord.detail.id')}</b>#${o.id.slice(-5).toUpperCase()}</div>
           <div><b>${t('ord.detail.date')}</b>${DB.fmt.date(o.createdAt)}</div>
-          <div><b>${t('ord.detail.customer')}</b>${o.name}</div>
-          <div><b>${t('ord.detail.phone')}</b>${o.phone}</div>
-          <div><b>${t('ord.detail.address')}</b>${o.address || '—'}</div>
-          <div><b>${t('ord.detail.payment')}</b>${o.payment}${
-            o.paymentMeta?.cardLast4 ? ` · **** ${o.paymentMeta.cardLast4}` :
-            o.paymentMeta?.phone ? ` · ${o.paymentMeta.phone}` : ''
+          <div><b>${t('ord.detail.customer')}</b>${esc(o.name)}</div>
+          <div><b>${t('ord.detail.phone')}</b>${esc(o.phone)}</div>
+          <div><b>${t('ord.detail.address')}</b>${esc(o.address) || '—'}</div>
+          <div><b>${t('ord.detail.payment')}</b>${esc(o.payment)}${
+            o.paymentMeta?.cardLast4 ? ` · **** ${esc(o.paymentMeta.cardLast4)}` :
+            o.paymentMeta?.phone ? ` · ${esc(o.paymentMeta.phone)}` : ''
           }</div>
-          ${o.note ? `<div style="grid-column:1/-1"><b>${t('ord.detail.note')}</b>${o.note}</div>` : ''}
+          ${o.note ? `<div style="grid-column:1/-1"><b>${t('ord.detail.note')}</b>${esc(o.note)}</div>` : ''}
         </div>
         <div class="items">
           ${o.items.map(i => `
             <div class="item">
-              <span>${i.name} <span class="muted">× ${i.qty}</span></span>
+              <span>${esc(i.name)} <span class="muted">× ${i.qty}</span></span>
               <b>${DB.fmt.money(i.qty * i.finalPrice)}</b>
             </div>`).join('')}
         </div>
@@ -467,9 +468,9 @@
       const spent = userOrders.reduce((s, o) => s + o.total, 0);
       return `
         <tr>
-          <td><b>${u.name}</b></td>
-          <td>${u.phone}</td>
-          <td>${u.address || '—'}</td>
+          <td><b>${esc(u.name)}</b></td>
+          <td>${esc(u.phone)}</td>
+          <td>${esc(u.address) || '—'}</td>
           <td>${userOrders.length}</td>
           <td><b style="color:var(--primary)">${DB.fmt.money(spent)}</b></td>
           <td>${DB.fmt.dateOnly(u.createdAt)}</td>
@@ -630,11 +631,11 @@
       const initial = (cu.userName || '?').charAt(0).toUpperCase();
       const lastText = cu.lastMsg.text.length > 30 ? cu.lastMsg.text.slice(0, 30) + '...' : cu.lastMsg.text;
       const isActive = activeChatUser === cu.userId;
-      return `<div class="chat-user-item ${isActive ? 'active' : ''}" data-chat-user="${cu.userId}">
-        <div class="cui-avatar">${initial}</div>
+      return `<div class="chat-user-item ${isActive ? 'active' : ''}" data-chat-user="${esc(cu.userId)}">
+        <div class="cui-avatar">${esc(initial)}</div>
         <div class="cui-info">
-          <div class="cui-name">${cu.userName}</div>
-          <div class="cui-last">${cu.lastMsg.from === 'admin' ? 'Siz: ' : ''}${lastText}</div>
+          <div class="cui-name">${esc(cu.userName)}</div>
+          <div class="cui-last">${cu.lastMsg.from === 'admin' ? 'Siz: ' : ''}${esc(lastText)}</div>
         </div>
         ${cu.unread > 0 ? `<div class="cui-badge">${cu.unread}</div>` : ''}
       </div>`;
@@ -668,15 +669,15 @@
     const form = $('#adminChatForm');
 
     const cu = DB.chat.users().find(c => c.userId === activeChatUser);
-    head.innerHTML = `<b>${cu ? cu.userName : 'Foydalanuvchi'}</b>`;
+    head.innerHTML = `<b>${cu ? esc(cu.userName) : 'Foydalanuvchi'}</b>`;
 
     if (!msgs.length) {
       wrap.innerHTML = '<div class="admin-chat-empty">Xabarlar yo\'q</div>';
     } else {
       wrap.innerHTML = msgs.map(m => {
         const time = new Date(m.at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-        return `<div class="admin-chat-bubble ${m.from}">
-          ${m.text}
+        return `<div class="admin-chat-bubble ${m.from === 'admin' ? 'admin' : 'user'}">
+          ${esc(m.text)}
           <span class="acb-time">${time}</span>
         </div>`;
       }).join('');
@@ -710,219 +711,143 @@
   function renderAll() { renderDashboard(); }
 
   // ====================================================================
-  //                          TELEGRAM BOT
+  //              TELEGRAM BOT — Python server holati (real)
   // ====================================================================
-  const BOT_CFG_KEY = 'si_bot_config';
-  const BOT_FEED_KEY = 'si_bot_feed';
-  const BOT_HTTP_URL = localStorage.getItem('si_bot_http_url') || 'http://localhost:3344';
-
-  function botRead() {
-    try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null'); } catch { return null; }
-  }
-  function botWrite(cfg) {
-    localStorage.setItem(BOT_CFG_KEY, JSON.stringify(cfg));
-  }
-  function getOrCreateBotId() {
-    let cfg = botRead();
-    if (!cfg || !cfg.botId) {
-      const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
-      cfg = cfg || {};
-      cfg.botId = `BOT-SALQIN-${suffix}`;
-      cfg.createdAt = new Date().toISOString();
-      cfg.connected = false;
-      cfg.channel = null;
-      cfg.connectedAt = null;
-      cfg.sentCount = 0;
-      botWrite(cfg);
-    }
-    return cfg;
-  }
-
-  function fmtBotDate(iso) {
-    if (!iso) return '—';
-    try { return new Date(iso).toLocaleString('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-    catch { return '—'; }
-  }
-
-  function renderBot() {
-    const cfg = getOrCreateBotId();
-    const idInput = $('#botIdInput');
-    if (idInput) idInput.value = cfg.botId;
-
-    const statusCard      = $('#botStatusCard');
-    const statusLabel     = $('#botStatusLabel');
-    const statusTitle     = $('#botStatusTitle');
-    const statusDesc      = $('#botStatusDesc');
-    const indicatorText   = $('#botIndicatorText');
-    const connectedCard   = $('#botConnectedCard');
-    const sideBadge       = $('#botSideBadge');
-
-    if (cfg.connected && cfg.channel) {
-      statusCard?.classList.add('connected');
-      if (statusLabel)   statusLabel.textContent = 'Ulangan';
-      if (statusTitle)   statusTitle.textContent = 'Bot faol ishlamoqda';
-      if (statusDesc)    statusDesc.textContent  = `Yangi buyurtmalar ${cfg.channel} kanaliga yuborilmoqda`;
-      if (indicatorText) indicatorText.textContent = 'Online';
-      if (connectedCard) connectedCard.style.display = '';
-      if (sideBadge)     sideBadge.classList.remove('hidden');
-
-      const ch = $('#botChannelName');   if (ch) ch.textContent = cfg.channel;
-      const at = $('#botConnectedAt');   if (at) at.textContent = fmtBotDate(cfg.connectedAt);
-      const sc = $('#botSentCount');     if (sc) sc.textContent = String(cfg.sentCount || 0);
-    } else {
-      statusCard?.classList.remove('connected');
-      if (statusLabel)   statusLabel.textContent = 'Ulanmagan';
-      if (statusTitle)   statusTitle.textContent = 'Bot ulanish kutmoqda';
-      if (statusDesc)    statusDesc.textContent  = 'Quyidagi qadamlarni bajaring va botingizni ulang';
-      if (indicatorText) indicatorText.textContent = 'Offline';
-      if (connectedCard) connectedCard.style.display = 'none';
-      if (sideBadge)     sideBadge.classList.add('hidden');
-    }
-  }
-
-  function pushBotFeed(msg) {
-    let feed = [];
-    try { feed = JSON.parse(localStorage.getItem(BOT_FEED_KEY) || '[]'); } catch {}
-    feed.push(msg);
-    if (feed.length > 50) feed.shift();
-    localStorage.setItem(BOT_FEED_KEY, JSON.stringify(feed));
-  }
-
-  // ----- Bot ID nusxalash -----
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#copyBotIdBtn');
-    if (!btn) return;
-    const idInput = $('#botIdInput');
-    if (!idInput) return;
-    navigator.clipboard.writeText(idInput.value).then(() => {
-      btn.classList.add('copied');
-      toast('Bot ID nusxalandi', 'success');
-      setTimeout(() => btn.classList.remove('copied'), 1800);
-    }).catch(() => {
-      idInput.select();
-      try { document.execCommand('copy'); toast('Bot ID nusxalandi', 'success'); } catch {}
-    });
-  });
-
-  // ----- Demo: kanal ulash -----
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#botSimConnectBtn');
-    if (!btn) return;
-    const input = $('#botChannelInput');
-    let channel = (input?.value || '').trim();
-    if (!channel) { toast('Kanal username yoki ID kiriting', 'error'); return; }
-    if (!channel.startsWith('@') && !channel.startsWith('-')) channel = '@' + channel;
-
-    const cfg = getOrCreateBotId();
-    cfg.connected = true;
-    cfg.channel = channel;
-    cfg.connectedAt = new Date().toISOString();
-    cfg.sentCount = cfg.sentCount || 0;
-    botWrite(cfg);
-
-    toast(`Bot ${channel} kanaliga ulandi! 🎉`, 'success');
-    pushBotFeed({
-      type: 'system',
-      text: `✅ ${cfg.botId} muvaffaqiyatli ulandi! Endi yangi buyurtmalar shu yerga keladi.`,
-      time: new Date().toISOString(),
-    });
-    renderBot();
-  });
-
-  // ----- Test habar -----
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#botTestBtn');
-    if (!btn) return;
-    const cfg = botRead() || {};
-    if (!cfg.connected) { toast('Avval botni ulang', 'error'); return; }
-
-    pushBotFeed({
-      type: 'test',
-      text: `🧪 Test habar — ${cfg.channel} ulanishi to'g'ri ishlamoqda.`,
-      time: new Date().toISOString(),
-    });
-    cfg.sentCount = (cfg.sentCount || 0) + 1;
-    botWrite(cfg);
-    toast('Test habar yuborildi', 'success');
-    renderBot();
-  });
-
-  // ----- Uzish -----
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('#botDisconnectBtn');
-    if (!btn) return;
-    if (!confirm('Botni kanaldan uzasizmi? Yangi buyurtmalar yuborilmaydi.')) return;
-    const cfg = getOrCreateBotId();
-    cfg.connected = false;
-    cfg.channel = null;
-    cfg.connectedAt = null;
-    botWrite(cfg);
-    toast('Bot uzildi', 'info');
-    renderBot();
-  });
-
-  // ----- Buyurtma → Kanal (script.js dan chaqirish uchun global) -----
-  window.notifyBotNewOrder = function (order) {
+  function botLocal() { try { return JSON.parse(localStorage.getItem('si_bot_config') || 'null') || {}; } catch { return {}; } }
+  function botLocalSave(c) { localStorage.setItem('si_bot_config', JSON.stringify(c)); }
+  function botShopName() {
     try {
-      const cfg = botRead();
-      if (!cfg || !cfg.connected || !cfg.channel) return;
+      const s = (typeof DB !== 'undefined' && DB.settings && DB.settings.get) ? DB.settings.get() : null;
+      return (s && (s.storeName || s.shopName || s.name)) || 'Salqin';
+    } catch { return 'Salqin'; }
+  }
+  function botErr(e) { const m = String((e && e.message) || e || ''); if (/Failed to fetch|NetworkError|load failed|ERR_/i.test(m)) return "Bot serveriga ulanib bo'lmadi — «cd bot && python3 bot.py» ishlab turibdimi? (" + Telegram.API_URL + ')'; return m || 'Xato'; }
 
-      const settings = (() => { try { return JSON.parse(localStorage.getItem('si_settings') || '{}'); } catch { return {}; } })();
-      const shopName = settings.shopName || 'Salqin';
+  function botSetConnUI(connected, username) {
+    const pill = $('#bot2Status'); if (pill) { pill.className = 'bot2-status ' + (connected ? 'on' : 'off'); pill.textContent = '● ' + (connected ? 'Ulangan' : 'Ulanmagan'); }
+    const side = $('#botSideBadge'); if (side) side.classList.toggle('hidden', !connected);
+    const c = $('#bot2ConnectBtn'); if (c) c.style.display = connected ? 'none' : '';
+    const d = $('#bot2DisconnectBtn'); if (d) d.style.display = connected ? '' : 'none';
+    const box = $('#bot2BotInfo'); if (box) box.style.display = connected ? '' : 'none';
+    const un = $('#bot2Username'); if (un) un.textContent = username || '@bot';
+    const link = $('#bot2OpenLink'); if (link) { const u = String(username || '').replace(/^@/, ''); link.href = u ? ('https://t.me/' + u) : '#'; }
+    const t = $('#bot2Token'); if (t) t.readOnly = connected;
+  }
+  function botSetChanUI(cfg) {
+    const info = $('#bot2ChannelInfo'); if (info) info.style.display = cfg.channel ? '' : 'none';
+    const set = (id, v) => { const el = $('#' + id); if (el) el.textContent = v; };
+    set('bot2ChannelName', cfg.channel || '—');
+    set('bot2SentCount', String(cfg.sentCount || 0));
+    set('bot2UserCount', String(cfg.userCount || 0));
+  }
 
-      const itemsText = (order.items || []).map(it =>
-        `   • ${it.name} × ${it.qty} = ${DB.fmt.money(it.finalPrice * it.qty)}`
-      ).join('\n');
-
-      const msg = [
-        `🥤 YANGI BUYURTMA — ${shopName}`,
-        ``,
-        `📦 Buyurtma: ${order.id.slice(-6).toUpperCase()}`,
-        `👤 Mijoz: ${order.name || 'Anonim'}`,
-        `📞 Tel: ${order.phone || '—'}`,
-        `📍 Manzil: ${order.address || '—'}`,
-        ``,
-        `🛒 Mahsulotlar:`,
-        itemsText || '   (bo\'sh)',
-        ``,
-        `💰 Jami: ${DB.fmt.money(order.total)}`,
-        `⏱ Vaqt: ${DB.fmt.date(order.createdAt)}`
-      ].join('\n');
-
-      pushBotFeed({ type: 'order', text: msg, time: new Date().toISOString(), orderId: order.id });
-      cfg.sentCount = (cfg.sentCount || 0) + 1;
-      botWrite(cfg);
-
-      // Haqiqiy Telegram bot serveriga POST
-      fetch(`${BOT_HTTP_URL}/orders/${cfg.botId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          order: {
-            id: order.id.slice(-6).toUpperCase(),
-            userName: order.name,
-            phone: order.phone,
-            address: order.address,
-            items: (order.items || []).map(i => ({ name: i.name, qty: i.qty, price: i.finalPrice })),
-            total: order.total,
-          }
-        })
-      })
-        .then(r => r.json().catch(() => ({ ok: false, error: 'Invalid JSON' })))
-        .then(res => {
-          if (res && res.ok) {
-            console.log('[bot] yuborildi:', cfg.channel);
-          } else {
-            console.warn('[bot] xato:', res?.error);
-          }
-        })
-        .catch(err => {
-          console.warn('[bot] HTTP xato (port 3344 ishlamayotgan bo\'lishi mumkin):', err.message);
-        });
-    } catch (err) {
-      console.error('notifyBotNewOrder error:', err);
+  async function renderBot() {
+    const cfg = botLocal();
+    const setv = (id, v) => { const el = $('#' + id); if (el && !el.value) el.value = v; };
+    setv('bot2Token', cfg.token || '');
+    botSetConnUI(!!cfg.connected, cfg.username);
+    botSetChanUI(cfg);
+    const h = await Telegram.status();
+    if (h && h.ok) {
+      const c = botLocal();
+      c.connected = !!h.connected; c.username = h.username || c.username; c.channel = h.channel || null; c.sentCount = h.sentCount || 0; c.userCount = h.userCount || 0;
+      botLocalSave(c);
+      botSetConnUI(c.connected, c.username); botSetChanUI(c);
     }
-  };
+  }
+
+  function botBusy(btn, on, txt) { if (!btn) return; btn.disabled = on; if (on) { btn.dataset._t = btn.innerHTML; btn.innerHTML = '⏳ ' + (txt || '...'); } else if (btn.dataset._t) { btn.innerHTML = btn.dataset._t; delete btn.dataset._t; } }
+
+  async function botConnect() {
+    const tokenEl = $('#bot2Token');
+    const token = (tokenEl?.value || botLocal().token || '').trim();
+    if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri", 'error'); tokenEl?.focus(); return; }
+    const cfg = { shopName: botShopName(), token };
+    const btn = $('#bot2ConnectBtn');
+    botBusy(btn, true, 'Ulanmoqda...');
+    try {
+      const data = await Telegram.connect(cfg);
+      const lc = botLocal(); Object.assign(lc, cfg, { username: data.username, connected: true }); botLocalSave(lc);
+      botSetConnUI(true, data.username);
+      toast('Bot ulandi! ' + (data.username || '') + ' 🎉', 'success');
+      renderBot();
+    } catch (err) { toast(botErr(err), 'error'); } finally { botBusy(btn, false); }
+  }
+  async function botDisconnect() {
+    if (!confirm('Botni uzasizmi? Buyurtmalar kanalga yuborilmaydi.')) return;
+    await Telegram.disconnect();
+    const c = botLocal(); c.connected = false; c.channel = null; botLocalSave(c);
+    botSetConnUI(false); botSetChanUI(c); toast('Bot uzildi', 'info');
+  }
+  async function botConnectChannel() {
+    const channel = ($('#bot2Channel')?.value || '').trim();
+    if (!channel) { toast('Kanal username yoki ID kiriting', 'error'); return; }
+    if (!botLocal().connected) { toast('Avval botni ulang', 'error'); return; }
+    const btn = $('#bot2ChannelBtn'); botBusy(btn, true, 'Ulanmoqda...');
+    try {
+      const data = await Telegram.setChannel(channel);
+      const c = botLocal(); c.channel = data.channel; botLocalSave(c); botSetChanUI(c);
+      toast('Kanal ulandi: ' + data.channel + ' 🎉', 'success');
+    } catch (err) { toast(botErr(err), 'error'); } finally { botBusy(btn, false); }
+  }
+  async function botDisconnectChannel() {
+    if (!confirm('Kanalni uzasizmi? Buyurtmalar yuborilmaydi.')) return;
+    try { await Telegram.setChannel(null, true); } catch (e) {}
+    const c = botLocal(); c.channel = null; botLocalSave(c); botSetChanUI(c); toast('Kanal uzildi', 'info');
+  }
+  async function botTestChannel() {
+    if (!botLocal().channel) { toast('Avval kanal ulang', 'error'); return; }
+    const btn = $('#bot2ChannelTest'); botBusy(btn, true, 'Yuborilmoqda...');
+    try {
+      const data = await Telegram.sendOrder({ id: 'TEST', name: 'Test mijoz', phone: '+998 90 000 00 00', address: 'Sinov manzil', items: [{ name: 'Sinov mahsulot', qty: 1, price: 10000 }], total: 10000 });
+      if (!data.ok) throw new Error(data.error || 'Yuborilmadi');
+      const c = botLocal(); c.sentCount = data.sentCount || (c.sentCount || 0) + 1; botLocalSave(c); botSetChanUI(c);
+      toast('Test habar kanalga yuborildi ✅', 'success');
+    } catch (err) { toast(botErr(err), 'error'); } finally { botBusy(btn, false); }
+  }
+  async function botBroadcast() {
+    const ta = $('#bot2BroadcastText'); const text = (ta?.value || '').trim();
+    if (!text) { toast('Xabar matnini kiriting', 'error'); return; }
+    if (!botLocal().connected) { toast('Avval botni ulang', 'error'); return; }
+    const btn = $('#bot2BroadcastBtn'); const resEl = $('#bot2BroadcastResult'); botBusy(btn, true, 'Yuborilmoqda...');
+    try {
+      const data = await Telegram.broadcast(text);
+      if (resEl) resEl.textContent = `✅ Yuborildi: ${data.sent} / ${data.total} ta` + (data.failed ? ` (xato: ${data.failed})` : '');
+      if (ta) ta.value = ''; toast(data.total ? `Yuborildi: ${data.sent} ta` : 'Hali hech kim botga /start yozmagan', data.total ? 'success' : 'info');
+    } catch (err) { if (resEl) resEl.textContent = ''; toast(botErr(err), 'error'); } finally { botBusy(btn, false); }
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#bot2ConnectBtn')) botConnect();
+    else if (e.target.closest('#bot2DisconnectBtn')) botDisconnect();
+    else if (e.target.closest('#bot2ChannelBtn')) botConnectChannel();
+    else if (e.target.closest('#bot2ChannelTest')) botTestChannel();
+    else if (e.target.closest('#bot2ChannelDisc')) botDisconnectChannel();
+    else if (e.target.closest('#bot2BroadcastBtn')) botBroadcast();
+    else if (e.target.closest('#bot2Eye')) { const t = $('#bot2Token'); const btn = e.target.closest('#bot2Eye'); if (t) { const h = t.type === 'password'; t.type = h ? 'text' : 'password'; btn.textContent = h ? '🙈' : '👁'; } }
+  });
+
+  // ----- Admin parolini o'zgartirish -----
+  $('#changePassBtn')?.addEventListener('click', () => {
+    const oldP = prompt('Joriy parolni kiriting:');
+    if (oldP === null) return;
+    const newP = prompt('Yangi parol (kamida 6 belgi):');
+    if (newP === null) return;
+    const newP2 = prompt('Yangi parolni takrorlang:');
+    if (newP2 === null) return;
+    if (newP !== newP2) return toast('Parollar mos kelmadi', 'error');
+    try {
+      DB.admin.changePassword(oldP, newP);
+      toast('Parol o\'zgartirildi ✓', 'success');
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
 
   if (DB.admin.isAuthed()) showApp(); else showLogin();
+
+  // Standart parol bilan ishlatilayotgan bo'lsa ogohlantirish
+  if (DB.admin.isAuthed() && DB.admin.isDefaultPassword()) {
+    setTimeout(() => toast('⚠ Standart admin paroli ishlatilmoqda — uni o\'zgartiring!', 'error'), 1200);
+  }
 })();

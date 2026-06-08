@@ -42,6 +42,9 @@
         <i class="fa-brands fa-telegram"></i><span>Telegram Bot</span>
         <em class="side-badge" id="botBadge" style="display:none; background:#0088cc">●</em>
       </button>
+      <button class="side-link" data-section="qr">
+        <i class="fa-solid fa-qrcode"></i><span>QR Kod</span>
+      </button>
       <button class="side-link" data-section="settings">
         <i class="fa-solid fa-gear"></i><span>Sozlamalar</span>
       </button>
@@ -265,136 +268,118 @@
       <div class="sec-head">
         <div>
           <h1>Telegram Bot</h1>
-          <p>Buyurtmalarni Telegram kanalingizga avtomatik yuboring</p>
+          <p>O'z botingizni ulang — yangi buyurtmalar Telegram kanalingizga avtomatik yuboriladi</p>
+        </div>
+        <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
+      </div>
+
+      <!-- 1) BOTNI ULASH (token) -->
+      <div class="bot2-card">
+        <div class="bot2-card-head">
+          <span class="bot2-ic"><i class="fa-brands fa-telegram"></i></span>
+          <div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div>
+        </div>
+        <label class="bot2-label" for="bot2Token">Bot tokeni</label>
+        <div class="bot2-token">
+          <input type="password" id="bot2Token" placeholder="123456789:AAE-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+          <button type="button" class="bot2-eye" id="bot2Eye" aria-label="Ko'rsatish"><i class="fa-solid fa-eye"></i></button>
+        </div>
+        <p class="bot2-hint">Telegram → <b>@BotFather</b> → <code>/newbot</code> → tokenni nusxalab joylang.</p>
+        <div class="bot2-actions">
+          <button type="button" class="abtn primary" id="bot2ConnectBtn"><i class="fa-brands fa-telegram"></i> Botni ulash</button>
+          <button type="button" class="abtn danger-outline" id="bot2DisconnectBtn" style="display:none"><i class="fa-solid fa-link-slash"></i> Botni uzish</button>
+        </div>
+        <div class="bot2-connected" id="bot2BotInfo" style="display:none">
+          <span class="bot2-av"><i class="fa-brands fa-telegram"></i></span>
+          <div class="bot2-meta">
+            <div class="bot2-name" id="bot2Username">@bot</div>
+            <div class="bot2-sub">Faol — buyurtmalarni yuboradi</div>
+          </div>
+          <a href="#" target="_blank" rel="noopener" class="abtn" id="bot2OpenLink"><i class="fa-solid fa-up-right-from-square"></i> Ochish</a>
         </div>
       </div>
 
-      <!-- Bot status card -->
-      <div class="bot-status-card" id="botStatusCard">
-        <div class="bot-status-head">
-          <div class="bot-icon-wrap">
-            <i class="fa-brands fa-telegram"></i>
+      <!-- 2) BUYURTMA KANALI -->
+      <div class="bot2-card">
+        <div class="bot2-card-head">
+          <span class="bot2-ic"><i class="fa-solid fa-bullhorn"></i></span>
+          <div><h3>2. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div>
+        </div>
+        <div class="bot2-steps-mini">
+          <span><b>1.</b> Botni kanalingizga <b>admin</b> qiling (yozish huquqi bilan)</span>
+          <span><b>2.</b> Kanal username yoki ID sini yozib <b>Ulash</b> bosing</span>
+        </div>
+        <div class="bot2-channel-row">
+          <input type="text" id="bot2Channel" class="bot2-input" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
+          <button type="button" class="abtn primary" id="bot2ChannelBtn"><i class="fa-solid fa-plug"></i> Ulash</button>
+        </div>
+        <div class="bot2-connected" id="bot2ChannelInfo" style="display:none">
+          <span class="bot2-av ok"><i class="fa-solid fa-circle-check"></i></span>
+          <div class="bot2-meta">
+            <div class="bot2-name" id="bot2ChannelName">—</div>
+            <div class="bot2-sub"><span id="bot2SentCount">0</span> ta buyurtma yuborilgan</div>
           </div>
-          <div class="bot-status-info">
-            <span class="bot-status-label" id="botStatusLabel">Ulanmagan</span>
-            <h2 id="botStatusTitle">Bot ulanish kutmoqda</h2>
-            <p id="botStatusDesc">Quyidagi qadamlarni bajaring va botingizni ulang</p>
+          <button type="button" class="abtn" id="bot2ChannelTest"><i class="fa-solid fa-paper-plane"></i> Test</button>
+          <button type="button" class="abtn danger-outline" id="bot2ChannelDisc"><i class="fa-solid fa-link-slash"></i> Uzish</button>
+        </div>
+      </div>
+
+      <!-- 3) MIJOZLARGA XABAR (broadcast) -->
+      <div class="bot2-card">
+        <div class="bot2-card-head">
+          <span class="bot2-ic"><i class="fa-solid fa-paper-plane"></i></span>
+          <div><h3>3. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div>
+        </div>
+        <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
+        <button type="button" class="abtn primary" id="bot2BroadcastBtn" style="margin-top:12px"><i class="fa-solid fa-paper-plane"></i> Hammaga yuborish</button>
+        <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
+      </div>
+    </section>
+
+    <!-- ============ QR KOD ============ -->
+    <section class="asection" id="sec-qr">
+      <div class="sec-head">
+        <div>
+          <h1>QR Kod</h1>
+          <p>Mijozlar uchun veb-ilova QR kodi</p>
+        </div>
+      </div>
+
+      <div class="qr-wrap">
+        <div class="panel qr-preview-card">
+          <div class="qr-frame" id="qrFrame">
+            <img id="qrImage" alt="QR kod">
+            <div class="qr-loading" id="qrLoading">QR yuklanmoqda…</div>
           </div>
-          <div class="bot-status-indicator" id="botStatusIndicator">
-            <span class="bot-dot"></span>
-            <span id="botIndicatorText">Offline</span>
+          <div class="qr-store-name" id="qrStoreName">Restoran</div>
+          <div class="qr-scan-hint">📷 Telefon bilan skaner qiling</div>
+        </div>
+
+        <div class="panel qr-info-card">
+          <span class="qr-badge"><i class="fa-solid fa-link"></i> VEB-ILOVA QR KODI</span>
+          <h3>Mijozlar QR kodni skaner qilib ilovangizni ochadi</h3>
+          <p>Telefon kamerasi bilan skaner qilinganda do'koningizning veb-ilovasi avtomatik ochiladi. QR kodni stol, vitrina, menyu yoki reklama varaqasiga joylashtiring.</p>
+
+          <label class="qr-label">Ilova manzili (URL)</label>
+          <div class="qr-url-row">
+            <input type="text" id="qrUrlInput" placeholder="https://mening-domenim.uz">
+            <button class="abtn primary" id="qrSaveBtn">Saqlash</button>
+          </div>
+          <p class="qr-url-note">Standart manzil — shu ilovaning havolasi. O'z domeningizni kiriting (masalan <code>https://mening-restoranim.uz</code>) — QR avtomatik yangilanadi.</p>
+
+          <div class="qr-actions">
+            <button class="abtn" id="qrCopyBtn"><i class="fa-solid fa-copy"></i> Nusxalash</button>
+            <button class="abtn" id="qrDownloadBtn"><i class="fa-solid fa-download"></i> Yuklab olish</button>
+            <button class="abtn" id="qrPrintBtn"><i class="fa-solid fa-print"></i> Chop etish</button>
+            <button class="abtn" id="qrOpenBtn"><i class="fa-solid fa-up-right-from-square"></i> Ochish</button>
           </div>
         </div>
       </div>
 
-      <!-- Bot ID kartochka — eng muhim ma'lumot -->
-      <div class="bot-id-card">
-        <div class="bot-id-head">
-          <div>
-            <span class="bot-id-tag"><i class="fa-solid fa-key"></i> SIZNING UNIKAL BOT ID</span>
-            <h3>Botga ulanish uchun bu ID ni nusxalab oling</h3>
-            <p>Botga <code>/start</code> yuborganingizda u sizdan shu ID ni so'raydi</p>
-          </div>
-        </div>
-        <div class="bot-id-display">
-          <input type="text" id="botIdInput" readonly>
-          <button type="button" class="bot-copy-btn" id="copyBotIdBtn">
-            <i class="fa-solid fa-copy"></i> <span>Nusxalash</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Steps grid -->
-      <div class="bot-steps-grid">
-        <div class="bot-step-card" data-step="1">
-          <div class="bot-step-num">1</div>
-          <div class="bot-step-icon"><i class="fa-brands fa-telegram"></i></div>
-          <h4>Botni oching</h4>
-          <p>Telegram'da botimizni qidiring va <code>/start</code> tugmasini bosing</p>
-          <a href="https://t.me/BiznesOnlineOrdersBot" target="_blank" rel="noopener" class="bot-step-link">
-            <i class="fa-brands fa-telegram"></i> @BiznesOnlineOrdersBot
-          </a>
-        </div>
-
-        <div class="bot-step-card" data-step="2">
-          <div class="bot-step-num">2</div>
-          <div class="bot-step-icon"><i class="fa-solid fa-fingerprint"></i></div>
-          <h4>ID ni yuboring</h4>
-          <p>Yuqoridagi <strong>Bot ID</strong> ni nusxalab botga yuboring. Bot do'koningizni topadi.</p>
-        </div>
-
-        <div class="bot-step-card" data-step="3">
-          <div class="bot-step-num">3</div>
-          <div class="bot-step-icon"><i class="fa-solid fa-bullhorn"></i></div>
-          <h4>Kanal yuboring</h4>
-          <p>Buyurtmalar yuboriladigan kanal username yoki ID sini yuboring (masalan: <code>@mening_kanalim</code>)</p>
-        </div>
-
-        <div class="bot-step-card" data-step="4">
-          <div class="bot-step-num">4</div>
-          <div class="bot-step-icon"><i class="fa-solid fa-user-shield"></i></div>
-          <h4>Botni admin qiling</h4>
-          <p>Kanalingizga botni <strong>admin</strong> sifatida qo'shing — yozish huquqi bilan</p>
-        </div>
-
-        <div class="bot-step-card success" data-step="5">
-          <div class="bot-step-num"><i class="fa-solid fa-check"></i></div>
-          <div class="bot-step-icon"><i class="fa-solid fa-circle-check"></i></div>
-          <h4>Tayyor!</h4>
-          <p>Bot kanalingizga <strong>"Muvaffaqiyatli ulandi"</strong> habarini yuboradi va har bir yangi buyurtma avtomatik kanalga keladi</p>
-        </div>
-      </div>
-
-      <!-- Connected channel info (hidden until connected) -->
-      <div class="bot-connected-card" id="botConnectedCard" style="display:none">
-        <div class="bot-connected-head">
-          <i class="fa-solid fa-circle-check"></i>
-          <div>
-            <h3>Kanal ulangan</h3>
-            <p>Yangi buyurtmalar shu kanalga yuboriladi</p>
-          </div>
-        </div>
-        <div class="bot-connected-info">
-          <div class="bot-info-row">
-            <span>Kanal</span>
-            <strong id="botChannelName">—</strong>
-          </div>
-          <div class="bot-info-row">
-            <span>Ulangan vaqt</span>
-            <strong id="botConnectedAt">—</strong>
-          </div>
-          <div class="bot-info-row">
-            <span>Yuborilgan buyurtmalar</span>
-            <strong id="botSentCount">0</strong>
-          </div>
-        </div>
-        <div class="bot-connected-actions">
-          <button type="button" class="abtn" id="botTestBtn">
-            <i class="fa-solid fa-paper-plane"></i> Test habar yuborish
-          </button>
-          <button type="button" class="abtn danger-outline" id="botDisconnectBtn">
-            <i class="fa-solid fa-link-slash"></i> Uzish
-          </button>
-        </div>
-      </div>
-
-      <!-- Simulator for demo (since no real backend) -->
-      <div class="bot-sim-card">
-        <div class="bot-sim-head">
-          <i class="fa-solid fa-flask"></i>
-          <strong>Demo simulyatori</strong>
-          <small>Faqat localStorage'da</small>
-        </div>
-        <p class="bot-sim-desc">
-          ⚠️ <strong>Diqqat:</strong> Bu faqat <em>UI sinov</em> uchun — haqiqiy Telegram'ga habar yubormaydi.
-          Haqiqiy ulanish uchun yuqoridagi 5 qadamni Telegram'da bajaring (<code>/start</code> → Bot ID → kanal → bot'ni admin qiling).
-        </p>
-        <div class="bot-sim-form">
-          <input type="text" id="botChannelInput" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
-          <button type="button" class="abtn primary" id="botSimConnectBtn">
-            <i class="fa-solid fa-plug"></i> Ulanish (demo)
-          </button>
-        </div>
+      <div class="qr-steps">
+        <div class="qr-step"><span class="qr-step-ic">1️⃣</span><div><strong>QR kodni joylashtiring</strong><p>Stol, vitrina, menyu yoki reklamaga</p></div></div>
+        <div class="qr-step"><span class="qr-step-ic">2️⃣</span><div><strong>Mijoz skaner qiladi</strong><p>Telefon kamerasi yoki QR-skaner orqali</p></div></div>
+        <div class="qr-step"><span class="qr-step-ic">3️⃣</span><div><strong>Ilova ochiladi</strong><p>Mijoz to'g'ridan-to'g'ri buyurtma beradi</p></div></div>
       </div>
     </section>
 
@@ -574,6 +559,6 @@
 <!-- ============ TOAST ============ -->
 <div class="atoast" id="atoast"></div>
 
-<script src="admin.js"></script>
+<script src="admin.js?v=2"></script>
 </body>
 </html>

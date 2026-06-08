@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Salqin — Raqobat Tahlili Battlecard</title>
+<style>
+  :root {
+    --bg: #0a0d14; --bg2: #0f131c; --bg3: #161b28; --bg4: #1e2536;
+    --text: #ffffff; --text2: rgba(255,255,255,.72); --text3: rgba(255,255,255,.45);
+    --border: rgba(255,255,255,.08); --border2: rgba(255,255,255,.14);
+    --blue: #3b82f6; --blue-bg: rgba(59,130,246,.12);
+    --green: #10b981; --green-bg: rgba(16,185,129,.12);
+    --red: #ef4444; --red-bg: rgba(239,68,68,.12);
+    --amber: #f59e0b; --amber-bg: rgba(245,158,11,.12);
+    --purple: #a855f7; --purple-bg: rgba(168,85,247,.12);
+    --radius: 12px; --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+
+  /* HEADER */
+  .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .header-brand { display: flex; align-items: center; gap: 12px; }
+  .brand-icon { width: 40px; height: 40px; background: var(--blue-bg); border: 1px solid rgba(59,130,246,.3); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .brand-name { font-size: 18px; font-weight: 700; }
+  .brand-sub { font-size: 12px; color: var(--text3); }
+  .header-meta { font-size: 12px; color: var(--text3); text-align: right; }
+
+  /* TAB NAV */
+  .tab-nav { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 4px; overflow-x: auto; }
+  .tab-btn { padding: 14px 18px; font-size: 13px; font-weight: 500; color: var(--text3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* CONTENT */
+  .tab-content { display: none; padding: 28px 32px; max-width: 1100px; }
+  .tab-content.active { display: block; }
+
+  /* MATRIX */
+  .matrix-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  .matrix-table th { background: var(--bg3); padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text3); border-bottom: 1px solid var(--border); }
+  .matrix-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+  .matrix-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+  .matrix-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-table tr:hover td { background: var(--bg3); }
+  .matrix-table td.feature { font-weight: 500; color: var(--text2); }
+  .win  { color: var(--green); font-size: 18px; }
+  .lose { color: var(--red);   font-size: 18px; }
+  .part { color: var(--amber); font-size: 18px; }
+  .you-col { background: var(--blue-bg) !important; }
+
+  .win-loss-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .wl-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .wl-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text2); }
+  .wl-item { font-size: 12px; color: var(--text3); padding: 4px 0; display: flex; gap: 6px; align-items: flex-start; }
+  .wl-item::before { content: ''; flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; }
+  .win-item::before  { background: var(--green); }
+  .lose-item::before { background: var(--red); }
+
+  /* BATTLECARD */
+  .bc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .bc-full { margin-bottom: 16px; }
+  .panel { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .panel h3 { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+  .profile-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .profile-row:last-child { border-bottom: none; }
+  .profile-row .label { color: var(--text3); }
+  .profile-row .value { color: var(--text); font-weight: 500; text-align: right; max-width: 60%; }
+
+  .tag { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+  .tag-win    { background: var(--green-bg); color: var(--green); border: 1px solid rgba(16,185,129,.2); }
+  .tag-lose   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(239,68,68,.2); }
+  .tag-blue   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(59,130,246,.2); }
+  .tag-amber  { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+  .tag-purple { background: var(--purple-bg);color: var(--purple);border: 1px solid rgba(168,85,247,.2); }
+
+  .diff-list { list-style: none; }
+  .diff-item { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .diff-item:last-child { border-bottom: none; }
+  .diff-item .di-title { font-weight: 600; margin-bottom: 2px; }
+  .diff-item .di-desc  { color: var(--text3); font-size: 12px; }
+  .diff-win  .di-title { color: var(--green); }
+  .diff-lose .di-title { color: var(--red); }
+
+  .track { background: var(--bg4); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 8px; }
+  .track .t-scenario { font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .track .t-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  .landmine { background: var(--bg4); border-left: 3px solid var(--amber); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px; margin-bottom: 8px; font-size: 13px; color: var(--text2); }
+
+  .price-box { background: var(--bg4); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
+  .price-box .amount { font-size: 26px; font-weight: 700; color: var(--text); }
+  .price-box .period { font-size: 12px; color: var(--text3); }
+  .price-box .note   { font-size: 12px; color: var(--amber); margin-top: 6px; }
+
+  .comp-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .comp-logo { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; }
+  .comp-name { font-size: 20px; font-weight: 700; }
+  .comp-tagline { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+  .section-title { font-size: 16px; font-weight: 600; margin: 24px 0 14px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* YOU card */
+  .you-card { background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(16,185,129,.06)); border: 1px solid rgba(59,130,246,.25); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; }
+  .you-card h2 { font-size: 18px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+  .you-card .tagline { color: var(--text3); font-size: 13px; margin-bottom: 16px; }
+  .usp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .usp { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; }
+  .usp .usp-icon { font-size: 20px; margin-bottom: 6px; }
+  .usp .usp-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .usp .usp-desc  { font-size: 12px; color: var(--text3); }
+
+  @media (max-width: 700px) {
+    .header, .tab-nav, .tab-content { padding-left: 16px; padding-right: 16px; }
+    .bc-grid { grid-template-columns: 1fr; }
+    .matrix-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="brand-icon">❄</div>
+    <div>
+      <div class="brand-name">Salqin — Raqobat Battlecard</div>
+      <div class="brand-sub">O'zbekiston bozori · 2026</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    Raqobatchilar: BILLZ · Poster POS · iiko · Delever · Yandex Eats<br>
+    Yangilangan: Iyun 2026
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('matrix')">📊 Umumiy taqqoslama</button>
+  <button class="tab-btn" onclick="showTab('you')">❄ Salqin (siz)</button>
+  <button class="tab-btn" onclick="showTab('billz')">🔵 BILLZ</button>
+  <button class="tab-btn" onclick="showTab('poster')">🟠 Poster POS</button>
+  <button class="tab-btn" onclick="showTab('iiko')">🔴 iiko</button>
+  <button class="tab-btn" onclick="showTab('delever')">🟢 Delever.uz</button>
+  <button class="tab-btn" onclick="showTab('yandex')">🟡 Yandex Eats</button>
+</div>
+
+<!-- ============================================================ MATRIX -->
+<div id="tab-matrix" class="tab-content active">
+  <h2 class="section-title">Funksiya taqqoslamasи</h2>
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th>Funksiya / Mezon</th>
+        <th class="you-col">❄ Salqin</th>
+        <th>🔵 BILLZ</th>
+        <th>🟠 Poster POS</th>
+        <th>🔴 iiko</th>
+        <th>🟢 Delever</th>
+        <th>🟡 Yandex Eats</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="feature">O'zbek tili (birinchi)</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Har bir shop uchun subdomen</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Telegram bot (ichida)</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Online buyurtma qabul qilish</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Admin panel</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Mobil-first (apparat kerak emas)</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Komissiyasiz model</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Boshlang'ich narx (oylik)</td>
+        <td class="you-col"><span class="tag tag-win">99 000 so'm</span></td>
+        <td><span class="tag tag-amber">Noma'lum</span></td>
+        <td><span class="tag tag-amber">$24 (~300K so'm)</span></td>
+        <td><span class="tag tag-lose">$54 (~675K so'm)</span></td>
+        <td><span class="tag tag-amber">Noma'lum</span></td>
+        <td><span class="tag tag-lose">15–25% komissiya</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Inventory (ombor) boshqaruvi</td>
+        <td class="you-col"><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Mijozlar bazasi (CRM)</td>
+        <td class="you-col"><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Soliq (OFD) integratsiya</td>
+        <td class="you-col"><span class="lose">✗</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Ko'p til (uz/ru/en)</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+      <tr>
+        <td class="feature">Sozlash osonligi</td>
+        <td class="you-col"><span class="win">✓</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="lose">✗</span></td>
+        <td><span class="part">△</span></td>
+        <td><span class="win">✓</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size: 12px; color: var(--text3); margin-bottom: 28px; display: flex; gap: 16px; flex-wrap: wrap;">
+    <span><span class="win">✓</span> Kuchli</span>
+    <span><span class="part">△</span> Qisman</span>
+    <span><span class="lose">✗</span> Yo'q</span>
+  </div>
+
+  <h2 class="section-title">Qachon yutasiz — qachon yutqazasiz</h2>
+  <div class="win-loss-grid">
+    <div class="wl-card">
+      <h4 style="color: var(--green)">✓ Yutish holatlari</h4>
+      <div class="wl-item win-item">Mijoz Telegram orqali buyurtma olmoqchi</div>
+      <div class="wl-item win-item">Kichik do'kon — apparat xarid qila olmaydi</div>
+      <div class="wl-item win-item">O'z brendi bilan subdomen kerak</div>
+      <div class="wl-item win-item">Arzon narx — birinchi marta sinab ko'rish</div>
+      <div class="wl-item win-item">Tezkor sozlash (1 soat ichida)</div>
+      <div class="wl-item win-item">O'zbek tilidagi interfeys muhim</div>
+    </div>
+    <div class="wl-card">
+      <h4 style="color: var(--red)">✗ Yutqazish holatlari</h4>
+      <div class="wl-item lose-item">Katta restoran — to'liq ERP kerak</div>
+      <div class="wl-item lose-item">OFD / soliq integratsiyasi zarur</div>
+      <div class="wl-item lose-item">Ombor va ingredient boshqaruvi kerak</div>
+      <div class="wl-item lose-item">Mavjud katta foydalanuvchi bazasi kerak</div>
+      <div class="wl-item lose-item">Kassa apparati bilan integratsiya kerak</div>
+    </div>
+    <div class="wl-card">
+      <h4 style="color: var(--blue)">→ Eng to'g'ri mijoz profili</h4>
+      <div class="wl-item win-item">Ichimlik, non, pishiriq do'konlari</div>
+      <div class="wl-item win-item">Kichik oshxona / homemade food</div>
+      <div class="wl-item win-item">1–5 xodimli mikrobiznes</div>
+      <div class="wl-item win-item">Telegram faol, Instagram sotuvchi</div>
+      <div class="wl-item win-item">Toshkent va viloyat markazlari</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ YOU -->
+<div id="tab-you" class="tab-content">
+  <div class="you-card">
+    <h2>❄ Salqin</h2>
+    <div class="tagline">O'zbekistondagi birinchi white-label sovuq ichimliklar do'koni platformasi — Telegram integratsiyasi bilan</div>
+    <div class="usp-grid">
+      <div class="usp"><div class="usp-icon">🌐</div><div class="usp-title">O'z subdomen</div><div class="usp-desc">Har bir do'kon shop1.salqin.uz da ishlaydi</div></div>
+      <div class="usp"><div class="usp-icon">✈</div><div class="usp-title">Telegram bot</div><div class="usp-desc">Buyurtmalar to'g'ri kanalingizga keladi</div></div>
+      <div class="usp"><div class="usp-icon">🇺🇿</div><div class="usp-title">O'zbek tilida</div><div class="usp-desc">uz / ru / en — to'liq ko'p tilli</div></div>
+      <div class="usp"><div class="usp-icon">📱</div><div class="usp-title">Apparat kerak emas</div><div class="usp-desc">Faqat telefon yetarli — POS qurilma yo'q</div></div>
+      <div class="usp"><div class="usp-icon">💸</div><div class="usp-title">Komissiya yo'q</div><div class="usp-desc">Oylik obuna — har bir buyurtmadan foiz yo'q</div></div>
+      <div class="usp"><div class="usp-icon">⚡</div><div class="usp-title">1 soatda tayyor</div><div class="usp-desc">Ro'yxatdan → do'kon ochilgunga qadar</div></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Sizning eng kuchli talk track'laringiz</h2>
+
+  <div class="track">
+    <div class="t-scenario">Mijoz: "Yandex Eats da edik"</div>
+    <div class="t-text">"Yandex Eats har buyurtmadan 15–25% oladi — oyiga 1 mln so'm tushum bo'lsa, 150–250 ming so'm komissiya yo'qoladi. Bizda oyiga 99 ming so'm to'laysiz, komissiya yo'q, o'z brend nomingiz, o'z mijozlar bazangiz. 6 oy ichida farqni hisoblang."</div>
+  </div>
+  <div class="track">
+    <div class="t-scenario">Mijoz: "Poster yoki iiko bor"</div>
+    <div class="t-text">"Poster va iiko kassa apparati va oshxona uchun — ular qurilma va murakkab sozlash talab qiladi, $24–54/oy. Salqin faqat smartfon bilan ishlaydi, 1 soatda o'rnatiladi, va Telegram bot integratsiyasi darhol tayyor. Siz ichimlik sotasiz, murakkab ERP kerak emas."</div>
+  </div>
+  <div class="track">
+    <div class="t-scenario">Mijoz: "O'zimga Telegram bot yozdirganman"</div>
+    <div class="t-text">"Maxsus bot faqat sizniki — yangilanmaydi, xatolik chiqsa developer topib tuzattirasiz. Salqin platformada 24/7 qo'llab-quvvatlash, har oy yangi funksiyalar, va o'z professional do'kon sayti bor. Bot — vosita, do'kon — bu brend."</div>
+  </div>
+
+  <h2 class="section-title">Hozirgi zaif tomonlar (halol)</h2>
+  <ul class="diff-list">
+    <li class="diff-item diff-lose"><div class="di-title">OFD / soliq integratsiyasi yo'q</div><div class="di-desc">Hozircha fiskal chek berilmaydi — katta savdo nuqtalari uchun muammo. Yechim: Multikassa integratsiyasini rejalashtirish.</div></li>
+    <li class="diff-item diff-lose"><div class="di-title">localStorage — real backend yo'q</div><div class="di-desc">Ma'lumotlar faqat bir brauzerda. Yechim: PostgreSQL + multi-tenant backend (eng muhim keyingi qadam).</div></li>
+    <li class="diff-item diff-lose"><div class="di-title">Inventory boshqaruvi cheklangan</div><div class="di-desc">Stock mavjud, lekin ingredient-darajali boshqaruv yo'q. Restoran va kafe uchun muammo.</div></li>
+    <li class="diff-item diff-lose"><div class="di-title">Yangi brend — ishonch past</div><div class="di-desc">Yechim: Dastlabki 5–10 ta do'konni bepul onboard qilib, review va case study yig'ish.</div></li>
+  </ul>
+</div>
+
+<!-- ============================================================ BILLZ -->
+<div id="tab-billz" class="tab-content">
+  <div class="comp-header">
+    <div class="comp-logo" style="background: rgba(59,130,246,.15); color: #3b82f6;">B</div>
+    <div>
+      <div class="comp-name">BILLZ</div>
+      <div class="comp-tagline">O'zbekistondagi yetakchi retail management SaaS · TBC Bank ($20M valuation)</div>
+    </div>
+    <div style="margin-left: auto;"><span class="tag tag-lose">Kuchli raqobatchi</span></div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Kompaniya profili</h3>
+      <div class="profile-row"><span class="label">Joylashuv</span><span class="value">Toshkent, O'zbekiston</span></div>
+      <div class="profile-row"><span class="label">Foydalanuvchilar</span><span class="value">4,000+ biznes</span></div>
+      <div class="profile-row"><span class="label">Tranzaksiyalar</span><span class="value">1.5M+/oy</span></div>
+      <div class="profile-row"><span class="label">Valuation</span><span class="value">$20M (2025)</span></div>
+      <div class="profile-row"><span class="label">Investor</span><span class="value">TBC Bank Group (53%)</span></div>
+      <div class="profile-row"><span class="label">Bozor</span><span class="value">UZ, KZ, KG, TJ, GE, AZ</span></div>
+    </div>
+    <div class="panel">
+      <h3>Narx</h3>
+      <div class="price-box">
+        <div class="amount">Noma'lum</div>
+        <div class="period">Saytda narx ko'rsatilmagan</div>
+        <div class="note">Enterprise sotish modeli — demo orqali</div>
+      </div>
+      <div style="margin-top: 10px; font-size: 12px; color: var(--text3);">BILLZ kichik do'konlar uchun ham bor, lekin narxi Salqindan ancha yuqori deb taxmin qilinadi.</div>
+    </div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Ular qayerda yutadi</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-lose"><div class="di-title">Bozordagi yetakchi brend</div><div class="di-desc">4,000+ foydalanuvchi — ishonch va referral kuchli</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">To'liq ekosistema</div><div class="di-desc">POS + CRM + inventar + e-commerce + moliya bir joyda</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Kuchli kapital</div><div class="di-desc">TBC Bank bilan $9M investitsiya — tez o'sishi kutilmoqda</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">OFD integratsiya</div><div class="di-desc">Soliq va fiskal talablarga mos</div></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Siz qayerda yutasiz</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-win"><div class="di-title">Telegram bot integratsiya</div><div class="di-desc">BILLZ da Telegram bot yo'q — UZ da 76% Telegram ishlatadi</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Subdomen / brend sayt</div><div class="di-desc">Har bir shop o'z saytiga ega — BILLZ da bu yo'q</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Narx</div><div class="di-desc">Salqin ancha arzon — kichik do'konlar uchun qulay</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Soddalik</div><div class="di-desc">1 soatda sozlanadi — BILLZ demo + onboarding kerak</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Landmine savollar (BILLZ foydalanuvchisiga)</h2>
+  <div class="landmine">"BILLZ da mijozlaringiz to'g'ridan-to'g'ri Telegram orqali buyurtma bera oladimi — alohida bot o'rnatmasdan?"</div>
+  <div class="landmine">"Do'koningiz uchun alohida sayt yoki subdomen bor emasmi? Mijozlar qanday buyurtma qiladi?"</div>
+  <div class="landmine">"BILLZ ni sozlash qancha vaqt va qancha to'ladingiz? Onboarding va training bormi?"</div>
+</div>
+
+<!-- ============================================================ POSTER -->
+<div id="tab-poster" class="tab-content">
+  <div class="comp-header">
+    <div class="comp-logo" style="background: rgba(245,158,11,.15); color: #f59e0b;">P</div>
+    <div>
+      <div class="comp-name">Poster POS</div>
+      <div class="comp-tagline">CIS restoran va do'konlar uchun bulutli POS tizim · joinposter.com</div>
+    </div>
+    <div style="margin-left: auto;"><span class="tag tag-amber">O'rta raqobatchi</span></div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Kompaniya profili</h3>
+      <div class="profile-row"><span class="label">Joylashuv</span><span class="value">Ukraina (global)</span></div>
+      <div class="profile-row"><span class="label">Maqsad bozor</span><span class="value">Restoran, kafe, bar</span></div>
+      <div class="profile-row"><span class="label">UZ integratsiya</span><span class="value">Multikassa (fiskal)</span></div>
+      <div class="profile-row"><span class="label">Platforma</span><span class="value">iOS, Android, Windows, macOS</span></div>
+      <div class="profile-row"><span class="label">Sinov muddati</span><span class="value">15 kun bepul</span></div>
+    </div>
+    <div class="panel">
+      <h3>Narx (oylik)</h3>
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+        <div class="price-box"><div class="amount" style="font-size:18px;">$24</div><div class="period">Mini</div></div>
+        <div class="price-box"><div class="amount" style="font-size:18px;">$44</div><div class="period">Business</div></div>
+        <div class="price-box"><div class="amount" style="font-size:18px;">$64</div><div class="period">Pro</div></div>
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:var(--text3);">Mini = ~300 000 so'm/oy · Pro = ~800 000 so'm/oy. Apparat alohida.</div>
+    </div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Ular qayerda yutadi</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-lose"><div class="di-title">To'liq restoran boshqaruvi</div><div class="di-desc">Stol, oshxona, inventar, moliya — hamma narsasi bor</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Online buyurtma sayti (Poster Shop)</div><div class="di-desc">O'z domen bilan online buyurtma sahifasi</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">OFD / Multikassa</div><div class="di-desc">O'zbekiston soliq talablariga mos fiskal chek</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Ko'p yillik tajriba</div><div class="di-desc">CIS bozorida taniqli, ishonchli brend</div></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Siz qayerda yutasiz</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-win"><div class="di-title">3–8x arzon</div><div class="di-desc">Salqin 99K so'm ($8) — Poster Mini $24 (300K so'm)</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Telegram bot ichida</div><div class="di-desc">Poster da Telegram integratsiya yo'q</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Apparat kerak emas</div><div class="di-desc">Poster POS qurilma yoki planshet talab qiladi</div></li>
+        <li class="diff-item diff-win"><div class="di-title">O'zbek tili birinchi</div><div class="di-desc">Poster interfeysi asosan rus va ingliz tilida</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Landmine savollar</h2>
+  <div class="landmine">"Poster ni sozlash uchun qancha vaqt ketdi? Xodimlaringiz o'rganish qiyin bo'lmadimi?"</div>
+  <div class="landmine">"Poster Shop da saytingiz bormi? Mijozlar Telegram orqali buyurtma bera oladimi?"</div>
+  <div class="landmine">"Kassa qurilmasi uchun qancha to'ladingiz? Oyiga qancha umumiy xarajat chiqadi?"</div>
+</div>
+
+<!-- ============================================================ IIKO -->
+<div id="tab-iiko" class="tab-content">
+  <div class="comp-header">
+    <div class="comp-logo" style="background: rgba(239,68,68,.15); color: #ef4444;">i</div>
+    <div>
+      <div class="comp-name">iiko</div>
+      <div class="comp-tagline">ERP-darajali restoran avtomatlashtirish tizimi · Rossiya ishlab chiqishi</div>
+    </div>
+    <div style="margin-left: auto;"><span class="tag tag-amber">Katta restoran uchun</span></div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Kompaniya profili</h3>
+      <div class="profile-row"><span class="label">Ishlab chiqaruvchi</span><span class="value">Rossiya</span></div>
+      <div class="profile-row"><span class="label">UZ distributorlar</span><span class="value">kafesoft.uz, soft24.uz</span></div>
+      <div class="profile-row"><span class="label">Maqsad</span><span class="value">Katta restoran, zanjirlar</span></div>
+      <div class="profile-row"><span class="label">Platforma</span><span class="value">Windows server, tablet</span></div>
+      <div class="profile-row"><span class="label">O'rnatish vaqti</span><span class="value">Kunlar / haftalar</span></div>
+    </div>
+    <div class="panel">
+      <h3>Narx</h3>
+      <div class="price-box">
+        <div class="amount">$54+</div>
+        <div class="period">oylik / iikoCloud Start</div>
+        <div class="note">~675 000 so'm/oy · apparat alohida</div>
+      </div>
+      <div style="margin-top:10px; font-size:12px; color:var(--text3);">O'rnatish va o'qitish narxi alohida. Kichik do'konlar uchun juda qimmat.</div>
+    </div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Ular qayerda yutadi</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-lose"><div class="di-title">To'liq ERP tizim</div><div class="di-desc">Oshxona, inventar, xodimlar, moliya — hamma narsasi bor</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Katta restoran zanjirlari</div><div class="di-desc">Ko'p filial boshqaruvi uchun ideal</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">OFD va fiskal</div><div class="di-desc">Soliq integratsiya to'liq</div></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Siz qayerda yutasiz</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-win"><div class="di-title">7x arzon</div><div class="di-desc">99K vs 675K so'm/oy — kichik biznes uchun farq katta</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Tezkor sozlash</div><div class="di-desc">iiko o'rnatish haftalab ketadi — Salqin 1 soat</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Telegram bot</div><div class="di-desc">iiko da Telegram yo'q</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Apparat kerak emas</div><div class="di-desc">iiko server + POS qurilma talab qiladi</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Siyosiy risk yo'q</div><div class="di-desc">Rossiya dasturiy ta'minoti — geosiyosiy noaniqlik</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Landmine savollar</h2>
+  <div class="landmine">"iiko ni o'rnatish va o'rgatish uchun qancha vaqt va pul ketdi? Hozir oyiga umumiy xarajat qancha?"</div>
+  <div class="landmine">"Kichik ichimlik do'koni uchun iiko ning barcha funksiyalari keraqmi? 80% funksiyasini ishlatmaysizmi?"</div>
+</div>
+
+<!-- ============================================================ DELEVER -->
+<div id="tab-delever" class="tab-content">
+  <div class="comp-header">
+    <div class="comp-logo" style="background: rgba(16,185,129,.15); color: #10b981;">D</div>
+    <div>
+      <div class="comp-name">Delever.uz</div>
+      <div class="comp-tagline">Yetkazib berish avtomatlashtirish platformasi · Toshkent, O'zbekiston</div>
+    </div>
+    <div style="margin-left: auto;"><span class="tag tag-win">Qisman raqobatchi</span></div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Kompaniya profili</h3>
+      <div class="profile-row"><span class="label">Joylashuv</span><span class="value">129-B Amir Temur, Toshkent</span></div>
+      <div class="profile-row"><span class="label">Telefon</span><span class="value">+998 90 022 58 55</span></div>
+      <div class="profile-row"><span class="label">E-mail</span><span class="value">support@delever.uz</span></div>
+      <div class="profile-row"><span class="label">Fokus</span><span class="value">Yetkazib berish avtomatlashtirish</span></div>
+    </div>
+    <div class="panel">
+      <h3>Narx</h3>
+      <div class="price-box">
+        <div class="amount">Noma'lum</div>
+        <div class="period">Saytda ko'rsatilmagan</div>
+        <div class="note">Demo so'rab bilish kerak</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Ular qayerda yutadi</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-lose"><div class="di-title">Yetkazib berish optimallashtirish</div><div class="di-desc">Kuryer yo'nalish, tracking — Salqin da yo'q</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">POS integratsiya</div><div class="di-desc">Mavjud tizimlar bilan ulanadi</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Mahalliy kompaniya</div><span class="di-desc">Toshkentda ofis, mahalliy qo'llab-quvvatlash</span></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Siz qayerda yutasiz</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-win"><div class="di-title">To'liq do'kon sayt</div><div class="di-desc">Delever faqat yetkazib berish — do'kon sayt yo'q</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Telegram bot</div><div class="di-desc">Telegram integratsiya yo'q Delever da</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Subdomen brend</div><div class="di-desc">O'z saytingiz — Delever da bu yo'q</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Landmine savollar</h2>
+  <div class="landmine">"Delever orqali mijozlaringiz to'g'ridan to'g'ri o'z saytingizdan buyurtma bera oladimi?"</div>
+  <div class="landmine">"Delever brend saytingizni qiladi va Telegram botingizni sozlab beradimi?"</div>
+</div>
+
+<!-- ============================================================ YANDEX -->
+<div id="tab-yandex" class="tab-content">
+  <div class="comp-header">
+    <div class="comp-logo" style="background: rgba(245,158,11,.15); color: #f59e0b;">Y</div>
+    <div>
+      <div class="comp-name">Yandex Eats / Express24</div>
+      <div class="comp-tagline">O'zbekiston yetkazib berish bozorining monopolisti · 87.5% bozor ulushi</div>
+    </div>
+    <div style="margin-left: auto;"><span class="tag tag-lose">Indirect raqobatchi</span></div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Bozor holati</h3>
+      <div class="profile-row"><span class="label">Bozor ulushi</span><span class="value" style="color:var(--red)">87.5% (monopol)</span></div>
+      <div class="profile-row"><span class="label">Yandex + Express24</span><span class="value">Qo'shildi (2024)</span></div>
+      <div class="profile-row"><span class="label">Raqib</span><span class="value">Wolt (chiqib ketdi 2024)</span></div>
+      <div class="profile-row"><span class="label">Model</span><span class="value">Agregator (komissiya)</span></div>
+      <div class="profile-row"><span class="label">UZ bozori</span><span class="value">$281M (2025)</span></div>
+    </div>
+    <div class="panel">
+      <h3>Narx (biznes uchun)</h3>
+      <div class="price-box">
+        <div class="amount">15–25%</div>
+        <div class="period">har bir buyurtmadan komissiya</div>
+        <div class="note">100 ta buyurtma × 50 000 so'm = 5M → 750K–1.25M komissiya</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bc-grid">
+    <div class="panel">
+      <h3>Ular qayerda yutadi</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-lose"><div class="di-title">Katta foydalanuvchi bazasi</div><div class="di-desc">Millionlab UZ foydalanuvchilari — yangi mijoz topish oson</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">Marketing va brend</div><div class="di-desc">Yandex brend kuchi va reklama</div></li>
+        <li class="diff-item diff-lose"><div class="di-title">To'lov tizimi tayyor</div><div class="di-desc">Click, Payme, karta — hamma narsa bor</div></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Siz qayerda yutasiz</h3>
+      <ul class="diff-list">
+        <li class="diff-item diff-win"><div class="di-title">Komissiya yo'q</div><div class="di-desc">Oyiga bir martalik to'lov — har buyurtmadan % ketmaydi</div></li>
+        <li class="diff-item diff-win"><div class="di-title">O'z mijozlar bazasi</div><div class="di-desc">Yandex da mijoz — Yandexniki. Salqin da — sizniki</div></li>
+        <li class="diff-item diff-win"><div class="di-title">O'z brend va sayt</div><div class="di-desc">Yandex da siz faqat ro'yxatdasiz — brend yo'q</div></li>
+        <li class="diff-item diff-win"><div class="di-title">Narx nazorati</span></div><div class="di-desc">Yandex narx siyosatiga bog'liq emassiz</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Eng kuchli talk track (Yandex Eats foydalanuvchisiga)</h2>
+  <div class="track">
+    <div class="t-scenario">Asosiy argument</div>
+    <div class="t-text">
+      "Yandex Eats da oyiga 200 ta buyurtma qilsangiz, har biri 50 000 so'm bo'lsa — 10 mln so'm tushum, lekin 1.5–2.5 mln so'mi komissiya bo'lib ketadi. Bu yiliga 18–30 mln so'm. Salqin da oyiga 99 000 so'm to'laysiz — yiliga faqat 1.2 mln. Farq: 17–29 mln so'm tejaysiz. Va mijozlar bazasi to'liq sizniki."
+    </div>
+  </div>
+
+  <h2 class="section-title">Landmine savollar</h2>
+  <div class="landmine">"Yandex Eats da har oy qancha komissiya to'layapsiz? Oxirgi 3 oyni hisoblab ko'rdingizmi?"</div>
+  <div class="landmine">"Yandex orqali kelgan mijozlar keyingi safar to'g'ridan to'g'ri siz bilan bog'lana oladimi? Ularning telefon raqamini bilasizmi?"</div>
+  <div class="landmine">"Yandex narxingizni yoki shartlaringizni o'zgartirsа nima qilasiz?"</div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

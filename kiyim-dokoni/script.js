@@ -190,12 +190,14 @@ function toast(msg, type = 'success') {
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('moda_bot_config') || 'null');
-        if (!cfg || !cfg.connected || !cfg.channel) return;
-        const BOT_HTTP = localStorage.getItem('moda_bot_http_url') || 'http://localhost:3344';
-        fetch(`${BOT_HTTP}/orders/${cfg.botId}`, {
+        if (!cfg || !cfg.token) return;
+        const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kiyim';
+        const BOT_HTTP = (localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, '');
+        fetch(`${BOT_HTTP}/store-bot/order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                clientId: SHOP_KEY,
                 order: {
                     id: String(order.id),
                     userName: order.name,
@@ -444,6 +446,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     function openProductDetail(id) {
         const p = data.products.find(x => x.id === id);
         if (!p) return;
+        const imgs = (Array.isArray(p.images) && p.images.length) ? p.images : (p.image ? [p.image] : []);
         const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
         const isFav = favorites.includes(p.id);
         const sizesHtml = (p.sizes || []).map((s,i) => `<button class="size-btn ${i===0?'active':''}" data-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');
@@ -454,7 +457,11 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             <div class="sheet-body">
                 <div class="pd-gallery">
                     <button class="pd-fav ${isFav ? 'on' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '🤍'}</button>
-                    <img src="${p.image}" alt="${escapeHtml(p.name)}">
+                    <div class="pd-slider" id="pdSlider">
+                        ${imgs.map(src => `<div class="pd-slide"><img src="${src}" alt="${escapeHtml(p.name)}" draggable="false"></div>`).join('')}
+                    </div>
+                    ${imgs.length > 1 ? `<span class="pd-count" id="pdCount">1 / ${imgs.length}</span>` : ''}
+                    ${imgs.length > 1 ? `<div class="pd-dots" id="pdDots">${imgs.map((_, i) => `<span class="pd-dot ${i === 0 ? 'active' : ''}" data-i="${i}"></span>`).join('')}</div>` : ''}
                 </div>
                 <div class="pd-cat">${escapeHtml(p.category)}</div>
                 <h2 class="pd-name">${escapeHtml(p.name)}</h2>
@@ -479,6 +486,35 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 </button>
             </div>`;
         openSheet('productSheet');
+
+        // Rasm galereyasi — yonga surish (swipe) + nuqtalar
+        const slider = document.getElementById('pdSlider');
+        if (slider && imgs.length > 1) {
+            const dots = [...document.querySelectorAll('#pdDots .pd-dot')];
+            const countEl = document.getElementById('pdCount');
+            const sync = () => {
+                const i = Math.round(slider.scrollLeft / slider.clientWidth);
+                dots.forEach((d, k) => d.classList.toggle('active', k === i));
+                if (countEl) countEl.textContent = `${Math.min(i + 1, imgs.length)} / ${imgs.length}`;
+            };
+            slider.addEventListener('scroll', sync, { passive: true });
+            dots.forEach((d, k) => d.onclick = () => slider.scrollTo({ left: k * slider.clientWidth, behavior: 'smooth' }));
+            // Desktop: sichqoncha bilan ham surish
+            let down = false, startX = 0, startScroll = 0, moved = false;
+            slider.addEventListener('pointerdown', e => { down = true; moved = false; startX = e.clientX; startScroll = slider.scrollLeft; });
+            slider.addEventListener('pointermove', e => {
+                if (!down) return;
+                const dx = e.clientX - startX;
+                if (Math.abs(dx) > 4) moved = true;
+                slider.scrollLeft = startScroll - dx;
+            });
+            const endDrag = () => {
+                if (!down) return; down = false;
+                if (moved) slider.scrollTo({ left: Math.round(slider.scrollLeft / slider.clientWidth) * slider.clientWidth, behavior: 'smooth' });
+            };
+            slider.addEventListener('pointerup', endDrag);
+            slider.addEventListener('pointerleave', endDrag);
+        }
 
         document.querySelectorAll('#productDetail .size-btn').forEach(b => b.onclick = () => {
             document.querySelectorAll('#productDetail .size-btn').forEach(x => x.classList.remove('active'));

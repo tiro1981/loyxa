@@ -995,3 +995,25 @@ input { font-family: inherit; outline: none; border: none; background: transpare
   .food-grid { grid-template-columns: 1fr; }
   .promo-text h2 { font-size: 18px; }
 }
+
+/* ===== To'lov usullari — faqat Naqd faol, qolganlari "Tez orada" (rangsiz) ===== */
+.pay-method-list { display: flex; flex-direction: column; gap: 10px; }
+.pay-method {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--line, #ECEDEF);
+  border-radius: 14px;
+  background: var(--card, #fff);
+}
+.pay-method.active { border-color: #2DBE60; background: rgba(45,190,96,.08); }
+.pay-method .pm-emoji { font-size: 22px; width: 28px; text-align: center; flex-shrink: 0; }
+.pay-method .pm-text { flex: 1; min-width: 0; }
+.pay-method .pm-text b { display: block; font-size: 14px; }
+.pay-method .pm-text small { font-size: 11.5px; color: var(--text-sub, #6B7280); }
+.pay-method .pm-ok { color: #2DBE60; font-size: 18px; }
+.pay-method.pay-soon { opacity: .6; filter: grayscale(1); cursor: not-allowed; }
+.pay-method .soon-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .3px;
+  background: #E5E7EB; color: #6B7280;
+  padding: 3px 8px; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+}

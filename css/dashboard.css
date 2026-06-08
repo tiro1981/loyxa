@@ -1245,6 +1245,11 @@ a.qa-btn { text-decoration: none; color: inherit; }
     color: #92400E;
 }
 .mp-app-price-custom i { color: #B45309; margin-right: 6px; }
+.mp-app-price-free {
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+.mp-app-price-free i { color: var(--primary); margin-right: 6px; }
 .mp-app-actions {
     display: flex;
     gap: 8px;
@@ -1282,3 +1287,289 @@ a.qa-btn { text-decoration: none; color: inherit; }
     .no-sub-hero-body h2 { font-size: 22px; }
     .no-sub-hero-icon { width: 64px; height: 64px; font-size: 28px; }
 }
+
+/* ============================================================
+   ====== BILDIRISHNOMA (notification dropdown) ==============
+   ============================================================ */
+.notif-wrap { position: relative; }
+.notif-badge {
+    position: absolute;
+    top: 2px; right: 2px;
+    min-width: 17px; height: 17px;
+    padding: 0 4px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 100px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--white);
+}
+.notif-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 340px;
+    max-width: 86vw;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 60;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: var(--transition);
+}
+.notif-panel.show { opacity: 1; visibility: visible; transform: translateY(0); }
+.notif-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--gray-100);
+}
+.notif-panel-head h4 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.notif-panel-head h4 i { color: var(--primary); font-size: 13px; }
+.notif-readall {
+    background: none; border: none; cursor: pointer;
+    color: var(--primary); font-size: 12px; font-weight: 600; font-family: inherit;
+}
+.notif-readall:hover { text-decoration: underline; }
+.notif-list { max-height: 380px; overflow-y: auto; }
+.notif-item {
+    display: flex; gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: var(--gray-50); }
+.notif-item.unread { background: var(--primary-light); }
+.notif-item-ic {
+    width: 36px; height: 36px; flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+}
+.notif-item-body { flex: 1; min-width: 0; }
+.notif-item-body p { font-size: 13px; color: var(--gray-700); line-height: 1.45; margin-bottom: 4px; }
+.notif-time { font-size: 11px; color: var(--gray-400); }
+.notif-empty { text-align: center; padding: 36px 20px; color: var(--gray-400); }
+.notif-empty i { font-size: 30px; opacity: 0.4; margin-bottom: 8px; display: block; }
+.notif-empty p { font-size: 13px; }
+
+/* ============================================================
+   ====== QO'LLAB-QUVVATLASH (support chat) ==================
+   ============================================================ */
+.support-head {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+.support-head-ic {
+    width: 54px; height: 54px; flex-shrink: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+}
+.support-head h2 { font-size: 20px; margin-bottom: 4px; }
+.support-head p { font-size: 13.5px; color: var(--gray-500); line-height: 1.5; }
+.support-head p i { color: var(--primary); }
+
+.support-chat {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+}
+.support-thread {
+    padding: 22px 24px;
+    min-height: 320px;
+    max-height: 56vh;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--gray-50);
+}
+.msg-row { display: flex; }
+.msg-row.me { justify-content: flex-end; }
+.msg-row.them { justify-content: flex-start; }
+.msg-bubble {
+    max-width: 76%;
+    padding: 11px 14px;
+    border-radius: 14px;
+    font-size: 14px; line-height: 1.5;
+}
+.msg-row.me .msg-bubble {
+    background: var(--primary); color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.msg-row.them .msg-bubble {
+    background: var(--white); color: var(--gray-800);
+    border: 1px solid var(--gray-200);
+    border-bottom-left-radius: 4px;
+}
+.msg-bubble p { margin-bottom: 5px; white-space: pre-wrap; word-wrap: break-word; }
+.msg-meta { font-size: 10.5px; opacity: 0.8; }
+.msg-row.me .msg-meta { color: rgba(255,255,255,0.9); }
+.msg-row.them .msg-meta { color: var(--gray-400); }
+.support-empty { margin: auto; text-align: center; color: var(--gray-400); padding: 40px 20px; }
+.support-empty i { font-size: 38px; opacity: 0.4; margin-bottom: 10px; display: block; }
+.support-empty p { font-size: 14px; }
+
+.support-form {
+    display: flex; align-items: flex-end; gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--white);
+}
+.support-form textarea {
+    flex: 1;
+    resize: none;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: inherit; font-size: 14px;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    outline: none;
+    max-height: 120px;
+    line-height: 1.4;
+    transition: var(--transition);
+}
+.support-form textarea:focus { border-color: var(--primary); background: var(--white); }
+.support-send {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border: none; border-radius: 12px;
+    background: var(--primary); color: #fff;
+    cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+}
+.support-send:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+@media (max-width: 768px) {
+    .notif-panel { width: 300px; }
+    .support-head { padding: 18px; }
+    .support-thread { padding: 16px; max-height: 50vh; }
+    .msg-bubble { max-width: 86%; }
+}
+
+/* ============================================================
+   ====== OBUNALAR (Mening ilovalarim / Obuna) ===============
+   ============================================================ */
+.myapps-head {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+}
+.myapps-head h2 { font-size: 22px; margin-bottom: 4px; }
+.myapps-head p { color: var(--gray-500); font-size: 14px; }
+
+.subs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 20px;
+}
+.sub-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+.sub-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.sub-card-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.sub-icon {
+    width: 52px; height: 52px; flex-shrink: 0;
+    border-radius: 14px;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; overflow: hidden;
+}
+.sub-icon img { width: 100%; height: 100%; object-fit: cover; }
+.sub-card-info { flex: 1; min-width: 0; }
+.sub-card-info h3 { font-size: 17px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub-domain { font-size: 12.5px; color: var(--primary-dark); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+.sub-domain i { font-size: 11px; opacity: .8; }
+.sub-status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px; font-weight: 700;
+    color: var(--primary-dark); background: var(--primary-light);
+    padding: 4px 10px; border-radius: 100px; white-space: nowrap; align-self: flex-start;
+}
+.sub-status-pill i { font-size: 7px; }
+.sub-meta-row {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--gray-500);
+    padding: 12px 0; margin-bottom: 12px;
+    border-top: 1px dashed var(--gray-200);
+}
+.sub-meta-row i { color: var(--gray-400); margin-right: 4px; }
+.sub-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sub-actions .btn { flex: 1 1 calc(50% - 4px); justify-content: center; }
+.sub-actions .btn-ghost-danger { flex-basis: 100%; }
+.btn-ghost-danger {
+    background: transparent; border: 1.5px solid var(--gray-200); color: var(--danger);
+}
+.btn-ghost-danger:hover { background: #FEE2E2; border-color: var(--danger); }
+.btn-subscribed {
+    background: var(--primary-light); color: var(--primary-dark);
+    border: 1.5px solid transparent; cursor: default;
+}
+
+/* ===== Subdomen modal ===== */
+.subdomain-box {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%; max-width: 440px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    animation: sdPop .25s ease;
+}
+@keyframes sdPop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.subdomain-inner { padding: 28px 26px 26px; }
+.subdomain-app { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.subdomain-app-ic {
+    width: 54px; height: 54px; border-radius: 14px;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+}
+.subdomain-tag { font-size: 11px; font-weight: 700; letter-spacing: .6px; color: var(--primary); display: block; margin-bottom: 2px; }
+.subdomain-app h3 { font-size: 19px; }
+.subdomain-desc { font-size: 13.5px; color: var(--gray-500); line-height: 1.55; margin-bottom: 18px; }
+.subdomain-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--gray-500); margin-bottom: 8px; }
+.subdomain-input {
+    display: flex; align-items: stretch;
+    border: 1.5px solid var(--gray-200); border-radius: 12px; overflow: hidden;
+    transition: var(--transition);
+}
+.subdomain-input:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+.subdomain-input input {
+    flex: 1; min-width: 0; border: none; outline: none; padding: 13px 14px;
+    font-family: inherit; font-size: 15px; font-weight: 600; color: var(--gray-900); background: var(--white);
+}
+.subdomain-suffix {
+    display: flex; align-items: center; padding: 0 14px;
+    background: var(--gray-100); color: var(--gray-500); font-size: 14px; white-space: nowrap;
+    border-left: 1px solid var(--gray-200);
+}
+.subdomain-hint { font-size: 12.5px; color: var(--gray-400); margin: 8px 2px 18px; min-height: 16px; }
+.subdomain-hint.ok { color: var(--primary-dark); }
+.subdomain-hint.err { color: var(--danger); }
+
+@media (max-width: 768px) {
+    .subs-grid { grid-template-columns: 1fr; }
+}
+html[data-theme="dark"] .sub-card { background: #1E293B; border-color: rgba(255,255,255,.06); }
+html[data-theme="dark"] .subdomain-box { background: #1E293B; }
+html[data-theme="dark"] .subdomain-input input { background: #1E293B; }
+html[data-theme="dark"] .subdomain-suffix { background: rgba(255,255,255,.06); }

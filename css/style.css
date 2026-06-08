@@ -148,6 +148,19 @@ img {
     transform: translateY(-2px);
 }
 
+/* Light-context ghost — navbar/login (readable on light & dark via settings.css gray flip) */
+.btn-soft {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border: 1px solid var(--gray-200);
+}
+.btn-soft:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: transparent;
+    transform: translateY(-2px);
+}
+
 /* ===== NAVBAR ===== */
 .navbar {
     position: fixed;
@@ -204,6 +217,9 @@ img {
     align-items: center;
     gap: 4px;
 }
+
+/* Auth buttons only appear inside the mobile dropdown */
+.nav-auth { display: none; }
 
 .nav-link {
     padding: 10px 16px;
@@ -799,6 +815,22 @@ section {
     font-weight: 500;
 }
 
+/* Bepul yorlig'i (obuna o'rniga) */
+.app-free-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+    border: 1.5px solid var(--primary-light);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--primary-dark);
+}
+.app-free-tag i { color: var(--primary); }
+
 /* ===== APP DETAIL MODAL ===== */
 .app-detail-overlay {
     position: fixed;
@@ -1265,7 +1297,7 @@ section {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    grid-template-columns: 1.8fr 1fr 1.3fr;
     gap: 40px;
     margin-bottom: 60px;
 }
@@ -1328,6 +1360,13 @@ section {
     gap: 10px;
     color: var(--gray-400);
 }
+.footer-contacts li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+.footer-contacts li a:hover { color: var(--primary); }
 
 .footer-contacts i {
     color: var(--primary);
@@ -2109,6 +2148,7 @@ section {
     .nav-links.open { transform: translateY(0); }
     .nav-link { width: 100%; padding: 12px 16px; }
     .nav-actions .btn { display: none; }
+    .nav-auth { display: block; width: 100%; margin-top: 6px; }
     .hamburger { display: flex; }
     .apps-grid, .reviews-grid, .pricing-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr; }
@@ -2131,3 +2171,4 @@ section {
     .hero-card-1 { width: 240px; left: 10px; }
     .hero-card-2 { right: -5px; }
 }
+

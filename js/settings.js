@@ -32,10 +32,10 @@
             'hero.title_1':            'Biznesingizni',
             'hero.title_online':       'Online',
             'hero.title_2':            'ga oling —',
-            'hero.title_sub':          'Oylik obuna',
-            'hero.title_3':            'bilan',
-            'hero.subtitle':           'Do\'kon, fast food yoki kafe — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Obuna narxi siz bilan kelishilgan holda, individual tarzda belgilanadi.',
-            'hero.btn_subscribe':      'Obuna bo\'lish',
+            'hero.title_sub':          'Bepul',
+            'hero.title_3':            'va bir necha daqiqada',
+            'hero.subtitle':           'Do\'kon, fast food, kafe yoki kitob do\'koni — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Ro\'yxatdan o\'ting va ilovani mutlaqo bepul oling.',
+            'hero.btn_subscribe':      'Bepul boshlash',
             'hero.btn_view_apps':      'Ilovalarni ko\'rish',
             'hero.trust_count':        '200+ biznes',
             'hero.trust_text':         'bizga ishonadi',
@@ -51,7 +51,7 @@
             'reviews.subtitle':        '200+ biznes egasi bizni tanladi',
             // CTA / Footer
             'cta.title':               'Bugun boshlang — ertaga mijozlaringiz ko\'paysin',
-            'cta.btn_start':           'Hozir boshlash',
+            'cta.btn_start':           'Bepul boshlash',
             // Dashboard
             'dash.main':               'Asosiy',
             'dash.home':               'Bosh sahifa',
@@ -70,10 +70,10 @@
             'dash.contact_admin':      'Adminga yozish',
             'dash.no_sub_tag':         'XUSH KELIBSIZ!',
             'dash.no_sub_title':       'Biznesingizni online ga olib chiqing',
-            'dash.no_sub_desc':        'Hali bironta ilovaga obuna emassiz. Pastdagi ilovalardan birini tanlang va biznesingiz uchun veb-ilova hamda boshqaruv dashbordini bir necha daqiqada ishga tushiring.',
+            'dash.no_sub_desc':        'Hali ilova tanlamagansiz. Pastdagi ilovalardan birini tanlang va biznesingiz uchun veb-ilova hamda boshqaruv dashbordini bir necha daqiqada bepul ishga tushiring.',
             'dash.no_sub_btn':         'Ilovalarni ko\'rish',
             'dash.mp_title':           'BiznesOnline Ilovalari',
-            'dash.mp_subtitle':        'Biznesingizga mos ilovani tanlang va obuna bo\'ling',
+            'dash.mp_subtitle':        'Biznesingizga mos ilovani tanlang — barchasi bepul',
         },
         ru: {
             'common.settings':         'Настройки',
@@ -96,10 +96,10 @@
             'hero.title_1':            'Сделайте бизнес',
             'hero.title_online':       'Онлайн',
             'hero.title_2':            ' —',
-            'hero.title_sub':          'Месячная подписка',
-            'hero.title_3':            '',
-            'hero.subtitle':           'Магазин, фастфуд или кафе — готовое веб-приложение и панель управления. Цена подписки устанавливается индивидуально по согласованию.',
-            'hero.btn_subscribe':      'Подписаться',
+            'hero.title_sub':          'Бесплатно',
+            'hero.title_3':            'за пару минут',
+            'hero.subtitle':           'Магазин, фастфуд, кафе или книжный — готовое веб-приложение и панель управления. Зарегистрируйтесь и получите приложение совершенно бесплатно.',
+            'hero.btn_subscribe':      'Начать бесплатно',
             'hero.btn_view_apps':      'Смотреть приложения',
             'hero.trust_count':        '200+ бизнесов',
             'hero.trust_text':         'нам доверяют',
@@ -113,7 +113,7 @@
             'reviews.title':           'Что говорят наши клиенты',
             'reviews.subtitle':        '200+ владельцев бизнеса выбрали нас',
             'cta.title':               'Начните сегодня — увеличьте клиентов завтра',
-            'cta.btn_start':           'Начать сейчас',
+            'cta.btn_start':           'Начать бесплатно',
             'dash.main':               'Основное',
             'dash.home':               'Главная',
             'dash.apps':               'Приложения',
@@ -131,10 +131,10 @@
             'dash.contact_admin':      'Написать админу',
             'dash.no_sub_tag':         'ДОБРО ПОЖАЛОВАТЬ!',
             'dash.no_sub_title':       'Сделайте бизнес онлайн',
-            'dash.no_sub_desc':        'Вы ещё не подписаны ни на одно приложение. Выберите одно из приложений ниже и запустите веб-приложение и панель управления за несколько минут.',
+            'dash.no_sub_desc':        'Вы ещё не выбрали приложение. Выберите одно из приложений ниже и запустите веб-приложение и панель управления бесплатно за несколько минут.',
             'dash.no_sub_btn':         'Смотреть приложения',
             'dash.mp_title':           'Приложения BiznesOnline',
-            'dash.mp_subtitle':        'Выберите подходящее приложение и подпишитесь',
+            'dash.mp_subtitle':        'Выберите подходящее приложение — всё бесплатно',
         },
         en: {
             'common.settings':         'Settings',
@@ -157,10 +157,10 @@
             'hero.title_1':            'Take your business',
             'hero.title_online':       'Online',
             'hero.title_2':            ' —',
-            'hero.title_sub':          'Monthly subscription',
-            'hero.title_3':            '',
-            'hero.subtitle':           'Shop, fast food or cafe — a ready web app and management dashboard for all. Subscription price is set individually based on agreement.',
-            'hero.btn_subscribe':      'Subscribe',
+            'hero.title_sub':          'Free',
+            'hero.title_3':            'in minutes',
+            'hero.subtitle':           'Shop, fast food, cafe or bookstore — a ready web app and dashboard for all. Sign up and get your app completely free.',
+            'hero.btn_subscribe':      'Start free',
             'hero.btn_view_apps':      'View apps',
             'hero.trust_count':        '200+ businesses',
             'hero.trust_text':         'trust us',
@@ -174,7 +174,7 @@
             'reviews.title':           'What our clients say',
             'reviews.subtitle':        '200+ business owners chose us',
             'cta.title':               'Start today — grow your customers tomorrow',
-            'cta.btn_start':           'Start now',
+            'cta.btn_start':           'Start free',
             'dash.main':               'Main',
             'dash.home':               'Home',
             'dash.apps':               'Apps',
@@ -192,10 +192,10 @@
             'dash.contact_admin':      'Message admin',
             'dash.no_sub_tag':         'WELCOME!',
             'dash.no_sub_title':       'Take your business online',
-            'dash.no_sub_desc':        'You haven\'t subscribed to any app yet. Choose one of the apps below and launch a web app and dashboard for your business in minutes.',
+            'dash.no_sub_desc':        'You haven\'t picked an app yet. Choose one of the apps below and launch a web app and dashboard for your business — free, in minutes.',
             'dash.no_sub_btn':         'View apps',
             'dash.mp_title':           'BiznesOnline Apps',
-            'dash.mp_subtitle':        'Choose the right app and subscribe',
+            'dash.mp_subtitle':        'Choose the right app — all free',
         }
     };
 
@@ -222,87 +222,102 @@
             <div class="settings-body">
 
                 <!-- TIL -->
-                <div class="settings-section">
-                    <div class="settings-label">
+                <div class="settings-section" data-accordion>
+                    <button type="button" class="settings-label" aria-expanded="false">
                         <i class="fa-solid fa-language"></i>
                         <span data-i18n="common.language">Til</span>
-                    </div>
-                    <div class="lang-list">
-                        <button type="button" class="lang-card" data-lang="uz">
-                            <span class="lang-flag">🇺🇿</span>
-                            <div class="lang-info">
-                                <strong>O'zbekcha</strong>
-                                <span>Uzbek</span>
+                        <i class="fa-solid fa-chevron-down settings-acc-arrow"></i>
+                    </button>
+                    <div class="settings-section-body">
+                        <div class="settings-section-inner">
+                            <div class="lang-list">
+                                <button type="button" class="lang-card" data-lang="uz">
+                                    <span class="lang-flag">🇺🇿</span>
+                                    <div class="lang-info">
+                                        <strong>O'zbekcha</strong>
+                                        <span>Uzbek</span>
+                                    </div>
+                                    <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
+                                </button>
+                                <button type="button" class="lang-card" data-lang="ru">
+                                    <span class="lang-flag">🇷🇺</span>
+                                    <div class="lang-info">
+                                        <strong>Русский</strong>
+                                        <span>Russian</span>
+                                    </div>
+                                    <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
+                                </button>
+                                <button type="button" class="lang-card" data-lang="en">
+                                    <span class="lang-flag">🇬🇧</span>
+                                    <div class="lang-info">
+                                        <strong>English</strong>
+                                        <span>English</span>
+                                    </div>
+                                    <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
+                                </button>
                             </div>
-                            <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
-                        </button>
-                        <button type="button" class="lang-card" data-lang="ru">
-                            <span class="lang-flag">🇷🇺</span>
-                            <div class="lang-info">
-                                <strong>Русский</strong>
-                                <span>Russian</span>
-                            </div>
-                            <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
-                        </button>
-                        <button type="button" class="lang-card" data-lang="en">
-                            <span class="lang-flag">🇬🇧</span>
-                            <div class="lang-info">
-                                <strong>English</strong>
-                                <span>English</span>
-                            </div>
-                            <span class="lang-tick"><i class="fa-solid fa-check"></i></span>
-                        </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- EMAIL O'ZGARTIRISH -->
-                <div class="settings-section" id="settingsEmailSection">
-                    <div class="settings-label">
-                        <i class="fa-solid fa-envelope"></i>
-                        <span>Email manzilni o'zgartirish</span>
+                <!-- FOYDALANUVCHI NOMINI O'ZGARTIRISH -->
+                <div class="settings-section" id="settingsUsernameSection" data-accordion>
+                    <button type="button" class="settings-label" aria-expanded="false">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Foydalanuvchi nomini o'zgartirish</span>
+                        <i class="fa-solid fa-chevron-down settings-acc-arrow"></i>
+                    </button>
+                    <div class="settings-section-body">
+                        <div class="settings-section-inner">
+                            <form class="settings-form" id="usernameChangeForm">
+                                <div class="settings-input-row">
+                                    <label>Joriy foydalanuvchi nomi</label>
+                                    <input type="text" id="settingsCurrentUsername" readonly>
+                                </div>
+                                <div class="settings-input-row">
+                                    <label>Yangi foydalanuvchi nomi</label>
+                                    <input type="text" id="settingsNewUsername" placeholder="yangi_username" required minlength="3">
+                                </div>
+                                <div class="settings-input-row">
+                                    <label>Joriy parol (tasdiqlash uchun)</label>
+                                    <input type="password" id="settingsUsernamePass" placeholder="••••••" required>
+                                </div>
+                                <button type="submit" class="settings-btn">
+                                    <i class="fa-solid fa-floppy-disk"></i> Saqlash
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <form class="settings-form" id="emailChangeForm">
-                        <div class="settings-input-row">
-                            <label>Joriy email</label>
-                            <input type="email" id="settingsCurrentEmail" readonly>
-                        </div>
-                        <div class="settings-input-row">
-                            <label>Yangi email</label>
-                            <input type="email" id="settingsNewEmail" placeholder="yangi@gmail.com" required>
-                        </div>
-                        <div class="settings-input-row">
-                            <label>Joriy parol (tasdiqlash uchun)</label>
-                            <input type="password" id="settingsEmailPass" placeholder="••••••" required>
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fa-solid fa-floppy-disk"></i> Email saqlash
-                        </button>
-                    </form>
                 </div>
 
                 <!-- PAROL O'ZGARTIRISH -->
-                <div class="settings-section" id="settingsPassSection">
-                    <div class="settings-label">
+                <div class="settings-section" id="settingsPassSection" data-accordion>
+                    <button type="button" class="settings-label" aria-expanded="false">
                         <i class="fa-solid fa-lock"></i>
                         <span>Parolni o'zgartirish</span>
+                        <i class="fa-solid fa-chevron-down settings-acc-arrow"></i>
+                    </button>
+                    <div class="settings-section-body">
+                        <div class="settings-section-inner">
+                            <form class="settings-form" id="passChangeForm">
+                                <div class="settings-input-row">
+                                    <label>Joriy parol</label>
+                                    <input type="password" id="settingsCurrentPass" placeholder="••••••" required>
+                                </div>
+                                <div class="settings-input-row">
+                                    <label>Yangi parol</label>
+                                    <input type="password" id="settingsNewPass" placeholder="Kamida 6 ta belgi" required minlength="6">
+                                </div>
+                                <div class="settings-input-row">
+                                    <label>Yangi parolni takrorlang</label>
+                                    <input type="password" id="settingsConfirmPass" placeholder="••••••" required minlength="6">
+                                </div>
+                                <button type="submit" class="settings-btn">
+                                    <i class="fa-solid fa-key"></i> Parol saqlash
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <form class="settings-form" id="passChangeForm">
-                        <div class="settings-input-row">
-                            <label>Joriy parol</label>
-                            <input type="password" id="settingsCurrentPass" placeholder="••••••" required>
-                        </div>
-                        <div class="settings-input-row">
-                            <label>Yangi parol</label>
-                            <input type="password" id="settingsNewPass" placeholder="Kamida 6 ta belgi" required minlength="6">
-                        </div>
-                        <div class="settings-input-row">
-                            <label>Yangi parolni takrorlang</label>
-                            <input type="password" id="settingsConfirmPass" placeholder="••••••" required minlength="6">
-                        </div>
-                        <button type="submit" class="settings-btn">
-                            <i class="fa-solid fa-key"></i> Parol saqlash
-                        </button>
-                    </form>
                 </div>
             </div>
         `;
@@ -383,6 +398,23 @@
             card.addEventListener('click', () => applyLang(card.dataset.lang));
         });
 
+        // Akkordion — sozlamalar bo'limlari sarlavhasiga bosilganda ochiladi/yopiladi
+        document.querySelectorAll('.settings-section[data-accordion] > .settings-label').forEach(label => {
+            label.addEventListener('click', () => {
+                const section = label.closest('.settings-section');
+                const willOpen = !section.classList.contains('open');
+                // Bir vaqtda faqat bitta bo'lim ochiq tursin
+                document.querySelectorAll('.settings-section[data-accordion].open').forEach(s => {
+                    if (s !== section) {
+                        s.classList.remove('open');
+                        s.querySelector('.settings-label')?.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                section.classList.toggle('open', willOpen);
+                label.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+        });
+
         // Trigger buttons — `data-settings-open` atributi orqali har qanday element
         document.querySelectorAll('[data-settings-open]').forEach(btn => {
             btn.addEventListener('click', (e) => { e.preventDefault(); openPanel(); });
@@ -426,49 +458,54 @@
 
     function setupProfileForms() {
         const data = getCurrentClient();
-        const emailSection = document.getElementById('settingsEmailSection');
+        const usernameSection = document.getElementById('settingsUsernameSection');
         const passSection = document.getElementById('settingsPassSection');
 
         if (!data || !data.me) {
             // Login bo'lmagan — bo'limlarni yashirish
-            if (emailSection) emailSection.style.display = 'none';
+            if (usernameSection) usernameSection.style.display = 'none';
             if (passSection) passSection.style.display = 'none';
             return;
         }
 
-        // Email — current ni to'ldirish
-        const curEmailEl = document.getElementById('settingsCurrentEmail');
-        if (curEmailEl) curEmailEl.value = data.me.email || '';
+        // Foydalanuvchi nomi — current ni to'ldirish
+        const curUserEl = document.getElementById('settingsCurrentUsername');
+        if (curUserEl) curUserEl.value = data.me.username || data.me.businessName || '';
 
-        // Email submit
-        const emailForm = document.getElementById('emailChangeForm');
-        emailForm?.addEventListener('submit', (e) => {
+        // Foydalanuvchi nomi submit
+        const usernameForm = document.getElementById('usernameChangeForm');
+        usernameForm?.addEventListener('submit', (e) => {
             e.preventDefault();
-            const newEmail = document.getElementById('settingsNewEmail').value.trim();
-            const pass = document.getElementById('settingsEmailPass').value;
+            const newU = document.getElementById('settingsNewUsername').value.trim();
+            const pass = document.getElementById('settingsUsernamePass').value;
             const fresh = getCurrentClient();
             if (!fresh || !fresh.me) return;
 
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-                showToast("To'g'ri email kiriting", 'error'); return;
+            if (newU.length < 3) {
+                showToast("Foydalanuvchi nomi kamida 3 ta belgi", 'error'); return;
+            }
+            if (/\s/.test(newU)) {
+                showToast("Foydalanuvchi nomida bo'sh joy bo'lmasin", 'error'); return;
             }
             if (fresh.me.password !== pass) {
                 showToast("Parol noto'g'ri", 'error'); return;
             }
-            if (fresh.subs.find(s => s.email === newEmail && s.id !== fresh.me.id)) {
-                showToast("Bu email allaqachon band", 'error'); return;
+            if (fresh.subs.find(s => s.username && s.username.toLowerCase() === newU.toLowerCase() && s.id !== fresh.me.id)) {
+                showToast("Bu foydalanuvchi nomi band", 'error'); return;
             }
 
-            fresh.me.email = newEmail;
+            fresh.me.username = newU;
+            fresh.me.businessName = newU;   // ko'rsatish nomi ham yangilanadi
             localStorage.setItem('bo_subscriptions', JSON.stringify(fresh.subs));
             // Session ham yangilash
-            fresh.session.email = newEmail;
+            fresh.session.username = newU;
+            fresh.session.businessName = newU;
             localStorage.setItem('bo_session', JSON.stringify(fresh.session));
 
-            if (curEmailEl) curEmailEl.value = newEmail;
-            document.getElementById('settingsNewEmail').value = '';
-            document.getElementById('settingsEmailPass').value = '';
-            showToast('Email yangilandi ✅', 'success');
+            if (curUserEl) curUserEl.value = newU;
+            document.getElementById('settingsNewUsername').value = '';
+            document.getElementById('settingsUsernamePass').value = '';
+            showToast('Foydalanuvchi nomi yangilandi ✅', 'success');
         });
 
         // Parol submit

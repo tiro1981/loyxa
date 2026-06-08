@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin.css?v=6">
 </head>
 <body class="admin-body">
 
@@ -32,6 +32,10 @@
                 <button class="admin-link" data-section="clients">
                     <i class="fa-solid fa-users"></i> <span>Mijozlar</span>
                 </button>
+                <button class="admin-link" data-section="messages">
+                    <i class="fa-solid fa-comments"></i> <span>Xabarlar</span>
+                    <span class="admin-nav-badge" id="msgNavBadge" style="display:none">0</span>
+                </button>
                 <button class="admin-link" data-section="apps">
                     <i class="fa-solid fa-mobile-screen"></i> <span>Ilovalar</span>
                 </button>
@@ -44,6 +48,14 @@
                 </button>
                 <button class="admin-link" data-section="revenue">
                     <i class="fa-solid fa-chart-line"></i> <span>Daromad</span>
+                </button>
+            </div>
+
+            <div class="admin-nav-section">
+                <span class="admin-nav-title">Telegram</span>
+                <button class="admin-link" data-section="bot">
+                    <i class="fa-brands fa-telegram"></i> <span>Bot</span>
+                    <span class="admin-nav-dot" id="botNavDot" style="display:none"></span>
                 </button>
             </div>
 
@@ -80,9 +92,9 @@
                 <input type="text" placeholder="Mijoz, ID yoki email orqali qidirish..." id="adminSearch">
             </div>
             <div class="topbar-actions">
-                <button class="topbar-icon" title="Bildirishnomalar">
+                <button class="topbar-icon" id="adminNotifBtn" title="Yangi xabarlar">
                     <i class="fa-solid fa-bell"></i>
-                    <span class="dot"></span>
+                    <span class="dot" id="adminNotifDot" style="display:none"></span>
                 </button>
                 <button class="topbar-icon" title="Yordam">
                     <i class="fa-solid fa-circle-question"></i>
@@ -206,6 +218,39 @@
                 </div>
             </section>
 
+            <!-- ============ MESSAGES (XABARLAR) ============ -->
+            <section class="admin-section" id="sec-messages">
+                <div class="admin-head">
+                    <div>
+                        <h1>Xabarlar</h1>
+                        <p>Mijozlardan kelgan qo'llab-quvvatlash murojaatlari — javob bering, mijozga bildirishnoma boradi</p>
+                    </div>
+                </div>
+
+                <div class="msg-layout">
+                    <div class="msg-convos" id="msgConvos">
+                        <!-- JS: suhbatlar ro'yxati -->
+                    </div>
+                    <div class="msg-panel">
+                        <div class="msg-panel-empty" id="msgPanelEmpty">
+                            <i class="fa-regular fa-comments"></i>
+                            <h3>Suhbatni tanlang</h3>
+                            <p>Chapdan mijozni tanlab, xabarlariga javob bering</p>
+                        </div>
+                        <div class="msg-conversation" id="msgConversation" style="display:none;">
+                            <div class="msg-conv-head" id="msgConvHead"></div>
+                            <div class="msg-conv-thread" id="msgConvThread"></div>
+                            <form class="msg-reply-form" id="msgReplyForm">
+                                <textarea id="msgReplyInput" rows="1" placeholder="Javob yozing..." required></textarea>
+                                <button type="submit" class="msg-reply-send" title="Yuborish" aria-label="Yuborish">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ============ APPS (ILOVALAR) ============ -->
             <section class="admin-section" id="sec-apps">
                 <div class="admin-head">
@@ -292,6 +337,97 @@
                 </div>
             </section>
 
+            <!-- ============ BOT (TELEGRAM) ============ -->
+            <section class="admin-section" id="sec-bot">
+                <div class="admin-head">
+                    <div>
+                        <h1><i class="fa-brands fa-telegram" style="color:#229ED9"></i> Telegram bot</h1>
+                        <p>Botdan foydalanuvchilar sonini kuzating va ularga ommaviy xabar yuboring</p>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <span class="bot-status" id="botStatus"><span class="bot-status-dot"></span> Tekshirilmoqda...</span>
+                        <button class="btn btn-outline btn-sm" id="botRefresh"><i class="fa-solid fa-rotate"></i> Yangilash</button>
+                    </div>
+                </div>
+
+                <!-- KPI -->
+                <div class="kpi-grid">
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <span class="kpi-label">Jami foydalanuvchilar</span>
+                            <strong class="kpi-value" id="botTotalUsers">0</strong>
+                            <small>Botni ishga tushirgan odamlar</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div>
+                            <span class="kpi-label">Faol foydalanuvchilar</span>
+                            <strong class="kpi-value" id="botActiveUsers">0</strong>
+                            <small>Oxirgi 7 kunda yozganlar</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-icon"><i class="fa-solid fa-link"></i></div>
+                        <div>
+                            <span class="kpi-label">Ulangan kanallar</span>
+                            <strong class="kpi-value" id="botConnections">0</strong>
+                            <small>Do'kon kanallariga ulanishlar</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid-2">
+                    <!-- BROADCAST -->
+                    <div class="adm-panel">
+                        <h3 class="panel-title"><i class="fa-solid fa-bullhorn"></i> Ommaviy xabar (broadcast)</h3>
+                        <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px;">
+                            Xabar barcha bot foydalanuvchilariga yuboriladi. Telegram'da ham <code>/broadcast matn</code> orqali yuborsa bo'ladi.
+                        </p>
+                        <div class="adm-form">
+                            <label>Xabar matni
+                                <textarea id="botBroadcastText" rows="5" placeholder="Assalomu alaykum! Yangiliklar..."></textarea>
+                            </label>
+                            <div id="botBroadcastResult" class="bot-broadcast-result" style="display:none"></div>
+                            <button class="btn btn-primary" id="botBroadcastBtn">
+                                <i class="fa-solid fa-paper-plane"></i> Hammaga yuborish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- USERS LIST -->
+                    <div class="adm-panel">
+                        <div class="adm-panel-head">
+                            <div>
+                                <h3>Foydalanuvchilar</h3>
+                                <p>Bot bilan muloqot qilganlar</p>
+                            </div>
+                        </div>
+                        <div class="bot-users-wrap">
+                            <div class="table-wrap">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Foydalanuvchi</th>
+                                            <th>Username</th>
+                                            <th>Oxirgi faollik</th>
+                                            <th>Holat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="botUsersTbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bot-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Bot <code>bot/bot.py</code> faylida ishlaydi. Statistika va broadcast uchun bot <strong>ishlab turishi</strong> kerak (<code>python3 bot.py</code>). API manzili: <code id="botApiLabel">http://localhost:3344</code> — o'zgartirish uchun Sozlamalar.</span>
+                </div>
+            </section>
+
             <!-- ============ SETTINGS ============ -->
             <section class="admin-section" id="sec-settings">
                 <div class="admin-head">
@@ -318,6 +454,8 @@
                             <label>Sayt nomi<input type="text" id="setSiteName" value="BiznesOnline"></label>
                             <label>Aloqa telefoni<input type="text" id="setSitePhone" value="+998 90 123 45 67"></label>
                             <label>Aloqa email<input type="email" id="setSiteEmail" value="info@biznesonline.uz"></label>
+                            <label>Telegram bot API manzili<input type="text" id="setBotApi" placeholder="http://localhost:3344"></label>
+                            <label>Bot admin token (ixtiyoriy — botni internetga ochsangiz)<input type="password" id="setBotToken" placeholder="Bo'sh = localhost uchun shart emas"></label>
                             <button class="btn btn-primary" id="saveSite">Saqlash</button>
                         </div>
                     </div>
@@ -491,6 +629,6 @@ Yetkazib berish"></textarea>
     <div class="toast" id="toast"></div>
 
     <script src="js/main.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/admin.js?v=6"></script>
 </body>
 </html>

@@ -102,7 +102,7 @@
 }
 
 /* Section */
-.settings-section { margin-bottom: 28px; }
+.settings-section { margin-bottom: 14px; }
 .settings-section:last-child { margin-bottom: 0; }
 .settings-label {
     display: flex;
@@ -116,6 +116,73 @@
     margin-bottom: 12px;
 }
 .settings-label i { color: var(--primary); }
+
+/* ===== Akkordion — bo'limlar sarlavhaga bosilganda ochiladi ===== */
+.settings-section[data-accordion] { margin-bottom: 12px; }
+.settings-section[data-accordion] > .settings-label {
+    width: 100%;
+    margin-bottom: 0;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--gray-600);
+    transition: var(--transition, all 0.2s ease);
+}
+.settings-section[data-accordion] > .settings-label:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+.settings-section[data-accordion].open > .settings-label {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.settings-acc-arrow {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--gray-400) !important;
+    transition: transform 0.3s ease;
+}
+.settings-section[data-accordion].open .settings-acc-arrow {
+    transform: rotate(180deg);
+    color: var(--primary) !important;
+}
+
+/* Collapsible body — grid-rows 0fr -> 1fr orqali silliq ochilish */
+.settings-section-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid transparent;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+.settings-section[data-accordion].open .settings-section-body {
+    grid-template-rows: 1fr;
+    border-color: var(--gray-200);
+}
+.settings-section-inner {
+    overflow: hidden;
+    min-height: 0;
+}
+/* Padding bevosita grid-item ga emas, uning bolasiga — aks holda 0fr collapse ishlamaydi */
+.settings-section-inner > * {
+    padding: 16px;
+}
+
+html[data-theme="dark"] .settings-section[data-accordion] > .settings-label {
+    background: #0F172A;
+    border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dark"] .settings-section[data-accordion].open .settings-section-body {
+    border-color: rgba(255,255,255,0.08);
+}
 
 /* Theme tiles */
 .theme-grid {
