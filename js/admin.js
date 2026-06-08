@@ -916,12 +916,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function seedDemoData() {
-        // Admin
-        if (!localStorage.getItem('bo_admin')) {
-            localStorage.setItem('bo_admin', JSON.stringify({
-                username: 'admin', password: 'admin123', name: 'Bosh administrator'
-            }));
-        }
+        // Admin — standart hisob: tiro / tiro2004
+        (function ensureAdmin() {
+            const a = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+            // Hisob yo'q yoki eski standart (admin/admin123) bo'lsa — tiro hisobiga o'tkazamiz
+            if (!a || (a.username === 'admin' && a.password === 'admin123')) {
+                localStorage.setItem('bo_admin', JSON.stringify({
+                    username: 'tiro', password: 'tiro2004', name: 'Bosh administrator'
+                }));
+            }
+        })();
         // Demo mijozlar
         if (!localStorage.getItem('bo_subscriptions')) {
             localStorage.setItem('bo_subscriptions', JSON.stringify([

@@ -102,10 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
         }
-        if (!localStorage.getItem('bo_admin')) {
+        // Admin standart hisobi: tiro / tiro2004
+        const _adm = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+        if (!_adm || (_adm.username === 'admin' && _adm.password === 'admin123')) {
             localStorage.setItem('bo_admin', JSON.stringify({
-                username: 'admin',
-                password: 'admin123',
+                username: 'tiro',
+                password: 'tiro2004',
                 name: 'Bosh administrator'
             }));
         }
@@ -121,6 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const loginDigits = digits(login);
 
             try {
+                // ---- MAXFIY ADMIN KIRISHI ----
+                // Oddiy kirish formasiga admin login/parol terilsa — boshqaruv paneli ochiladi.
+                // (Alohida ko'rinadigan "Admin" tugmasi yo'q — maxfiy)
+                const admin = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+                if (admin && admin.username
+                    && login.toLowerCase() === String(admin.username).toLowerCase()
+                    && password === admin.password) {
+                    localStorage.setItem('bo_session', JSON.stringify({
+                        type: 'admin',
+                        username: admin.username,
+                        name: admin.name,
+                        loggedAt: Date.now()
+                    }));
+                    window.showToast && window.showToast('Admin paneliga kirildi', 'success');
+                    setTimeout(() => { window.location.href = 'admin.html'; }, 700);
+                    return;
+                }
+
                 const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
                 // Telefon (raqamlar bo'yicha) yoki foydalanuvchi nomi (katta-kichik harf farqsiz)
                 const user = subs.find(s => {
