@@ -45,7 +45,7 @@ from aiogram.types import Message
 from aiohttp import web
 
 # ============ CONFIG ============
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8917607768:AAGcwl9CuafvR_TKGcE1Q-bMkK-pHEfE2jg")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8843518782:AAHiVrJ7EDtLkAsMw1LviuNlTv0ZB7cyDNw")
 HTTP_PORT = int(os.getenv("PORT", "3344"))
 # Standart — faqat localhost (admin panel shu mashinada). Internetga ochish uchun HOST=0.0.0.0
 HTTP_HOST = os.getenv("HOST", "127.0.0.1")
