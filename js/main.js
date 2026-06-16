@@ -243,10 +243,34 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
+            },
+            {
+                id: 'app-ovqat',
+                slug: 'ovqat-dokoni',
+                name: 'Ovqat Dokoni',
+                desc: 'Oziq-ovqat va yetkazib berish do\'koni uchun zamonaviy ilova — menyu, savat, buyurtma, Telegram bot va QR kod menyu',
+                logo: null,
+                logoEmoji: '🛒',
+                price: 134000,
+                priceLabel: 'oyiga',
+                features: [
+                    'Mahsulotlar katalogi va kategoriyalar',
+                    'Savat va buyurtma berish tizimi',
+                    'Yetkazib berish va to\'lov usullari',
+                    'Mijoz bilan jonli chat',
+                    'Telegram bot integratsiyasi',
+                    'QR kod menyu (stol va do\'kon uchun)',
+                    'Admin panel (mahsulot, buyurtma, moliya, mijozlar)'
+                ],
+                demoUrl: 'ovqat-dokoni/index.html',
+                adminUrl: 'ovqat-dokoni/admin/index.html',
+                popular: false,
+                active: true,
+                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v2-relative-urls';
+        const APPS_VERSION = 'v3-ovqat-dokoni';
         const savedVersion = localStorage.getItem('bo_apps_version');
         const existing = JSON.parse(localStorage.getItem('bo_apps') || '[]');
 

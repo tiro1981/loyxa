@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Ovqat Dokoni · Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <div class="admin">
+
+    <!-- ============ SIDEBAR (desktop) ============ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">🛒</span>
+        <span>Ovqat Dokoni<small>Admin Panel</small></span>
+      </div>
+
+      <nav class="nav" id="nav"><!-- JS to'ldiradi --></nav>
+
+      <div class="sidebar-foot">
+        <div class="admin-profile">
+          <div class="av">👨🏻‍💼</div>
+          <div>
+            <div class="pn">Jamshid Karimov</div>
+            <div class="pr">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="burger" id="burger" aria-label="Menyu"></button>
+        <h1 id="pageTitle">Boshqaruv paneli</h1>
+        <div class="top-search">
+          <span id="searchIco"></span>
+          <input id="globalSearch" type="text" placeholder="Qidirish..." />
+        </div>
+        <div class="spacer"></div>
+        <div class="top-date">
+          <span id="calIco"></span>
+          <span>15-iyun, 2026</span>
+        </div>
+        <button class="icon-btn" id="themeBtn" aria-label="Rejim"></button>
+        <button class="icon-btn" id="bellBtn" aria-label="Bildirishnoma">
+          <span class="dot"></span>
+        </button>
+      </header>
+
+      <!-- Sahifa kontenti -->
+      <div class="content" id="content"><!-- JS to'ldiradi --></div>
+
+    </main>
+  </div>
+
+  <!-- Pastki tab-bar (mobil) -->
+  <nav class="mobile-tabbar" id="tabbar"><!-- JS to'ldiradi --></nav>
+
+  <!-- Modal qatlami -->
+  <div class="modal-back" id="modalBack">
+    <div class="modal" id="modal"><!-- JS to'ldiradi --></div>
+  </div>
+
+  <!-- Toast zonasi -->
+  <div class="toast-zone" id="toastZone"></div>
+
+  <!-- Mijoz ilovasidagi ma'lumotlar (window.DATA) -->
+  <script src="../js/data.js"></script>
+  <!-- Telegram bot (store-bot) klienti -->
+  <script src="../telegram.js"></script>
+  <!-- QR kod generatori (Kazuhiko Arase, MIT) -->
+  <script src="js/qrcode.js"></script>
+  <!-- Admin mantiq -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
