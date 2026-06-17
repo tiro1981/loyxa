@@ -107,9 +107,13 @@
      ---------------------------------------------------------- */
 
   // Mahsulotlarni nusxalab olamiz (admin in-memory bilan ishlaydi)
-  const products = (window.DATA && window.DATA.products ? window.DATA.products : []).map((p) => ({ ...p }));
+  // To'g'ridan-to'g'ri umumiy katalogga (DATA.products/categories) ishlaymiz —
+  // o'zgarishlar saveCatalog() orqali localStorage'ga saqlanadi va storefront ko'radi.
+  const products = window.DATA && window.DATA.products ? window.DATA.products : [];
   const categories = window.DATA && window.DATA.categories ? window.DATA.categories : [];
   const orders = (window.DATA && window.DATA.orders ? window.DATA.orders : []).map((o) => ({ ...o }));
+  // Katalogni saqlash yordamchisi
+  const saveCatalog = () => { if (window.DATA && window.DATA.saveCatalog) window.DATA.saveCatalog(); };
 
   let nextProductId = products.reduce((m, p) => Math.max(m, p.id), 0) + 1;
   const STATUS_LABEL = { pending: "Kutilmoqda", ontheway: "Yo'lda", done: "Yetkazildi", cancel: "Bekor qilindi" };
@@ -504,6 +508,7 @@
       });
       toast("Mahsulot qo'shildi", "ok");
     }
+    saveCatalog();
     closeModal();
     render(); // jadvalni yangilash
   }
@@ -541,6 +546,7 @@
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
     const id = "cat_" + (slug || "yangi") + "_" + (categories.length + 1);
     categories.push({ id: id, name: name, icon: icon, grad: ["#22c55e", "#16a34a"] });
+    saveCatalog();
     closeModal();
     prodFilter = id;           // yangi kategoriyani darhol ko'rsatamiz
     toast("Kategoriya qo'shildi", "ok");
@@ -1076,6 +1082,7 @@
       const p = products.find((x) => x.id === id);
       const idx = products.indexOf(p);
       if (idx > -1) products.splice(idx, 1);
+      saveCatalog();
       closeModal();
       toast("Mahsulot o'chirildi", "ok");
       render();

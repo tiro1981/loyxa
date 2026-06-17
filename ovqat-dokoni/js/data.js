@@ -3,7 +3,9 @@
    ============================================================ */
 window.DATA = (function () {
 
-  const categories = [
+  const CATALOG_KEY = "ovqat_catalog_v1";  // admin va storefront umumiy katalog (localStorage)
+
+  const defaultCategories = [
     { id: "all",      name: "Barchasi",   icon: "🛒", grad: ["#22c55e", "#16a34a"] },
     { id: "meva",     name: "Mevalar",    icon: "🍎", grad: ["#f97316", "#ef4444"] },
     { id: "sabzavot", name: "Sabzavotlar",icon: "🥬", grad: ["#22c55e", "#15803d"] },
@@ -13,6 +15,16 @@ window.DATA = (function () {
     { id: "gosht",    name: "Go'sht",     icon: "🥩", grad: ["#ec4899", "#be185d"] },
     { id: "bakaleya", name: "Bakaleya",   icon: "🌾", grad: ["#a855f7", "#7c3aed"] },
   ];
+
+  // Saqlangan katalogni yuklaymiz — admin paneldan qo'shilgan mahsulotlar
+  // storefront'da ham ko'rinadi (ikkalasi shu localStorage kalitini baham ko'radi).
+  let products = [];
+  let categories = defaultCategories;
+  try {
+    const _saved = JSON.parse(localStorage.getItem(CATALOG_KEY) || "null");
+    if (_saved && Array.isArray(_saved.products)) products = _saved.products;
+    if (_saved && Array.isArray(_saved.categories) && _saved.categories.length) categories = _saved.categories;
+  } catch (e) {}
 
   const gradOf = (cat) => (categories.find((c) => c.id === cat) || categories[0]).grad;
 
@@ -48,9 +60,6 @@ window.DATA = (function () {
     };
   };
 
-  // Mahsulotlar — bo'sh. Admin paneldan qo'shiladi.
-  const products = [];
-
   // Reklama bannerlari — bo'sh.
   const ads = [];
 
@@ -83,5 +92,12 @@ window.DATA = (function () {
     { q: "Buyurtmani bekor qilsam bo'ladimi?", a: "Buyurtma yo'lga chiqmaguncha uni bepul bekor qilishingiz mumkin." },
   ];
 
-  return { categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf };
+  // Katalogni localStorage'ga saqlash — admin panel har o'zgarishdan keyin chaqiradi
+  function saveCatalog() {
+    try { localStorage.setItem(CATALOG_KEY, JSON.stringify({ products, categories })); } catch (e) {}
+  }
+  // Ilk ishga tushirishda standart kategoriyalarni yozib qo'yamiz
+  if (!localStorage.getItem(CATALOG_KEY)) saveCatalog();
+
+  return { categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog };
 })();
