@@ -22,20 +22,30 @@
     <div class="toast-layer" id="toastLayer"></div>
   </div>
 
-  <!-- order matters: data -> store -> app -> views -->
-  <script src="js/data.js"></script>
-  <script src="js/store.js"></script>
-  <!-- Telegram bot (store-bot) klienti — buyurtmani kanalga yuboradi -->
-  <script src="telegram.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/components.js"></script>
-  <script src="js/views/home.js"></script>
-  <script src="js/views/category.js"></script>
-  <script src="js/views/product.js"></script>
-  <script src="js/views/cart.js"></script>
-  <script src="js/views/checkout.js"></script>
-  <script src="js/views/orders.js"></script>
-  <script src="js/views/profile.js"></script>
-  <script src="js/views/subpages.js"></script>
+  <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="cloud.js"></script>
+
+  <!-- Boot-loader: AVVAL Cloud.init (server ma'lumotini yuklaydi), keyin ilova skriptlari.
+       order matters: data -> store -> telegram -> app -> components -> views -->
+  <script>
+    window.__CLOUD_BOOT = true;  // app.js avtomatik boot qilmasin — loader o'zi chaqiradi
+    (async () => {
+      const CLIENT_ID = new URLSearchParams(location.search).get("client")
+        || (function () { try { return JSON.parse(localStorage.getItem("bo_session") || "{}").clientId; } catch (e) { return null; } })()
+        || "demo";
+      window.__CLIENT_ID = CLIENT_ID;
+      try { await Cloud.init("ovqat", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
+      const scripts = [
+        "js/data.js", "js/store.js", "telegram.js", "js/app.js", "js/components.js",
+        "js/views/home.js", "js/views/category.js", "js/views/product.js", "js/views/cart.js",
+        "js/views/checkout.js", "js/views/orders.js", "js/views/profile.js", "js/views/subpages.js"
+      ];
+      for (const src of scripts) {
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+      }
+      if (window.UI && UI.go) UI.go("home");   // barcha skript yuklangach boshlang'ich render
+    })();
+  </script>
 </body>
 </html>

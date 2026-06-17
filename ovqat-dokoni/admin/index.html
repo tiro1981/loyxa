@@ -72,11 +72,24 @@
   <!-- Toast zonasi -->
   <div class="toast-zone" id="toastZone"></div>
 
-  <!-- Mijoz ilovasidagi ma'lumotlar (window.DATA) -->
-  <script src="../js/data.js"></script>
-  <!-- Telegram bot (store-bot) klienti -->
-  <script src="../telegram.js"></script>
-  <!-- Admin mantiq -->
-  <script src="js/admin.js"></script>
+  <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../cloud.js"></script>
+
+  <!-- Boot-loader: AVVAL Cloud.init, keyin data -> telegram -> admin.
+       admin.js readyState guard bilan o'zi ishga tushadi. -->
+  <script>
+    (async () => {
+      const CLIENT_ID = new URLSearchParams(location.search).get("client")
+        || (function () { try { return JSON.parse(localStorage.getItem("bo_session") || "{}").clientId; } catch (e) { return null; } })()
+        || "demo";
+      window.__CLIENT_ID = CLIENT_ID;
+      try { await Cloud.init("ovqat", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
+      const scripts = ["../js/data.js", "../telegram.js", "js/admin.js"];
+      for (const src of scripts) {
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+      }
+    })();
+  </script>
 </body>
 </html>

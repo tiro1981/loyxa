@@ -14,8 +14,8 @@
    Events: cart:change | favorites:change | orders:change | theme:change | address:change | user:change
    ============================================================ */
 window.Store = (function () {
-  // Har bir mijoz (do'kon) o'z holatiga ega — DATA.clientId orqali ajratamiz
-  const KEY = "ovqat_dokoni_v1__" + ((window.DATA && DATA.clientId) ? DATA.clientId : "demo");
+  // Holat (cart, orders, ...) Cloud (Supabase) orqali serverda saqlanadi — kalit "state".
+  // Cloud client_id bo'yicha avtomatik ajratadi (boot-loader Cloud.init bilan).
 
   const defaults = {
     cart: [],            // [{id, qty}]
@@ -31,16 +31,15 @@ window.Store = (function () {
 
   function load() {
     try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return structuredClone(defaults);
-      const saved = JSON.parse(raw);
+      const saved = (window.Cloud ? Cloud.get("state", null) : null);  // serverdan (yoki localStorage fallback)
+      if (!saved) return structuredClone(defaults);
       return { ...structuredClone(defaults), ...saved };
     } catch (e) {
       return structuredClone(defaults);
     }
   }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    try { if (window.Cloud) Cloud.set("state", state); } catch (e) {}
   }
 
   /* --- events --- */

@@ -190,6 +190,10 @@ Store.on("orders:change", () => {
 });
 
 /* ---------------- Boot ---------------- */
-document.addEventListener("DOMContentLoaded", () => {
-  go("home");
-});
+// Cloud (Supabase) async — ilova skriptlari index.html boot-loader tomonidan
+// Cloud.init tugagach yuklanadi va loader UI.go("home") ni o'zi chaqiradi
+// (window.__CLOUD_BOOT === true). Loadersiz (statik) ochilganda zaxira boot:
+if (!window.__CLOUD_BOOT) {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => go("home"));
+  else go("home");
+}

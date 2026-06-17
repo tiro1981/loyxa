@@ -6,7 +6,8 @@ window.DATA = (function () {
   // Har bir mijoz (do'kon) o'z katalogiga ega bo'lishi kerak. Mijozni aniqlash:
   // QR/subdomen orqali kelganda ?client=..., aks holda joriy sessiya (bo_session).
   // Shu tufayli QR skaner qilingan storefront aynan o'sha do'kon katalogini ko'rsatadi.
-  const CLIENT_ID = (function () {
+  // Mijoz (do'kon) id'si — boot-loader window.__CLIENT_ID ga qo'yadi (?client= yoki bo_session).
+  const CLIENT_ID = window.__CLIENT_ID || (function () {
     try {
       const q = new URLSearchParams(location.search).get("client");
       if (q) return q;
@@ -15,7 +16,6 @@ window.DATA = (function () {
     } catch (e) {}
     return "demo";
   })();
-  const CATALOG_KEY = "ovqat_catalog_v1__" + CLIENT_ID;  // mijozga xos katalog (admin + storefront)
 
   const defaultCategories = [
     { id: "all",      name: "Barchasi",   icon: "🛒", grad: ["#22c55e", "#16a34a"] },
@@ -33,7 +33,7 @@ window.DATA = (function () {
   let products = [];
   let categories = defaultCategories;
   try {
-    const _saved = JSON.parse(localStorage.getItem(CATALOG_KEY) || "null");
+    const _saved = (window.Cloud ? Cloud.get("catalog", null) : null);  // serverdan (yoki localStorage fallback)
     if (_saved && Array.isArray(_saved.products)) products = _saved.products;
     if (_saved && Array.isArray(_saved.categories) && _saved.categories.length) categories = _saved.categories;
   } catch (e) {}
@@ -104,12 +104,12 @@ window.DATA = (function () {
     { q: "Buyurtmani bekor qilsam bo'ladimi?", a: "Buyurtma yo'lga chiqmaguncha uni bepul bekor qilishingiz mumkin." },
   ];
 
-  // Katalogni localStorage'ga saqlash — admin panel har o'zgarishdan keyin chaqiradi
+  // Katalogni serverga (Cloud) saqlash — admin panel har o'zgarishdan keyin chaqiradi
   function saveCatalog() {
-    try { localStorage.setItem(CATALOG_KEY, JSON.stringify({ products, categories })); } catch (e) {}
+    try { if (window.Cloud) Cloud.set("catalog", { products, categories }); } catch (e) {}
   }
-  // Ilk ishga tushirishda standart kategoriyalarni yozib qo'yamiz
-  if (!localStorage.getItem(CATALOG_KEY)) saveCatalog();
+  // Ilk ishga tushirishda standart kategoriyalarni serverga yozib qo'yamiz
+  if (window.Cloud && !Cloud.get("catalog")) saveCatalog();
 
   return { clientId: CLIENT_ID, categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog };
 })();
