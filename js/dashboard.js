@@ -110,13 +110,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function subAppUrl(sub)   { return buildUrl(sub.demoUrl,  'app/index.html'); }
     function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'app/admin.html'); }
 
+    function isInTelegram() {
+        // Telegram ichidaligini bir nechta signal bilan aniqlaymiz (platform ba'zan 'unknown' bo'ladi).
+        const w = window.Telegram && window.Telegram.WebApp;
+        if (window.TelegramWebviewProxy) return true;                 // mobil Telegram webview belgisi
+        if (w && w.initData && w.initData.length > 0) return true;    // haqiqiy Mini App
+        if (w && w.initDataUnsafe && Object.keys(w.initDataUnsafe).length) return true;
+        if (w && w.platform && w.platform !== 'unknown') return true;
+        if (/Telegram/i.test(navigator.userAgent || '')) return true; // desktop Telegram
+        return false;
+    }
+
     function openInNewTab(url) {
-        // Telegram Mini App ichida bo'lsak — havolani O'SHA webview'da ochamiz.
-        // Aks holda Telegram "Open link?" so'rab, tashqi brauzerga chiqaradi.
-        const tg = window.Telegram && window.Telegram.WebApp;
-        const inTelegram = tg && tg.platform && tg.platform !== 'unknown';
-        if (inTelegram) {
-            window.location.href = url;   // yangi tab EMAS — joyida o'tadi, Telegram ichida qoladi
+        // Telegram ichida bo'lsak — havolani O'SHA webview'da ochamiz (yangi tab emas),
+        // aks holda Telegram "Open link?" so'rab, tashqi brauzerga chiqaradi.
+        if (isInTelegram()) {
+            window.location.href = url;   // joyida o'tadi, Telegram ichida qoladi
             return;
         }
         // Oddiy brauzerda — yangi tab (pop-up blocker'dan qochish uchun <a target="_blank">).
