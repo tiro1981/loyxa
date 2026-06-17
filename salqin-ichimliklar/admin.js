@@ -762,7 +762,7 @@
     const tokenEl = $('#bot2Token');
     const token = (tokenEl?.value || botLocal().token || '').trim();
     if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri", 'error'); tokenEl?.focus(); return; }
-    const cfg = { shopName: botShopName(), token };
+    const cfg = { shopName: botShopName(), token, storeUrl: (function(){ try { var u=new URL('index.html', location.href); var c=new URLSearchParams(location.search).get('client')||(JSON.parse(localStorage.getItem('bo_session')||'{}').clientId||''); if(c)u.searchParams.set('client',c); return u.href; } catch(e){ return ''; } })() };
     const btn = $('#bot2ConnectBtn');
     botBusy(btn, true, 'Ulanmoqda...');
     try {

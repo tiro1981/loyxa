@@ -41,7 +41,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiohttp import web
 
 # ============ CONFIG ============
@@ -350,16 +350,30 @@ async def _store_bot_for(client_id: str, cfg: dict):
 
 
 async def store_start_handler(message: "Message", cfg: dict) -> None:
-    """Mijoz /start bosganda — oddiy xush kelibsiz xabari (tugmasiz)."""
+    """Mijoz /start bosganda — do'kon web ilovasini Telegram ichida ochadigan
+    web_app tugmasi (ulangan bo'lsa). storeUrl cfg da saqlanadi, shu sabab bot
+    qaysi do'konga (client) ulangan bo'lsa, aynan o'sha ilova ochiladi."""
     shop = cfg.get("shopName") or "do'konimiz"
+    url = (cfg.get("storeUrl") or "").strip()
     name = (getattr(message.from_user, "first_name", "") or "").strip()
     hello = f"Salom, {name}! " if name else "Salom! "
-    await message.answer(
-        f"👋 {hello}{shop} ga xush kelibsiz!\n\n"
-        f"Bu yerda do'kon yangiliklari va maxsus takliflarini birinchi bo'lib olasiz. "
-        f"Buyurtma berish uchun do'kon ilovasidan foydalaning.",
-        parse_mode=None,
-    )
+    if url.startswith("https://"):
+        kb = InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🛍 Ilovani ochish", web_app=WebAppInfo(url=url))
+        ]])
+        await message.answer(
+            f"👋 {hello}{shop} ga xush kelibsiz!\n\n"
+            f"Buyurtma berish uchun ilovani oching — pastdagi tugmani bosing.",
+            reply_markup=kb,
+            parse_mode=None,
+        )
+    else:
+        # URL hali ulanmagan (yoki HTTPS emas) — eski tugmasiz matn
+        await message.answer(
+            f"👋 {hello}{shop} ga xush kelibsiz!\n\n"
+            f"Buyurtma berish uchun do'kon ilovasidan foydalaning.",
+            parse_mode=None,
+        )
 
 
 def _make_store_dp(cfg: dict, shop_key: str) -> Dispatcher:
@@ -480,16 +494,38 @@ router.message.outer_middleware(TrackingMiddleware())
 
 
 # ============ /start ============
+PLATFORM_APP_URL = "https://onlinebiznes.uz/"  # platforma mini app kirish sahifasi
+
+
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    name = md_strip(message.from_user.first_name) or "do'st"
+    kb = InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(
+            text="🚀 Ilovani ochish",
+            web_app=WebAppInfo(url=PLATFORM_APP_URL),
+        )
+    ]])
+    await message.answer(
+        f"👋 Assalomu alaykum, {name}!\n\n"
+        f"Bu — onlinebiznes.uz rasmiy boti. Platformani ochish uchun "
+        f"pastdagi tugmani bosing.",
+        reply_markup=kb,
+        parse_mode=None,
+    )
+
+
+# ============ /connect — do'kon ulash (eski Bot ID oqimi) ============
+@router.message(Command("connect"))
+async def cmd_connect(message: Message, state: FSMContext) -> None:
     await state.clear()
     await state.set_state(Connect.awaiting_id)
     name = md_strip(message.from_user.first_name) or "foydalanuvchi"
     await message.answer(
-        f"👋 Salom, {name}!\n\n"
-        f"Men BiznesOnline buyurtmalar botiman. Sizning do'koningiz uchun yangi "
-        f"buyurtmalarni shu yerdan kanalingizga yuboraman.\n\n"
-        f"📋 *1-qadam:* Iltimos, admin paneldan olingan *Bot ID* ni yuboring.\n\n"
+        f"📋 *Do'kon ulash*\n\n"
+        f"{name}, admin paneldan olingan *Bot ID* ni yuboring — buyurtmalarni "
+        f"shu yerdan kanalingizga yuboraman.\n\n"
         f"Misol: `BOT-CL001-X7K9P`",
     )
 
@@ -499,7 +535,8 @@ async def cmd_start(message: Message, state: FSMContext) -> None:
 async def cmd_help(message: Message) -> None:
     await message.answer(
         "📚 *Yordam*\n\n"
-        "/start — Ulanishni boshlash\n"
+        "/start — Ilovani ochish\n"
+        "/connect — Do'kon ulash (Bot ID)\n"
         "/status — Joriy ulanish holati\n"
         "/disconnect — Botni uzish\n\n"
         "Muammo bo'lsa: @support"
@@ -802,6 +839,7 @@ async def handle_store_connect(request: web.Request) -> web.Response:
     cfg = {
         "token": token,
         "shopName": str(body.get("shopName") or prev.get("shopName") or "Do'kon"),
+        "storeUrl": str(body.get("storeUrl") or prev.get("storeUrl") or ""),
         "channel": prev.get("channel"),
         "channelConnectedAt": prev.get("channelConnectedAt"),
         "sentCount": int(prev.get("sentCount") or 0),

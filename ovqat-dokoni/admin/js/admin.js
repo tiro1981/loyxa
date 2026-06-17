@@ -968,7 +968,7 @@
         btn.disabled = true;
         const old = btn.innerHTML; btn.innerHTML = "Ulanmoqda…";
         try {
-          const r = await Telegram.connect({ token: token, shopName: SETTINGS.shopName });
+          const r = await Telegram.connect({ token: token, shopName: SETTINGS.shopName, storeUrl: qrStoreUrl() });
           botSave({ connected: true, username: r.username });
           toast("Bot ulandi" + (r.username ? ": " + r.username : ""), "ok");
         } catch (e) {

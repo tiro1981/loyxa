@@ -1413,7 +1413,7 @@ async function connectBot() {
     const tokenEl = document.getElementById('bot2Token');
     const token = (tokenEl?.value || botRead().token || '').trim();
     if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri", 'error'); tokenEl?.focus(); return; }
-    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token };
+    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token, storeUrl: (function(){ try { var u=new URL('index.html', location.href); var c=new URLSearchParams(location.search).get('client')||(JSON.parse(localStorage.getItem('bo_session')||'{}').clientId||''); if(c)u.searchParams.set('client',c); return u.href; } catch(e){ return ''; } })() };
     const btn = document.getElementById('bot2ConnectBtn');
     _btnBusy(btn, true, 'Ulanmoqda...');
     try {

@@ -1016,7 +1016,7 @@ async function connectBot() {
   const tokenEl = document.getElementById('bot2Token');
   const token = (tokenEl?.value || getBotCfg().token || '').trim();
   if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri. @BotFather dan to'liq nusxa oling.", 'error'); tokenEl?.focus(); return; }
-  const payload = { clientId: SHOP_KEY, shopName: _shopName() || "Do'kon", token };
+  const payload = { clientId: SHOP_KEY, shopName: _shopName() || "Do'kon", token, storeUrl: qrStoreUrl() };
   const btn = document.getElementById('bot2ConnectBtn');
   _btnBusy(btn, true, 'Ulanmoqda...');
   try {
