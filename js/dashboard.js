@@ -111,8 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'app/admin.html'); }
 
     function openInNewTab(url) {
-        // window.open ba'zi browserlarda pop-up blocker tomonidan to'silishi mumkin —
-        // shu sababli vaqtinchalik <a target="_blank"> yaratib, click qilamiz.
+        // Telegram Mini App ichida bo'lsak — havolani O'SHA webview'da ochamiz.
+        // Aks holda Telegram "Open link?" so'rab, tashqi brauzerga chiqaradi.
+        const tg = window.Telegram && window.Telegram.WebApp;
+        const inTelegram = tg && tg.platform && tg.platform !== 'unknown';
+        if (inTelegram) {
+            window.location.href = url;   // yangi tab EMAS — joyida o'tadi, Telegram ichida qoladi
+            return;
+        }
+        // Oddiy brauzerda — yangi tab (pop-up blocker'dan qochish uchun <a target="_blank">).
         const a = document.createElement('a');
         a.href = url;
         a.target = '_blank';
