@@ -155,7 +155,7 @@
     { id: "users",     label: "Foydalanuvchilar", icon: "users",     title: "Foydalanuvchilar" },
     { id: "messages",  label: "Habarlar",         icon: "chat",      title: "Habarlar", badge: () => CHATS.reduce((s, c) => s + c.unread, 0) },
     { id: "bot",       label: "Telegram bot",     icon: "bot",       title: "Telegram bot" },
-    { id: "qrcode",    label: "QR kod",           icon: "qr",        title: "QR kod menyu" },
+    { id: "qrcode",    label: "QR kod",           icon: "qr",        title: "QR Kod" },
     { id: "settings",  label: "Sozlamalar",       icon: "settings",  title: "Sozlamalar" },
   ];
   // Mobil tab-bar uchun (5 ta asosiy)
@@ -177,9 +177,6 @@
   }
   let botStatus = null;      // store-bot serveridan oxirgi holat
   let botTokenShown = false; // token ko'rinishi (eye toggle)
-
-  // QR kod menyu
-  let qrLast = null;         // oxirgi yaratilgan QR: { text, title }
 
   /* ----------------------------------------------------------
      4) Toast
@@ -797,48 +794,46 @@
   }
 
   /* ----------------------------------------------------------
-     7c) QR kod menyu bo'limi
+     7c) QR kod bo'limi — platformaning standart QR tizimi
      ---------------------------------------------------------- */
-  function qrDefaultUrl() {
-    try { return localStorage.getItem("ovqat_qr_url") || new URL("../index.html", location.href).href; }
-    catch (e) { return "../index.html"; }
-  }
-
   function viewQr() {
-    const url = qrDefaultUrl();
-    return '<div class="qr-wrap"><div class="qr-grid">' +
+    return '<div class="qr-wrap">' +
 
-      '<div class="card"><div class="card-head"><h3>QR kod yaratish</h3></div><div class="card-pad">' +
-        '<div class="field"><label>Menyu havolasi (URL)</label>' +
-          '<input class="input" id="qrUrl" value="' + esc(url) + '"/>' +
-          '<p class="bot-hint">Mijoz QR ni skanerlaganda shu sahifa ochiladi</p>' +
+      '<div class="card qr-preview-card"><div class="card-pad">' +
+        '<div class="qr-frame" id="qrFrame">' +
+          '<img id="qrImage" alt="QR kod"/>' +
+          '<div class="qr-loading" id="qrLoading">QR yuklanmoqda…</div>' +
         '</div>' +
-        '<div class="form-grid">' +
-          '<div class="field"><label>Stol raqami (ixtiyoriy)</label><input class="input" id="qrTable" type="number" min="1" placeholder="masalan 5"/></div>' +
-          '<div class="field"><label>O\'lcham</label>' +
-            '<select class="input" id="qrSize"><option value="220">Kichik</option><option value="320" selected>O\'rta</option><option value="440">Katta</option></select>' +
-          '</div>' +
-        '</div>' +
-        '<div class="field"><label>Sarlavha (chop etishda chiqadi)</label><input class="input" id="qrTitle" value="' + esc(SETTINGS.shopName || "Ovqat Dokoni") + '"/></div>' +
-        '<button class="btn btn--primary btn--block" id="qrGen" style="margin-top:6px">' + ICON.qr + ' QR kod yaratish</button>' +
+        '<div class="qr-store-name" id="qrStoreName">' + esc(SETTINGS.shopName || "Ovqat Dokoni") + '</div>' +
+        '<div class="qr-scan-hint">📷 Telefon bilan skaner qiling</div>' +
       '</div></div>' +
 
-      '<div class="card"><div class="card-head"><h3>Natija</h3></div><div class="card-pad">' +
-        '<div class="qr-preview" id="qrPreview"><div class="qr-empty">' + ICON.qr + '<span>QR kod shu yerda chiqadi</span></div></div>' +
-        '<div class="qr-cap" id="qrCap"></div>' +
+      '<div class="card qr-info-card"><div class="card-pad">' +
+        '<span class="qr-badge">' + ICON.link + ' VEB-ILOVA QR KODI</span>' +
+        '<h3>Mijozlar QR kodni skaner qilib ilovangizni ochadi</h3>' +
+        '<p>Telefon kamerasi bilan skaner qilinganda do\'koningizning veb-ilovasi avtomatik ochiladi. QR kodni stol, vitrina, menyu yoki reklama varaqasiga joylashtiring.</p>' +
+
+        '<label class="qr-label">Ilova manzili (URL)</label>' +
+        '<div class="qr-url-row">' +
+          '<input class="input" type="text" id="qrUrlInput" placeholder="https://mening-domenim.uz"/>' +
+          '<button class="btn btn--primary" id="qrSaveBtn">Saqlash</button>' +
+        '</div>' +
+        '<p class="qr-url-note">Standart manzil — shu ilovaning havolasi. O\'z domeningizni kiriting (masalan <code>https://mening-dokonim.uz</code>) — QR avtomatik yangilanadi.</p>' +
+
         '<div class="qr-actions">' +
-          '<button class="btn btn--primary" id="qrDownload" disabled>' + ICON.download + ' Yuklab olish</button>' +
-          '<button class="btn btn--ghost" id="qrPrint" disabled>' + ICON.print + ' Chop etish</button>' +
-          '<button class="btn btn--ghost" id="qrCopy" disabled>' + ICON.copy + ' Havola</button>' +
+          '<button class="btn btn--ghost" id="qrCopyBtn">' + ICON.copy + ' Nusxalash</button>' +
+          '<button class="btn btn--ghost" id="qrDownloadBtn">' + ICON.download + ' Yuklab olish</button>' +
+          '<button class="btn btn--ghost" id="qrPrintBtn">' + ICON.print + ' Chop etish</button>' +
+          '<button class="btn btn--ghost" id="qrOpenBtn">' + ICON.link + ' Ochish</button>' +
         '</div>' +
       '</div></div>' +
+    '</div>' +
 
-      '</div>' +
-      '<div class="card qr-tip"><div class="card-pad">' +
-        '<h4>Maslahat</h4>' +
-        '<p>Har bir stol uchun alohida QR yarating — buyurtma kelganda qaysi stoldan kelganini bilib olasiz. QR ni chop etib stollarga yoki do\'kon eshigiga joylashtiring.</p>' +
-      '</div></div>' +
-    '</div>';
+      '<div class="qr-steps">' +
+        '<div class="qr-step"><span class="qr-step-ic">1️⃣</span><div><strong>QR kodni joylashtiring</strong><p>Stol, vitrina, menyu yoki reklamaga</p></div></div>' +
+        '<div class="qr-step"><span class="qr-step-ic">2️⃣</span><div><strong>Mijoz skaner qiladi</strong><p>Telefon kamerasi yoki QR-skaner orqali</p></div></div>' +
+        '<div class="qr-step"><span class="qr-step-ic">3️⃣</span><div><strong>Ilova ochiladi</strong><p>Mijoz to\'g\'ridan-to\'g\'ri buyurtma beradi</p></div></div>' +
+      '</div>';
   }
 
   /* ----------------------------------------------------------
@@ -1056,12 +1051,49 @@
       });
     }
 
-    /* --- QR kod bo'limi --- */
-    if (el("qrGen")) {
-      el("qrGen").addEventListener("click", generateQr);
-      const dl = el("qrDownload"); if (dl) dl.addEventListener("click", downloadQr);
-      const pr = el("qrPrint"); if (pr) pr.addEventListener("click", printQr);
-      const cp = el("qrCopy"); if (cp) cp.addEventListener("click", copyQrLink);
+    /* --- QR kod bo'limi (platformaning standart tizimi) --- */
+    if (el("qrSaveBtn")) {
+      el("qrSaveBtn").addEventListener("click", () => {
+        let v = (el("qrUrlInput").value || "").trim();
+        if (!v) { toast("URL kiriting", "err"); return; }
+        if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = "https://" + v.replace(/^\/+/, "");
+        try { localStorage.setItem("ovqat_store_url", v); } catch (e) {}
+        toast("QR kod yangilandi", "ok");
+        renderQrImg();
+      });
+      el("qrCopyBtn").addEventListener("click", () => {
+        navigator.clipboard.writeText(qrStoreUrl())
+          .then(() => toast("Havola nusxalandi", "ok"))
+          .catch(() => toast("Nusxalab bo'lmadi", "err"));
+      });
+      el("qrOpenBtn").addEventListener("click", () => window.open(qrStoreUrl(), "_blank"));
+      el("qrDownloadBtn").addEventListener("click", async () => {
+        try {
+          const res = await fetch(qrApiSrc(qrStoreUrl(), 600));
+          const blob = await res.blob();
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob); a.download = "qr-kod.png";
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+          toast("QR kod yuklab olindi", "ok");
+        } catch (e) { window.open(qrApiSrc(qrStoreUrl(), 600), "_blank"); }
+      });
+      el("qrPrintBtn").addEventListener("click", () => {
+        const url = qrStoreUrl();
+        const w = window.open("", "_blank", "width=480,height=680");
+        if (!w) { toast("Chop etish oynasi bloklandi", "err"); return; }
+        w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR Kod</title></head>' +
+          '<body style="font-family:system-ui,sans-serif;text-align:center;padding:40px;color:#0f172a">' +
+          '<h2 style="margin:0 0 4px">' + esc(qrShopName()) + '</h2>' +
+          '<p style="margin:0 0 18px;color:#64748b">Veb-ilovamizni oching</p>' +
+          '<img src="' + qrApiSrc(url, 400) + '" style="width:320px;height:320px"/>' +
+          '<p style="margin-top:18px;font-size:18px">📷 Telefon kamerasi bilan skaner qiling</p>' +
+          '<p style="color:#64748b;word-break:break-all;font-size:12px">' + esc(url) + '</p>' +
+          '</body></html>');
+        w.document.close();
+        setTimeout(() => { try { w.focus(); w.print(); } catch (er) {} }, 700);
+      });
+      renderQrImg();
     }
   }
 
@@ -1186,93 +1218,34 @@
   }
 
   /* ----------------------------------------------------------
-     11c) QR kod — yaratish, yuklash, chop etish
+     11c) QR kod — platformaning standart tizimi (api.qrserver.com)
      ---------------------------------------------------------- */
-  function makeQrCanvas(text, sizePx) {
-    if (typeof qrcode === "undefined") throw new Error("QR kutubxonasi yuklanmadi");
-    const qr = qrcode(0, "M");        // 0 = avtomatik o'lcham, M = o'rta xatolik tuzatish
-    qr.addData(text);
-    qr.make();
-    const count = qr.getModuleCount();
-    const margin = 4;                  // tinch zona (modul)
-    const total = count + margin * 2;
-    const scale = Math.max(2, Math.floor((sizePx || 320) / total));
-    const px = total * scale;
-    const canvas = document.createElement("canvas");
-    canvas.width = px; canvas.height = px;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, px, px);
-    ctx.fillStyle = "#0a0e14";
-    for (let r = 0; r < count; r++) {
-      for (let c = 0; c < count; c++) {
-        if (qr.isDark(r, c)) ctx.fillRect((c + margin) * scale, (r + margin) * scale, scale, scale);
-      }
+  function qrStoreUrl() {
+    try {
+      const saved = localStorage.getItem("ovqat_store_url");
+      if (saved) return saved;
+      return new URL("../index.html", location.href).href.split("?")[0];
+    } catch (e) { return "../index.html"; }
+  }
+  function qrApiSrc(url, size) {
+    return "https://api.qrserver.com/v1/create-qr-code/?size=" + size + "x" + size +
+      "&margin=10&qzone=1&data=" + encodeURIComponent(url);
+  }
+  function qrShopName() { return SETTINGS.shopName || "Ovqat Dokoni"; }
+
+  function renderQrImg() {
+    const url = qrStoreUrl();
+    const input = el("qrUrlInput"); if (input) input.value = url;
+    const sn = el("qrStoreName"); if (sn) sn.textContent = qrShopName();
+    const img = el("qrImage");
+    const loading = el("qrLoading");
+    if (img) {
+      if (loading) { loading.style.display = "block"; loading.textContent = "QR yuklanmoqda…"; }
+      img.style.display = "none";
+      img.onload = () => { img.style.display = "block"; if (loading) loading.style.display = "none"; };
+      img.onerror = () => { if (loading) loading.textContent = "⚠️ QR yuklanmadi (internet kerak)"; };
+      img.src = qrApiSrc(url, 320);
     }
-    return canvas;
-  }
-
-  function generateQr() {
-    let base = (el("qrUrl").value || "").trim();
-    if (!base) { toast("Havola kiriting", "err"); return; }
-    try { localStorage.setItem("ovqat_qr_url", base); } catch (e) {}
-    const table = (el("qrTable").value || "").trim();
-    let url = base;
-    if (table) url += (url.indexOf("?") > -1 ? "&" : "?") + "table=" + encodeURIComponent(table);
-    const size = parseInt(el("qrSize").value, 10) || 320;
-    const title = (el("qrTitle").value || "").trim();
-
-    let canvas;
-    try { canvas = makeQrCanvas(url, size); }
-    catch (e) { toast(e.message, "err"); return; }
-
-    qrLast = { text: url, title: title, table: table, dataUrl: canvas.toDataURL("image/png") };
-    canvas.style.width = size + "px";
-    canvas.style.maxWidth = "100%";
-    canvas.style.height = "auto";
-    canvas.style.borderRadius = "12px";
-    const prev = el("qrPreview");
-    prev.innerHTML = "";
-    prev.appendChild(canvas);
-    el("qrCap").innerHTML = (table ? '<b>Stol ' + esc(table) + '</b> · ' : "") + '<span class="qr-url">' + esc(url) + "</span>";
-    ["qrDownload", "qrPrint", "qrCopy"].forEach((id) => { const b = el(id); if (b) b.disabled = false; });
-    toast("QR kod tayyor", "ok");
-  }
-
-  function downloadQr() {
-    if (!qrLast) return;
-    const slug = (qrLast.title || "qr").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "qr";
-    const name = slug + (qrLast.table ? "-stol-" + qrLast.table : "") + "-qr.png";
-    const a = document.createElement("a");
-    a.href = qrLast.dataUrl; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-  }
-
-  function printQr() {
-    if (!qrLast) return;
-    const w = window.open("", "_blank", "width=480,height=640");
-    if (!w) { toast("Pop-up bloklangan — ruxsat bering", "err"); return; }
-    const sub = qrLast.table ? ("Stol " + qrLast.table + " · menyuni ko'rish uchun skanerlang") : "Menyuni ko'rish uchun skanerlang";
-    w.document.write(
-      '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(qrLast.title || "QR") + '</title>' +
-      '<style>body{font-family:Inter,Arial,sans-serif;text-align:center;padding:40px 24px;color:#0a0e14}' +
-      'h1{font-size:24px;margin:0 0 6px}p{color:#555;margin:0 0 24px;font-size:14px}' +
-      'img{width:340px;max-width:90%;image-rendering:pixelated}</style></head><body>' +
-      '<h1>' + esc(qrLast.title || "") + '</h1><p>' + sub + '</p>' +
-      '<img src="' + qrLast.dataUrl + '"/>' +
-      '<scr' + 'ipt>window.onload=function(){setTimeout(function(){window.print()},200)}</scr' + 'ipt>' +
-      '</body></html>'
-    );
-    w.document.close();
-  }
-
-  function copyQrLink() {
-    if (!qrLast) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(qrLast.text).then(
-        () => toast("Havola nusxalandi", "ok"),
-        () => toast("Nusxalab bo'lmadi", "err")
-      );
-    } else { toast(qrLast.text, "info"); }
   }
 
   /* ----------------------------------------------------------
