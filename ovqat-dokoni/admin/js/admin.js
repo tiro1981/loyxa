@@ -87,8 +87,24 @@
   // Buyurtmalardagi mijoz ismlari
   const ORDER_CUSTOMERS = [];
 
-  // Habarlar (suhbatlar) — bo'sh (mijozlar yozgach to'ladi)
-  const CHATS = [];
+  // Habarlar umumiy Cloud "messages" kalitida saqlanadi: [{from:'user'|'admin', text, time}].
+  // Storefront chat shu yerga yozadi — shuning uchun mijoz xabari admin panelda ko'rinadi.
+  function loadMessages() {
+    const m = window.Cloud ? Cloud.get("messages", null) : null;
+    return Array.isArray(m) ? m : [];
+  }
+  function saveMessages(list) { if (window.Cloud) Cloud.set("messages", list); }
+  // Admin UI bitta suhbat (mijoz) ko'rinishida ishlaydi
+  function loadChats() {
+    const msgs = loadMessages();
+    if (!msgs.length) return [];
+    return [{
+      id: 1, av: "👤", name: "Mijoz",
+      time: msgs[msgs.length - 1].time || "",
+      unread: 0,
+      msgs: msgs.map((m) => ({ me: m.from === "admin", t: m.text, time: m.time || "" })),
+    }];
+  }
 
   // Do'kon sozlamalari
   const SETTINGS = {
@@ -111,7 +127,13 @@
   // o'zgarishlar saveCatalog() orqali localStorage'ga saqlanadi va storefront ko'radi.
   const products = window.DATA && window.DATA.products ? window.DATA.products : [];
   const categories = window.DATA && window.DATA.categories ? window.DATA.categories : [];
-  const orders = (window.DATA && window.DATA.orders ? window.DATA.orders : []).map((o) => ({ ...o }));
+  // Buyurtmalar umumiy Cloud "orders" kalitidan o'qiladi (storefront shu yerga yozadi).
+  function loadOrders() {
+    const cloud = window.Cloud ? Cloud.get("orders", null) : null;
+    if (Array.isArray(cloud)) return cloud;
+    return (window.DATA && window.DATA.orders) ? window.DATA.orders : [];
+  }
+  function saveOrders(list) { if (window.Cloud) Cloud.set("orders", list); }
   // Katalogni saqlash yordamchisi
   const saveCatalog = () => { if (window.DATA && window.DATA.saveCatalog) window.DATA.saveCatalog(); };
 
@@ -123,7 +145,7 @@
     { id: "products",  label: "Mahsulotlar",      icon: "box",       title: "Mahsulotlar" },
     { id: "orders",    label: "Buyurtmalar",      icon: "receipt",   title: "Buyurtmalar" },
     { id: "users",     label: "Foydalanuvchilar", icon: "users",     title: "Foydalanuvchilar" },
-    { id: "messages",  label: "Habarlar",         icon: "chat",      title: "Habarlar", badge: () => CHATS.reduce((s, c) => s + c.unread, 0) },
+    { id: "messages",  label: "Habarlar",         icon: "chat",      title: "Habarlar", badge: () => { const m = loadMessages(); let u = 0; for (let i = m.length - 1; i >= 0; i--) { if (m[i].from === "admin") break; if (m[i].from === "user") u++; } return u; } },
     { id: "bot",       label: "Telegram bot",     icon: "bot",       title: "Telegram bot" },
     { id: "qrcode",    label: "QR kod",           icon: "qr",        title: "QR Kod" },
     { id: "settings",  label: "Sozlamalar",       icon: "settings",  title: "Sozlamalar" },
@@ -134,7 +156,7 @@
   let activeSection = "dashboard";
   let prodFilter = "all";    // mahsulot kategoriya filtri
   let orderFilter = "all";   // buyurtma status filtri
-  let activeChat = CHATS[0] ? CHATS[0].id : null;
+  let activeChat = 1;   // yagona mijoz suhbati
   let modalImage = null;     // mahsulot modalida yuklangan rasm (data-URL)
 
   // Telegram bot — lokal config (UI uchun) + serverdan kelgan oxirgi holat
@@ -327,11 +349,12 @@
       '</div>'
     ).join("");
 
-    const ordersHTML = orders.map((o) =>
+    const recentOrders = loadOrders().slice(0, 6);
+    const ordersHTML = recentOrders.length ? recentOrders.map((o) =>
       '<tr><td><b>' + o.id + '</b></td><td class="muted">' + o.date + '</td>' +
       '<td class="num">' + sum(o.total) + '</td>' +
-      '<td><span class="pill ' + o.status + '"><span class="pdot"></span>' + STATUS_LABEL[o.status] + '</span></td></tr>'
-    ).join("");
+      '<td><span class="pill ' + o.status + '"><span class="pdot"></span>' + (STATUS_LABEL[o.status] || o.status) + '</span></td></tr>'
+    ).join("") : '<tr><td colspan="4" class="muted" style="text-align:center;padding:18px">Hozircha buyurtma yo\'q</td></tr>';
 
     const donutLegend = PAY_DIST.map((p) =>
       '<div class="dl-row"><i style="background:' + p.color + '"></i><span class="dl-name">' + p.name + '</span><span class="dl-val">' + p.val + '</span></div>'
@@ -560,10 +583,11 @@
       '<button class="chip' + (orderFilter === id ? " is-active" : "") + '" data-ofilter="' + id + '">' + lbl + '</button>'
     ).join("");
 
+    const orders = loadOrders();
     const list = orderFilter === "all" ? orders : orders.filter((o) => o.status === orderFilter);
     const rows = list.length ? list.map((o, i) => {
-      const count = o.items.reduce((s, it) => s + it.qty, 0);
-      const cust = ORDER_CUSTOMERS[i % ORDER_CUSTOMERS.length];
+      const count = (o.items || []).reduce((s, it) => s + it.qty, 0);
+      const cust = o.userName || o.name || "Mijoz";
       const payName = (window.DATA.paymentMethods.find((m) => m.id === o.payment) || {}).name || o.payment;
       return '<tr>' +
         '<td><b>' + o.id + '</b></td>' +
@@ -608,6 +632,7 @@
 
   // --- HABARLAR ---
   function viewMessages() {
+    const CHATS = loadChats();
     const list = CHATS.map((c) =>
       '<div class="chat-li' + (c.id === activeChat ? " is-active" : "") + '" data-chat="' + c.id + '">' +
         '<span class="u-av">' + c.av + '</span>' +
@@ -759,7 +784,13 @@
           '<li>Kanal username (masalan <code>@mening_dokonim</code>) ni kiritib <b>Kanalni ulang</b>.</li>' +
           '<li>Endi har bir yangi buyurtma avtomatik kanalga yuboriladi. ✅</li>' +
         '</ol>' +
-        '<p class="bot-note">Bot serveri: <code id="botApiUrl">—</code>. Server ishlamasa, sozlamalar saqlanadi va server yoqilganda ishlaydi.</p>' +
+        '<div class="field" style="margin-top:6px"><label>Bot server manzili (URL)</label>' +
+          '<div class="qr-url-row">' +
+            '<input class="input" id="botApiInput" placeholder="https://mening-bot.example.com"/>' +
+            '<button class="btn btn--primary" id="botApiSave">Saqlash</button>' +
+          '</div>' +
+          '<p class="bot-note">bot.py ishlab turgan manzil. Hozirgi: <code id="botApiUrl">—</code>. Mijoz buyurtmasi shu serverga yuboriladi — <b>HTTPS</b> bo\'lishi va internetdan ochiq bo\'lishi shart (localhost faqat sizning kompyuteringizda ishlaydi).</p>' +
+        '</div>' +
       '</div></div>' +
 
     '</div>';
@@ -891,15 +922,14 @@
 
     // Buyurtma status o'zgartirish
     root.querySelectorAll("[data-ostatus]").forEach((s) => s.addEventListener("change", () => {
-      const o = orders.find((x) => x.id === s.dataset.ostatus);
-      if (o) { o.status = s.value; toast(o.id + " holati yangilandi", "ok"); }
+      const all = loadOrders();
+      const o = all.find((x) => x.id === s.dataset.ostatus);
+      if (o) { o.status = s.value; saveOrders(all); toast(o.id + " holati yangilandi", "ok"); }
     }));
 
-    // Habarlar
+    // Habarlar — suhbatni ochish
     root.querySelectorAll("[data-chat]").forEach((c) => c.addEventListener("click", () => {
       activeChat = parseInt(c.dataset.chat, 10);
-      const ch = CHATS.find((x) => x.id === activeChat);
-      if (ch) ch.unread = 0;
       render();
       updateNavBadges();
       const layout = el("chatLayout");
@@ -913,9 +943,10 @@
         const inp = el("chatInput");
         const txt = inp.value.trim();
         if (!txt) return;
-        const ch = CHATS.find((x) => x.id === activeChat);
-        ch.msgs.push({ me: true, t: txt, time: "Hozir" });
-        ch.time = "Hozir";
+        // Admin javobini umumiy "messages" ga qo'shamiz — mijoz web ilovada ko'radi
+        const all = loadMessages();
+        all.push({ from: "admin", text: txt, time: "Hozir" });
+        saveMessages(all);
         render();
         el("chatLayout").classList.add("show-conv");
         const body = el("convBody");
@@ -951,6 +982,22 @@
     if (el("botConnect")) {
       const apiEl = el("botApiUrl");
       if (apiEl && window.Telegram) apiEl.textContent = Telegram.API_URL;
+      // Bot server manzilini sozlash (Cloud "bot_api" — mijozlarga ham sinxron)
+      const apiInput = el("botApiInput");
+      if (apiInput) {
+        const cur = (window.Cloud ? Cloud.get("bot_api", "") : "") || localStorage.getItem("bo_bot_api") || "";
+        apiInput.value = cur;
+      }
+      const apiSave = el("botApiSave");
+      if (apiSave) apiSave.addEventListener("click", () => {
+        let v = (el("botApiInput").value || "").trim().replace(/\/+$/, "");
+        if (v && !/^https?:\/\//i.test(v)) v = "https://" + v;
+        if (window.Cloud) Cloud.set("bot_api", v);
+        try { if (v) localStorage.setItem("bo_bot_api", v); else localStorage.removeItem("bo_bot_api"); } catch (e) {}
+        if (el("botApiUrl") && window.Telegram) el("botApiUrl").textContent = Telegram.API_URL;
+        toast(v ? "Bot server manzili saqlandi" : "Standart manzilga qaytarildi", "ok");
+        botRefreshStatus();
+      });
 
       const eye = el("botEye");
       if (eye) eye.addEventListener("click", () => {

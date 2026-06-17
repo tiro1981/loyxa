@@ -109,12 +109,24 @@ window.Store = (function () {
     save(); emit("favorites:change");
   }
 
-  /* --- orders --- */
-  const getOrders = () => state.orders;
+  /* --- orders ---
+     Buyurtmalar umumiy "orders" kalitida saqlanadi (admin ham shu yerdan o'qiydi).
+     Shu tufayli storefront'da berilgan buyurtma admin panelida ko'rinadi. */
+  function ordersAll() {
+    const cloud = window.Cloud ? Cloud.get("orders", null) : null;
+    if (Array.isArray(cloud)) return cloud;
+    return state.orders || [];
+  }
+  function ordersSave(list) {
+    if (window.Cloud) Cloud.set("orders", list);
+    state.orders = list;   // mahalliy nusxa (mijoz "Buyurtmalarim" ko'rinishi uchun)
+  }
+  const getOrders = () => ordersAll();
   function placeOrder({ payment, address, note } = {}) {
     const items = state.cart.map((c) => ({ id: c.id, qty: c.qty }));
+    const all = ordersAll().slice();
     const order = {
-      id: "ORD-" + (1043 + state.orders.length),
+      id: "ORD-" + (1043 + all.length),
       date: nowLabel(),
       status: "pending",
       items,
@@ -122,8 +134,11 @@ window.Store = (function () {
       payment: payment || "cash",
       address: address || (defaultAddress() && defaultAddress().text) || "",
       note: note || "",
+      userName: (state.user && state.user.name) || "Mijoz",
+      phone: (state.user && state.user.phone) || "",
     };
-    state.orders.unshift(order);
+    all.unshift(order);
+    ordersSave(all);
     clearCart();
     save(); emit("orders:change");
     return order;

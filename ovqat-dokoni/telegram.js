@@ -3,22 +3,28 @@
 // serveriga (bot/bot.py, port 3344) yuboriladi, server uni kanalga uzatadi.
 // Har bir do'kon clientId kaliti bilan ajratiladi: <client>__ovqat.
 const Telegram = (() => {
-  // Do'kon kaliti — dashboarddan ?client=... bo'lsa o'sha, aks holda 'shop'
+  // Do'kon kaliti — boot-loader window.__CLIENT_ID (?client= yoki bo_session) bilan mos.
+  // Admin bot ulaganda ham, storefront order yuborganda ham bir xil bo'lishi shart.
   const SHOP_KEY = (
+    window.__CLIENT_ID ||
     new URLSearchParams(location.search).get('client') ||
     (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() ||
     'shop'
   ) + '__ovqat';
 
-  // Bot server manzili (platforma sozlamasi bilan bir xil kalit)
-  const API_URL = (
-    localStorage.getItem('bo_bot_api') ||
-    localStorage.getItem('ovqat_bot_http_url') ||
-    'http://localhost:3344'
-  ).replace(/\/+$/, '');
+  // Bot server manzili — Cloud("bot_api") (admin sozlaydi, mijozga ham sinxron),
+  // aks holda localStorage, aks holda localhost. Har chaqiruvда yangidan o'qiymiz.
+  function apiBase() {
+    return (
+      (window.Cloud && Cloud.get('bot_api')) ||
+      localStorage.getItem('bo_bot_api') ||
+      localStorage.getItem('ovqat_bot_http_url') ||
+      'http://localhost:3344'
+    ).replace(/\/+$/, '');
+  }
 
   async function request(path, opts = {}) {
-    const res = await fetch(API_URL + path, {
+    const res = await fetch(apiBase() + path, {
       ...opts,
       headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     });
@@ -65,10 +71,12 @@ const Telegram = (() => {
         })),
         total: order.total,
       };
+      console.log('[Telegram] sendOrder →', apiBase() + '/store-bot/order', '| clientId:', SHOP_KEY, '| order:', payload.id);
       const data = await request('/store-bot/order', { method: 'POST', body: JSON.stringify({ clientId: SHOP_KEY, order: payload }) });
+      console.log('[Telegram] sendOrder ✓ kanalga yuborildi:', data);
       return { ok: true, ...data };
     } catch (err) {
-      console.warn('[Telegram] sendOrder failed:', err.message);
+      console.warn('[Telegram] sendOrder XATO:', err.message, '| bot server:', apiBase(), '| clientId:', SHOP_KEY);
       return { ok: false, error: err.message };
     }
   }
@@ -77,7 +85,7 @@ const Telegram = (() => {
   async function sendStatusUpdate() { return { ok: true }; }
   function isEnabled() { return true; }
 
-  return { SHOP_KEY, API_URL, status, health, connect, disconnect, setChannel, broadcast, sendOrder, sendStatusUpdate, isEnabled };
+  return { SHOP_KEY, get API_URL() { return apiBase(); }, status, health, connect, disconnect, setChannel, broadcast, sendOrder, sendStatusUpdate, isEnabled };
 })();
 
 window.Telegram = Telegram;

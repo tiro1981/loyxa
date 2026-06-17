@@ -245,14 +245,24 @@ window.Views.chat = function (root) {
     return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
   }
 
-  // Boshlang'ich mock xabarlar
-  const seed = [
-    { who: "them", text: "Assalomu alaykum! Sizga qanday yordam bera olaman? 😊" },
-    { who: "them", text: "Buyurtma, yetkazib berish yoki to'lov bo'yicha savollaringiz bo'lsa, yozing." },
-  ];
+  // Xabarlar umumiy "messages" (Cloud) da saqlanadi — admin ham shu yerdan o'qiydi/yozadi.
+  function cloudMsgs() {
+    const m = window.Cloud ? Cloud.get("messages", null) : null;
+    return Array.isArray(m) ? m : [];
+  }
+  function saveMsgs(list) { if (window.Cloud) Cloud.set("messages", list); }
 
-  function bubbleHTML(m) {
-    return `<div class="bubble ${m.who}">${m.text}<span class="b-time">${now()}</span></div>`;
+  function bubbleHTML(who, text, time) {
+    return `<div class="bubble ${who}">${text}<span class="b-time">${time || now()}</span></div>`;
+  }
+  // Mavjud suhbat; tarix bo'sh bo'lsa — saqlanmaydigan xush kelibsiz xabari
+  function renderMsgs() {
+    const msgs = cloudMsgs();
+    if (!msgs.length) {
+      return bubbleHTML("them", "Assalomu alaykum! Sizga qanday yordam bera olaman? 😊", now())
+        + bubbleHTML("them", "Buyurtma, yetkazib berish yoki to'lov bo'yicha savollaringiz bo'lsa, yozing.", now());
+    }
+    return msgs.map((m) => bubbleHTML(m.from === "user" ? "me" : "them", m.text, m.time)).join("");
   }
 
   root.innerHTML =
@@ -261,9 +271,7 @@ window.Views.chat = function (root) {
       sub: "Onlayn · odatda 5 daqiqada javob",
       back: true,
     }) +
-    `<div class="chat-wrap" id="chatWrap">
-      ${seed.map(bubbleHTML).join("")}
-    </div>
+    `<div class="chat-wrap" id="chatWrap">${renderMsgs()}</div>
     <div class="dock">
       <div class="chat-input">
         <div class="searchbar">
@@ -279,28 +287,21 @@ window.Views.chat = function (root) {
   const wrap = root.querySelector("#chatWrap");
   const field = root.querySelector("#chatField");
 
-  // Pastga scroll
-  function toBottom() {
-    wrap.scrollTop = wrap.scrollHeight;
-  }
+  function toBottom() { wrap.scrollTop = wrap.scrollHeight; }
 
-  // Xabar qo'shish
-  function pushBubble(who, text) {
-    wrap.insertAdjacentHTML("beforeend", bubbleHTML({ who: who, text: text }));
-    toBottom();
-  }
-
-  // Yuborish
+  // Yuborish — xabar umumiy "messages" ga yoziladi, admin panelда ko'rinadi (mock javob yo'q)
   function send() {
     const val = (field.value || "").trim();
     if (!val) return;
-    pushBubble("me", val);
+    const all = cloudMsgs();
+    if (!all.length) wrap.innerHTML = "";   // xush kelibsiz xabarini tozalaymiz
+    const t = now();
+    all.push({ from: "user", text: val, time: t });
+    saveMsgs(all);
+    wrap.insertAdjacentHTML("beforeend", bubbleHTML("me", val, t));
+    toBottom();
     field.value = "";
     field.focus();
-    // Admin mock javobi
-    setTimeout(() => {
-      pushBubble("them", "Rahmat! So'rovingiz qabul qilindi 🙌");
-    }, 900);
   }
 
   root.querySelector("#chatSend").onclick = send;
