@@ -16,8 +16,8 @@
    ============================================================ */
 
 // >>> Supabase Settings → API dan oling <<<
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL";   // masalan: https://abcdefgh.supabase.co
-const SUPABASE_KEY = "PASTE_YOUR_ANON_KEY";       // "anon public" kaliti (brauzerda ochiq turishi normal)
+const SUPABASE_URL = "https://ctakvioxteagcwjlclnu.supabase.co";   // masalan: https://abcdefgh.supabase.co
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ";       // "anon public" kaliti (brauzerda ochiq turishi normal)
 
 window.Cloud = (function () {
   // Sozlangan-sozlanmaganini aniqlaymiz. Placeholder yoki supabase kutubxonasi
