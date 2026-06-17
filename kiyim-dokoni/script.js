@@ -52,45 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ---------- Default Demo Data ---------- */
 const DEFAULT_DATA = {
-    products: [
-        { id: 1, name: "Klassik oq ko'ylak", category: "erkaklar", price: 285000, oldPrice: 350000, stock: 24, image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600", sizes: ["S","M","L","XL"], colors: ["#ffffff","#e5e7eb"], desc: "Yuqori sifatli paxtadan tikilgan klassik oq ko'ylak. Ofis va rasmiy tadbirlar uchun ideal tanlov.", active: true, sold: 142, created: "2026-04-12" },
-        { id: 2, name: "Qora teri kurtka", category: "erkaklar", price: 1450000, oldPrice: null, stock: 12, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600", sizes: ["M","L","XL","XXL"], colors: ["#000000","#3f3f46"], desc: "Sof teridan tikilgan zamonaviy kurtka. Qish va kuz uchun mos.", active: true, sold: 87, created: "2026-03-22" },
-        { id: 3, name: "Jeans shimi slim-fit", category: "erkaklar", price: 320000, oldPrice: 420000, stock: 38, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600", sizes: ["28","30","32","34","36"], colors: ["#1e3a8a","#000000"], desc: "Slim-fit ko'rinishidagi sifatli jeans shim.", active: true, sold: 215, created: "2026-04-01" },
-        { id: 4, name: "Gulli yozgi ko'ylak", category: "ayollar", price: 245000, oldPrice: 290000, stock: 18, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600", sizes: ["XS","S","M","L"], colors: ["#fda4af","#fde047"], desc: "Engil va qulay yozgi ko'ylak. Gulli naqshli.", active: true, sold: 178, created: "2026-04-18" },
-        { id: 5, name: "Elegant kechki libos", category: "ayollar", price: 890000, oldPrice: null, stock: 8, image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600", sizes: ["XS","S","M","L"], colors: ["#000000","#7c2d12"], desc: "Maxsus tadbirlar uchun elegant kechki libos.", active: true, sold: 56, created: "2026-03-05" },
-        { id: 6, name: "Trikotaj sviter", category: "ayollar", price: 380000, oldPrice: null, stock: 22, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600", sizes: ["S","M","L"], colors: ["#f5f5dc","#d4d4d8","#fda4af"], desc: "Yumshoq va issiq trikotaj sviter.", active: true, sold: 112, created: "2026-02-20" },
-        { id: 7, name: "Bolalar futbolkasi", category: "bolalar", price: 89000, oldPrice: 120000, stock: 45, image: "https://images.unsplash.com/photo-1519278409-1f56fdda7fe5?w=600", sizes: ["3-4","5-6","7-8","9-10"], colors: ["#3b82f6","#ef4444","#22c55e"], desc: "100% paxta, bolalar uchun qulay futbolka.", active: true, sold: 320, created: "2026-04-25" },
-        { id: 8, name: "Bolalar sport kostyumi", category: "bolalar", price: 290000, oldPrice: null, stock: 16, image: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=600", sizes: ["5-6","7-8","9-10","11-12"], colors: ["#1e40af","#374151"], desc: "Bolalar uchun qulay sport kostyumi.", active: true, sold: 89, created: "2026-03-15" },
-        { id: 9, name: "Nike krossovkalari", category: "poyabzal", price: 980000, oldPrice: 1150000, stock: 20, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600", sizes: ["39","40","41","42","43","44"], colors: ["#ffffff","#000000","#dc2626"], desc: "Original Nike sport krossovkalari.", active: true, sold: 198, created: "2026-04-08" },
-        { id: 10, name: "Ayollar baland poshnali tuflisi", category: "poyabzal", price: 520000, oldPrice: null, stock: 14, image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600", sizes: ["36","37","38","39","40"], colors: ["#000000","#dc2626","#fbbf24"], desc: "Elegant baland poshnali tufli.", active: true, sold: 76, created: "2026-03-28" },
-        { id: 11, name: "Erkak charm tuflisi", category: "poyabzal", price: 680000, oldPrice: 820000, stock: 18, image: "https://images.unsplash.com/photo-1614252369475-531eba835c4d?w=600", sizes: ["40","41","42","43","44"], colors: ["#1c1917","#78350f"], desc: "Klassik charm tufli, ofis uchun.", active: true, sold: 124, created: "2026-02-10" },
-        { id: 12, name: "Charm sumka", category: "aksessuar", price: 450000, oldPrice: null, stock: 11, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600", sizes: ["Standart"], colors: ["#1c1917","#a16207"], desc: "Sifatli charm ayollar sumkasi.", active: true, sold: 92, created: "2026-04-15" },
-        { id: 13, name: "Kuyov uchun galstuk", category: "aksessuar", price: 120000, oldPrice: 160000, stock: 30, image: "https://images.unsplash.com/photo-1606509036041-bc59b6e64f7e?w=600", sizes: ["Standart"], colors: ["#7c2d12","#1e3a8a","#000000"], desc: "Ipakdan tikilgan elegant galstuk.", active: true, sold: 145, created: "2026-03-12" },
-        { id: 14, name: "Quyosh ko'zoynagi", category: "aksessuar", price: 180000, oldPrice: null, stock: 27, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600", sizes: ["Standart"], colors: ["#000000","#92400e"], desc: "UV himoyali quyosh ko'zoynagi.", active: true, sold: 168, created: "2026-04-22" },
-        { id: 15, name: "Charm kamar", category: "aksessuar", price: 145000, oldPrice: 195000, stock: 35, image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=600", sizes: ["S","M","L","XL"], colors: ["#1c1917","#78350f"], desc: "Sifatli charm kamar, erkaklar uchun.", active: true, sold: 210, created: "2026-02-28" },
-        { id: 16, name: "Sport futbolkasi", category: "erkaklar", price: 165000, oldPrice: null, stock: 0, image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600", sizes: ["M","L","XL"], colors: ["#1e40af","#000000"], desc: "Nafas oluvchi sport futbolkasi.", active: false, sold: 67, created: "2026-01-15" },
-    ],
+    products: [],
 
-    orders: [
-        { id: 1001, customerId: 1, name: "Aliyev Akmal", phone: "+998901234567", address: "Toshkent, Chilonzor 12", items: [{ pid: 1, name: "Klassik oq ko'ylak", qty: 2, price: 285000, size: "L" },{ pid: 13, name: "Kuyov uchun galstuk", qty: 1, price: 120000, size: "Standart" }], total: 690000, payment: "karta", status: "yetkazildi", note: "", date: "2026-05-18" },
-        { id: 1002, customerId: 2, name: "Karimova Madina", phone: "+998935551122", address: "Samarqand, Markaziy ko'cha 8", items: [{ pid: 5, name: "Elegant kechki libos", qty: 1, price: 890000, size: "M" }], total: 890000, payment: "click", status: "jarayonda", note: "Tezda yetkazib bering", date: "2026-05-19" },
-        { id: 1003, customerId: 3, name: "Toshmatov Bobur", phone: "+998901112233", address: "Buxoro, Mustaqillik 45", items: [{ pid: 9, name: "Nike krossovkalari", qty: 1, price: 980000, size: "42" },{ pid: 3, name: "Jeans shimi slim-fit", qty: 1, price: 320000, size: "32" }], total: 1300000, payment: "karta", status: "yetkazilmoqda", note: "", date: "2026-05-20" },
-        { id: 1004, customerId: 4, name: "Yusupova Nilufar", phone: "+998977778899", address: "Toshkent, Yunusobod 3", items: [{ pid: 4, name: "Gulli yozgi ko'ylak", qty: 1, price: 245000, size: "S" },{ pid: 12, name: "Charm sumka", qty: 1, price: 450000, size: "Standart" }], total: 695000, payment: "naqd", status: "yangi", note: "", date: "2026-05-21" },
-        { id: 1005, customerId: 5, name: "Xolmatov Sardor", phone: "+998931234455", address: "Andijon, Bobur ko'chasi 21", items: [{ pid: 2, name: "Qora teri kurtka", qty: 1, price: 1450000, size: "L" }], total: 1450000, payment: "karta", status: "yangi", note: "Qadoqlash maxsus", date: "2026-05-21" },
-        { id: 1006, customerId: 6, name: "Rahimova Zilola", phone: "+998901119988", address: "Farg'ona, Al-Forobiy 7", items: [{ pid: 10, name: "Ayollar baland poshnali tuflisi", qty: 1, price: 520000, size: "38" }], total: 520000, payment: "click", status: "yetkazildi", note: "", date: "2026-05-15" },
-        { id: 1007, customerId: 7, name: "Nazarov Jasur", phone: "+998935557766", address: "Namangan, Yangi yo'l 15", items: [{ pid: 11, name: "Erkak charm tuflisi", qty: 1, price: 680000, size: "42" },{ pid: 15, name: "Charm kamar", qty: 1, price: 145000, size: "L" }], total: 825000, payment: "naqd", status: "yetkazildi", note: "", date: "2026-05-14" },
-        { id: 1008, customerId: 8, name: "Saidova Gulnoza", phone: "+998901234511", address: "Toshkent, Mirzo Ulug'bek 9", items: [{ pid: 6, name: "Trikotaj sviter", qty: 2, price: 380000, size: "M" }], total: 760000, payment: "karta", status: "jarayonda", note: "", date: "2026-05-20" },
-        { id: 1009, customerId: 9, name: "Tursunov Oybek", phone: "+998935551199", address: "Qashqadaryo, Karshi 5", items: [{ pid: 7, name: "Bolalar futbolkasi", qty: 3, price: 89000, size: "7-8" },{ pid: 8, name: "Bolalar sport kostyumi", qty: 1, price: 290000, size: "9-10" }], total: 557000, payment: "click", status: "yangi", note: "", date: "2026-05-21" },
-        { id: 1010, customerId: 10, name: "Mirzayeva Sevara", phone: "+998901188822", address: "Toshkent, Yashnobod 14", items: [{ pid: 14, name: "Quyosh ko'zoynagi", qty: 2, price: 180000, size: "Standart" }], total: 360000, payment: "naqd", status: "bekor", note: "Mijoz bekor qildi", date: "2026-05-12" },
-    ],
+    orders: [],
 
-    customers: [
-        { id: 1, name: "Aliyev Akmal", email: "akmal.aliyev@mail.uz", phone: "+998901234567", address: "Toshkent, Chilonzor 12", joined: "2025-11-10", active: true },
-        { id: 2, name: "Karimova Madina", email: "madina.karimova@gmail.com", phone: "+998935551122", address: "Samarqand, Markaziy ko'cha 8", joined: "2025-12-04", active: true },
-        { id: 3, name: "Toshmatov Bobur", email: "bobur.t@mail.ru", phone: "+998901112233", address: "Buxoro, Mustaqillik 45", joined: "2026-01-15", active: true },
-        { id: 4, name: "Yusupova Nilufar", email: "nilufar.y@gmail.com", phone: "+998977778899", address: "Toshkent, Yunusobod 3", joined: "2026-01-22", active: true },
-        { id: 5, name: "Xolmatov Sardor", email: "sardor.x@mail.uz", phone: "+998931234455", address: "Andijon, Bobur ko'chasi 21", joined: "2026-02-08", active: true },
-    ],
+    customers: [],
 
     categories: [
         { id: 'erkaklar', name: "Erkaklar", icon: "👔", desc: "Erkaklar uchun kiyim-kechak", active: true },
@@ -100,12 +66,7 @@ const DEFAULT_DATA = {
         { id: 'aksessuar', name: "Aksessuar", icon: "👜", desc: "Sumkalar, kamarlar va boshqalar", active: true },
     ],
 
-    coupons: [
-        { id: 1, code: "YANGI10", type: "percent", value: 10, maxUses: 100, used: 23, expires: "2026-12-31", active: true },
-        { id: 2, code: "SUMMER20", type: "percent", value: 20, maxUses: 50, used: 12, expires: "2026-08-31", active: true },
-        { id: 3, code: "VIP30", type: "percent", value: 30, maxUses: 20, used: 7, expires: "2026-07-15", active: true },
-        { id: 4, code: "FREESHIP", type: "fixed", value: 30000, maxUses: 200, used: 89, expires: "2026-06-30", active: true },
-    ],
+    coupons: [],
 
     settings: {
         storeName: "Moda Style",
@@ -904,8 +865,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             });
         });
         // 3. Promos
-        notifs.push({ icon: '🎁', title: 'Yangi promotsiya', text: 'YANGI10 kod bilan 10% chegirma', time: 'Bugun' });
-        notifs.push({ icon: '🔥', title: 'Yangi kolleksiya', text: "Bahor kolleksiyasi keldi — birinchi bo'lib ko'ring", time: 'Kecha' });
         return notifs;
     }
 

@@ -52,45 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ---------- Default Demo Data ---------- */
 const DEFAULT_DATA = {
-    products: [
-        { id: 1, name: "O'tkan kunlar", author: "Abdulla Qodiriy", category: "badiiy", price: 58000, oldPrice: 72000, stock: 40, image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-001-1", publisher: "Yangi asr avlodi", year: 2021, pages: 416, lang: "O'zbek", desc: "O'zbek romanchiligining ilk durdonasi. Otabek va Kumush sevgisi orqali XIX asr Turkiston hayoti tasvirlangan.", active: true, sold: 542, created: "2026-04-12" },
-        { id: 2, name: "Mehrobdan chayon", author: "Abdulla Qodiriy", category: "badiiy", price: 52000, oldPrice: null, stock: 28, image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-002-8", publisher: "Sharq", year: 2020, pages: 352, lang: "O'zbek", desc: "Xon saroyidagi fitnalar va Anvar bilan Ra'no muhabbati haqidagi tarixiy roman.", active: true, sold: 318, created: "2026-03-22" },
-        { id: 3, name: "Shaytanat", author: "Tohir Malik", category: "badiiy", price: 75000, oldPrice: 90000, stock: 35, image: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-003-5", publisher: "Sharq", year: 2022, pages: 720, lang: "O'zbek", desc: "Jinoiy dunyo va inson ruhiyatining qorong'u tomonlari haqidagi mashhur ko'p jildlik asar.", active: true, sold: 615, created: "2026-04-01" },
-        { id: 4, name: "Kichik shahzoda", author: "Antuan de Sent-Ekzюperi", category: "bolalar", price: 38000, oldPrice: 48000, stock: 60, image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-004-2", publisher: "Hilol nashr", year: 2023, pages: 112, lang: "O'zbek", desc: "Bolalar va kattalar uchun falsafiy ertak. Sevgi, do'stlik va hayot mazmuni haqida.", active: true, sold: 489, created: "2026-04-18" },
-        { id: 5, name: "1984", author: "Jorj Oruell", category: "badiiy", price: 64000, oldPrice: null, stock: 22, image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600", sizes: ["Yumshoq muqova"], colors: [], isbn: "978-9943-01-005-9", publisher: "Asaxiy Books", year: 2022, pages: 328, lang: "O'zbek", desc: "Totalitar jamiyat va nazorat ostidagi dunyo haqidagi mashhur antiutopiya romani.", active: true, sold: 276, created: "2026-03-05" },
-        { id: 6, name: "Alkimyogar", author: "Paulo Koelo", category: "badiiy", price: 49000, oldPrice: 59000, stock: 33, image: "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-006-6", publisher: "Asaxiy Books", year: 2021, pages: 208, lang: "O'zbek", desc: "Santiago ismli cho'pon yigitning orzusi ortidan sayohati haqidagi ilhomlantiruvchi asar.", active: true, sold: 401, created: "2026-02-20" },
-        { id: 7, name: "Sapiens: Insoniyatning qisqacha tarixi", author: "Yuval Noy Harari", category: "ilmiy", price: 98000, oldPrice: 120000, stock: 25, image: "https://images.unsplash.com/photo-1610882648335-ced8fc8fa6b6?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-007-3", publisher: "Asaxiy Books", year: 2023, pages: 512, lang: "O'zbek", desc: "Inson zotining paydo bo'lishidan to bugungi kungacha bo'lgan tarixiy-ilmiy tahlil.", active: true, sold: 358, created: "2026-04-25" },
-        { id: 8, name: "Atom odatlar", author: "Jeyms Klir", category: "psixologiya", price: 72000, oldPrice: null, stock: 44, image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-008-0", publisher: "Asaxiy Books", year: 2023, pages: 288, lang: "O'zbek", desc: "Kichik o'zgarishlar orqali katta natijalarga erishish. Yaxshi odatlarni shakllantirish bo'yicha amaliy qo'llanma.", active: true, sold: 523, created: "2026-03-15" },
-        { id: 9, name: "Boy ota, kambag'al ota", author: "Robert Kiyosaki", category: "biznes", price: 68000, oldPrice: 85000, stock: 30, image: "https://images.unsplash.com/photo-1554475901-4538ddfbccc2?w=600", sizes: ["Yumshoq muqova"], colors: [], isbn: "978-9943-01-009-7", publisher: "Yangi asr avlodi", year: 2022, pages: 336, lang: "O'zbek", desc: "Moliyaviy savodxonlik va boylik haqida fikrlashni o'zgartiruvchi mashhur kitob.", active: true, sold: 467, created: "2026-04-08" },
-        { id: 10, name: "Amir Temur o'gitlari", author: "Amir Temur", category: "tarix", price: 55000, oldPrice: null, stock: 19, image: "https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-010-3", publisher: "Sharq", year: 2020, pages: 264, lang: "O'zbek", desc: "Sohibqiron Amir Temurning davlat boshqaruvi va hayotiy o'gitlari to'plami.", active: true, sold: 198, created: "2026-03-28" },
-        { id: 11, name: "Boy bolaning fikrlash tarzi", author: "T. Harv Eker", category: "biznes", price: 61000, oldPrice: 76000, stock: 27, image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600", sizes: ["Yumshoq muqova"], colors: [], isbn: "978-9943-01-011-0", publisher: "Asaxiy Books", year: 2023, pages: 224, lang: "O'zbek", desc: "Boylik psixologiyasi va moliyaviy muvaffaqiyatga olib boruvchi tafakkur namunalari.", active: true, sold: 289, created: "2026-02-10" },
-        { id: 12, name: "Ikki eshik orasi", author: "O'tkir Hoshimov", category: "badiiy", price: 54000, oldPrice: null, stock: 31, image: "https://images.unsplash.com/photo-1474932430478-367dbb6832c1?w=600", sizes: ["Qattiq muqova","Yumshoq muqova"], colors: [], isbn: "978-9943-01-012-7", publisher: "Sharq", year: 2021, pages: 480, lang: "O'zbek", desc: "Urush davri va undan keyingi hayot, inson taqdirlari haqidagi sevimli roman.", active: true, sold: 372, created: "2026-04-15" },
-        { id: 13, name: "Alpomish dostoni", author: "Xalq dostoni", category: "bolalar", price: 42000, oldPrice: 52000, stock: 38, image: "https://images.unsplash.com/photo-1621944190310-e3cca1564bd7?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-013-4", publisher: "Hilol nashr", year: 2022, pages: 192, lang: "O'zbek", desc: "O'zbek xalq qahramonlik dostoni. Yoshlar uchun moslashtirilgan nashr.", active: true, sold: 254, created: "2026-03-12" },
-        { id: 14, name: "Tafakkur sekin va tez", author: "Daniel Kaneman", category: "psixologiya", price: 88000, oldPrice: null, stock: 21, image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-014-1", publisher: "Asaxiy Books", year: 2023, pages: 528, lang: "O'zbek", desc: "Inson tafakkurining ikki tizimi va qaror qabul qilish psixologiyasi haqida.", active: true, sold: 167, created: "2026-04-22" },
-        { id: 15, name: "Ona tili. 5-sinf darsligi", author: "M. Qodirov va b.", category: "darslik", price: 32000, oldPrice: null, stock: 80, image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600", sizes: ["Yumshoq muqova"], colors: [], isbn: "978-9943-01-015-8", publisher: "O'qituvchi", year: 2024, pages: 208, lang: "O'zbek", desc: "Umumta'lim maktablarining 5-sinf o'quvchilari uchun ona tili darsligi.", active: true, sold: 612, created: "2026-02-28" },
-        { id: 16, name: "Qur'oni Karim ma'nolari tarjimasi", author: "Shayx Abdulaziz Mansur", category: "diniy", price: 95000, oldPrice: 115000, stock: 0, image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=600", sizes: ["Qattiq muqova"], colors: [], isbn: "978-9943-01-016-5", publisher: "Hilol nashr", year: 2023, pages: 640, lang: "O'zbek", desc: "Qur'oni Karimning o'zbek tilidagi ma'nolari tarjimasi va izohlari.", active: false, sold: 134, created: "2026-01-15" },
-    ],
+    products: [],
 
-    orders: [
-        { id: 1001, customerId: 1, name: "Aliyev Akmal", phone: "+998901234567", address: "Toshkent, Chilonzor 12", items: [{ pid: 1, name: "O'tkan kunlar", qty: 1, price: 58000, size: "Qattiq muqova" },{ pid: 6, name: "Alkimyogar", qty: 1, price: 49000, size: "Yumshoq muqova" }], total: 107000, payment: "karta", status: "yetkazildi", note: "", date: "2026-05-18" },
-        { id: 1002, customerId: 2, name: "Karimova Madina", phone: "+998935551122", address: "Samarqand, Markaziy ko'cha 8", items: [{ pid: 8, name: "Atom odatlar", qty: 1, price: 72000, size: "Qattiq muqova" }], total: 72000, payment: "click", status: "jarayonda", note: "Tezda yetkazib bering", date: "2026-05-19" },
-        { id: 1003, customerId: 3, name: "Toshmatov Bobur", phone: "+998901112233", address: "Buxoro, Mustaqillik 45", items: [{ pid: 7, name: "Sapiens: Insoniyatning qisqacha tarixi", qty: 1, price: 98000, size: "Qattiq muqova" },{ pid: 9, name: "Boy ota, kambag'al ota", qty: 1, price: 68000, size: "Yumshoq muqova" }], total: 166000, payment: "karta", status: "yetkazilmoqda", note: "", date: "2026-05-20" },
-        { id: 1004, customerId: 4, name: "Yusupova Nilufar", phone: "+998977778899", address: "Toshkent, Yunusobod 3", items: [{ pid: 4, name: "Kichik shahzoda", qty: 2, price: 38000, size: "Qattiq muqova" },{ pid: 13, name: "Alpomish dostoni", qty: 1, price: 42000, size: "Qattiq muqova" }], total: 118000, payment: "naqd", status: "yangi", note: "", date: "2026-05-21" },
-        { id: 1005, customerId: 5, name: "Xolmatov Sardor", phone: "+998931234455", address: "Andijon, Bobur ko'chasi 21", items: [{ pid: 3, name: "Shaytanat", qty: 1, price: 75000, size: "Qattiq muqova" }], total: 75000, payment: "karta", status: "yangi", note: "Sovg'a uchun qadoqlang", date: "2026-05-21" },
-        { id: 1006, customerId: 6, name: "Rahimova Zilola", phone: "+998901119988", address: "Farg'ona, Al-Forobiy 7", items: [{ pid: 14, name: "Tafakkur sekin va tez", qty: 1, price: 88000, size: "Qattiq muqova" }], total: 88000, payment: "click", status: "yetkazildi", note: "", date: "2026-05-15" },
-        { id: 1007, customerId: 7, name: "Nazarov Jasur", phone: "+998935557766", address: "Namangan, Yangi yo'l 15", items: [{ pid: 12, name: "Ikki eshik orasi", qty: 1, price: 54000, size: "Yumshoq muqova" },{ pid: 5, name: "1984", qty: 1, price: 64000, size: "Yumshoq muqova" }], total: 118000, payment: "naqd", status: "yetkazildi", note: "", date: "2026-05-14" },
-        { id: 1008, customerId: 8, name: "Saidova Gulnoza", phone: "+998901234511", address: "Toshkent, Mirzo Ulug'bek 9", items: [{ pid: 2, name: "Mehrobdan chayon", qty: 2, price: 52000, size: "Qattiq muqova" }], total: 104000, payment: "karta", status: "jarayonda", note: "", date: "2026-05-20" },
-        { id: 1009, customerId: 9, name: "Tursunov Oybek", phone: "+998935551199", address: "Qashqadaryo, Karshi 5", items: [{ pid: 15, name: "Ona tili. 5-sinf darsligi", qty: 3, price: 32000, size: "Yumshoq muqova" },{ pid: 13, name: "Alpomish dostoni", qty: 1, price: 42000, size: "Qattiq muqova" }], total: 138000, payment: "click", status: "yangi", note: "", date: "2026-05-21" },
-        { id: 1010, customerId: 10, name: "Mirzayeva Sevara", phone: "+998901188822", address: "Toshkent, Yashnobod 14", items: [{ pid: 11, name: "Boy bolaning fikrlash tarzi", qty: 1, price: 61000, size: "Yumshoq muqova" }], total: 61000, payment: "naqd", status: "bekor", note: "Mijoz bekor qildi", date: "2026-05-12" },
-    ],
+    orders: [],
 
-    customers: [
-        { id: 1, name: "Aliyev Akmal", email: "akmal.aliyev@mail.uz", phone: "+998901234567", address: "Toshkent, Chilonzor 12", joined: "2025-11-10", active: true },
-        { id: 2, name: "Karimova Madina", email: "madina.karimova@gmail.com", phone: "+998935551122", address: "Samarqand, Markaziy ko'cha 8", joined: "2025-12-04", active: true },
-        { id: 3, name: "Toshmatov Bobur", email: "bobur.t@mail.ru", phone: "+998901112233", address: "Buxoro, Mustaqillik 45", joined: "2026-01-15", active: true },
-        { id: 4, name: "Yusupova Nilufar", email: "nilufar.y@gmail.com", phone: "+998977778899", address: "Toshkent, Yunusobod 3", joined: "2026-01-22", active: true },
-        { id: 5, name: "Xolmatov Sardor", email: "sardor.x@mail.uz", phone: "+998931234455", address: "Andijon, Bobur ko'chasi 21", joined: "2026-02-08", active: true },
-    ],
+    customers: [],
 
     categories: [
         { id: 'badiiy', name: "Badiiy adabiyot", icon: "📖", desc: "Romanlar, qissalar va hikoyalar", active: true },
@@ -103,12 +69,7 @@ const DEFAULT_DATA = {
         { id: 'darslik', name: "Darsliklar", icon: "🎓", desc: "Maktab va o'quv darsliklari", active: true },
     ],
 
-    coupons: [
-        { id: 1, code: "KITOB10", type: "percent", value: 10, maxUses: 100, used: 23, expires: "2026-12-31", active: true },
-        { id: 2, code: "MUTOLAA20", type: "percent", value: 20, maxUses: 50, used: 12, expires: "2026-08-31", active: true },
-        { id: 3, code: "VIP30", type: "percent", value: 30, maxUses: 20, used: 7, expires: "2026-07-15", active: true },
-        { id: 4, code: "BEPULYETKAZISH", type: "fixed", value: 25000, maxUses: 200, used: 89, expires: "2026-06-30", active: true },
-    ],
+    coupons: [],
 
     settings: {
         storeName: "Kitob Olami",
@@ -888,8 +849,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             });
         });
         // 3. Promos
-        notifs.push({ icon: '🎁', title: 'Yangi promotsiya', text: 'YANGI10 kod bilan 10% chegirma', time: 'Bugun' });
-        notifs.push({ icon: '🔥', title: 'Yangi kolleksiya', text: "Bahor kolleksiyasi keldi — birinchi bo'lib ko'ring", time: 'Kecha' });
         return notifs;
     }
 

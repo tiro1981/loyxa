@@ -30,23 +30,7 @@ if (!DB.get('tb_admin_account')) {
 if (!DB.get('tb_foods')) DB.set('tb_foods', []);
 if (!DB.get('tb_orders')) DB.set('tb_orders', []);
 if (!DB.get('tb_users')) DB.set('tb_users', []);
-if (!DB.get('tb_messages')) DB.set('tb_messages', [
-  { id: 1, userId: 'demo-1', userName: 'Aziza K.', avatar: 'A', unread: true,
-    messages: [
-      { from: 'user', text: 'Assalomu alaykum, buyurtmam qachon yetib boradi?', time: '14:25' },
-      { from: 'user', text: 'Yana bir savol — to\'lovni qanday qaytarish mumkin?', time: '14:30' }
-    ]
-  },
-  { id: 2, userId: 'demo-2', userName: 'Bobur S.', avatar: 'B', unread: true,
-    messages: [ { from: 'user', text: 'Rahmat, hammasi yetib bordi!', time: '13:15' } ]
-  },
-  { id: 3, userId: 'demo-3', userName: 'Madina R.', avatar: 'M', unread: false,
-    messages: [
-      { from: 'user', text: 'Buyurtmani bekor qilmoqchiman', time: '12:00' },
-      { from: 'admin', text: 'Albatta, qaysi raqamli buyurtma?', time: '12:05' }
-    ]
-  }
-]);
+if (!DB.get('tb_messages')) DB.set('tb_messages', []);
 if (!DB.get('tb_settings')) {
   // Mijozning o'zining biznes nomi va manzili default qiymat sifatida
   DB.set('tb_settings', {

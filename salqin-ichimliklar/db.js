@@ -235,23 +235,7 @@ const DB = (() => {
 
   // ----- Seed boshlang'ich ma'lumotlar -----
   function seed() {
-    if (!localStorage.getItem(KEYS.products)) {
-      const demo = [
-        { name: 'Coca-Cola 1L',     category: 'Gazli',     price: 14000, discount: 10, stock: 50,  img: svgGlass({ liquid: '#7c2d12', type: 'bottle', label: 'COLA' }) },
-        { name: 'Pepsi 1L',         category: 'Gazli',     price: 13500, discount: 0,  stock: 40,  img: svgGlass({ liquid: '#1e3a8a', type: 'bottle', label: 'PEPSI' }) },
-        { name: 'Fanta 1L',         category: 'Gazli',     price: 13000, discount: 5,  stock: 35,  img: svgGlass({ liquid: '#ea580c', type: 'bottle', label: 'FANTA' }) },
-        { name: 'Sprite 1L',        category: 'Gazli',     price: 13000, discount: 0,  stock: 30,  img: svgGlass({ liquid: '#16a34a', type: 'bottle', label: 'SPRITE' }) },
-        { name: 'Apelsin sharbati', category: 'Sharbat',   price: 18000, discount: 15, stock: 25,  img: svgGlass({ liquid: '#f97316', type: 'glass',  garnish: 'orange' }) },
-        { name: 'Olma sharbati',    category: 'Sharbat',   price: 17000, discount: 0,  stock: 22,  img: svgGlass({ liquid: '#84cc16', type: 'glass',  garnish: 'apple' }) },
-        { name: 'Hayot suvi 1.5L',  category: 'Suv',       price: 5000,  discount: 0,  stock: 100, img: svgGlass({ liquid: '#bae6fd', type: 'water',  label: 'HAYOT' }) },
-        { name: 'Nestea limon',     category: 'Choy',      price: 12000, discount: 0,  stock: 28,  img: svgGlass({ liquid: '#ca8a04', type: 'bottle', label: 'NESTEA' }) },
-        { name: 'Red Bull',         category: 'Energetik', price: 25000, discount: 0,  stock: 18,  img: svgGlass({ liquid: '#1e3a8a', type: 'can',    label: 'BULL' }) },
-        { name: 'Adrenaline Rush',  category: 'Energetik', price: 22000, discount: 10, stock: 20,  img: svgGlass({ liquid: '#6d28d9', type: 'can',    label: 'RUSH' }) },
-        { name: 'Mojito kokteyl',   category: 'Kokteyl',   price: 22000, discount: 0,  stock: 15,  img: svgGlass({ liquid: '#86efac', type: 'glass',  garnish: 'lime' }) },
-        { name: 'Limonad',          category: 'Sharbat',   price: 12000, discount: 0,  stock: 30,  img: svgGlass({ liquid: '#fde68a', type: 'glass',  garnish: 'lemon' }) },
-      ].map(p => ({ id: uid(), createdAt: Date.now(), ...p }));
-      write(KEYS.products, demo);
-    }
+    if (!localStorage.getItem(KEYS.products)) write(KEYS.products, []);
     if (!localStorage.getItem(KEYS.orders))   write(KEYS.orders, []);
     if (!localStorage.getItem(KEYS.users))    write(KEYS.users, []);
     if (!localStorage.getItem(KEYS.settings)) write(KEYS.settings, { shopName: 'Salqin', currency: "so'm" });

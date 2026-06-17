@@ -56,73 +56,39 @@
      2) Mock ma'lumotlar (admin uchun)
      ---------------------------------------------------------- */
 
-  // Haftalik daromad va harajat (Du–Ya) — ming so'mda emas, to'liq so'mda
+  // Haftalik daromad va harajat (Du–Ya) — real ma'lumot kelguncha bo'sh (0)
   const WEEK = {
     days: ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"],
-    revenue: [1820000, 2150000, 1980000, 2460000, 2980000, 3240000, 2450000],
-    expense: [760000, 880000, 820000, 940000, 1120000, 1280000, 980000],
+    revenue: [0, 0, 0, 0, 0, 0, 0],
+    expense: [0, 0, 0, 0, 0, 0, 0],
   };
   // Sof foyda = daromad - harajat
   WEEK.profit = WEEK.revenue.map((r, i) => r - WEEK.expense[i]);
 
-  // KPI (bugungi)
+  // KPI (bugungi) — real ma'lumot kelguncha 0
   const KPI = {
-    revenue: 2450000, revenueUp: 12,
-    expense: 980000, expenseUp: -4,
-    profit: 1470000, profitUp: 18,
-    orders: 48, ordersUp: 8,
+    revenue: 0, revenueUp: 0,
+    expense: 0, expenseUp: 0,
+    profit: 0, profitUp: 0,
+    orders: 0, ordersUp: 0,
   };
 
-  // To'lov usullari taqsimoti (buyurtmalar soni)
+  // To'lov usullari taqsimoti (buyurtmalar soni) — boshlang'ich 0
   const PAY_DIST = [
-    { id: "cash",  name: "Naqd pul",     val: 19, color: "#22c55e" },
-    { id: "card",  name: "Bank kartasi", val: 14, color: "#3b82f6" },
-    { id: "click", name: "Click",        val: 9,  color: "#0ea5e9" },
-    { id: "payme", name: "Payme",        val: 6,  color: "#22d3ee" },
+    { id: "cash",  name: "Naqd pul",     val: 0, color: "#22c55e" },
+    { id: "card",  name: "Bank kartasi", val: 0, color: "#3b82f6" },
+    { id: "click", name: "Click",        val: 0, color: "#0ea5e9" },
+    { id: "payme", name: "Payme",        val: 0, color: "#22d3ee" },
   ];
 
-  // Mijozlar (mock)
-  const USERS = [
-    { id: 1, av: "👨🏻", name: "Sardor Akbarov",   phone: "+998 90 123 45 67", orders: 24, spent: 1840000, joined: "12-yan, 2026", status: "faol" },
-    { id: 2, av: "👩🏻", name: "Nigora Yusupova",   phone: "+998 91 234 56 78", orders: 18, spent: 1320000, joined: "3-fev, 2026",  status: "faol" },
-    { id: 3, av: "🧔🏽", name: "Bekzod Rahimov",    phone: "+998 93 345 67 89", orders: 31, spent: 2470000, joined: "21-dek, 2025", status: "faol" },
-    { id: 4, av: "👩🏽", name: "Malika Tojiyeva",   phone: "+998 94 456 78 90", orders: 7,  spent: 520000,  joined: "8-mar, 2026",  status: "faol" },
-    { id: 5, av: "👨🏽", name: "Jahongir Sodiqov",  phone: "+998 95 567 89 01", orders: 2,  spent: 96000,   joined: "1-iyun, 2026", status: "bloklangan" },
-    { id: 6, av: "👵🏻", name: "Zulfiya Karimova",  phone: "+998 97 678 90 12", orders: 42, spent: 3210000, joined: "5-noy, 2025",  status: "faol" },
-    { id: 7, av: "👨🏻‍🦱", name: "Otabek Nazarov",  phone: "+998 99 789 01 23", orders: 13, spent: 980000,  joined: "17-fev, 2026", status: "faol" },
-    { id: 8, av: "👩🏻‍🦰", name: "Dilnoza Aliyeva", phone: "+998 88 890 12 34", orders: 5,  spent: 340000,  joined: "29-may, 2026", status: "bloklangan" },
-  ];
+  // Mijozlar — bo'sh (foydalanuvchilar ro'yxatdan o'tgach to'ladi)
+  const USERS = [];
 
-  // Buyurtmalardagi mijoz ismlari (DATA.orders bilan moslash)
-  const ORDER_CUSTOMERS = ["Sardor Akbarov", "Bekzod Rahimov", "Nigora Yusupova"];
+  // Buyurtmalardagi mijoz ismlari
+  const ORDER_CUSTOMERS = [];
 
-  // Habarlar (suhbatlar)
-  const CHATS = [
-    { id: 1, av: "👨🏻", name: "Sardor Akbarov", time: "12:40", unread: 2, msgs: [
-      { me: false, t: "Assalomu alaykum, buyurtmam qachon yetib keladi?", time: "12:30" },
-      { me: true,  t: "Vaalaykum assalom! Buyurtmangiz yo'lda, taxminan 25 daqiqada yetkaziladi.", time: "12:33" },
-      { me: false, t: "Rahmat. Yetkazuvchi qo'ng'iroq qiladimi?", time: "12:39" },
-      { me: false, t: "Yana bir savol — to'lovni karta orqali qila olamanmi?", time: "12:40" },
-    ]},
-    { id: 2, av: "👩🏻", name: "Nigora Yusupova", time: "11:05", unread: 0, msgs: [
-      { me: false, t: "Yer tut bormi hozir?", time: "10:58" },
-      { me: true,  t: "Ha, mavjud. 500 g — 45 000 so'm.", time: "11:00" },
-      { me: false, t: "Ajoyib, buyurtma berdim, rahmat!", time: "11:05" },
-    ]},
-    { id: 3, av: "🧔🏽", name: "Bekzod Rahimov", time: "Kecha", unread: 1, msgs: [
-      { me: false, t: "Mol go'shti sifati juda yaxshi ekan, rahmat!", time: "Kecha" },
-      { me: false, t: "Keyingi haftaga ham buyurtma beraman.", time: "Kecha" },
-    ]},
-    { id: 4, av: "👵🏻", name: "Zulfiya Karimova", time: "Kecha", unread: 0, msgs: [
-      { me: false, t: "Yetkazib berish narxi qancha?", time: "Kecha" },
-      { me: true,  t: "Shahar ichida 10 000 so'm. 100 000 so'mdan ortiq xaridga bepul.", time: "Kecha" },
-      { me: false, t: "Tushunarli, rahmat.", time: "Kecha" },
-    ]},
-    { id: 5, av: "👨🏽", name: "Otabek Nazarov", time: "2 kun", unread: 0, msgs: [
-      { me: false, t: "Buyurtmani bekor qilsam bo'ladimi?", time: "2 kun" },
-      { me: true,  t: "Albatta, buyurtma yo'lga chiqmaguncha bepul bekor qilish mumkin.", time: "2 kun" },
-    ]},
-  ];
+  // Habarlar (suhbatlar) — bo'sh (mijozlar yozgach to'ladi)
+  const CHATS = [];
 
   // Do'kon sozlamalari
   const SETTINGS = {
@@ -164,7 +130,7 @@
   let activeSection = "dashboard";
   let prodFilter = "all";    // mahsulot kategoriya filtri
   let orderFilter = "all";   // buyurtma status filtri
-  let activeChat = CHATS[0].id;
+  let activeChat = CHATS[0] ? CHATS[0].id : null;
   let modalImage = null;     // mahsulot modalida yuklangan rasm (data-URL)
 
   // Telegram bot — lokal config (UI uchun) + serverdan kelgan oxirgi holat
@@ -218,7 +184,7 @@
     const W = 620, H = 260, padL = 50, padR = 14, padT = 18, padB = 34;
     const innerW = W - padL - padR, innerH = H - padT - padB;
     const all = WEEK.revenue.concat(WEEK.expense);
-    const max = Math.ceil(Math.max(...all) / 500000) * 500000;
+    const max = Math.ceil(Math.max(...all) / 500000) * 500000 || 500000;
     const y = (v) => padT + innerH - (v / max) * innerH;
     const groupW = innerW / WEEK.days.length;
     const barW = Math.min(20, groupW / 3.2);
@@ -257,7 +223,7 @@
     const W = 620, H = 240, padL = 50, padR = 16, padT = 18, padB = 30;
     const innerW = W - padL - padR, innerH = H - padT - padB;
     const data = WEEK.profit;
-    const max = Math.ceil(Math.max(...data) / 500000) * 500000;
+    const max = Math.ceil(Math.max(...data) / 500000) * 500000 || 500000;
     const min = 0;
     const x = (i) => padL + (innerW / (data.length - 1)) * i;
     const y = (v) => padT + innerH - ((v - min) / (max - min)) * innerH;
@@ -317,7 +283,7 @@
     let off = 0;
     let arcs = "";
     PAY_DIST.forEach((p) => {
-      const frac = p.val / total;
+      const frac = total ? p.val / total : 0;
       const len = frac * circ;
       arcs += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '" fill="none" stroke="' + p.color + '" stroke-width="' + sw + '" ' +
         'stroke-dasharray="' + len + ' ' + (circ - len) + '" stroke-dashoffset="' + (-off) + '" transform="rotate(-90 ' + C + ' ' + C + ')" stroke-linecap="butt"><title>' + p.name + ': ' + p.val + '</title></circle>';
@@ -344,7 +310,7 @@
       kpiCard("revenue", "💰", "Kunlik daromad", sum(KPI.revenue), KPI.revenueUp, "rgba(34,197,94,.16)", "#22c55e", WEEK.revenue) +
       kpiCard("expense", "🧾", "Harajatlar", sum(KPI.expense), KPI.expenseUp, "rgba(239,68,68,.16)", "#ef4444", WEEK.expense) +
       kpiCard("profit", "📈", "Sof foyda", sum(KPI.profit), KPI.profitUp, "rgba(34,197,94,.16)", "#22c55e", WEEK.profit) +
-      kpiCard("orders", "🛒", "Buyurtmalar", KPI.orders + " ta", KPI.ordersUp, "rgba(59,130,246,.16)", "#3b82f6", [38, 41, 36, 44, 47, 52, 48]);
+      kpiCard("orders", "🛒", "Buyurtmalar", KPI.orders + " ta", KPI.ordersUp, "rgba(59,130,246,.16)", "#3b82f6", [0, 0, 0, 0, 0, 0, 0]);
 
     const topHTML = top5.map((p) =>
       '<div class="top-item">' +
@@ -384,7 +350,7 @@
 
       '<div class="dash-row dash-2">' +
         '<div class="card">' +
-          '<div class="card-head"><h3>Sof foyda tendensiyasi</h3><span class="pill done"><span class="pdot"></span>+18%</span></div>' +
+          '<div class="card-head"><h3>Sof foyda tendensiyasi</h3></div>' +
           '<div class="chart-wrap">' + lineChart() + '</div>' +
         '</div>' +
         '<div class="card">' +

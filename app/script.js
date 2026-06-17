@@ -22,23 +22,9 @@ const DB = {
 };
 
 // ========== SEED FOODS ==========
-const DEFAULT_FOODS = [
-  { id: 1, name: "Klassik Burger", cat: "burger", emoji: "🍔", image: null, price: 35000, rating: 4.8, time: 15, active: true, desc: "Mol go'shtidan tayyorlangan yumshoq nonli klassik burger, pomidor, salat va maxsus sous bilan." },
-  { id: 2, name: "Chizburger", cat: "burger", emoji: "🍔", image: null, price: 42000, rating: 4.7, time: 15, active: true, desc: "Ikki qatlamli pishloq va mol kotleti bilan tayyorlangan to'yimli burger." },
-  { id: 3, name: "Pepperoni Pizza", cat: "pizza", emoji: "🍕", image: null, price: 85000, rating: 4.9, time: 25, active: true, desc: "Italyan pepperoni kolbasasi va mozzarella pishloq bilan klassik pizza." },
-  { id: 4, name: "Margarita Pizza", cat: "pizza", emoji: "🍕", image: null, price: 75000, rating: 4.6, time: 22, active: true, desc: "An'anaviy italyan retsepti bo'yicha pomidor sousi va fresh bazilik bilan." },
-  { id: 5, name: "Tovuq Lavash", cat: "lavash", emoji: "🌯", image: null, price: 28000, rating: 4.7, time: 12, active: true, desc: "Mazali tovuq go'shti, fri kartoshka va sabzavotlar bilan lavash." },
-  { id: 6, name: "Mol Lavash", cat: "lavash", emoji: "🌯", image: null, price: 32000, rating: 4.8, time: 14, active: true, desc: "Yumshoq mol go'shti va maxsus sous bilan tayyorlangan lavash." },
-  { id: 7, name: "Hot-Dog Classic", cat: "hotdog", emoji: "🌭", image: null, price: 22000, rating: 4.5, time: 10, active: true, desc: "Yumshoq nonli klassik xot-dog ketchup va xantal bilan." },
-  { id: 8, name: "Pishloqli Hot-Dog", cat: "hotdog", emoji: "🌭", image: null, price: 26000, rating: 4.6, time: 12, active: true, desc: "Erigan pishloq va kolbasalar bilan maxsus xot-dog." },
-  { id: 9, name: "Fri Kartoshka", cat: "fries", emoji: "🍟", image: null, price: 18000, rating: 4.7, time: 8, active: true, desc: "Tilim qilingan oltin rangli fri kartoshka, tuz va ketchup bilan." },
-  { id: 10, name: "Coca-Cola 0.5L", cat: "drink", emoji: "🥤", image: null, price: 12000, rating: 4.8, time: 2, active: true, desc: "Sovutilgan klassik Coca-Cola ichimligi." },
-  { id: 11, name: "Apelsin sharbati", cat: "drink", emoji: "🧃", image: null, price: 15000, rating: 4.6, time: 2, active: true, desc: "Yangi siqilgan tabiiy apelsin sharbati." },
-  { id: 12, name: "Pishloqli Donut", cat: "dessert", emoji: "🍩", image: null, price: 16000, rating: 4.7, time: 5, active: true, desc: "Shokoladli glazur va sepma bilan yumshoq donut." }
-];
 // Har bir mijoz alohida boshlanadi — default ovqatlar yo'q.
-// Mijoz admin panelida o'z menyusini qo'shadi. Demo mijoz ('demo') uchun DEFAULT_FOODS.
-if (!DB.get('tb_foods')) DB.set('tb_foods', CLIENT_ID === 'demo' ? DEFAULT_FOODS : []);
+// Mijoz admin panelida o'z menyusini qo'shadi.
+if (!DB.get('tb_foods')) DB.set('tb_foods', []);
 if (!DB.get('tb_orders')) DB.set('tb_orders', []);
 if (!DB.get('tb_users')) DB.set('tb_users', []);
 if (!DB.get('tb_messages')) DB.set('tb_messages', []);
