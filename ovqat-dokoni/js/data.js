@@ -3,7 +3,19 @@
    ============================================================ */
 window.DATA = (function () {
 
-  const CATALOG_KEY = "ovqat_catalog_v1";  // admin va storefront umumiy katalog (localStorage)
+  // Har bir mijoz (do'kon) o'z katalogiga ega bo'lishi kerak. Mijozni aniqlash:
+  // QR/subdomen orqali kelganda ?client=..., aks holda joriy sessiya (bo_session).
+  // Shu tufayli QR skaner qilingan storefront aynan o'sha do'kon katalogini ko'rsatadi.
+  const CLIENT_ID = (function () {
+    try {
+      const q = new URLSearchParams(location.search).get("client");
+      if (q) return q;
+      const s = JSON.parse(localStorage.getItem("bo_session") || "{}");
+      if (s && s.clientId) return s.clientId;
+    } catch (e) {}
+    return "demo";
+  })();
+  const CATALOG_KEY = "ovqat_catalog_v1__" + CLIENT_ID;  // mijozga xos katalog (admin + storefront)
 
   const defaultCategories = [
     { id: "all",      name: "Barchasi",   icon: "🛒", grad: ["#22c55e", "#16a34a"] },
@@ -99,5 +111,5 @@ window.DATA = (function () {
   // Ilk ishga tushirishda standart kategoriyalarni yozib qo'yamiz
   if (!localStorage.getItem(CATALOG_KEY)) saveCatalog();
 
-  return { categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog };
+  return { clientId: CLIENT_ID, categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog };
 })();

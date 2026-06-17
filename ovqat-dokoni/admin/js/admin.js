@@ -1029,7 +1029,7 @@
         let v = (el("qrUrlInput").value || "").trim();
         if (!v) { toast("URL kiriting", "err"); return; }
         if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = "https://" + v.replace(/^\/+/, "");
-        try { localStorage.setItem("ovqat_store_url", v); } catch (e) {}
+        try { localStorage.setItem(qrStoreUrlKey(), v); } catch (e) {}
         toast("QR kod yangilandi", "ok");
         renderQrImg();
       });
@@ -1193,11 +1193,27 @@
   /* ----------------------------------------------------------
      11c) QR kod — platformaning standart tizimi (api.qrserver.com)
      ---------------------------------------------------------- */
+  // Joriy mijoz (do'kon) id'si — QR aynan shu do'kon storefront'iga olib borishi uchun
+  function qrClientId() {
+    if (window.DATA && DATA.clientId) return DATA.clientId;
+    try {
+      const q = new URLSearchParams(location.search).get("client");
+      if (q) return q;
+      const s = JSON.parse(localStorage.getItem("bo_session") || "{}");
+      if (s && s.clientId) return s.clientId;
+    } catch (e) {}
+    return "demo";
+  }
+  function qrStoreUrlKey() { return "ovqat_store_url__" + qrClientId(); }
   function qrStoreUrl() {
     try {
-      const saved = localStorage.getItem("ovqat_store_url");
+      const saved = localStorage.getItem(qrStoreUrlKey());
       if (saved) return saved;
-      return new URL("../index.html", location.href).href.split("?")[0];
+      // Standart: shu do'kon storefront'i + mijoz konteksti (?client=...)
+      const u = new URL("../index.html", location.href);
+      const cid = qrClientId();
+      if (cid) u.searchParams.set("client", cid);
+      return u.href;
     } catch (e) { return "../index.html"; }
   }
   function qrApiSrc(url, size) {

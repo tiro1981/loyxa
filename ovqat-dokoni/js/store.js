@@ -14,7 +14,8 @@
    Events: cart:change | favorites:change | orders:change | theme:change | address:change | user:change
    ============================================================ */
 window.Store = (function () {
-  const KEY = "ovqat_dokoni_v1";
+  // Har bir mijoz (do'kon) o'z holatiga ega — DATA.clientId orqali ajratamiz
+  const KEY = "ovqat_dokoni_v1__" + ((window.DATA && DATA.clientId) ? DATA.clientId : "demo");
 
   const defaults = {
     cart: [],            // [{id, qty}]
