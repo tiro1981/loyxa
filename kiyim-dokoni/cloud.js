@@ -51,9 +51,20 @@ window.Cloud = (function () {
         return;
       }
       try {
-        const { data, error } = await _sb
+        // Supabase so'rovi (thenable — Promise.race chaqirilganda ishga tushadi)
+        const query = _sb
           .from("app_state").select("key,value")
           .eq("app", this.app).eq("client_id", this.client);
+        // MUHIM: tarmoq sekin yoki uzilgan bo'lsa sahifa QOTIB qolmasin. So'rovni 6 soniyalik
+        // timeout bilan poygaga qo'yamiz — javob kelmasa localStorage rejimiga o'tib davom etamiz.
+        const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 6000));
+        const res = await Promise.race([query, timeout]);
+        if (res && res.__timeout) {
+          console.warn("[Cloud] init: server 6s ichida javob bermadi — localStorage rejimida davom etamiz.");
+          this.mode = "local";
+          return;
+        }
+        const { data, error } = res;
         if (error) { console.error("[Cloud] init:", error); this.mode = "local"; return; }
         (data || []).forEach((r) => { this._cache[r.key] = r.value; });
       } catch (e) {
