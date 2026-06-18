@@ -731,7 +731,7 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js", "admin.js"]) {
+        for (const src of ["script.js?v=3", "admin.js?v=3"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

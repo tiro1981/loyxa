@@ -13,9 +13,13 @@ let pFilters = { search: '', cat: 'all', status: 'all' };
 let orderStatusTab = 'all';
 let reportRange = 'week';
 
-/* Login olib tashlandi — to'g'ridan-to'g'ri admin panelni ishga tushuramiz */
+/* Login olib tashlandi — to'g'ridan-to'g'ri admin panelni ishga tushuramiz.
+   MUHIM: cloud boot-loader admin.js'ni sahifa tayyor bo'lgach (readyState=complete) qo'shadi.
+   initAdmin'ni TO'G'RIDAN-TO'G'RI chaqirsak, u pastda e'lon qilingan `let` o'zgaruvchilardan
+   (masalan __adminInited) OLDIN ishlaydi va TDZ xatosi bilan to'xtaydi — natijada tugmalar
+   bog'lanmay qoladi ("qotib qolish"). Shuning uchun setTimeout bilan BUTUN skript bajarilgach chaqiramiz. */
 document.addEventListener('DOMContentLoaded', initAdmin);
-if (document.readyState === 'interactive' || document.readyState === 'complete') initAdmin();
+if (document.readyState === 'interactive' || document.readyState === 'complete') setTimeout(initAdmin, 0);
 
 /* ============ INIT ============ */
 let __adminInited = false;
