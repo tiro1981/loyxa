@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sd) { setSdHint('Subdomen kiriting', 'err'); return; }
         if (!isValidSubdomain(sd)) { setSdHint('Kamida 3 ta belgi kerak', 'err'); return; }
         if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); return; }
-        setSdHint('✓ ' + sd + '.biznesonline.uz — bo\'sh', 'ok');
+        setSdHint('✓ ' + sd + '.onlinebiznes.uz — bo\'sh', 'ok');
     });
     sdInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('sdConfirm').click(); } });
     document.getElementById('subdomainClose')?.addEventListener('click', closeSubdomainModal);
@@ -342,6 +342,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); sdInput.focus(); return; }
         subscribeToApp(pendingApp, sd);
     });
+
+    // Obunada tanlangan subdomenni Supabase'ga yozamiz — subdomen yo'naltirishi
+    // (index.html) shu yerdan o'qiydi. Shu sabab egasi admin'da qayta kiritmaydi.
+    function saveSubdomainToCloud(slug, clientId, subdomain) {
+        const SLUG_APP = { 'ovqat-dokoni': 'ovqat', 'salqin-ichimliklar': 'salqin', 'kitob-dokoni': 'kitob', 'kiyim-dokoni': 'kiyim', 'fastfood': 'tabby' };
+        const app = SLUG_APP[slug];
+        if (!app || !clientId || !subdomain) return;
+        const SB = "https://ctakvioxteagcwjlclnu.supabase.co";
+        const K = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ";
+        try {
+            fetch(SB + "/rest/v1/app_state?on_conflict=app,client_id,key", {
+                method: "POST",
+                headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
+                body: JSON.stringify({ app: app, client_id: clientId, key: "subdomain", value: subdomain, updated_at: new Date().toISOString() })
+            }).catch(() => {});
+        } catch (e) {}
+    }
 
     function subscribeToApp(app, subdomain) {
         const sub = {
@@ -360,9 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!Array.isArray(client.subscriptions)) client.subscriptions = [];
         client.subscriptions.push(sub);
         persistClient();
+        // Subdomenni serverga (Supabase) yozamiz — subdomen havolasi darhol ishlaydi
+        saveSubdomainToCloud(sub.slug, resolvedClientId, subdomain);
         hasActiveSubscription = true;
         closeSubdomainModal();
-        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 (${subdomain}.biznesonline.uz)`, 'success');
+        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 (${subdomain}.onlinebiznes.uz)`, 'success');
         document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === 'subscription'));
         showView('subscription');
     }
@@ -388,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
                     <div class="sub-card-info">
                         <h3>${escapeHtml(sub.name)}</h3>
-                        <span class="sub-domain"><i class="fa-solid fa-globe"></i> ${escapeHtml(sub.subdomain || 'biznes')}.biznesonline.uz</span>
+                        <span class="sub-domain"><i class="fa-solid fa-globe"></i> ${escapeHtml(sub.subdomain || 'biznes')}.onlinebiznes.uz</span>
                     </div>
                     <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
                 </div>
@@ -413,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cancelSubscription(subId) {
         const sub = (client.subscriptions || []).find(s => s.id === subId);
         if (!sub) return;
-        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?\n\nSubdomen "${sub.subdomain}.biznesonline.uz" bo'shaydi.`)) return;
+        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?\n\nSubdomen "${sub.subdomain}.onlinebiznes.uz" bo'shaydi.`)) return;
         client.subscriptions = client.subscriptions.filter(s => s.id !== subId);
         persistClient();
         hasActiveSubscription = activeSubs().length > 0;
