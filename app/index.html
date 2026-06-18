@@ -327,12 +327,8 @@
           <label>Nomi (Uy, Ish, ...)
             <input type="text" id="addrLabel" placeholder="Uy" required>
           </label>
-          <label>To'liq manzil
-            <input type="text" id="addrText" placeholder="Toshkent, Chilonzor 11, 25-uy" required>
-          </label>
-          <label>Mo'ljal (ixtiyoriy)
-            <input type="text" id="addrNote" placeholder="2-qavat, ko'k eshik">
-          </label>
+          <!-- Umumiy UzAddress manzil kaskadi (viloyat/tuman/qishloq/uy/izoh) bu yerga joylashtiriladi -->
+          <div id="addrCascade"></div>
           <button type="submit" class="btn-primary block">Saqlash</button>
         </form>
       </div>
@@ -527,7 +523,7 @@
         || "demo";
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("tabby", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-      for (const src of ["script.js"]) {
+      for (const src of ["uzbekistan-regions.js", "script.js"]) {
         await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();

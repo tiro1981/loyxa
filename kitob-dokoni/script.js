@@ -96,22 +96,9 @@ const DEFAULT_DATA = {
 };
 
 /* ---------- Uzbekistan regions & districts ---------- */
-const UZ_REGIONS = {
-    "Toshkent shahri": ["Bektemir", "Chilonzor", "Mirobod", "Mirzo Ulug'bek", "Olmazor", "Sergeli", "Shayxontohur", "Uchtepa", "Yakkasaroy", "Yashnobod", "Yangihayot", "Yunusobod"],
-    "Toshkent viloyati": ["Angren", "Bekobod", "Bo'ka", "Bo'stonliq", "Chinoz", "Nurafshon", "Ohangaron", "Olmaliq", "Parkent", "Piskent", "Quyichirchiq", "Yangiyo'l", "Yuqorichirchiq", "Zangiota"],
-    "Andijon viloyati": ["Andijon shahri", "Asaka", "Baliqchi", "Bo'z", "Buloqboshi", "Izboskan", "Jalaquduq", "Marhamat", "Oltinko'l", "Paxtaobod", "Qo'rg'ontepa", "Shahrixon", "Ulug'nor", "Xo'jaobod"],
-    "Buxoro viloyati": ["Buxoro shahri", "G'ijduvon", "Jondor", "Kogon", "Olot", "Peshku", "Qorako'l", "Qorovulbozor", "Romitan", "Shofirkon", "Vobkent"],
-    "Farg'ona viloyati": ["Farg'ona shahri", "Bag'dod", "Beshariq", "Buvayda", "Dang'ara", "Furqat", "Marg'ilon", "Oltiariq", "Qo'qon", "Quva", "Quvasoy", "Rishton", "So'x", "Toshloq", "Uchko'prik", "Yozyovon", "O'zbekiston"],
-    "Jizzax viloyati": ["Jizzax shahri", "Arnasoy", "Baxmal", "Do'stlik", "Forish", "G'allaorol", "Mirzacho'l", "Paxtakor", "Yangiobod", "Zafarobod", "Zarbdor", "Zomin"],
-    "Xorazm viloyati": ["Urganch", "Bog'ot", "Gurlan", "Hazorasp", "Xiva", "Xonqa", "Qo'shko'pir", "Shovot", "Yangiariq", "Yangibozor"],
-    "Namangan viloyati": ["Namangan shahri", "Chortoq", "Chust", "Kosonsoy", "Mingbuloq", "Norin", "Pop", "To'raqo'rg'on", "Uchqo'rg'on", "Uychi", "Yangiqo'rg'on"],
-    "Navoiy viloyati": ["Navoiy shahri", "Karmana", "Konimex", "Navbahor", "Nurota", "Qiziltepa", "Tomdi", "Uchquduq", "Xatirchi", "Zarafshon"],
-    "Qashqadaryo viloyati": ["Qarshi", "Chiroqchi", "Dehqonobod", "G'uzor", "Kasbi", "Kitob", "Koson", "Mirishkor", "Muborak", "Nishon", "Qamashi", "Shahrisabz", "Yakkabog'"],
-    "Qoraqalpog'iston Respublikasi": ["Nukus", "Amudaryo", "Beruniy", "Chimboy", "Ellikqal'a", "Kegeyli", "Mo'ynoq", "Qanliko'l", "Qo'ng'irot", "Qorao'zak", "Shumanay", "Taxiatosh", "Taxtako'pir", "To'rtko'l", "Xo'jayli"],
-    "Samarqand viloyati": ["Samarqand shahri", "Bulung'ur", "Ishtixon", "Jomboy", "Kattaqo'rg'on", "Narpay", "Nurobod", "Oqdaryo", "Paxtachi", "Payariq", "Pastdarg'om", "Qo'shrabot", "Toyloq", "Urgut"],
-    "Sirdaryo viloyati": ["Guliston", "Boyovut", "Mirzaobod", "Oqoltin", "Sayxunobod", "Sardoba", "Shirin", "Xovos", "Yangiyer"],
-    "Surxondaryo viloyati": ["Termiz", "Angor", "Bandixon", "Boysun", "Denov", "Jarqo'rg'on", "Muzrabot", "Oltinsoy", "Qiziriq", "Qumqo'rg'on", "Sariosiyo", "Sherobod", "Sho'rchi", "Uzun"],
-};
+// Viloyat/tuman ma'lumotlari endi umumiy `uzbekistan-regions.js` faylida (window.UZ_REGIONS).
+// Manzil kaskadi (viloyat -> tuman -> qishloq/uy/izoh) UzAddress komponenti orqali — barcha
+// ilovalar bilan bir xil (etalon: ovqat-dokoni). Eski inline UZ_REGIONS olib tashlandi.
 
 /* ---------- Storage ---------- */
 // Do'kon ma'lumoti (katalog + buyurtmalar + sozlama) endi SERVERDA (Cloud/Supabase),
@@ -1053,34 +1040,51 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         });
     }
 
-    /* ---------- Region/District dropdowns ---------- */
-    function populateRegionSelect(selectedRegion = '') {
-        const sel = document.getElementById('addrRegion');
-        sel.innerHTML = '<option value="">Tanlang...</option>' +
-            Object.keys(UZ_REGIONS).map(r => `<option value="${escapeHtml(r)}" ${r === selectedRegion ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('');
-    }
-    function populateDistrictSelect(region, selectedDistrict = '') {
-        const sel = document.getElementById('addrDistrict');
-        if (!region || !UZ_REGIONS[region]) {
-            sel.innerHTML = '<option value="">Avval viloyatni tanlang</option>';
-            sel.disabled = true;
-            return;
+    /* ---------- Manzil kaskadi (umumiy UzAddress) ----------
+       Viloyat/tuman/qishloq/uy/izoh maydonlari endi umumiy UzAddress komponenti orqali
+       quriladi (etalon: ovqat-dokoni). idPrefix: 'addr' => addr-region, addr-district,
+       addr-village, addr-house, addr-note. */
+
+    // Kaskad formani #addrGeo ichiga quyadi, selectlarni native ko'rinish uchun
+    // .select-wrap ichiga o'raydi va UzAddress.bind bilan viloyat->tuman bog'lashni o'rnatadi.
+    // prefill berilsa (tahrirlash) — saqlangan qiymatlarni qo'yadi.
+    function renderAddrGeo(prefill) {
+        const box = document.getElementById('addrGeo');
+        box.innerHTML = UzAddress.formHTML({ idPrefix: 'addr' });
+        // Native chevron + appearance reset uchun ikkala selectni .select-wrap ichiga o'raymiz.
+        ['addr-region', 'addr-district'].forEach(id => {
+            const sel = box.querySelector('#' + id);
+            if (sel && !sel.closest('.select-wrap')) {
+                const wrap = document.createElement('div');
+                wrap.className = 'select-wrap';
+                sel.parentNode.insertBefore(wrap, sel);
+                wrap.appendChild(sel);
+            }
+        });
+        UzAddress.bind(document, { idPrefix: 'addr' });
+
+        if (prefill) {
+            const reg = box.querySelector('#addr-region');
+            const dist = box.querySelector('#addr-district');
+            // Viloyatni qo'yamiz va tuman ro'yxatini to'ldirish uchun change'ni ishga tushiramiz.
+            if (prefill.region) {
+                reg.value = prefill.region;
+                reg.dispatchEvent(new Event('change'));
+                if (prefill.district) dist.value = prefill.district;
+            }
+            // Tarkibiy maydonlar (eski manzillarda bo'lmasligi mumkin — xatosiz o'tadi).
+            if (prefill.village) box.querySelector('#addr-village').value = prefill.village;
+            if (prefill.house) box.querySelector('#addr-house').value = prefill.house;
+            if (prefill.note) box.querySelector('#addr-note').value = prefill.note;
         }
-        sel.disabled = false;
-        sel.innerHTML = '<option value="">Tanlang...</option>' +
-            UZ_REGIONS[region].map(d => `<option value="${escapeHtml(d)}" ${d === selectedDistrict ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
     }
-    document.getElementById('addrRegion').onchange = e => {
-        populateDistrictSelect(e.target.value);
-    };
 
     function editAddr(i) {
         const a = addresses[i];
         document.getElementById('addrId').value = i;
         document.getElementById('addrLabel').value = a.label || '';
-        populateRegionSelect(a.region || '');
-        populateDistrictSelect(a.region || '', a.district || '');
-        document.getElementById('addrStreet').value = a.street || a.full || '';
+        // Geografiya kaskadini saqlangan qiymatlar bilan to'ldiramiz.
+        renderAddrGeo(a);
         document.getElementById('addrPhone').value = a.phone || '';
         document.getElementById('addrDefault').checked = !!a.default;
         document.getElementById('addrFormTitle').textContent = 'Manzilni tahrirlash';
@@ -1104,28 +1108,29 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('addAddrBtn').onclick = () => {
         document.getElementById('addrForm').reset();
         document.getElementById('addrId').value = '';
-        populateRegionSelect('');
-        populateDistrictSelect('');
+        // Geografiya kaskadini bo'sh holatda qaytadan quramiz (reset() inject qilingan
+        // maydonlarni tozalamaydi, shuning uchun yangidan render qilamiz).
+        renderAddrGeo(null);
         document.getElementById('addrFormTitle').textContent = 'Yangi manzil';
         openSheet('addrFormSheet');
     };
 
     document.getElementById('saveAddrBtn').onclick = () => {
         const id = document.getElementById('addrId').value;
-        const region = document.getElementById('addrRegion').value.trim();
-        const district = document.getElementById('addrDistrict').value.trim();
-        const street = document.getElementById('addrStreet').value.trim();
         const phone = document.getElementById('addrPhone').value.trim();
 
-        if (!region) { toast("Viloyat / shaharni tanlang", 'error'); return; }
-        if (!district) { toast("Tumanni tanlang", 'error'); return; }
-        if (!street) { toast("Ko'cha va uy raqamini kiriting", 'error'); return; }
+        // Geografiya qismini umumiy UzAddress orqali o'qiymiz (majburiy: viloyat, tuman, uy).
+        const addr = UzAddress.read(document, { idPrefix: 'addr' });
+        if (!addr) { toast("Viloyat, tuman va uy raqamini to'ldiring", 'error'); return; }
         if (!phone || phone.replace(/\D/g, '').length < 9) { toast("Telefon raqamni to'g'ri kiriting", 'error'); return; }
 
         const obj = {
             label: document.getElementById('addrLabel').value.trim() || 'Manzil',
-            region, district, street,
-            full: `${region}, ${district}, ${street}`,
+            // Tarkibiy maydonlar (tahrirlashda qaytarib qo'yish uchun).
+            region: addr.region, district: addr.district,
+            village: addr.village, house: addr.house, note: addr.note,
+            // `full` — to'liq manzil satri (checkout prefill va manzil kartasi shuni o'qiydi).
+            full: addr.text,
             phone,
             default: document.getElementById('addrDefault').checked,
         };

@@ -838,6 +838,9 @@ input { font-family: inherit; outline: none; border: none; background: transpare
   outline: none;
 }
 .ufm input:focus, .ufm select:focus, .ufm textarea:focus { border-color: var(--orange); }
+/* UzAddress kaskadi: formHTML `<div class="field">` + `<label>` chiqaradi — native ufm ko'rinishiga moslaymiz */
+.ufm .field { display: flex; flex-direction: column; gap: 6px; }
+.ufm .field > label { font-size: 12px; color: var(--text-sub); font-weight: 500; }
 
 /* ========== ADDRESS LIST ITEMS ========== */
 .address-item, .pay-item {

@@ -607,14 +607,30 @@ function renderAddresses() {
 function openAddressForm(id) {
   $('addressForm').reset();
   $('addrId').value = '';
+  // Umumiy UzAddress kaskadini har ochilishda qaytadan joylashtiramiz (edit-rejim toza reset bo'lsin)
+  $('addrCascade').innerHTML = UzAddress.formHTML({ idPrefix: 'na', inputClass: '', selectClass: '', labelClass: '' });
+  UzAddress.bind(document, { idPrefix: 'na' });
   if (id) {
     const a = getAddrs().find(x => x.id === id);
     if (!a) return;
     $('addrFormTitle').textContent = 'Manzilni tahrirlash';
     $('addrId').value = a.id;
     $('addrLabel').value = a.label;
-    $('addrText').value = a.address;
-    $('addrNote').value = a.note || '';
+    // Saqlangan tarkibiy maydonlardan kaskadni to'ldiramiz
+    if (a.region) {
+      $('na-region').value = a.region;
+      // bind() faqat change'da tumanlarni to'ldiradi — edit uchun qo'lda to'ldiramiz
+      const ds = UzAddress.districts(a.region);
+      if (ds.length) {
+        $('na-district').innerHTML = ['<option value="">Tumanni tanlang</option>']
+          .concat(ds.map(d => `<option value="${d}">${d}</option>`)).join('');
+        $('na-district').disabled = false;
+        if (a.district) $('na-district').value = a.district;
+      }
+    }
+    if (a.village) $('na-village').value = a.village;
+    if (a.house) $('na-house').value = a.house;
+    if (a.note) $('na-note').value = a.note;
   } else $('addrFormTitle').textContent = 'Yangi manzil';
   openModal('addressFormModal');
 }
@@ -622,10 +638,21 @@ function openAddressForm(id) {
 $('addressForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const id = parseInt($('addrId').value);
+  const label = $('addrLabel').value.trim();
+  // Umumiy UzAddress kaskadidan to'liq manzilni o'qiymiz (majburiy: viloyat, tuman, uy)
+  const addr = UzAddress.read(document, { idPrefix: 'na' });
+  if (!label || !addr) {
+    showToast('Nomi, viloyat, tuman va uy raqamini to\'ldiring');
+    return;
+  }
   const data = {
-    label: $('addrLabel').value.trim(),
-    address: $('addrText').value.trim(),
-    note: $('addrNote').value.trim()
+    label,
+    address: addr.text,   // checkout/renderAddresses `address` ni o'qiydi — shu nom saqlanadi
+    note: addr.note,
+    region: addr.region,
+    district: addr.district,
+    village: addr.village,
+    house: addr.house
   };
   let addrs = getAddrs();
   if (id) {

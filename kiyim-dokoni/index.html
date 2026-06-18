@@ -286,20 +286,9 @@
         <input type="hidden" id="addrId">
         <label>Nom <span class="hint">(uy, ish, va h.k.)</span></label>
         <input type="text" id="addrLabel" required placeholder="Uy" maxlength="20">
-        <label>Viloyat / Shahar</label>
-        <div class="select-wrap">
-            <select id="addrRegion" required>
-                <option value="">Tanlang...</option>
-            </select>
-        </div>
-        <label>Tuman</label>
-        <div class="select-wrap">
-            <select id="addrDistrict" required disabled>
-                <option value="">Avval viloyatni tanlang</option>
-            </select>
-        </div>
-        <label>Ko'cha, uy raqami, kvartira</label>
-        <input type="text" id="addrStreet" required placeholder="Amir Temur ko'chasi, 12-uy, 23-xonadon" maxlength="200">
+        <!-- Geografiya qismi (viloyat/tuman/qishloq/uy/izoh) — umumiy UzAddress kaskadi
+             script.js'da shu joyga quyiladi (etalon: ovqat-dokoni). -->
+        <div id="addrGeo"></div>
         <label>Telefon</label>
         <input type="tel" id="addrPhone" required placeholder="+998 __ ___ __ __">
         <label class="check-line"><input type="checkbox" id="addrDefault"><span>Asosiy manzil sifatida</span></label>
@@ -438,7 +427,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["script.js"]) {
+    for (const src of ["uzbekistan-regions.js", "script.js"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

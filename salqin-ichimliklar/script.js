@@ -539,36 +539,33 @@
   const addressModal = $('#addressModal');
   $$('[data-close="address"]').forEach(b => b.addEventListener('click', () => addressModal.classList.remove('open')));
 
-  // Viloyat selectini to'ldirish
-  const addrRegion = $('#addrRegion');
-  const addrDistrict = $('#addrDistrict');
-  Object.keys(DB.regions).forEach(r => {
-    const opt = document.createElement('option');
-    opt.value = r; opt.textContent = r;
-    addrRegion.appendChild(opt);
-  });
+  // Geografiya qismi umumiy UzAddress kaskadi bilan quriladi (window.UzAddress).
+  // ID prefiks 'na' — yangi maydonlar: na-region, na-district, na-village, na-house, na-note.
+  const addrFields = $('#addrFields');
 
-  addrRegion.addEventListener('change', () => {
-    const districts = DB.regions[addrRegion.value] || [];
-    addrDistrict.innerHTML = '<option value="">Tanlang...</option>';
-    districts.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d; opt.textContent = d;
-      addrDistrict.appendChild(opt);
+  // Forma maydonlarini umumiy komponentdan qurib, viloyat->tuman bog'lashni o'rnatamiz.
+  // inputClass/selectClass/labelClass bo'sh — ilovaning `.form input`/`.form select`/`.form label`
+  // uslublari merosga o'tib, native ko'rinish saqlanadi.
+  function buildAddrFields() {
+    if (!window.UzAddress) return;
+    addrFields.innerHTML = UzAddress.formHTML({
+      idPrefix: 'na',
+      inputClass: '',
+      selectClass: '',
+      labelClass: '',
     });
-    addrDistrict.disabled = !districts.length;
-    updateAddrPreview();
-  });
-  addrDistrict.addEventListener('change', updateAddrPreview);
-  $('#addrStreet').addEventListener('input', updateAddrPreview);
-  $('#addrHouse').addEventListener('input', updateAddrPreview);
+    UzAddress.bind(addrFields, { idPrefix: 'na' });
+    // Jonli ko'rinish (preview) — har bir o'zgarishda yangilanadi.
+    addrFields.addEventListener('change', updateAddrPreview);
+    addrFields.addEventListener('input', updateAddrPreview);
+  }
 
   function updateAddrPreview() {
-    const parts = [addrRegion.value, addrDistrict.value, $('#addrStreet').value.trim(), $('#addrHouse').value.trim()].filter(Boolean);
     const pre = $('#addrPreview');
-    if (parts.length >= 2) {
+    const addr = window.UzAddress ? UzAddress.read(addrFields, { idPrefix: 'na' }) : null;
+    if (addr) {
       pre.classList.remove('hidden');
-      pre.innerHTML = '<b>Manzil:</b> ' + esc(parts.join(', '));
+      pre.innerHTML = '<b>Manzil:</b> ' + esc(addr.text);
     } else {
       pre.classList.add('hidden');
     }
@@ -581,22 +578,26 @@
       authModal.classList.add('open');
       return;
     }
-    // Agar avval manzil saqlangan bo'lsa, parselaymiz
-    if (u.address) {
-      const parts = u.address.split(', ');
-      if (parts.length >= 2 && DB.regions[parts[0]]) {
-        addrRegion.value = parts[0];
-        addrRegion.dispatchEvent(new Event('change'));
-        setTimeout(() => {
-          if (parts[1]) addrDistrict.value = parts[1];
-          if (parts[2]) $('#addrStreet').value = parts[2];
-          if (parts[3]) $('#addrHouse').value = parts[3];
-          updateAddrPreview();
-        }, 50);
+    // Formani har ochilganda toza qilib qayta quramiz (prefill qayta ishlashi uchun).
+    buildAddrFields();
+    // Avval saqlangan manzil bo'lsa, viloyat/tumanni mos kelsa to'ldiramiz.
+    if (u.address && window.UzAddress) {
+      const head = u.address.split(' (')[0];          // izohni ajratib tashlaymiz
+      const parts = head.split(', ');
+      const reg = $('#na-region'), dist = $('#na-district');
+      if (parts[0] && UzAddress.districts(parts[0]).length && reg) {
+        reg.value = parts[0];
+        reg.dispatchEvent(new Event('change'));        // tumanlar ro'yxati to'ladi
+        if (parts[1] && dist) dist.value = parts[1];
+        // Qolgan bo'laklar: oxirgisi uy, undan oldingisi (bo'lsa) qishloq/mahalla.
+        const rest = parts.slice(2);
+        if (rest.length >= 2) { $('#na-village').value = rest[0]; $('#na-house').value = rest[rest.length - 1]; }
+        else if (rest.length === 1) { $('#na-house').value = rest[0]; }
       } else {
-        $('#addrStreet').value = u.address;
-        updateAddrPreview();
+        // Eski/mos kelmaydigan manzil — izoh maydoniga joylaymiz, ma'lumot yo'qolmaydi.
+        $('#na-note').value = u.address;
       }
+      updateAddrPreview();
     }
     addressModal.classList.add('open');
   }
@@ -605,10 +606,9 @@
     e.preventDefault();
     const u = DB.users.current();
     if (!u) return;
-    const parts = [addrRegion.value, addrDistrict.value, $('#addrStreet').value.trim(), $('#addrHouse').value.trim()].filter(Boolean);
-    const val = parts.join(', ');
-    if (!val) return toast('Manzilni to\'liq kiriting', 'error');
-    DB.users.update(u.id, { address: val });
+    const addr = window.UzAddress ? UzAddress.read(addrFields, { idPrefix: 'na' }) : null;
+    if (!addr) return toast('Viloyat, tuman va uy raqamini to\'ldiring', 'error');
+    DB.users.update(u.id, { address: addr.text });
     addressModal.classList.remove('open');
     renderProfile();
     toast(t('address.saved'), 'success');
