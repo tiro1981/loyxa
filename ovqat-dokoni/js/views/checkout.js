@@ -150,19 +150,22 @@ window.Views.checkout = function (root, params) {
     UI.sheet(
       '<div class="field"><label>Nomi</label>' +
         '<input class="input" id="na-label" placeholder="Uy, Ish, Boshqa..."></div>' +
-      '<div class="field"><label>Manzil</label>' +
-        '<textarea class="input" id="na-text" placeholder="Ko\'cha, uy, kvartira..."></textarea></div>' +
+      // Avtomatik manzil: viloyat -> tuman (ro'yxat) + qishloq/uy/izoh (qo'lda) — umumiy UzAddress komponenti
+      UzAddress.formHTML({ idPrefix: 'na' }) +
       '<button class="btn btn--primary btn--block" id="na-save" style="margin-top:6px">Saqlash</button>',
       { title: 'Yangi manzil' }
     );
+    // Viloyat tanlanganda tumanlar to'ldirilsin
+    UzAddress.bind(document, { idPrefix: 'na' });
     document.getElementById('na-save').addEventListener('click', function () {
       const label = (document.getElementById('na-label').value || '').trim();
-      const text = (document.getElementById('na-text').value || '').trim();
-      if (!label || !text) {
-        UI.toast('Barcha maydonlarni to\'ldiring', 'err');
+      const addr = UzAddress.read(document, { idPrefix: 'na' });
+      if (!label || !addr) {
+        UI.toast('Nomi, viloyat, tuman va uy raqamini to\'ldiring', 'err');
         return;
       }
-      Store.addAddress({ label: label, icon: '📍', text: text });
+      Store.addAddress({ label: label, icon: '📍', text: addr.text,
+        region: addr.region, district: addr.district, village: addr.village, house: addr.house, note: addr.note });
       // addAddress qiymat qaytarmaydi — oxirgi qo'shilgan manzilni tanlaymiz
       const list = Store.getAddresses();
       const last = list[list.length - 1];

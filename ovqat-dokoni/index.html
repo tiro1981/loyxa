@@ -37,6 +37,7 @@
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("ovqat", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       const scripts = [
+        "uzbekistan-regions.js",
         "js/data.js", "js/store.js", "telegram.js", "js/app.js", "js/components.js",
         "js/views/home.js", "js/views/category.js", "js/views/product.js", "js/views/cart.js",
         "js/views/checkout.js", "js/views/orders.js", "js/views/profile.js", "js/views/subpages.js"
