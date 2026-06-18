@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=3">
+    <link rel="stylesheet" href="admin.css?v=4">
 </head>
 <body>
 
@@ -545,16 +545,6 @@
                                 <button type="button" class="btn btn-ghost" id="qrPrintBtn">🖨️ Chop etish</button>
                                 <button type="button" class="btn btn-ghost" id="qrOpenBtn">🔗 Ochish</button>
                             </div>
-
-                            <hr class="qr-sep">
-
-                            <label class="bot2-label" for="qrCustomUrl">Maxsus domen (ixtiyoriy)</label>
-                            <p class="bot2-hint" style="margin-top:0">O'z domeningiz bo'lsa shu yerga yozing — QR shunga yangilanadi.</p>
-                            <div class="qr-custom-row">
-                                <input type="text" id="qrCustomUrl" class="search-input" placeholder="masalan: kitob-olami.uz" autocomplete="off" spellcheck="false" style="flex:1">
-                                <button type="button" class="btn btn-primary" id="qrSaveBtn">💾 Saqlash</button>
-                            </div>
-                            <button type="button" class="btn btn-mini btn-ghost" id="qrResetBtn" style="margin-top:8px">↩️ Standart havolaga qaytarish</button>
                         </div>
                     </div>
                 </div>
@@ -729,7 +719,7 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js?v=3", "admin.js?v=3"]) {
+        for (const src of ["script.js?v=4", "admin.js?v=4"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

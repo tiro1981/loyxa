@@ -1523,17 +1523,9 @@ function qrClientId() {
     return window.__CLIENT_ID || 'shop';
 }
 
-/* localStorage kaliti: shu client uchun maxsus domen saqlanadi */
-function qrStoreKey() {
-    return 'moda_store_url__' + qrClientId();
-}
-
-/* Do'kon havolasi:
-   - agar foydalanuvchi maxsus domen saqlagan bo'lsa — o'shani qaytaramiz,
-   - aks holda shu papkadagi index.html + ?client=<id> (admin.html bilan bir papkada, "../" KERAK EMAS). */
+/* Do'kon havolasi: shu papkadagi index.html + ?client=<id>
+   (admin.html storefront index.html bilan bir papkada — "../" KERAK EMAS). */
 function qrStoreUrl() {
-    const saved = localStorage.getItem(qrStoreKey());
-    if (saved) return saved;
     const u = new URL('index.html', location.href);
     // ?client= dan boshqa eski parametrlarni tozalab, faqat client qo'shamiz
     u.search = '';
@@ -1558,10 +1550,6 @@ function renderQrImg() {
     const nameEl = document.getElementById('qrShopName');
     if (nameEl) nameEl.textContent = _shopName();
 
-    // Maxsus domen inputiga saqlangan qiymatni ko'rsatamiz
-    const customInput = document.getElementById('qrCustomUrl');
-    if (customInput) customInput.value = localStorage.getItem(qrStoreKey()) || '';
-
     // QR rasmni yuklash — holatni boshqaramiz
     const img = document.getElementById('qrImg');
     const state = document.getElementById('qrState');
@@ -1574,14 +1562,6 @@ function renderQrImg() {
     img.onload = () => { state.style.display = 'none'; img.style.display = ''; };
     img.onerror = () => { img.style.display = 'none'; state.style.display = ''; state.textContent = '⚠️ QR yuklanmadi (internet kerak)'; };
     img.src = qrApiSrc(url, 320);
-}
-
-/* http(s):// prefiks qo'shadi — foydalanuvchi domenni sxemasiz kiritsa */
-function qrNormalizeUrl(v) {
-    v = (v || '').trim();
-    if (!v) return '';
-    if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
-    return v;
 }
 
 /* Tugma ishlovchilarini ulaymiz (initAdmin'da bir marta) */
@@ -1633,25 +1613,6 @@ function setupQrPage() {
             '<p>' + url + '</p></body></html>'
         );
         w.document.close();
-    });
-
-    // Saqlash — maxsus domenni localStorage'ga yozib QR'ni qayta render qilamiz
-    byId('qrSaveBtn', () => {
-        const input = document.getElementById('qrCustomUrl');
-        const val = qrNormalizeUrl(input ? input.value : '');
-        if (!val) { toast('Domen kiriting', 'error'); return; }
-        localStorage.setItem(qrStoreKey(), val);
-        renderQrImg();
-        toast('Maxsus domen saqlandi', 'success');
-    });
-
-    // Standart havolaga qaytarish — maxsus domenni o'chiramiz
-    byId('qrResetBtn', () => {
-        localStorage.removeItem(qrStoreKey());
-        const input = document.getElementById('qrCustomUrl');
-        if (input) input.value = '';
-        renderQrImg();
-        toast('Standart havolaga qaytarildi', 'info');
     });
 }
 

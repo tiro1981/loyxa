@@ -524,7 +524,7 @@
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("tabby", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       for (const src of ["uzbekistan-regions.js", "script.js"]) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=3"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

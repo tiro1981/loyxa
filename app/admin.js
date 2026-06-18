@@ -1180,8 +1180,6 @@ setInterval(() => {
 // ============ QR KOD ============
 // ============================================================
 function qrStoreUrl() {
-  const saved = DB.get('tb_store_url', null);
-  if (saved) return saved;
   try { return new URL('index.html', location.href).href.split('?')[0]; }
   catch { return location.origin; }
 }
@@ -1210,14 +1208,6 @@ function renderQR() {
 }
 // QR tugmalari — delegatsiya
 document.addEventListener('click', (e) => {
-  if (e.target.closest('#qrSaveBtn')) {
-    let v = (document.getElementById('qrUrlInput').value || '').trim();
-    if (!v) { toast('URL kiriting', 'error'); return; }
-    if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
-    DB.set('tb_store_url', v);
-    toast('QR kod yangilandi', 'success');
-    renderQR();
-  }
   if (e.target.closest('#qrCopyBtn')) {
     navigator.clipboard.writeText(qrStoreUrl()).then(() => toast('Havola nusxalandi', 'success')).catch(() => toast('Nusxalab bo\'lmadi', 'error'));
   }

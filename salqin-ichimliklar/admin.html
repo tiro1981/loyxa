@@ -309,14 +309,6 @@
               <button type="button" class="btn btn-ghost btn-sm" id="qrPrintBtn">🖨 Chop etish</button>
               <button type="button" class="btn btn-ghost btn-sm" id="qrOpenBtn">↗ Ochish</button>
             </div>
-            <!-- Ixtiyoriy: maxsus domen -->
-            <div class="qr-custom">
-              <p class="muted" style="margin:14px 0 6px">Maxsus domeningiz bo'lsa, shu yerga kiriting va saqlang:</p>
-              <div class="qr-btn-row">
-                <input id="qrCustomInput" class="qr-url-input" type="text" placeholder="masalan: salqin.uz" style="flex:1;min-width:160px" />
-                <button type="button" class="btn btn-primary btn-sm" id="qrSaveBtn">💾 Saqlash</button>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -436,7 +428,7 @@
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("salqin", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       for (const src of ["db.js", "i18n.js", "telegram.js", "admin.js"]) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=3"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

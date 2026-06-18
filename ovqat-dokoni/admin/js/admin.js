@@ -818,10 +818,9 @@
 
         '<label class="qr-label">Ilova manzili (URL)</label>' +
         '<div class="qr-url-row">' +
-          '<input class="input" type="text" id="qrUrlInput" placeholder="https://mening-domenim.uz"/>' +
-          '<button class="btn btn--primary" id="qrSaveBtn">Saqlash</button>' +
+          '<input class="input" type="text" id="qrUrlInput" readonly/>' +
         '</div>' +
-        '<p class="qr-url-note">Standart manzil — shu do\'kon havolasi (<code>?client=</code> bilan). O\'z domeningiz bo\'lsa kiriting — QR avtomatik yangilanadi.</p>' +
+        '<p class="qr-url-note">Bu havola QR kodga yozilgan (<code>?client=</code> bilan). Mijoz skanerlasa shu sahifa ochiladi.</p>' +
 
         '<div class="qr-actions">' +
           '<button class="btn btn--ghost" id="qrCopyBtn">' + ICON.copy + ' Nusxalash</button>' +
@@ -1071,15 +1070,7 @@
     }
 
     /* --- QR kod bo'limi (platformaning standart tizimi) --- */
-    if (el("qrSaveBtn")) {
-      el("qrSaveBtn").addEventListener("click", () => {
-        let v = (el("qrUrlInput").value || "").trim();
-        if (!v) { toast("URL kiriting", "err"); return; }
-        if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = "https://" + v.replace(/^\/+/, "");
-        try { localStorage.setItem(qrStoreUrlKey(), v); } catch (e) {}
-        toast("QR kod yangilandi", "ok");
-        renderQrImg();
-      });
+    if (el("qrCopyBtn")) {
       el("qrCopyBtn").addEventListener("click", () => {
         navigator.clipboard.writeText(qrStoreUrl())
           .then(() => toast("Havola nusxalandi", "ok"))
@@ -1251,11 +1242,8 @@
     } catch (e) {}
     return "demo";
   }
-  function qrStoreUrlKey() { return "ovqat_store_url__" + qrClientId(); }
   function qrStoreUrl() {
     try {
-      const saved = localStorage.getItem(qrStoreUrlKey());
-      if (saved) return saved;
       // Shu do'kon storefront'i + mijoz konteksti (?client=...)
       const u = new URL("../index.html", location.href);
       const cid = qrClientId();

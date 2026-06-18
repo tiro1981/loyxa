@@ -87,7 +87,7 @@
       try { await Cloud.init("ovqat", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       const scripts = ["../js/data.js", "../telegram.js", "js/admin.js"];
       for (const src of scripts) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=3"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

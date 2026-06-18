@@ -362,10 +362,9 @@
 
           <label class="qr-label">Ilova manzili (URL)</label>
           <div class="qr-url-row">
-            <input type="text" id="qrUrlInput" placeholder="https://mening-domenim.uz">
-            <button class="abtn primary" id="qrSaveBtn">Saqlash</button>
+            <input type="text" id="qrUrlInput" readonly>
           </div>
-          <p class="qr-url-note">Standart manzil — shu ilovaning havolasi. O'z domeningizni kiriting (masalan <code>https://mening-restoranim.uz</code>) — QR avtomatik yangilanadi.</p>
+          <p class="qr-url-note">Bu havola QR kodga yozilgan. Mijoz skanerlasa shu sahifa ochiladi.</p>
 
           <div class="qr-actions">
             <button class="abtn" id="qrCopyBtn"><i class="fa-solid fa-copy"></i> Nusxalash</button>
@@ -571,7 +570,7 @@
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("tabby", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
     for (const src of ["admin.js"]) {
-      await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=3"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+      await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();
 </script>

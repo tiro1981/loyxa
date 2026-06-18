@@ -838,14 +838,10 @@
     const c = window.__CLIENT_ID;
     return (c && c !== 'shop') ? c : '';
   }
-  // Ixtiyoriy maxsus domen uchun localStorage kaliti (har bir do'kon alohida)
-  function qrStoreUrlKey() { return 'si_store_url__' + (qrClientId() || 'shop'); }
   // QR ko'rsatadigan storefront manzili. admin.html va index.html BIR PAPKADA —
   // shuning uchun "index.html" (NE "../index.html"), kerak bo'lsa ?client= qo'shiladi.
   function qrStoreUrl() {
     try {
-      const saved = localStorage.getItem(qrStoreUrlKey());
-      if (saved) return saved;
       const u = new URL('index.html', location.href);
       const cid = qrClientId();
       if (cid) u.searchParams.set('client', cid);
@@ -919,17 +915,6 @@
         '</body></html>');
       w.document.close();
       setTimeout(() => { try { w.focus(); w.print(); } catch (er) {} }, 700);
-    }
-    // Saqlash — maxsus domenni localStorage'ga yozadi va QR'ni qayta chizadi
-    else if (e.target.closest('#qrSaveBtn')) {
-      const inp = $('#qrCustomInput');
-      let v = (inp && inp.value || '').trim();
-      if (!v) { toast('Avval domen kiriting', 'error'); return; }
-      if (!/^https?:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
-      try { localStorage.setItem(qrStoreUrlKey(), v); } catch (er) {}
-      if (inp) inp.value = '';
-      toast('QR kod yangilandi', 'success');
-      renderQrImg();
     }
   });
 
