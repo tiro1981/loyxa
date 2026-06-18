@@ -251,12 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        // "Obuna bo'lish" — subdomen modalini ochadi
+        // "Obuna bo'lish" — to'g'ridan-to'g'ri obuna (subdomen so'ralmaydi)
         container.querySelectorAll('[data-subscribe]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const app = apps.find(a => a.id === btn.dataset.subscribe);
-                if (app) openSubdomainModal(app);
+                if (app) subscribeToApp(app);
             });
         });
 
@@ -278,89 +278,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function isSubscribedTo(appId) {
         return activeSubs().some(s => s.appId === appId);
     }
-    function normalizeSubdomain(v) {
-        return String(v || '').toLowerCase().trim()
-            .replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 30);
-    }
-    function isValidSubdomain(sd) {
-        return /^[a-z0-9](?:[a-z0-9-]{1,28}[a-z0-9])$/.test(sd); // 3–30, boshida/oxirida "-" yo'q
-    }
-    function subdomainTaken(sd) {
-        try {
-            const all = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
-            return all.some(c => (c.subscriptions || []).some(s =>
-                s.status !== 'cancelled' && s.subdomain && s.subdomain.toLowerCase() === sd));
-        } catch { return false; }
-    }
-
-    /* ---------- SUBDOMEN MODAL ---------- */
-    let pendingApp = null;
-    const sdModal = document.getElementById('subdomainModal');
-    const sdInput = document.getElementById('sdInput');
-    const sdHint  = document.getElementById('sdHint');
-    function setSdHint(msg, type) {
-        if (!sdHint) return;
-        sdHint.textContent = msg;
-        sdHint.className = 'subdomain-hint' + (type ? ' ' + type : '');
-    }
-    function openSubdomainModal(app) {
+    // Obuna — subdomen so'ralmaydi. Mijoz do'koniga eski havola orqali kiradi:
+    //   /{papka}/index.html?client={client_id}
+    function subscribeToApp(app) {
         if (isSubscribedTo(app.id)) {
             window.showToast?.('Siz bu ilovaga allaqachon obuna bo\'lgansiz', 'info');
             return;
         }
-        pendingApp = app;
-        document.getElementById('sdAppIcon').textContent = app.logoEmoji || '📱';
-        document.getElementById('sdAppName').textContent = app.name;
-        let suggested = normalizeSubdomain(client.businessName || app.slug || 'dokon');
-        if (subdomainTaken(suggested)) suggested = normalizeSubdomain(suggested + '-' + (activeSubs().length + 1));
-        sdInput.value = suggested;
-        setSdHint('3–30 ta belgi: kichik harflar, raqamlar va "-"', '');
-        sdModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => sdInput.focus(), 60);
-    }
-    function closeSubdomainModal() {
-        sdModal.classList.remove('show');
-        document.body.style.overflow = '';
-        pendingApp = null;
-    }
-    sdInput?.addEventListener('input', () => {
-        const sd = normalizeSubdomain(sdInput.value);
-        if (sdInput.value !== sd) sdInput.value = sd;
-        if (!sd) { setSdHint('Subdomen kiriting', 'err'); return; }
-        if (!isValidSubdomain(sd)) { setSdHint('Kamida 3 ta belgi kerak', 'err'); return; }
-        if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); return; }
-        setSdHint('✓ ' + sd + '.onlinebiznes.uz — bo\'sh', 'ok');
-    });
-    sdInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('sdConfirm').click(); } });
-    document.getElementById('subdomainClose')?.addEventListener('click', closeSubdomainModal);
-    sdModal?.addEventListener('click', (e) => { if (e.target === sdModal) closeSubdomainModal(); });
-    document.getElementById('sdConfirm')?.addEventListener('click', () => {
-        if (!pendingApp) return;
-        const sd = normalizeSubdomain(sdInput.value);
-        if (!isValidSubdomain(sd)) { setSdHint('To\'g\'ri subdomen kiriting (3–30 belgi)', 'err'); sdInput.focus(); return; }
-        if (subdomainTaken(sd)) { setSdHint('Bu subdomen band — boshqasini tanlang', 'err'); sdInput.focus(); return; }
-        subscribeToApp(pendingApp, sd);
-    });
-
-    // Obunada tanlangan subdomenni Supabase'ga yozamiz — subdomen yo'naltirishi
-    // (index.html) shu yerdan o'qiydi. Shu sabab egasi admin'da qayta kiritmaydi.
-    function saveSubdomainToCloud(slug, clientId, subdomain) {
-        const SLUG_APP = { 'ovqat-dokoni': 'ovqat', 'salqin-ichimliklar': 'salqin', 'kitob-dokoni': 'kitob', 'kiyim-dokoni': 'kiyim', 'fastfood': 'tabby' };
-        const app = SLUG_APP[slug];
-        if (!app || !clientId || !subdomain) return;
-        const SB = "https://ctakvioxteagcwjlclnu.supabase.co";
-        const K = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ";
-        try {
-            fetch(SB + "/rest/v1/app_state?on_conflict=app,client_id,key", {
-                method: "POST",
-                headers: { apikey: K, Authorization: "Bearer " + K, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
-                body: JSON.stringify({ app: app, client_id: clientId, key: "subdomain", value: subdomain, updated_at: new Date().toISOString() })
-            }).catch(() => {});
-        } catch (e) {}
-    }
-
-    function subscribeToApp(app, subdomain) {
         const sub = {
             id: 'sub-' + Date.now() + '-' + Math.floor(Math.random() * 1e4),
             appId: app.id,
@@ -370,18 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
             logo: app.logo || null,
             demoUrl: app.demoUrl || null,
             adminUrl: app.adminUrl || null,
-            subdomain: subdomain,
             status: 'active',
             activatedAt: new Date().toISOString()
         };
         if (!Array.isArray(client.subscriptions)) client.subscriptions = [];
         client.subscriptions.push(sub);
         persistClient();
-        // Subdomenni serverga (Supabase) yozamiz — subdomen havolasi darhol ishlaydi
-        saveSubdomainToCloud(sub.slug, resolvedClientId, subdomain);
         hasActiveSubscription = true;
-        closeSubdomainModal();
-        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 (${subdomain}.onlinebiznes.uz)`, 'success');
+        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 Havola va QR kod "Ilova boshqaruvi"da.`, 'success');
         document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === 'subscription'));
         showView('subscription');
     }
@@ -407,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
                     <div class="sub-card-info">
                         <h3>${escapeHtml(sub.name)}</h3>
-                        <span class="sub-domain"><i class="fa-solid fa-globe"></i> ${escapeHtml(sub.subdomain || 'biznes')}.onlinebiznes.uz</span>
+                        <span class="sub-domain" title="${escapeHtml(subAppUrl(sub))}"><i class="fa-solid fa-link"></i> ${escapeHtml((subAppUrl(sub) || '').replace(/^https?:\/\//, ''))}</span>
                     </div>
                     <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
                 </div>
@@ -432,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cancelSubscription(subId) {
         const sub = (client.subscriptions || []).find(s => s.id === subId);
         if (!sub) return;
-        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?\n\nSubdomen "${sub.subdomain}.onlinebiznes.uz" bo'shaydi.`)) return;
+        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?`)) return;
         client.subscriptions = client.subscriptions.filter(s => s.id !== subId);
         persistClient();
         hasActiveSubscription = activeSubs().length > 0;
@@ -456,22 +376,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Detail modal va landing sahifa "Obuna bo'lish" tugmasi shu orqali subdomen so'raydi
+    // Detail modal va landing sahifa "Obuna bo'lish" tugmasi — to'g'ridan-to'g'ri obuna
     window.BO_subscribe = function (appId) {
         const app = getApps().find(a => a.id === appId);
         if (!app) return;
         document.getElementById('appDetailModal')?.classList.remove('show');
         document.body.style.overflow = '';
-        openSubdomainModal(app);
+        subscribeToApp(app);
     };
 
-    // URL ?subscribe=<slug> — landing/ro'yxatdan o'tishdan keyin subdomen modalini ochadi
+    // URL ?subscribe=<slug> — landing/ro'yxatdan o'tishdan keyin avtomatik obuna
     (function handleSubscribeParam() {
         const slug = new URLSearchParams(location.search).get('subscribe');
         history.replaceState(null, '', location.pathname);
         if (!slug) return;
         const app = getApps().find(a => a.slug === slug || a.id === slug);
-        if (app && !isSubscribedTo(app.id)) setTimeout(() => openSubdomainModal(app), 450);
+        if (app && !isSubscribedTo(app.id)) setTimeout(() => subscribeToApp(app), 450);
     })();
 
     function renderMarketplace() {

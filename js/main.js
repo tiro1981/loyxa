@@ -436,17 +436,13 @@ function boAssignApp(clientId, app) {
         me.price = 0;
         me.status = 'active';
         me.activatedAt = new Date().toISOString();
-        if (!me.subdomain) {
-            me.subdomain = (me.businessName || 'biznes').toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'biznes';
-        }
         localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
         return true;
     } catch (e) { console.error('boAssignApp', e); return false; }
 }
 
 window.boGetApp = function (appId) {
-    // Dashboard'da bo'lsa — to'g'ridan-to'g'ri subdomen modali (obuna bo'lishdan oldin)
+    // Dashboard'da bo'lsa — to'g'ridan-to'g'ri obuna bo'ladi
     if (typeof window.BO_subscribe === 'function') { window.BO_subscribe(appId); return; }
 
     let apps = [];
@@ -465,7 +461,7 @@ window.boGetApp = function (appId) {
         return;
     }
 
-    // Ro'yxatdan o'tgan — dashboard'da subdomen so'raladi
+    // Ro'yxatdan o'tgan — dashboard'da avtomatik obuna bo'ladi
     window.location.href = 'dashboard.html?subscribe=' + slug;
 };
 

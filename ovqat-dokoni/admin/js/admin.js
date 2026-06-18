@@ -816,17 +816,12 @@
         '<h3>Mijozlar QR kodni skaner qilib ilovangizni ochadi</h3>' +
         '<p>Telefon kamerasi bilan skaner qilinganda do\'koningizning veb-ilovasi avtomatik ochiladi. QR kodni stol, vitrina, menyu yoki reklama varaqasiga joylashtiring.</p>' +
 
-        '<label class="qr-label">Do\'kon havolasi (QR shunga ishora qiladi)</label>' +
+        '<label class="qr-label">Ilova manzili (URL)</label>' +
         '<div class="qr-url-row">' +
-          '<input class="input" type="text" id="qrUrlInput" readonly/>' +
+          '<input class="input" type="text" id="qrUrlInput" placeholder="https://mening-domenim.uz"/>' +
+          '<button class="btn btn--primary" id="qrSaveBtn">Saqlash</button>' +
         '</div>' +
-        '<p class="qr-url-note">Bu havola obunada tanlangan subdomenga bog\'langan — o\'zgartirilmaydi. Eski <code>?client=</code> havola ham ishlayveradi.</p>' +
-
-        '<label class="qr-label" style="margin-top:14px">Subdomen</label>' +
-        '<div class="qr-url-row">' +
-          '<input class="input" type="text" id="qrSubInput" readonly placeholder="(obunada tanlanadi)"/>' +
-        '</div>' +
-        '<p class="qr-url-note">Mijozlar <code id="qrSubUrl">—</code> orqali kiradi. Subdomen obuna paytida belgilanadi va o\'zgartirilmaydi.</p>' +
+        '<p class="qr-url-note">Standart manzil — shu do\'kon havolasi (<code>?client=</code> bilan). O\'z domeningiz bo\'lsa kiriting — QR avtomatik yangilanadi.</p>' +
 
         '<div class="qr-actions">' +
           '<button class="btn btn--ghost" id="qrCopyBtn">' + ICON.copy + ' Nusxalash</button>' +
@@ -1075,22 +1070,16 @@
       });
     }
 
-    /* --- QR kod bo'limi (havola/subdomen read-only — obunada belgilanadi) --- */
-    if (el("qrCopyBtn")) {
-      // Subdomenni obunadan (bo_subscriptions) Cloud'ga sinxronlab, read-only ko'rsatamiz
-      let sub = (window.Cloud ? Cloud.get("subdomain", "") : "") || "";
-      if (!sub) {
-        try {
-          const cid = (window.DATA && DATA.clientId) || window.__CLIENT_ID;
-          const subs = JSON.parse(localStorage.getItem("bo_subscriptions") || "[]");
-          const c = subs.find((x) => x.id === cid);
-          const s = c && (c.subscriptions || []).find((x) => x.slug === "ovqat-dokoni" && x.status !== "cancelled");
-          if (s && s.subdomain) { sub = s.subdomain; if (window.Cloud) Cloud.set("subdomain", sub); }
-        } catch (e) {}
-      }
-      if (el("qrSubInput")) el("qrSubInput").value = sub;
-      const su = el("qrSubUrl"); if (su) su.textContent = sub ? ("https://" + sub + ".onlinebiznes.uz") : "—";
-
+    /* --- QR kod bo'limi (platformaning standart tizimi) --- */
+    if (el("qrSaveBtn")) {
+      el("qrSaveBtn").addEventListener("click", () => {
+        let v = (el("qrUrlInput").value || "").trim();
+        if (!v) { toast("URL kiriting", "err"); return; }
+        if (!/^https?:\/\//i.test(v) && !/^file:/i.test(v)) v = "https://" + v.replace(/^\/+/, "");
+        try { localStorage.setItem(qrStoreUrlKey(), v); } catch (e) {}
+        toast("QR kod yangilandi", "ok");
+        renderQrImg();
+      });
       el("qrCopyBtn").addEventListener("click", () => {
         navigator.clipboard.writeText(qrStoreUrl())
           .then(() => toast("Havola nusxalandi", "ok"))
@@ -1265,10 +1254,9 @@
   function qrStoreUrlKey() { return "ovqat_store_url__" + qrClientId(); }
   function qrStoreUrl() {
     try {
-      // Subdomen belgilangan bo'lsa — chiroyli havola (mijoz shuni ko'radi)
-      const sub = (window.Cloud ? Cloud.get("subdomain", "") : "") || "";
-      if (sub) return "https://" + sub + ".onlinebiznes.uz";
-      // Aks holda: shu do'kon storefront'i + mijoz konteksti (?client=...)
+      const saved = localStorage.getItem(qrStoreUrlKey());
+      if (saved) return saved;
+      // Shu do'kon storefront'i + mijoz konteksti (?client=...)
       const u = new URL("../index.html", location.href);
       const cid = qrClientId();
       if (cid) u.searchParams.set("client", cid);
