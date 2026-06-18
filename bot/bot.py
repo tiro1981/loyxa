@@ -42,7 +42,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
-from aiohttp import web
+from aiohttp import web, ClientSession, ClientTimeout
 
 # ============ CONFIG ============
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8843518782:AAHiVrJ7EDtLkAsMw1LviuNlTv0ZB7cyDNw")
@@ -58,6 +58,20 @@ ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
 ADMIN_IDS = {x.strip() for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip()}
 # Broadcast'da xabarlar orasidagi pauza (Telegram rate-limit: ~30 msg/s)
 BROADCAST_DELAY = float(os.getenv("BROADCAST_DELAY", "0.05"))
+
+# ============ SUPABASE (buyurtma poller) ============
+# Bot mijoz brauzeriga emas, Supabase'ga ULANADI: web ilova buyurtmani Supabase'ga
+# yozadi, bot esa shu yerdan o'qib ulangan do'kon kanaliga yuboradi. Shu sabab bot
+# serverning ommaviy URL'i / inbound HTTP shart EMAS — bot faqat internetga chiqsa kifoya.
+# Standart qiymatlar cloud.js bilan bir xil; .env orqali o'zgartirsa bo'ladi.
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ctakvioxteagcwjlclnu.supabase.co").rstrip("/")
+SUPABASE_KEY = os.getenv(
+    "SUPABASE_KEY",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ",
+)
+SUPABASE_POLL_SEC = int(os.getenv("SUPABASE_POLL_SEC", "12"))
+# Cloud app nomi -> store-bot kalit suffiksi (admin shu suffiks bilan ulaydi: <client>__<suffiks>)
+SUPABASE_APPS = {"ovqat": "ovqat", "salqin": "salqin", "kitob": "kitob", "kiyim": "kiyim", "tabby": "tabby"}
 
 BOT_ID_RE = re.compile(r"^BOT-[A-Z0-9]+-[A-Z0-9]{5}$", re.IGNORECASE)
 
@@ -991,6 +1005,13 @@ async def handle_store_order(request: web.Request) -> web.Response:
     try:
         await bot.send_message(channel, format_store_order(cfg, order), parse_mode=None)
         cfg["sentCount"] = int(cfg.get("sentCount") or 0) + 1
+        # Poller xuddi shu buyurtmani qayta yubormasligi uchun id'ni belgilaymiz
+        oid = str(order.get("id") or "")
+        if oid:
+            ids = cfg.get("sentOrderIds") or []
+            if oid not in ids:
+                ids.append(oid)
+            cfg["sentOrderIds"] = ids[-500:]
         db = load_store_db()
         db[client_id] = cfg
         save_store_db(db)
@@ -1092,6 +1113,84 @@ def build_http_app(bot: Bot) -> web.Application:
     return app
 
 
+# ============ SUPABASE buyurtma poller ============
+async def _sb_fetch_orders(session: "ClientSession"):
+    """Supabase app_state dan key='orders' qatorlarini oladi: [{app, client_id, value}]."""
+    url = f"{SUPABASE_URL}/rest/v1/app_state?select=app,client_id,value&key=eq.orders"
+    headers = {"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"}
+    async with session.get(url, headers=headers, timeout=ClientTimeout(total=15)) as r:
+        if r.status != 200:
+            log.warning("[poll] Supabase %s: %s", r.status, (await r.text())[:200])
+            return []
+        data = await r.json()
+        return data if isinstance(data, list) else []
+
+
+async def supabase_order_poller() -> None:
+    """Har SUPABASE_POLL_SEC soniyada Supabase'dagi yangi buyurtmalarni ulangan do'kon
+    kanaliga yuboradi. Dublikatni cfg['sentOrderIds'] orqali to'sadi (to'g'ridan-to'g'ri
+    /store-bot/order yo'li bilan ham birga ishlaydi)."""
+    if "supabase.co" not in SUPABASE_URL or len(SUPABASE_KEY) < 30:
+        log.info("[poll] Supabase sozlanmagan — buyurtma poller o'chirilgan")
+        return
+    await asyncio.sleep(4)
+    log.info("[poll] Supabase buyurtma poller ishga tushdi (har %ss)", SUPABASE_POLL_SEC)
+    async with ClientSession() as session:
+        while True:
+            try:
+                for row in await _sb_fetch_orders(session):
+                    app = str(row.get("app") or "")
+                    suffix = SUPABASE_APPS.get(app)
+                    if not suffix:
+                        continue
+                    cid = str(row.get("client_id") or "")
+                    orders = row.get("value")
+                    if not isinstance(orders, list) or not orders:
+                        continue
+                    bot_client = f"{cid}__{suffix}"
+                    cfg = load_store_db().get(bot_client)
+                    if not cfg:
+                        continue  # bu do'kon uchun bot ulanmagan
+
+                    sent_ids = cfg.get("sentOrderIds")
+                    if sent_ids is None:
+                        # birinchi marta — mavjudlarni "yuborilgan" deb belgilaymiz (eskisini yubormaymiz)
+                        cfg["sentOrderIds"] = [str(o.get("id")) for o in orders if isinstance(o, dict)]
+                        db = load_store_db(); db[bot_client] = cfg; save_store_db(db)
+                        continue
+
+                    sent_set = set(sent_ids)
+                    new_orders = [o for o in orders if isinstance(o, dict) and str(o.get("id")) not in sent_set]
+                    if not new_orders:
+                        continue
+                    channel = cfg.get("channel")
+                    if not channel:
+                        continue  # kanal hali ulanmagan — keyinroq yuboramiz
+
+                    bot, is_temp = await _store_bot_for(bot_client, cfg)
+                    try:
+                        for o in reversed(new_orders):  # eskidan yangiga
+                            oid = str(o.get("id"))
+                            try:
+                                await bot.send_message(channel, format_store_order(cfg, o), parse_mode=None)
+                                sent_ids.append(oid)
+                                cfg["sentCount"] = int(cfg.get("sentCount") or 0) + 1
+                                log.info("[poll] buyurtma kanalga yuborildi: %s -> %s (%s)", oid, channel, bot_client)
+                            except TelegramAPIError as e:
+                                log.error("[poll] yuborish xatosi (%s): %s", bot_client, e)
+                    finally:
+                        if is_temp:
+                            try:
+                                await bot.session.close()
+                            except Exception:
+                                pass
+                    cfg["sentOrderIds"] = sent_ids[-500:]  # ro'yxat cheksiz o'smasin
+                    db = load_store_db(); db[bot_client] = cfg; save_store_db(db)
+            except Exception as e:
+                log.error("[poll] umumiy xato: %s", e)
+            await asyncio.sleep(SUPABASE_POLL_SEC)
+
+
 # ============ MAIN ============
 async def main() -> None:
     if BOT_TOKEN.startswith("PUT_YOUR"):
@@ -1115,6 +1214,8 @@ async def main() -> None:
 
     # Saqlangan do'kon botlarini (mijozga ko'rinadigan) tiklash
     await start_all_store_bots()
+    # Supabase'dagi yangi buyurtmalarni kanalga yuboruvchi fon vazifasi
+    asyncio.create_task(supabase_order_poller())
     log.info("✅ Telegram bot polling rejimida ishga tushdi")
 
     try:
