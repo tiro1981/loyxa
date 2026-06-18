@@ -1,6 +1,50 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
+    <!-- ===== Subdomen yo'naltirish (eng birinchi ishlaydi) =====
+         dokon.onlinebiznes.uz  ->  /folder/index.html?client=ID
+         Eski QR havola (?client=...) o'zgarmaydi. Statik deploy uchun client-side. -->
+    <script>
+    (function () {
+      var host = (location.hostname || "").toLowerCase();
+      var base = "onlinebiznes.uz";
+      // Asosiy domen / www / Render / localhost / IP — subdomen emas, tegmaymiz
+      if (host === base || host === "www." + base || host.indexOf("onrender.com") > -1 ||
+          host === "localhost" || host.indexOf(".") === -1 || /^[0-9.]+$/.test(host)) return;
+      if (host.slice(-(base.length + 1)) !== "." + base) return;   // .onlinebiznes.uz bilan tugamasa
+      var sub = host.slice(0, host.length - base.length - 1);      // "ovqat-dokoni"
+      if (!sub || sub === "www") return;
+      if (location.search.indexOf("client=") > -1) return;         // allaqachon to'g'ri havola
+      window.__SUB = true;                                         // pastdagi sessiya-redirectni to'xtatadi
+      document.documentElement.style.visibility = "hidden";        // sahifa miltillamasin
+
+      // App nomi -> papka (Cloud "subdomain" yozuvi app bo'yicha turadi)
+      var FOLDER = { ovqat: "ovqat-dokoni", salqin: "salqin-ichimliklar", kitob: "kitob-dokoni", kiyim: "kiyim-dokoni", tabby: "app" };
+      var SB = "https://ctakvioxteagcwjlclnu.supabase.co";
+      var K = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ";
+      fetch(SB + "/rest/v1/app_state?key=eq.subdomain&select=app,client_id,value",
+            { headers: { apikey: K, Authorization: "Bearer " + K } })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          var hit = null;
+          for (var i = 0; i < rows.length; i++) {
+            var v = rows[i].value;
+            if (typeof v === "string" && v.toLowerCase() === sub) { hit = rows[i]; break; }
+          }
+          if (hit) {
+            var folder = FOLDER[hit.app] || hit.app;
+            location.replace("/" + folder + "/index.html?client=" + encodeURIComponent(hit.client_id));
+          } else {
+            document.documentElement.style.visibility = "";
+            document.body.innerHTML = '<div style="font-family:Inter,system-ui,sans-serif;text-align:center;padding:64px 20px;color:#0f172a">' +
+              '<div style="font-size:64px">🔍</div><h2 style="margin:8px 0">Do\'kon topilmadi</h2>' +
+              '<p style="color:#64748b">«' + sub + '» subdomeni hech qaysi do\'konga ulanmagan.</p>' +
+              '<p><a href="https://onlinebiznes.uz" style="color:#16a34a;font-weight:600">onlinebiznes.uz</a></p></div>';
+          }
+        })
+        .catch(function () { document.documentElement.style.visibility = ""; });
+    })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun zamonaviy SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar.">
@@ -13,8 +57,10 @@
     <link rel="stylesheet" href="css/settings.css?v=7">
     <script>
         try {
-            const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
-            if (_s && _s.type === 'client') window.location.replace('dashboard.html');
+            if (!window.__SUB) {
+                const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
+                if (_s && _s.type === 'client') window.location.replace('dashboard.html');
+            }
         } catch {}
     </script>
 </head>

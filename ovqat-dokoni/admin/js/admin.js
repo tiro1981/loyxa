@@ -823,6 +823,13 @@
         '</div>' +
         '<p class="qr-url-note">Standart manzil — shu ilovaning havolasi. O\'z domeningizni kiriting (masalan <code>https://mening-dokonim.uz</code>) — QR avtomatik yangilanadi.</p>' +
 
+        '<label class="qr-label" style="margin-top:14px">Subdomen (onlinebiznes.uz)</label>' +
+        '<div class="qr-url-row">' +
+          '<input class="input" type="text" id="qrSubInput" placeholder="mening-dokonim" autocomplete="off" spellcheck="false"/>' +
+          '<button class="btn btn--primary" id="qrSubSave">Saqlash</button>' +
+        '</div>' +
+        '<p class="qr-url-note">Belgilangach mijozlar <code id="qrSubUrl">—</code> orqali ham kiradi (eski QR/havola ham ishlayveradi). Faqat kichik harf, raqam va "-".</p>' +
+
         '<div class="qr-actions">' +
           '<button class="btn btn--ghost" id="qrCopyBtn">' + ICON.copy + ' Nusxalash</button>' +
           '<button class="btn btn--ghost" id="qrDownloadBtn">' + ICON.download + ' Yuklab olish</button>' +
@@ -1079,6 +1086,20 @@
         try { localStorage.setItem(qrStoreUrlKey(), v); } catch (e) {}
         toast("QR kod yangilandi", "ok");
         renderQrImg();
+      });
+
+      /* Subdomen: mijoz <sub>.onlinebiznes.uz orqali ham kirsin (Cloud "subdomain") */
+      const subPaint = (s) => { const u = el("qrSubUrl"); if (u) u.textContent = s ? ("https://" + s + ".onlinebiznes.uz") : "—"; };
+      const subCur = (window.Cloud ? Cloud.get("subdomain", "") : "") || "";
+      if (el("qrSubInput")) el("qrSubInput").value = subCur;
+      subPaint(subCur);
+      if (el("qrSubSave")) el("qrSubSave").addEventListener("click", () => {
+        let s = (el("qrSubInput").value || "").trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+        if (s && s.length < 3) { toast("Subdomen juda qisqa (kamida 3 belgi)", "err"); return; }
+        if (window.Cloud) Cloud.set("subdomain", s);
+        if (el("qrSubInput")) el("qrSubInput").value = s;
+        subPaint(s);
+        toast(s ? "Subdomen saqlandi: " + s : "Subdomen o'chirildi", "ok");
       });
       el("qrCopyBtn").addEventListener("click", () => {
         navigator.clipboard.writeText(qrStoreUrl())
