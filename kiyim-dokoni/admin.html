@@ -56,6 +56,7 @@
 
                 <div class="nav-label">Integratsiya</div>
                 <button class="nav-link" data-page="bot"><span class="ni">✈️</span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
+                <button class="nav-link" data-page="qr"><span class="ni">📱</span> QR Kod</button>
             </nav>
 
             <div class="sidebar-bot">
@@ -505,6 +506,57 @@
                     <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
                     <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
                     <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
+                </div>
+            </section>
+
+            <!-- ============ QR KOD ============ -->
+            <section class="page" data-page="qr">
+                <div class="page-toolbar">
+                    <div>
+                        <h2 style="margin:0">QR Kod</h2>
+                        <p style="margin:2px 0 0;color:var(--text-muted,#6b7280);font-size:13px">Do'koningiz QR kodi — mijozlar telefonida skanerlab to'g'ridan-to'g'ri do'konga kiradi</p>
+                    </div>
+                </div>
+
+                <div class="qr-grid">
+                    <!-- QR rasm karta -->
+                    <div class="panel qr-preview-card">
+                        <div class="panel-body" style="text-align:center">
+                            <div class="qr-frame" id="qrFrame">
+                                <img id="qrImg" alt="QR Kod" width="320" height="320" style="display:none">
+                                <div class="qr-state" id="qrState">QR yuklanmoqda…</div>
+                            </div>
+                            <div class="qr-shop-name" id="qrShopName">Moda Style</div>
+                            <div class="qr-scan-hint">📷 Telefon bilan skaner qiling</div>
+                        </div>
+                    </div>
+
+                    <!-- Manzil + tugmalar karta -->
+                    <div class="panel qr-info-card">
+                        <div class="panel-head"><h3>Do'kon manzili</h3></div>
+                        <div class="panel-body">
+                            <label class="bot2-label" for="qrUrl">Ilova manzili (URL)</label>
+                            <input type="text" id="qrUrl" class="search-input" readonly spellcheck="false" style="width:100%;font-size:13px">
+                            <p class="bot2-hint">Bu havola QR kodga yozilgan. Mijoz skanerlasa shu sahifa ochiladi.</p>
+
+                            <div class="qr-actions">
+                                <button type="button" class="btn btn-primary" id="qrCopyBtn">📋 Nusxalash</button>
+                                <button type="button" class="btn btn-ghost" id="qrDownloadBtn">⬇️ Yuklab olish</button>
+                                <button type="button" class="btn btn-ghost" id="qrPrintBtn">🖨️ Chop etish</button>
+                                <button type="button" class="btn btn-ghost" id="qrOpenBtn">🔗 Ochish</button>
+                            </div>
+
+                            <hr class="qr-sep">
+
+                            <label class="bot2-label" for="qrCustomUrl">Maxsus domen (ixtiyoriy)</label>
+                            <p class="bot2-hint" style="margin-top:0">O'z domeningiz bo'lsa shu yerga yozing — QR shunga yangilanadi.</p>
+                            <div class="qr-custom-row">
+                                <input type="text" id="qrCustomUrl" class="search-input" placeholder="masalan: moda-style.uz" autocomplete="off" spellcheck="false" style="flex:1">
+                                <button type="button" class="btn btn-primary" id="qrSaveBtn">💾 Saqlash</button>
+                            </div>
+                            <button type="button" class="btn btn-mini btn-ghost" id="qrResetBtn" style="margin-top:8px">↩️ Standart havolaga qaytarish</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 

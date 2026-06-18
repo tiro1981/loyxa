@@ -2028,3 +2028,26 @@ img { max-width: 100%; display: block; }
   .bot2-preview { position: static; max-width: 360px; margin: 0 auto; width: 100%; }
   .bot2-row2 { grid-template-columns: 1fr; }
 }
+
+/* ============ QR KOD ============ */
+.qr-grid { display: grid; grid-template-columns: minmax(0,360px) 1fr; gap: 20px; align-items: start; }
+.qr-preview-card .panel-body { display: flex; flex-direction: column; align-items: center; }
+.qr-frame {
+  width: 320px; max-width: 100%; aspect-ratio: 1 / 1;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+.qr-frame img { width: 100%; height: auto; border-radius: var(--radius-sm); }
+.qr-state { color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px; }
+.qr-shop-name { margin-top: 16px; font-size: 18px; font-weight: 700; color: var(--text); }
+.qr-scan-hint { margin-top: 4px; color: var(--text-muted); font-size: 13px; }
+.qr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.qr-sep { border: none; border-top: 1px solid var(--border-soft); margin: 20px 0; }
+.qr-custom-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.qr-custom-row .search-input { min-width: 180px; }
+
+@media (max-width: 760px) {
+  .qr-grid { grid-template-columns: 1fr; }
+  .qr-preview-card .panel-body { align-items: center; }
+}

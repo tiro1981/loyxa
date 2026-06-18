@@ -77,6 +77,7 @@ function initAdmin() {
     setupMessagesPage();
     setupNotifications();
     setupBotPage();
+    setupQrPage();
 
     renderDashboard();
     updateNavBadge();
@@ -112,7 +113,7 @@ function navigate(page) {
         dashboard: 'Dashboard', products: 'Mahsulotlar', orders: 'Buyurtmalar',
         customers: 'Mijozlar', categories: 'Kategoriyalar', coupons: 'Kuponlar',
         reports: 'Hisobot', settings: 'Sozlamalar', messages: 'Habarlar',
-        bot: 'Telegram Bot'
+        bot: 'Telegram Bot', qr: 'QR Kod'
     };
     document.getElementById('pageTitle').textContent = titles[page] || page;
     document.getElementById('sidebar').classList.remove('open');
@@ -127,6 +128,7 @@ function navigate(page) {
     if (page === 'settings') renderSettings();
     if (page === 'messages') renderMessageThreads();
     if (page === 'bot') renderBot();
+    if (page === 'qr') renderQrImg();
 }
 
 function closeAllModals() {
@@ -1509,6 +1511,145 @@ window.notifyBotNewOrder = function (order) {
             .catch(err => console.warn('[bot] HTTP xato:', err.message));
     } catch (err) { console.error('notifyBotNewOrder error:', err); }
 };
+
+/* ============ QR KOD (platformaning standart tizimi) ============ */
+
+/* Joriy do'kon client_id'si — boot-loader hisoblab qo'ygan window.__CLIENT_ID'dan foydalanamiz */
+function qrClientId() {
+    return window.__CLIENT_ID || 'shop';
+}
+
+/* localStorage kaliti: shu client uchun maxsus domen saqlanadi */
+function qrStoreKey() {
+    return 'moda_store_url__' + qrClientId();
+}
+
+/* Do'kon havolasi:
+   - agar foydalanuvchi maxsus domen saqlagan bo'lsa — o'shani qaytaramiz,
+   - aks holda shu papkadagi index.html + ?client=<id> (admin.html bilan bir papkada, "../" KERAK EMAS). */
+function qrStoreUrl() {
+    const saved = localStorage.getItem(qrStoreKey());
+    if (saved) return saved;
+    const u = new URL('index.html', location.href);
+    // ?client= dan boshqa eski parametrlarni tozalab, faqat client qo'shamiz
+    u.search = '';
+    const cid = qrClientId();
+    if (cid) u.searchParams.set('client', cid);
+    return u.href;
+}
+
+/* QR rasm manbasi — tashqi API (internet kerak). size: ko'rsatish 320, yuklab olish/chop etish 600 */
+function qrApiSrc(url, size) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size +
+        '&margin=10&qzone=1&data=' + encodeURIComponent(url);
+}
+
+/* QR sahifasi ochilganda chaqiriladi — rasm + do'kon nomi + manzilni tiklaydi */
+function renderQrImg() {
+    const url = qrStoreUrl();
+
+    // Manzil inputi va do'kon nomi
+    const urlInput = document.getElementById('qrUrl');
+    if (urlInput) urlInput.value = url;
+    const nameEl = document.getElementById('qrShopName');
+    if (nameEl) nameEl.textContent = _shopName();
+
+    // Maxsus domen inputiga saqlangan qiymatni ko'rsatamiz
+    const customInput = document.getElementById('qrCustomUrl');
+    if (customInput) customInput.value = localStorage.getItem(qrStoreKey()) || '';
+
+    // QR rasmni yuklash — holatni boshqaramiz
+    const img = document.getElementById('qrImg');
+    const state = document.getElementById('qrState');
+    if (!img || !state) return;
+
+    state.style.display = '';
+    state.textContent = 'QR yuklanmoqda…';
+    img.style.display = 'none';
+
+    img.onload = () => { state.style.display = 'none'; img.style.display = ''; };
+    img.onerror = () => { img.style.display = 'none'; state.style.display = ''; state.textContent = '⚠️ QR yuklanmadi (internet kerak)'; };
+    img.src = qrApiSrc(url, 320);
+}
+
+/* http(s):// prefiks qo'shadi — foydalanuvchi domenni sxemasiz kiritsa */
+function qrNormalizeUrl(v) {
+    v = (v || '').trim();
+    if (!v) return '';
+    if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+    return v;
+}
+
+/* Tugma ishlovchilarini ulaymiz (initAdmin'da bir marta) */
+function setupQrPage() {
+    const byId = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+
+    // Nusxalash — havolani clipboard'ga
+    byId('qrCopyBtn', () => {
+        const url = qrStoreUrl();
+        navigator.clipboard.writeText(url)
+            .then(() => toast('Havola nusxalandi', 'success'))
+            .catch(() => toast('Nusxalab bo\'lmadi', 'error'));
+    });
+
+    // Ochish — do'kon sahifasini yangi oynada
+    byId('qrOpenBtn', () => { window.open(qrStoreUrl(), '_blank'); });
+
+    // Yuklab olish — 600px QR'ni blob qilib PNG sifatida saqlaymiz
+    byId('qrDownloadBtn', () => {
+        const src = qrApiSrc(qrStoreUrl(), 600);
+        fetch(src)
+            .then(r => r.blob())
+            .then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'qr-kod.png';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+                toast('QR yuklab olindi', 'success');
+            })
+            .catch(() => { window.open(src, '_blank'); }); // xato bo'lsa shunchaki ochamiz
+    });
+
+    // Chop etish — yangi oynaga QR + do'kon nomi + URL chiqarib print qilamiz
+    byId('qrPrintBtn', () => {
+        const url = qrStoreUrl();
+        const name = _shopName();
+        const w = window.open('', '_blank', 'width=480,height=640');
+        if (!w) { toast('Pop-up bloklangan', 'error'); return; }
+        w.document.write(
+            '<!doctype html><html><head><meta charset="utf-8"><title>QR — ' + name + '</title>' +
+            '<style>body{font-family:system-ui,Arial,sans-serif;text-align:center;padding:32px;margin:0}' +
+            'h1{font-size:22px;margin:0 0 4px}p{color:#555;word-break:break-all;font-size:13px;margin:16px auto 0;max-width:340px}' +
+            'img{margin:24px auto 0;display:block}</style></head><body>' +
+            '<h1>' + name + '</h1><div>📷 Telefon bilan skaner qiling</div>' +
+            '<img src="' + qrApiSrc(url, 600) + '" width="360" height="360" onload="window.print()">' +
+            '<p>' + url + '</p></body></html>'
+        );
+        w.document.close();
+    });
+
+    // Saqlash — maxsus domenni localStorage'ga yozib QR'ni qayta render qilamiz
+    byId('qrSaveBtn', () => {
+        const input = document.getElementById('qrCustomUrl');
+        const val = qrNormalizeUrl(input ? input.value : '');
+        if (!val) { toast('Domen kiriting', 'error'); return; }
+        localStorage.setItem(qrStoreKey(), val);
+        renderQrImg();
+        toast('Maxsus domen saqlandi', 'success');
+    });
+
+    // Standart havolaga qaytarish — maxsus domenni o'chiramiz
+    byId('qrResetBtn', () => {
+        localStorage.removeItem(qrStoreKey());
+        const input = document.getElementById('qrCustomUrl');
+        if (input) input.value = '';
+        renderQrImg();
+        toast('Standart havolaga qaytarildi', 'info');
+    });
+}
 
 /* ============ HELPERS ============ */
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }

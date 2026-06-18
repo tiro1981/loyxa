@@ -52,6 +52,7 @@
         <a class="menu-item" data-page="users"><span class="i">◉</span> <span data-i18n="admin.menu.users">Foydalanuvchilar</span></a>
         <a class="menu-item" data-page="finance"><span class="i">$</span> <span data-i18n="admin.menu.finance">Moliya</span></a>
         <a class="menu-item" data-page="bot"><span class="i">✈</span> <span>Telegram Bot</span> <span id="botSideBadge" class="m-badge hidden" style="background:#0088cc">●</span></a>
+        <a class="menu-item" data-page="qr"><span class="i">▢</span> <span>QR Kod</span></a>
       </nav>
       <div class="sidebar-foot">
         <a href="index.html" class="menu-item" data-i18n="admin.to_shop">← Do'konga</a>
@@ -284,6 +285,39 @@
           <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
           <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
           <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
+        </div>
+      </section>
+
+      <section id="page-qr" class="page hidden">
+        <div class="qr-wrap">
+          <!-- QR rasm va do'kon nomi kartasi -->
+          <div class="panel qr-card">
+            <div id="qrLoading" class="qr-loading">QR yuklanmoqda…</div>
+            <img id="qrImage" class="qr-img" alt="QR kod" style="display:none" />
+            <div id="qrStoreName" class="qr-store-name">Salqin</div>
+            <div class="qr-scan-hint">📷 Telefon bilan skaner qiling</div>
+          </div>
+
+          <!-- Ilova manzili va tugmalar kartasi -->
+          <div class="panel qr-actions">
+            <div class="panel-head"><h3>Ilova manzili</h3></div>
+            <p class="muted" style="margin:0 0 10px">Mijozlar QR kodni skaner qilib do'koningiz veb-ilovasini ochadi.</p>
+            <input id="qrUrlInput" class="qr-url-input" type="text" readonly value="" />
+            <div class="qr-btn-row">
+              <button type="button" class="btn btn-primary btn-sm" id="qrCopyBtn">📋 Nusxalash</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="qrDownloadBtn">⬇ Yuklab olish</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="qrPrintBtn">🖨 Chop etish</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="qrOpenBtn">↗ Ochish</button>
+            </div>
+            <!-- Ixtiyoriy: maxsus domen -->
+            <div class="qr-custom">
+              <p class="muted" style="margin:14px 0 6px">Maxsus domeningiz bo'lsa, shu yerga kiriting va saqlang:</p>
+              <div class="qr-btn-row">
+                <input id="qrCustomInput" class="qr-url-input" type="text" placeholder="masalan: salqin.uz" style="flex:1;min-width:160px" />
+                <button type="button" class="btn btn-primary btn-sm" id="qrSaveBtn">💾 Saqlash</button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

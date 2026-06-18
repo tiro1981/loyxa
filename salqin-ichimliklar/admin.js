@@ -103,6 +103,7 @@
     users:     { titleKey: 'admin.menu.users',      subKey: 'admin.page.users.sub' },
     finance:   { titleKey: 'admin.menu.finance',    subKey: 'admin.page.finance.sub' },
     bot:       { titleKey: 'admin.menu.dashboard',  subKey: 'admin.page.dashboard.sub' },
+    qr:        { titleKey: 'admin.menu.dashboard',  subKey: 'admin.page.dashboard.sub' },
   };
   function go(page) {
     $$('.menu-item').forEach(m => m.classList.toggle('active', m.dataset.page === page));
@@ -110,8 +111,8 @@
     $('#page-' + page).classList.remove('hidden');
     const meta = pageMeta[page];
     if (meta) {
-      const titles = { chat: 'Chat', bot: 'Telegram Bot' };
-      const subs   = { chat: 'Foydalanuvchilar bilan yozishmalar', bot: 'Buyurtmalarni Telegram kanalingizga avtomatik yuboring' };
+      const titles = { chat: 'Chat', bot: 'Telegram Bot', qr: 'QR Kod' };
+      const subs   = { chat: 'Foydalanuvchilar bilan yozishmalar', bot: 'Buyurtmalarni Telegram kanalingizga avtomatik yuboring', qr: 'QR kod orqali do\'koningizni ulashing' };
       $('#pageTitle').textContent = titles[page] || t(meta.titleKey);
       $('#pageSub').textContent   = subs[page]   || t(meta.subKey);
     }
@@ -122,6 +123,7 @@
     if (page === 'users')     renderUsers();
     if (page === 'finance')   renderFinance();
     if (page === 'bot')       renderBot();
+    if (page === 'qr')        renderQrImg();
   }
   document.addEventListener('click', (e) => {
     const link = e.target.closest('[data-page]');
@@ -825,6 +827,110 @@
     else if (e.target.closest('#bot2ChannelDisc')) botDisconnectChannel();
     else if (e.target.closest('#bot2BroadcastBtn')) botBroadcast();
     else if (e.target.closest('#bot2Eye')) { const t = $('#bot2Token'); const btn = e.target.closest('#bot2Eye'); if (t) { const h = t.type === 'password'; t.type = h ? 'text' : 'password'; btn.textContent = h ? '🙈' : '👁'; } }
+  });
+
+  // ====================================================================
+  //                  QR KOD — platformaning standart tizimi
+  // ====================================================================
+  // Joriy do'kon (mijoz) id'si — QR aynan shu do'kon storefront'iga olib borishi uchun.
+  // Mavjud global ifodani qayta ishlatamiz (admin.html boot scriptida o'rnatilgan).
+  function qrClientId() {
+    const c = window.__CLIENT_ID;
+    return (c && c !== 'shop') ? c : '';
+  }
+  // Ixtiyoriy maxsus domen uchun localStorage kaliti (har bir do'kon alohida)
+  function qrStoreUrlKey() { return 'si_store_url__' + (qrClientId() || 'shop'); }
+  // QR ko'rsatadigan storefront manzili. admin.html va index.html BIR PAPKADA —
+  // shuning uchun "index.html" (NE "../index.html"), kerak bo'lsa ?client= qo'shiladi.
+  function qrStoreUrl() {
+    try {
+      const saved = localStorage.getItem(qrStoreUrlKey());
+      if (saved) return saved;
+      const u = new URL('index.html', location.href);
+      const cid = qrClientId();
+      if (cid) u.searchParams.set('client', cid);
+      return u.href;
+    } catch (e) {
+      return location.href.replace(/admin\.html.*$/, 'index.html');
+    }
+  }
+  // Tashqi QR rasm xizmati (internet kerak)
+  function qrApiSrc(url, size) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size +
+      '&margin=10&qzone=1&data=' + encodeURIComponent(url);
+  }
+  // Do'kon nomi — bot bo'limidagi mavjud yordamchi orqali
+  function qrShopName() { return botShopName(); }
+
+  // QR rasmni va matnlarni chizish — sahifa ochilganda chaqiriladi
+  function renderQrImg() {
+    const url = qrStoreUrl();
+    const input = $('#qrUrlInput'); if (input) input.value = url;
+    const sn = $('#qrStoreName'); if (sn) sn.textContent = qrShopName();
+    const img = $('#qrImage');
+    const loading = $('#qrLoading');
+    if (img) {
+      if (loading) { loading.style.display = 'block'; loading.textContent = 'QR yuklanmoqda…'; }
+      img.style.display = 'none';
+      img.onload = () => { img.style.display = 'block'; if (loading) loading.style.display = 'none'; };
+      img.onerror = () => { if (loading) loading.textContent = '⚠️ QR yuklanmadi (internet kerak)'; };
+      img.src = qrApiSrc(url, 320);
+    }
+  }
+
+  // QR tugmalari — delegatsiya orqali (renderQrImg bir necha marta chaqirilsa ham xavfsiz)
+  document.addEventListener('click', (e) => {
+    // Nusxalash
+    if (e.target.closest('#qrCopyBtn')) {
+      navigator.clipboard.writeText(qrStoreUrl())
+        .then(() => toast('Havola nusxalandi', 'success'))
+        .catch(() => toast('Nusxalab bo\'lmadi', 'error'));
+    }
+    // Ochish
+    else if (e.target.closest('#qrOpenBtn')) {
+      window.open(qrStoreUrl(), '_blank');
+    }
+    // Yuklab olish (600px) — blob orqali, xato bo'lsa yangi oynada ochiladi
+    else if (e.target.closest('#qrDownloadBtn')) {
+      (async () => {
+        try {
+          const res = await fetch(qrApiSrc(qrStoreUrl(), 600));
+          const blob = await res.blob();
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob); a.download = 'qr-kod.png';
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+          toast('QR kod yuklab olindi', 'success');
+        } catch (err) { window.open(qrApiSrc(qrStoreUrl(), 600), '_blank'); }
+      })();
+    }
+    // Chop etish — alohida oynaga QR + do'kon nomi + URL chiqarib print qiladi
+    else if (e.target.closest('#qrPrintBtn')) {
+      const url = qrStoreUrl();
+      const w = window.open('', '_blank', 'width=480,height=680');
+      if (!w) { toast('Chop etish oynasi bloklandi', 'error'); return; }
+      w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR Kod</title></head>' +
+        '<body style="font-family:system-ui,sans-serif;text-align:center;padding:40px;color:#0f172a">' +
+        '<h2 style="margin:0 0 4px">' + esc(qrShopName()) + '</h2>' +
+        '<p style="margin:0 0 18px;color:#64748b">Veb-ilovamizni oching</p>' +
+        '<img src="' + qrApiSrc(url, 400) + '" style="width:320px;height:320px"/>' +
+        '<p style="margin-top:18px;font-size:18px">📷 Telefon kamerasi bilan skaner qiling</p>' +
+        '<p style="color:#64748b;word-break:break-all;font-size:12px">' + esc(url) + '</p>' +
+        '</body></html>');
+      w.document.close();
+      setTimeout(() => { try { w.focus(); w.print(); } catch (er) {} }, 700);
+    }
+    // Saqlash — maxsus domenni localStorage'ga yozadi va QR'ni qayta chizadi
+    else if (e.target.closest('#qrSaveBtn')) {
+      const inp = $('#qrCustomInput');
+      let v = (inp && inp.value || '').trim();
+      if (!v) { toast('Avval domen kiriting', 'error'); return; }
+      if (!/^https?:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
+      try { localStorage.setItem(qrStoreUrlKey(), v); } catch (er) {}
+      if (inp) inp.value = '';
+      toast('QR kod yangilandi', 'success');
+      renderQrImg();
+    }
   });
 
   // ----- Admin parolini o'zgartirish -----
