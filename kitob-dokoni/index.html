@@ -52,19 +52,7 @@
 
         <div class="chips-scroll" id="catChips"></div>
 
-        <div class="hero-banner" id="heroBanner">
-            <div class="hb-text">
-                <small>YANGI · 2026</small>
-                <h2>Har bir kitob —<br><span>yangi dunyo</span></h2>
-                <button class="hb-btn" id="heroCta">
-                    <span>Ko'rish</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-            <div class="hb-img">
-                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="" loading="eager">
-            </div>
-        </div>
+        <!-- Reklama banneri (hero) olib tashlandi — endi to'g'ridan-to'g'ri mahsulotlar ko'rsatiladi -->
 
         <div class="section-head">
             <h3>Mashhur kitoblar</h3>
@@ -438,6 +426,22 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js?v=5"></script>
+<!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud.js"></script>
+<!-- Boot-loader: AVVAL Cloud.init (serverdagi do'kon ma'lumotini yuklaydi), keyin script.js.
+     CLIENT_ID — ?client= yoki bo_session orqali (QR/subdomen tizimi o'zgarmaydi). -->
+<script>
+  (async () => {
+    const CLIENT_ID = new URLSearchParams(location.search).get("client")
+      || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+      || "shop";
+    window.__CLIENT_ID = CLIENT_ID;
+    try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
+    for (const src of ["script.js"]) {
+      await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+    }
+  })();
+</script>
 </body>
 </html>

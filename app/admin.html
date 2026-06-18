@@ -559,6 +559,21 @@
 <!-- ============ TOAST ============ -->
 <div class="atoast" id="atoast"></div>
 
-<script src="admin.js?v=2"></script>
+<!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud.js"></script>
+<!-- Boot-loader: AVVAL Cloud.init, keyin admin.js. -->
+<script>
+  (async () => {
+    const CLIENT_ID = new URLSearchParams(location.search).get("client")
+      || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+      || "demo";
+    window.__CLIENT_ID = CLIENT_ID;
+    try { await Cloud.init("tabby", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
+    for (const src of ["admin.js"]) {
+      await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+    }
+  })();
+</script>
 </body>
 </html>

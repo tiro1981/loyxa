@@ -6,9 +6,15 @@ const STORE_KEY = 'moda_store_v1';
 const CART_KEY = 'moda_cart_v1';
 const INSTALL_DISMISS_KEY = 'moda_install_dismissed';
 
+/* DOM tayyorligini hisobga oluvchi yordamchilar — cloud boot-loader skriptlarni
+   sahifa yuklangach (DOMContentLoaded/load o'tib ketgandan keyin) qo'shadi, shuning
+   uchun bu hodisalarga oddiy "addEventListener" qilish ishlamay qolishi mumkin. */
+function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+function onLoad(fn){ if (document.readyState === 'complete') fn(); else window.addEventListener('load', fn); }
+
 /* ============ PWA: Service Worker ============ */
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+    onLoad(() => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
     });
 }
@@ -30,7 +36,7 @@ window.addEventListener('appinstalled', () => {
     if (typeof toast === 'function') toast('Ilova o\'rnatildi! 🎉', 'success');
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+onReady(() => {
     const ipInstall = document.getElementById('ipInstall');
     const ipClose = document.getElementById('ipClose');
     const prompt = document.getElementById('installPrompt');
@@ -105,25 +111,23 @@ const UZ_REGIONS = {
 };
 
 /* ---------- Storage ---------- */
+// Do'kon ma'lumoti (katalog + buyurtmalar + sozlama) endi SERVERDA (Cloud/Supabase),
+// "store" kaliti ostida. Cloud client_id bo'yicha avtomatik ajratadi — shu sabab
+// har bir do'kon o'z katalogi/buyurtmalariga ega bo'ladi (multi-tenant to'g'rilandi).
+// Cloud sozlanmagan bo'lsa, cloud.js o'zi localStorage'ga (client bo'yicha) yozadi.
 const Store = {
     load() {
-        const raw = localStorage.getItem(STORE_KEY);
-        if (!raw) {
+        const parsed = window.Cloud ? Cloud.get("store", null) : null;
+        if (!parsed) {
             this.save(DEFAULT_DATA);
             return JSON.parse(JSON.stringify(DEFAULT_DATA));
         }
-        try {
-            const parsed = JSON.parse(raw);
-            // Ensure required keys exist (forward-compatible)
-            return { ...DEFAULT_DATA, ...parsed };
-        } catch {
-            this.save(DEFAULT_DATA);
-            return JSON.parse(JSON.stringify(DEFAULT_DATA));
-        }
+        // Cloud qaytargan qiymat allaqachon obyekt — JSON.parse SHART EMAS.
+        return { ...DEFAULT_DATA, ...parsed };
     },
-    save(data) { localStorage.setItem(STORE_KEY, JSON.stringify(data)); },
-    reset() { localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT_DATA)); },
-    clear() { localStorage.removeItem(STORE_KEY); localStorage.removeItem(CART_KEY); }
+    save(data) { if (window.Cloud) Cloud.set("store", data); },
+    reset() { if (window.Cloud) Cloud.set("store", JSON.parse(JSON.stringify(DEFAULT_DATA))); },
+    clear() { if (window.Cloud) Cloud.remove("store"); localStorage.removeItem(CART_KEY); }
 };
 
 /* ---------- Utilities ---------- */
@@ -801,14 +805,8 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         updateFilterIndicator();
     };
 
-    /* ============ HERO CTA & SEE-ALL ============ */
-    document.getElementById('heroCta').onclick = () => {
-        fState.sort = 'new';
-        fState.cat = 'all';
-        renderChips();
-        renderProductGrid();
-        document.getElementById('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+    /* ============ SEE-ALL ============ */
+    // (Reklama banneri olib tashlangani uchun "heroCta" ishlovchisi ham olib tashlandi)
     document.getElementById('seeAllTrending').onclick = () => {
         fState.sort = 'popular';
         renderProductGrid();

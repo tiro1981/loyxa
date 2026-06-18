@@ -14,12 +14,28 @@ const _clientInfo = (() => {
 })();
 
 // ========== SHARED DB (auto-prefixes tb_* keys per client) ==========
+// Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
+// avtomatik ajratadi (multi-tenant). Qurilmaga xos kalitlar (savat tb_cart, joriy login
+// tb_current_user, foydalanuvchiga xos tb_user_*, tema) localStorage'da (_P bilan) qoladi.
+const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url']);
 const DB = {
   _k(k) { return k.startsWith('tb_') ? _P + k : k; },
-  get(k, fb) { try { const v = localStorage.getItem(this._k(k)); return v ? JSON.parse(v) : fb; } catch { return fb; } },
-  set(k, v) { localStorage.setItem(this._k(k), JSON.stringify(v)); },
-  remove(k) { localStorage.removeItem(this._k(k)); }
+  get(k, fb) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { const v = Cloud.get(k, undefined); return (v === undefined || v === null) ? fb : v; }
+    try { const v = localStorage.getItem(this._k(k)); return v ? JSON.parse(v) : fb; } catch { return fb; }
+  },
+  set(k, v) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { Cloud.set(k, v); return; }
+    localStorage.setItem(this._k(k), JSON.stringify(v));
+  },
+  remove(k) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { Cloud.remove(k); return; }
+    localStorage.removeItem(this._k(k));
+  }
 };
+// DOM tayyorligini hisobga oluvchi yordamchi (cloud boot-loader skriptni sahifa
+// yuklangach qo'shadi — DOMContentLoaded o'tib ketgan bo'lishi mumkin).
+function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
 
 // ========== SEED FOODS ==========
 // Har bir mijoz alohida boshlanadi — default ovqatlar yo'q.
@@ -43,7 +59,7 @@ if (!DB.get('tb_settings')) {
   const name = settings.restaurantName || _clientInfo?.businessName || 'Restoran';
   const addr = settings.address || 'Manzil';
   document.title = name + ' — Onlayn buyurtma';
-  document.addEventListener('DOMContentLoaded', () => {
+  onReady(() => {
     const n = document.getElementById('topbarRestaurantName'); if (n) n.textContent = name;
     const a = document.getElementById('topbarAddress'); if (a) a.textContent = addr;
     const auth = document.getElementById('authBrandName'); if (auth) auth.textContent = name;
@@ -788,7 +804,7 @@ $('uchatForm').addEventListener('submit', (e) => {
 
 // ========== HELP / PROMO / FILTER ==========
 $('helpBtn').addEventListener('click', () => openModal('helpModal'));
-document.querySelector('.promo-card .btn-primary').addEventListener('click', () => navigateTo('home'));
+// (Reklama promo-banneri olib tashlangani uchun uning tugma ishlovchisi ham olib tashlandi)
 document.querySelectorAll('.see-all').forEach(a => a.addEventListener('click', (e) => {
   e.preventDefault();
   document.querySelector('[data-cat="all"]').click();

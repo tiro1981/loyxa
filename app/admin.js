@@ -14,13 +14,23 @@ const _clientInfo = (() => {
 })();
 
 // ========== SHARED DB — har mijozga alohida prefix ==========
+// Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
+// avtomatik ajratadi (multi-tenant). Boshqa (qurilmaga xos) kalitlar localStorage'da qoladi.
+const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url']);
 const DB = {
   _k(k) { return k.startsWith('tb_') ? _P + k : k; },
   get(k, fb = null) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { const v = Cloud.get(k, undefined); return (v === undefined || v === null) ? fb : v; }
     try { const v = localStorage.getItem(this._k(k)); return v !== null ? JSON.parse(v) : fb; } catch { return fb; }
   },
-  set(k, v) { localStorage.setItem(this._k(k), JSON.stringify(v)); },
-  remove(k) { localStorage.removeItem(this._k(k)); }
+  set(k, v) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { Cloud.set(k, v); return; }
+    localStorage.setItem(this._k(k), JSON.stringify(v));
+  },
+  remove(k) {
+    if (CLOUD_KEYS.has(k) && window.Cloud) { Cloud.remove(k); return; }
+    localStorage.removeItem(this._k(k));
+  }
 };
 
 // ========== SEED ==========
@@ -77,7 +87,10 @@ function escapeBrand(s) {
 
 // Script tugagandan keyin ishga tushirish — pastda e'lon qilingan
 // let o'zgaruvchilar (currentFoodFilter, orderFilter, activeMsgId) TDZ xatosini bermasligi uchun.
-window.addEventListener('DOMContentLoaded', () => {
+// Cloud boot-loader DOM tayyor bo'lgach skriptni qo'shadi — DOMContentLoaded allaqachon
+// o'tib ketgan bo'lsa, setTimeout orqali joriy skript TO'LIQ bajarilgandan keyin chaqiramiz.
+function onAdminReady(fn){ if (document.readyState !== 'loading') setTimeout(fn, 0); else window.addEventListener('DOMContentLoaded', fn); }
+onAdminReady(() => {
   try { showApp(); } catch (err) { console.error('init error:', err); }
 });
 

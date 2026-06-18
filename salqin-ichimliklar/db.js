@@ -16,6 +16,15 @@ const DB = (() => {
     adminCreds: 'si_admin_creds',
   };
 
+  // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
+  // avtomatik ajratadi, shu sabab har do'kon o'z mahsulot/buyurtma/foydalanuvchilariga
+  // ega bo'ladi (multi-tenant). Qurilmaga xos kalitlar (savat si_cart, login si_session,
+  // si_admin_session, tema si_theme) localStorage'da qoladi.
+  const CLOUD_KEYS = new Set([
+    'si_products', 'si_orders', 'si_users',
+    'si_settings', 'si_chat', 'si_seen_statuses', 'si_admin_creds',
+  ]);
+
   // ---------- SHA-256 (sinxron, sof JS — crypto.subtle HTTPS talab qilgani uchun) ----------
   function sha256(ascii) {
     function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
@@ -85,6 +94,11 @@ const DB = (() => {
   const ADMIN_DEFAULT_HASH = () => hashPass('admin123');
 
   const read = (k, fallback) => {
+    // Umumiy kalitlar serverdan (Cloud) keshdan o'qiladi; qolganlari localStorage'dan.
+    if (CLOUD_KEYS.has(k) && window.Cloud) {
+      const v = Cloud.get(k, undefined);
+      return (v === undefined || v === null) ? fallback : v;
+    }
     try {
       const v = localStorage.getItem(k);
       return v ? JSON.parse(v) : fallback;
@@ -93,6 +107,8 @@ const DB = (() => {
     }
   };
   const write = (k, v) => {
+    // Umumiy kalitlar serverga (Cloud) yoziladi; qolganlari localStorage'ga.
+    if (CLOUD_KEYS.has(k) && window.Cloud) { Cloud.set(k, v); return; }
     const json = JSON.stringify(v);
     try {
       localStorage.setItem(k, json);
@@ -235,10 +251,12 @@ const DB = (() => {
 
   // ----- Seed boshlang'ich ma'lumotlar -----
   function seed() {
-    if (!localStorage.getItem(KEYS.products)) write(KEYS.products, []);
-    if (!localStorage.getItem(KEYS.orders))   write(KEYS.orders, []);
-    if (!localStorage.getItem(KEYS.users))    write(KEYS.users, []);
-    if (!localStorage.getItem(KEYS.settings)) write(KEYS.settings, { shopName: 'Salqin', currency: "so'm" });
+    // MUHIM: tekshiruv read() orqali (Cloud yoki localStorage) — aks holda Cloud rejimida
+    // localStorage bo'sh bo'lgani uchun har yuklanishda serverdagi ma'lumot o'chib ketardi.
+    if (!read(KEYS.products, null)) write(KEYS.products, []);
+    if (!read(KEYS.orders, null))   write(KEYS.orders, []);
+    if (!read(KEYS.users, null))    write(KEYS.users, []);
+    if (!read(KEYS.settings, null)) write(KEYS.settings, { shopName: 'Salqin', currency: "so'm" });
   }
 
   // ----- Mahsulotlar -----
