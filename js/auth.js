@@ -7,8 +7,8 @@ const digits = (s) => String(s || '').replace(/\D/g, '');
 
 // ===== Telegram OTP tasdiqlash sozlamalari (ro'yxatdan o'tishda telefon tasdiqlash) =====
 // ↓↓↓ BU IKKI QIYMATNI O'ZINGIZNIKI BILAN ALMASHTIRING (aks holda tasdiqlash ishlamaydi) ↓↓↓
-const BOT_USERNAME = "BOT_USERNAME";   // platforma boti @username (@ siz), masalan: onlinebiznes_bot
-const BOT_SERVER   = "BOT_SERVER";     // bot/bot.py ishlab turgan HTTPS manzil, masalan: https://loyxa-bot.onrender.com
+const BOT_USERNAME = "onlinebiznes_smsbot";   // platforma boti @username (@ siz), masalan: onlinebiznes_bot
+const BOT_SERVER   = "htpps/127.0.0.1:3344";     // bot/bot.py ishlab turgan HTTPS manzil, masalan: https://loyxa-bot.onrender.com
 // ↑↑↑ ───────────────────────────────────────────────────────────────────────────── ↑↑↑
 const digitsOnly = (s) => String(s || '').replace(/\D/g, '');
 

@@ -38,7 +38,7 @@ from aiogram.types import (
 from aiohttp import web
 
 # ============ CONFIG ============
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")          # @BotFather'dan oling (.env yoki muhit o'zgaruvchisi)
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8938349890:AAH3uzdAyjOHabEZRGhyof5flBbV-jrTCuI")          # @BotFather'dan oling (.env yoki muhit o'zgaruvchisi)
 HTTP_HOST = os.getenv("HOST", "0.0.0.0")        # internetga ochiq bo'lsin (deploy uchun 0.0.0.0)
 HTTP_PORT = int(os.getenv("PORT", "3355"))      # asosiy bot 3344 da — bu boshqa port
 CODE_TTL = int(os.getenv("CODE_TTL", "600"))    # kod amal qilish muddati (soniya), 10 daqiqa
