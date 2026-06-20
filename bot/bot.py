@@ -24,9 +24,7 @@ import asyncio
 import json
 import logging
 import os
-import random
 import re
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -39,14 +37,11 @@ from aiogram.exceptions import (
     TelegramNetworkError,
     TelegramRetryAfter,
 )
-from aiogram.filters import Command, CommandObject, CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import (
-    Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
-    ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove,
-)
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiohttp import web, ClientSession, ClientTimeout
 
 # ============ CONFIG ============
@@ -505,18 +500,6 @@ class Connect(StatesGroup):
     awaiting_channel = State()
 
 
-# ============ Ro'yxatdan o'tish tasdiqlash kodlari (Telegram OTP) ============
-# Sayt ro'yxatdan o'tishida telefon egaligini tasdiqlash uchun. Bir martalik, 10 daqiqa amal qiladi.
-VERIFY_CODES = {}   # normalizatsiya qilingan_telefon -> {"code", "chatId", "ts"}
-CODE_TTL = 600      # 10 daqiqa
-
-
-def norm_phone(p):
-    """Telefonni oxirgi 9 raqami bo'yicha solishtirish uchun normalizatsiya qiladi."""
-    d = re.sub(r"\D", "", str(p or ""))
-    return d[-9:] if len(d) >= 9 else d
-
-
 router = Router()
 # Har bir xabarda foydalanuvchini ro'yxatga olish (filtrlardan oldin ishlaydi)
 router.message.outer_middleware(TrackingMiddleware())
@@ -524,27 +507,6 @@ router.message.outer_middleware(TrackingMiddleware())
 
 # ============ /start ============
 PLATFORM_APP_URL = "https://onlinebiznes.uz/"  # platforma mini app kirish sahifasi
-
-
-# /start verify — sayt ro'yxatdan o'tishi uchun telefon tasdiqlash (deep-link).
-# MUHIM: bu plain CommandStart() handleridan OLDIN turishi shart (deep-link payload avval tekshirilsin).
-@router.message(CommandStart(deep_link=True))
-async def cmd_start_verify(message: Message, command: CommandObject, state: FSMContext) -> None:
-    if (command.args or "").strip() == "verify":
-        kb = ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="📱 Telefon raqamni yuborish", request_contact=True)]],
-            resize_keyboard=True,
-            one_time_keyboard=True,
-        )
-        await message.answer(
-            "Ro'yxatdan o'tishni tasdiqlash uchun pastdagi tugma bilan "
-            "telefon raqamingizni yuboring.",
-            reply_markup=kb,
-            parse_mode=None,
-        )
-        return
-    # Boshqa payload bo'lsa — oddiy start (mini app)
-    await cmd_start(message, state)
 
 
 @router.message(CommandStart())
@@ -562,20 +524,6 @@ async def cmd_start(message: Message, state: FSMContext) -> None:
         f"Bu — onlinebiznes.uz rasmiy boti. Platformani ochish uchun "
         f"pastdagi tugmani bosing.",
         reply_markup=kb,
-        parse_mode=None,
-    )
-
-
-# Kontakt qabul qilish → 4 xonali tasdiqlash kodini yuborish (sayt ro'yxatdan o'tishi).
-@router.message(F.contact)
-async def on_contact(message: Message) -> None:
-    phone = norm_phone(message.contact.phone_number)
-    code = f"{random.randint(0, 9999):04d}"
-    VERIFY_CODES[phone] = {"code": code, "chatId": message.chat.id, "ts": time.time()}
-    await message.answer(
-        f"✅ Tasdiqlash kodingiz: {code}\n\n"
-        f"Shu kodni saytga kiriting. (10 daqiqa amal qiladi)",
-        reply_markup=ReplyKeyboardRemove(),
         parse_mode=None,
     )
 
@@ -1132,26 +1080,6 @@ async def handle_store_broadcast(request: web.Request) -> web.Response:
 
 
 @web.middleware
-async def handle_verify_check(request: web.Request) -> web.Response:
-    """Sayt ro'yxatdan o'tishida kiritilgan 4 xonali tasdiqlash kodini tekshiradi."""
-    try:
-        body = await request.json()
-    except Exception:
-        return web.json_response({"ok": False, "error": "Invalid JSON"}, status=400)
-    phone = norm_phone(body.get("phone"))
-    code = str(body.get("code") or "").strip()
-    rec = VERIFY_CODES.get(phone)
-    if not rec:
-        return web.json_response({"ok": False, "error": "Kod topilmadi. Botda telefon yuboring."})
-    if time.time() - rec["ts"] > CODE_TTL:
-        VERIFY_CODES.pop(phone, None)
-        return web.json_response({"ok": False, "error": "Kod muddati tugadi."})
-    if code != rec["code"]:
-        return web.json_response({"ok": False, "error": "Kod noto'g'ri."})
-    VERIFY_CODES.pop(phone, None)  # bir martalik ishlatiladi
-    return web.json_response({"ok": True})
-
-
 async def cors_middleware(request, handler):
     if request.method == "OPTIONS":
         return web.Response(
@@ -1179,8 +1107,6 @@ def build_http_app(bot: Bot) -> web.Application:
     app.router.add_post("/store-bot/set-channel", handle_store_set_channel)
     app.router.add_post("/store-bot/order", handle_store_order)
     app.router.add_post("/store-bot/broadcast", handle_store_broadcast)
-    # Sayt ro'yxatdan o'tishi — Telegram OTP kodini tekshirish
-    app.router.add_post("/verify/check", handle_verify_check)
     # OPTIONS preflight cors_middleware tomonidan to'g'ridan-to'g'ri javob beriladi (alohida route shart emas)
     return app
 
