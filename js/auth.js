@@ -5,6 +5,13 @@
 // Telefon raqamni faqat raqamlarga keltirish (taqqoslash uchun)
 const digits = (s) => String(s || '').replace(/\D/g, '');
 
+// ===== Telegram OTP tasdiqlash sozlamalari (ro'yxatdan o'tishda telefon tasdiqlash) =====
+// ↓↓↓ BU IKKI QIYMATNI O'ZINGIZNIKI BILAN ALMASHTIRING (aks holda tasdiqlash ishlamaydi) ↓↓↓
+const BOT_USERNAME = "BOT_USERNAME";   // platforma boti @username (@ siz), masalan: onlinebiznes_bot
+const BOT_SERVER   = "BOT_SERVER";     // bot/bot.py ishlab turgan HTTPS manzil, masalan: https://loyxa-bot.onrender.com
+// ↑↑↑ ───────────────────────────────────────────────────────────────────────────── ↑↑↑
+const digitsOnly = (s) => String(s || '').replace(/\D/g, '');
+
 /* Ilovani bepul biriktirish (URL ?app=slug bo'lsa) */
 function assignAppByParam(clientId) {
     try {
@@ -33,6 +40,101 @@ function assignAppByParam(clientId) {
         localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
         return true;
     } catch (e) { console.error('assignAppByParam', e); return false; }
+}
+
+/* Telegram OTP tasdiqlangach chaqiriladi — akkaunt SHU YERDA yaratiladi (avval emas).
+   Ilgari registerForm submit ichida bo'lgan "akkaunt yaratish" kodi shu yerga ko'chirildi. */
+function finishRegistration(username, phone, password) {
+    try {
+        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const clientId = 'CL-' + (1000 + subs.length + 1);
+        const now = new Date().toISOString();
+
+        const newClient = {
+            id: clientId,
+            username,
+            businessName: username,   // ko'rsatish uchun (dashboard/admin) — username bilan bir xil
+            phone,
+            password,
+            // App hali tanlanmagan — bo'sh
+            app: null,
+            appName: null,
+            appId: null,
+            price: null,
+            subdomain: null,
+            // Status: 'registered' — ro'yxatdan o'tgan, lekin ilova tanlanmagan
+            status: 'registered',
+            createdAt: now
+        };
+
+        subs.push(newClient);
+        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+
+        localStorage.setItem('bo_session', JSON.stringify({
+            type: 'client',
+            clientId: clientId,
+            id: clientId,
+            username,
+            businessName: username,
+            loggedAt: Date.now()
+        }));
+
+        // Agar ?app= bilan kelgan bo'lsa — dashboard'da subdomen so'rab obuna qilamiz
+        const appParam = new URLSearchParams(window.location.search).get('app');
+        window.showToast && window.showToast("Ro'yxatdan o'tdingiz! Xush kelibsiz.", 'success');
+        setTimeout(() => {
+            window.location.href = appParam ? ('dashboard.html?subscribe=' + encodeURIComponent(appParam)) : 'dashboard.html';
+        }, 800);
+    } catch (err) {
+        console.error(err);
+        window.showToast && window.showToast("Xatolik yuz berdi", 'error');
+    }
+}
+
+/* Tasdiqlash bosqichi: registratsiya formasi o'rniga "Telegram botni ochish" + 4 xonali
+   kod kiritish ko'rsatiladi. Kod BOT_SERVER/verify/check orqali tekshiriladi. */
+function openVerifyStep(username, phone, password) {
+    const box = document.getElementById('verifyStep');
+    const link = document.getElementById('verifyBotLink');
+    const input = document.getElementById('verifyCode');
+    const btn = document.getElementById('verifyConfirm');
+    const formEl = document.getElementById('registerForm');
+    if (!box || !link || !input || !btn) {
+        // Tasdiqlash UI'si bo'lmasa — to'g'ridan-to'g'ri yaratamiz (zaxira yo'l)
+        finishRegistration(username, phone, password);
+        return;
+    }
+    if (formEl) formEl.style.display = 'none';
+    box.style.display = 'block';
+    link.href = 'https://t.me/' + BOT_USERNAME + '?start=verify';
+    input.value = '';
+    try { input.focus(); } catch (e) {}
+    btn.disabled = false;
+    btn.onclick = async () => {
+        const code = digitsOnly(input.value);
+        if (code.length !== 4) {
+            window.showToast && window.showToast("4 xonali kod kiriting", 'error');
+            return;
+        }
+        btn.disabled = true;
+        try {
+            const r = await fetch(BOT_SERVER.replace(/\/+$/, '') + '/verify/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, code }),
+            });
+            const data = await r.json().catch(() => ({}));
+            if (data.ok) {
+                finishRegistration(username, phone, password);
+            } else {
+                window.showToast && window.showToast(data.error || "Kod tasdiqlanmadi", 'error');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            window.showToast && window.showToast("Server bilan ulanib bo'lmadi", 'error');
+            btn.disabled = false;
+        }
+    };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -252,44 +354,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                const clientId = 'CL-' + (1000 + subs.length + 1);
-                const now = new Date().toISOString();
-
-                const newClient = {
-                    id: clientId,
-                    username,
-                    businessName: username,   // ko'rsatish uchun (dashboard/admin) — username bilan bir xil
-                    phone,
-                    password,
-                    // App hali tanlanmagan — bo'sh
-                    app: null,
-                    appName: null,
-                    appId: null,
-                    price: null,
-                    subdomain: null,
-                    // Status: 'registered' — ro'yxatdan o'tgan, lekin ilova tanlanmagan
-                    status: 'registered',
-                    createdAt: now
-                };
-
-                subs.push(newClient);
-                localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
-
-                localStorage.setItem('bo_session', JSON.stringify({
-                    type: 'client',
-                    clientId: clientId,
-                    id: clientId,
-                    username,
-                    businessName: username,
-                    loggedAt: Date.now()
-                }));
-
-                // Agar ?app= bilan kelgan bo'lsa — dashboard'da subdomen so'rab obuna qilamiz
-                const appParam = new URLSearchParams(window.location.search).get('app');
-                window.showToast && window.showToast("Ro'yxatdan o'tdingiz! Xush kelibsiz.", 'success');
-                setTimeout(() => {
-                    window.location.href = appParam ? ('dashboard.html?subscribe=' + encodeURIComponent(appParam)) : 'dashboard.html';
-                }, 800);
+                // Akkaunt HALI yaratilmaydi — avval Telegram orqali telefon egaligi tasdiqlansin.
+                // Tasdiqlangach openVerifyStep ichidagi finishRegistration() akkauntni yaratadi.
+                openVerifyStep(username, phone, password);
             } catch (err) {
                 console.error(err);
                 window.showToast && window.showToast("Xatolik yuz berdi", 'error');
