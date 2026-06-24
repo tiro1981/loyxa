@@ -91,6 +91,73 @@ function finishRegistration(username, phone, password) {
     }
 }
 
+/* ===== Sanoq taymeri (kod amal qilish muddati) =====
+   Taymer server bilan sinxron: /verify/status?phone=... har 3 soniyada so'raladi,
+   oradagi soniyalar mahalliy (1s) sanoq bilan to'ldiriladi. Botda "Yangi kod olish"
+   bosilsa, server remaining qiymati o'sadi va taymer avtomatik qayta boshlanadi. */
+let _verifyTickInt = null;   // mahalliy 1s sanoq
+let _verifyPollInt = null;   // serverga so'rov (3s)
+let _verifyRemaining = 0;    // qolgan soniya
+
+function stopVerifyTimers() {
+    if (_verifyTickInt) { clearInterval(_verifyTickInt); _verifyTickInt = null; }
+    if (_verifyPollInt) { clearInterval(_verifyPollInt); _verifyPollInt = null; }
+}
+
+function renderVerifyTimer() {
+    const el = document.getElementById('verifyTimer');
+    if (!el) return;
+    const base = 'display:block;margin-top:12px;text-align:center;font-weight:600;'
+        + 'font-size:15px;padding:10px 12px;border-radius:10px;';
+    if (_verifyRemaining > 0) {
+        const m = Math.floor(_verifyRemaining / 60);
+        const s = _verifyRemaining % 60;
+        el.style.cssText = base + 'color:#15803d;background:#dcfce7;';
+        el.innerHTML = '⏳ Kod amal qiladi: ' + m + ':' + String(s).padStart(2, '0');
+    } else {
+        el.style.cssText = base + 'color:#b91c1c;background:#fee2e2;';
+        el.innerHTML = "⏱ Kod muddati tugadi. Botda «🔄 Yangi kod olish» tugmasini bosing.";
+    }
+}
+
+async function pollVerifyStatus(phone) {
+    try {
+        const r = await fetch(BOT_SERVER.replace(/\/+$/, '') + '/verify/status?phone=' + encodeURIComponent(phone));
+        const d = await r.json().catch(() => ({}));
+        if (d && d.exists) {
+            // server bilan sinxronlaymiz (mahalliy sanoq bilan farq 2s dan katta bo'lsa)
+            if (Math.abs((d.remaining || 0) - _verifyRemaining) > 2) _verifyRemaining = d.remaining || 0;
+            renderVerifyTimer();
+        }
+    } catch (e) { /* jim — tarmoq vaqtincha uzilgan bo'lishi mumkin */ }
+}
+
+function startVerifyCountdown(phone) {
+    stopVerifyTimers();
+    _verifyRemaining = 0;
+    renderVerifyTimer();
+    _verifyTickInt = setInterval(() => {
+        if (_verifyRemaining > 0) _verifyRemaining--;
+        renderVerifyTimer();
+    }, 1000);
+    pollVerifyStatus(phone);
+    _verifyPollInt = setInterval(() => pollVerifyStatus(phone), 3000);
+}
+
+/* Tasdiqlash bosqichini yopish/tiklash — login (Kirish) tabiga o'tilganda chaqiriladi,
+   shunda "Telefonni tasdiqlang" bloki login sahifasida ko'rinib qolmaydi. */
+function resetVerifyStep() {
+    stopVerifyTimers();
+    const box = document.getElementById('verifyStep');
+    const formEl = document.getElementById('registerForm');
+    const input = document.getElementById('verifyCode');
+    const timer = document.getElementById('verifyTimer');
+    if (box) box.style.display = 'none';
+    if (formEl) formEl.style.display = '';   // openVerifyStep qo'ygan inline display:none ni tozalash
+    if (input) input.value = '';
+    if (timer) timer.style.display = 'none';
+}
+
 /* Tasdiqlash bosqichi: registratsiya formasi o'rniga "Telegram botni ochish" + 4 xonali
    kod kiritish ko'rsatiladi. Kod BOT_SERVER/verify/check orqali tekshiriladi. */
 function openVerifyStep(username, phone, password) {
@@ -110,6 +177,7 @@ function openVerifyStep(username, phone, password) {
     input.value = '';
     try { input.focus(); } catch (e) {}
     btn.disabled = false;
+    startVerifyCountdown(phone);   // sanoq taymerini ishga tushiramiz
     btn.onclick = async () => {
         const code = digitsOnly(input.value);
         if (code.length !== 4) {
@@ -125,6 +193,7 @@ function openVerifyStep(username, phone, password) {
             });
             const data = await r.json().catch(() => ({}));
             if (data.ok) {
+                stopVerifyTimers();
                 finishRegistration(username, phone, password);
             } else {
                 window.showToast && window.showToast(data.error || "Kod tasdiqlanmadi", 'error');
@@ -144,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('.auth-form');
 
     function switchRole(role) {
+        resetVerifyStep();   // tab almashganda "Telefonni tasdiqlang" blokini yashiramiz
         tabs.forEach(t => t.classList.toggle('active', t.dataset.role === role));
         forms.forEach(f => f.classList.toggle('active', f.dataset.role === role));
     }

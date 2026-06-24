@@ -31,9 +31,12 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import (
     Message,
+    CallbackQuery,
     ReplyKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardRemove,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
 )
 from aiohttp import web
 
@@ -41,7 +44,7 @@ from aiohttp import web
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8938349890:AAH3uzdAyjOHabEZRGhyof5flBbV-jrTCuI")          # @BotFather'dan oling (.env yoki muhit o'zgaruvchisi)
 HTTP_HOST = os.getenv("IP") or os.getenv("HOST", "0.0.0.0")  # AlwaysData IP env'ni (IPv6) afzal ko'radi, aks holda HOST
 HTTP_PORT = int(os.getenv("PORT", "3355"))      # asosiy bot 3344 da — bu boshqa port
-CODE_TTL = int(os.getenv("CODE_TTL", "600"))    # kod amal qilish muddati (soniya), 10 daqiqa
+CODE_TTL = int(os.getenv("CODE_TTL", "120"))    # kod amal qilish muddati (soniya), 2 daqiqa
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("sms-habar")
@@ -49,6 +52,33 @@ log = logging.getLogger("sms-habar")
 # Tasdiqlash kodlari xotirada: normalizatsiya qilingan_telefon -> {"code","chatId","ts"}.
 # Bir martalik ishlatiladi va CODE_TTL dan keyin yaroqsiz bo'ladi.
 VERIFY_CODES: dict = {}
+
+# chat_id -> normalizatsiya qilingan telefon. "🔄 Yangi kod olish" tugmasi bosilganda
+# qaysi telefonga yangi kod yuborishni bilish uchun kerak.
+CHAT_PHONE: dict = {}
+
+
+def issue_code(phone: str, chat_id: int) -> str:
+    """Berilgan telefon uchun yangi 4 xonali kod yaratadi va xotiraga yozadi."""
+    code = f"{random.randint(0, 9999):04d}"
+    VERIFY_CODES[phone] = {"code": code, "chatId": chat_id, "ts": time.time()}
+    log.info("Kod yuborildi: phone=%s", phone)
+    return code
+
+
+def code_text(code: str) -> str:
+    return (
+        f"✅ Tasdiqlash kodingiz: {code}\n\n"
+        f"Shu kodni saytga kiriting. ({CODE_TTL // 60} daqiqa amal qiladi)\n"
+        f"Muddati tugasa — pastdagi «🔄 Yangi kod olish» tugmasini bosing."
+    )
+
+
+def refresh_kb() -> InlineKeyboardMarkup:
+    """Yangi kod olish uchun inline tugma."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text="🔄 Yangi kod olish", callback_data="newcode")]]
+    )
 
 
 def norm_phone(p) -> str:
@@ -82,18 +112,27 @@ async def cmd_start(message: Message) -> None:
 async def on_contact(message: Message) -> None:
     """Kontakt kelganda 4 xonali tasdiqlash kodini yaratib yuboradi."""
     phone = norm_phone(message.contact.phone_number)
-    code = f"{random.randint(0, 9999):04d}"
-    VERIFY_CODES[phone] = {"code": code, "chatId": message.chat.id, "ts": time.time()}
-    log.info("Kod yuborildi: phone=%s", phone)
-    await message.answer(
-        f"✅ Tasdiqlash kodingiz: {code}\n\n"
-        f"Shu kodni saytga kiriting. ({CODE_TTL // 60} daqiqa amal qiladi)",
-        reply_markup=ReplyKeyboardRemove(),
-        parse_mode=None,
-    )
+    CHAT_PHONE[message.chat.id] = phone          # keyin "Yangi kod olish" uchun eslab qolamiz
+    code = issue_code(phone, message.chat.id)
+    # Avval kontakt klaviaturasini olib tashlaymiz, so'ng kodni inline tugma bilan yuboramiz.
+    await message.answer("📱 Raqamingiz qabul qilindi.", reply_markup=ReplyKeyboardRemove())
+    await message.answer(code_text(code), reply_markup=refresh_kb(), parse_mode=None)
+
+
+@router.callback_query(F.data == "newcode")
+async def on_newcode(cb: CallbackQuery) -> None:
+    """«🔄 Yangi kod olish» bosilganda — shu chat telefoniga yangi kod yuboradi."""
+    phone = CHAT_PHONE.get(cb.message.chat.id)
+    if not phone:
+        await cb.answer("Avval telefon raqamingizni yuboring (/start).", show_alert=True)
+        return
+    code = issue_code(phone, cb.message.chat.id)
+    await cb.message.answer(code_text(code), reply_markup=refresh_kb(), parse_mode=None)
+    await cb.answer("Yangi kod yuborildi ✅")
 
 
 # ============ HTTP SERVER (sayt /verify/check shu yerga murojaat qiladi) ============
+@web.middleware
 async def cors_middleware(request, handler):
     """Har qanday domendan (sayt) so'rovga ruxsat (CORS) + OPTIONS preflight javobi."""
     if request.method == "OPTIONS":
@@ -131,6 +170,17 @@ async def handle_verify_check(request: web.Request) -> web.Response:
     return web.json_response({"ok": True})
 
 
+async def handle_verify_status(request: web.Request) -> web.Response:
+    """Sayt sanoq taymeri uchun: telefon bo'yicha kodning qolgan amal muddati (soniya).
+    GET /verify/status?phone=... → {"ok", "exists", "remaining", "ttl"}."""
+    phone = norm_phone(request.query.get("phone"))
+    rec = VERIFY_CODES.get(phone)
+    if not rec:
+        return web.json_response({"ok": True, "exists": False, "remaining": 0, "ttl": CODE_TTL})
+    remaining = int(max(0, CODE_TTL - (time.time() - rec["ts"])))
+    return web.json_response({"ok": True, "exists": True, "remaining": remaining, "ttl": CODE_TTL})
+
+
 async def handle_health(request: web.Request) -> web.Response:
     """Tiriklik tekshiruvi (deploy/monitoring uchun)."""
     return web.json_response({"ok": True, "service": "sms-habar"})
@@ -139,6 +189,7 @@ async def handle_health(request: web.Request) -> web.Response:
 def build_http_app() -> web.Application:
     app = web.Application(middlewares=[cors_middleware])
     app.router.add_post("/verify/check", handle_verify_check)
+    app.router.add_get("/verify/status", handle_verify_status)
     app.router.add_get("/", handle_health)
     return app
 

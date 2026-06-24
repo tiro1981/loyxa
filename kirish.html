@@ -168,10 +168,11 @@
                 <!-- Telefon tasdiqlash bosqichi (Telegram OTP) — boshida yashirin, registratsiyadan keyin ko'rsatiladi -->
                 <div id="verifyStep" style="display:none">
                     <h3 style="margin:0 0 6px">Telefonni tasdiqlang</h3>
-                    <p class="auth-sub">1) Botni oching va telefon raqamingizni yuboring. 2) Kelgan 4 xonali kodni kiriting.</p>
+                    <p class="auth-sub">1) Botni oching va telefon raqamingizni yuboring. 2) Kelgan 4 xonali kodni kiriting. Kod 2 daqiqa amal qiladi.</p>
                     <a id="verifyBotLink" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-block btn-lg">
                         <i class="fa-brands fa-telegram"></i> Telegram botni ochish
                     </a>
+                    <div id="verifyTimer" style="display:none"></div>
                     <div class="auth-input" style="margin-top:12px">
                         <i class="fa-solid fa-key"></i>
                         <input type="tel" id="verifyCode" inputmode="numeric" maxlength="4" placeholder="4 xonali kod" autocomplete="one-time-code">
@@ -186,6 +187,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="js/main.js?v=6"></script>
-    <script src="js/auth.js?v=8"></script>
+    <script src="js/auth.js?v=9"></script>
 </body>
 </html>
