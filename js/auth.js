@@ -98,6 +98,7 @@ function finishRegistration(username, phone, password) {
 let _verifyTickInt = null;   // mahalliy 1s sanoq
 let _verifyPollInt = null;   // serverga so'rov (3s)
 let _verifyRemaining = 0;    // qolgan soniya
+let _verifySeen = false;     // botdan kamida bir marta faol kod kelganmi
 
 function stopVerifyTimers() {
     if (_verifyTickInt) { clearInterval(_verifyTickInt); _verifyTickInt = null; }
@@ -110,13 +111,19 @@ function renderVerifyTimer() {
     const base = 'display:block;margin-top:12px;text-align:center;font-weight:600;'
         + 'font-size:15px;padding:10px 12px;border-radius:10px;';
     if (_verifyRemaining > 0) {
+        // Faol kod — yashil sanoq
         const m = Math.floor(_verifyRemaining / 60);
         const s = _verifyRemaining % 60;
         el.style.cssText = base + 'color:#15803d;background:#dcfce7;';
         el.innerHTML = '⏳ Kod amal qiladi: ' + m + ':' + String(s).padStart(2, '0');
-    } else {
+    } else if (_verifySeen) {
+        // Kod bor edi va sanoq tugadi — qizil ogohlantirish
         el.style.cssText = base + 'color:#b91c1c;background:#fee2e2;';
         el.innerHTML = "⏱ Kod muddati tugadi. Botda «🔄 Yangi kod olish» tugmasini bosing.";
+    } else {
+        // Hali kod kelmagan — kutish holati (sanoq kod kelishi bilan boshlanadi)
+        el.style.cssText = base + 'color:#475569;background:#f1f5f9;';
+        el.innerHTML = "⏳ Botdan kod oling — kod kelishi bilan sanoq boshlanadi.";
     }
 }
 
@@ -124,9 +131,16 @@ async function pollVerifyStatus(phone) {
     try {
         const r = await fetch(BOT_SERVER.replace(/\/+$/, '') + '/verify/status?phone=' + encodeURIComponent(phone));
         const d = await r.json().catch(() => ({}));
-        if (d && d.exists) {
-            // server bilan sinxronlaymiz (mahalliy sanoq bilan farq 2s dan katta bo'lsa)
+        if (!d || !d.ok) return;
+        if (d.exists && d.remaining > 0) {
+            // Botda kod yaratildi/yangilandi — server bilan sinxronlaymiz (farq 2s dan katta bo'lsa).
+            // Bu yerda taymer ham birinchi marta, ham "Yangi kod olish"dan keyin avtomatik boshlanadi.
+            _verifySeen = true;
             if (Math.abs((d.remaining || 0) - _verifyRemaining) > 2) _verifyRemaining = d.remaining || 0;
+            renderVerifyTimer();
+        } else if (_verifySeen) {
+            // Server'da kod tugagan/yo'q — sanoqni 0 ga tushiramiz (qizil holat tick orqali chiqadi)
+            _verifyRemaining = 0;
             renderVerifyTimer();
         }
     } catch (e) { /* jim — tarmoq vaqtincha uzilgan bo'lishi mumkin */ }
@@ -135,7 +149,8 @@ async function pollVerifyStatus(phone) {
 function startVerifyCountdown(phone) {
     stopVerifyTimers();
     _verifyRemaining = 0;
-    renderVerifyTimer();
+    _verifySeen = false;
+    renderVerifyTimer();   // kutish holati — kod kelishi bilan sanoq boshlanadi
     _verifyTickInt = setInterval(() => {
         if (_verifyRemaining > 0) _verifyRemaining--;
         renderVerifyTimer();
@@ -148,6 +163,8 @@ function startVerifyCountdown(phone) {
    shunda "Telefonni tasdiqlang" bloki login sahifasida ko'rinib qolmaydi. */
 function resetVerifyStep() {
     stopVerifyTimers();
+    _verifyRemaining = 0;
+    _verifySeen = false;
     const box = document.getElementById('verifyStep');
     const formEl = document.getElementById('registerForm');
     const input = document.getElementById('verifyCode');
