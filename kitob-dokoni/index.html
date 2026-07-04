@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-    <title>Bookz — Kiyim do'koni</title>
+    <title>Bookz — Kitob do'koni</title>
 
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0b0d14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,408 +17,483 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
-<body>
+<body class="dark">
 
-<div class="app">
+<div class="phone" id="phone">
 
-    <!-- ============ HOME ============ -->
+    <!-- ============ HOME (05) ============ -->
     <section class="screen active" data-screen="home">
-        <header class="app-header">
-            <div class="greet-wrap">
-                <div class="greet">Salom 👋</div>
-                <h1 class="greet-title">Qaysi kitobni olmoqchisiz?</h1>
+        <div class="topbar">
+            <button class="ib" id="menuBtn" aria-label="Menyu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/></svg></button>
+            <div class="tb-title">Bosh sahifa</div>
+            <button class="ib" id="bellBtn" aria-label="Bildirishnomalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="ib-dot" id="bellDot"></span></button>
+        </div>
+
+        <div class="scroll">
+            <h1 class="big-title">Qaysi kitobni<br>olmoqchisiz?</h1>
+
+            <div class="search-row">
+                <button class="search-box" id="homeSearchOpen" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <span>Kitob qidirish</span>
+                </button>
+                <button class="filter-red" id="filterBtn" aria-label="Filter">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+                </button>
             </div>
-            <button class="icon-btn" id="bellBtn" aria-label="Bildirishnomalar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                <span class="dot" id="bellDot"></span>
-            </button>
-        </header>
 
-        <div class="search-row">
-            <div class="search-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input type="text" id="searchInput" placeholder="Kitob qidirish..." autocomplete="off">
-                <button class="search-clear" id="searchClear" aria-label="Tozalash" style="display:none">×</button>
+            <div class="sec-head">
+                <h3>Ommabop kitoblar</h3>
+                <button class="sec-link" id="popAll">Barchasi <span>▾</span></button>
             </div>
-            <button class="filter-btn" id="filterBtn" aria-label="Filter">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
-                <span class="filter-dot" id="filterDot" style="display:none"></span>
-            </button>
-        </div>
+            <div class="pop-scroll" id="popScroll"></div>
 
-        <div class="chips-scroll" id="catChips"></div>
-
-        <!-- Reklama banneri (hero) olib tashlandi — endi to'g'ridan-to'g'ri mahsulotlar ko'rsatiladi -->
-
-        <div class="section-head">
-            <h3>Ommabop kitoblar</h3>
-            <button class="see-all" id="seeAllTrending">Hammasi <span>›</span></button>
-        </div>
-        <div class="trending-scroll" id="trendingScroll"></div>
-
-        <div class="section-head">
-            <h3 id="gridTitle">Barcha kitoblar</h3>
-            <span class="count" id="gridCount">0</span>
-        </div>
-        <div class="product-grid" id="productGrid"></div>
-
-        <div class="empty-state" id="emptyHome" style="display:none">
-            <div class="emp-ico">🔍</div>
-            <h4>Hech narsa topilmadi</h4>
-            <p>Boshqa kalit so'z yoki filter sinab ko'ring</p>
-            <button class="btn-ghost" id="emptyReset">Filterni tozalash</button>
+            <div class="sec-head">
+                <h3>Barcha kitoblar</h3>
+                <span class="sec-count" id="gridCount">0</span>
+            </div>
+            <div class="chips" id="catChips"></div>
+            <div class="book-grid" id="bookGrid"></div>
+            <div class="empty" id="emptyHome" style="display:none">
+                <div class="emp-ico">🔍</div><h4>Hech narsa topilmadi</h4><p>Boshqa kalit so'z sinab ko'ring</p>
+            </div>
         </div>
     </section>
 
-    <!-- ============ CART ============ -->
-    <section class="screen" data-screen="cart">
-        <header class="app-header simple">
-            <h1>Savatcha</h1>
-            <button class="link-btn" id="clearCartBtn">Tozalash</button>
-        </header>
-
-        <div id="cartList" class="cart-list"></div>
-
-        <div class="empty-state" id="emptyCart" style="display:none">
-            <div class="emp-ico">🛒</div>
-            <h4>Savatcha bo'sh</h4>
-            <p>Kitoblar qo'shing va xarid qiling</p>
-            <button class="btn-primary" data-go="home">Xaridni boshlash</button>
+    <!-- ============ SEVIMLILAR (12) ============ -->
+    <section class="screen" data-screen="favorites">
+        <div class="topbar">
+            <button class="ib" data-open-menu aria-label="Menyu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/></svg></button>
+            <div class="tb-title">Sevimli kitoblar</div>
+            <button class="ib" aria-label="Bildirishnomalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
         </div>
+        <div class="scroll">
+            <div class="ftabs" id="favTabs">
+                <button class="ftab active" data-ftab="all">Ommabop</button>
+                <button class="ftab" data-ftab="new">Yangi</button>
+                <button class="ftab" data-ftab="sale">Chegirmada</button>
+            </div>
+            <div class="row-list" id="favList"></div>
+            <div class="empty" id="emptyFav" style="display:none">
+                <div class="emp-ico">🔖</div><h4>Sevimlilar bo'sh</h4><p>Yoqtirgan kitoblaringizni belgilang</p>
+                <button class="btn-primary sm" data-go="home">Kitoblarga o'tish</button>
+            </div>
+        </div>
+    </section>
 
-        <div class="cart-footer" id="cartFooter" style="display:none">
+    <!-- ============ SAVAT ============ -->
+    <section class="screen" data-screen="cart">
+        <div class="topbar">
+            <button class="ib back" data-back="home" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Savat</div>
+            <button class="ib" id="clearCartBtn" aria-label="Tozalash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+        </div>
+        <div class="scroll">
+            <div id="cartList" class="cart-list"></div>
+            <div class="empty" id="emptyCart" style="display:none">
+                <div class="emp-ico">🛒</div><h4>Savat bo'sh</h4><p>Kitob qo'shing va xarid qiling</p>
+                <button class="btn-primary sm" data-go="home">Xaridni boshlash</button>
+            </div>
+        </div>
+        <div class="cart-foot" id="cartFoot" style="display:none">
             <div class="promo-row">
                 <input type="text" id="promoInput" placeholder="Promo-kod" autocomplete="off">
                 <button id="promoApply">Qo'llash</button>
             </div>
-            <div class="cart-row"><span>Mahsulotlar</span><strong id="cartSub">0 so'm</strong></div>
-            <div class="cart-row discount-row" id="cartDiscountRow" style="display:none"><span>Chegirma</span><strong id="cartDiscount">0 so'm</strong></div>
-            <div class="cart-row"><span>Yetkazib berish</span><strong id="cartShip">25 000 so'm</strong></div>
-            <div class="cart-row total"><span>Jami</span><strong id="cartTotal">0 so'm</strong></div>
-            <button class="btn-primary full" id="checkoutBtn">
-                <span>Buyurtma berish</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            <div class="sum-row"><span>Kitoblar</span><b id="cartSub">0 so'm</b></div>
+            <div class="sum-row disc" id="cartDiscRow" style="display:none"><span>Chegirma</span><b id="cartDisc">0 so'm</b></div>
+            <div class="sum-row"><span>Yetkazib berish</span><b id="cartShip">25 000 so'm</b></div>
+            <div class="sum-row total"><span>Jami</span><b id="cartTotal">0 so'm</b></div>
+            <button class="btn-primary full" id="checkoutBtn">Buyurtma berish</button>
+        </div>
+    </section>
+
+    <!-- ============ SOZLAMALAR (17) ============ -->
+    <section class="screen" data-screen="settings">
+        <div class="topbar">
+            <button class="ib" data-open-menu aria-label="Menyu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/></svg></button>
+            <div class="tb-title">Sozlamalar</div>
+            <button class="ib" aria-label="Bildirishnomalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+        </div>
+        <div class="scroll">
+            <div class="set-label">HISOB</div>
+            <button class="set-user" data-go="profileInfo">
+                <span class="su-avatar" id="setAvatar">DR</span>
+                <span class="su-info"><strong id="setName">Foydalanuvchi</strong><small>Profil ma'lumotlari</small></span>
+                <span class="chev">›</span>
             </button>
-        </div>
-    </section>
+            <button class="set-row" id="passwordRow">
+                <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <span class="sr-text"><strong>Parol va xavfsizlik</strong><small>Shaxsiy ma'lumotlar</small></span>
+                <span class="chev">›</span>
+            </button>
 
-    <!-- ============ ORDERS ============ -->
-    <section class="screen" data-screen="orders">
-        <header class="app-header simple">
-            <h1>Buyurtmalar</h1>
-        </header>
-
-        <div class="order-tabs-wrap">
-            <div class="order-tabs" id="orderTabs">
-                <button class="ot active" data-ostatus="all">Hammasi</button>
-                <button class="ot" data-ostatus="yangi">Yangi</button>
-                <button class="ot" data-ostatus="jarayonda">Jarayonda</button>
-                <button class="ot" data-ostatus="yetkazilmoqda">Yo'lda</button>
-                <button class="ot" data-ostatus="yetkazildi">Yetkazilgan</button>
+            <div class="set-label">SOZLAMALAR</div>
+            <button class="set-row" data-go="language">
+                <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg></span>
+                <span class="sr-text"><strong>Til</strong></span>
+                <span class="sr-val" id="langVal">O'zbek</span><span class="chev">›</span>
+            </button>
+            <div class="set-row">
+                <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
+                <span class="sr-text"><strong>Bildirishnoma</strong></span>
+                <label class="switch"><input type="checkbox" id="notifSwitch" checked><span class="slider"></span></label>
             </div>
-        </div>
+            <div class="set-row">
+                <span class="sr-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+                <span class="sr-text"><strong>Tungi rejim</strong></span>
+                <label class="switch"><input type="checkbox" id="themeSwitch" checked><span class="slider"></span></label>
+            </div>
 
-        <div id="ordersList" class="orders-list"></div>
-
-        <div class="empty-state" id="emptyOrders" style="display:none">
-            <div class="emp-ico">📦</div>
-            <h4>Buyurtmalar yo'q</h4>
-            <p>Birinchi buyurtmangizni bering</p>
-            <button class="btn-primary" data-go="home">Xaridga o'tish</button>
+            <button class="set-row danger" id="logoutBtn2">
+                <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
+                <span class="sr-text"><strong>Chiqish</strong></span>
+                <span class="chev">›</span>
+            </button>
+            <div class="brand-foot">Bookz · v2.0 · © 2026</div>
         </div>
     </section>
 
-    <!-- ============ PROFILE ============ -->
-    <section class="screen" data-screen="profile">
-        <header class="app-header simple">
-            <h1>Profil</h1>
-            <button class="link-btn" id="aboutLink">Ilova haqida</button>
-        </header>
-
-        <div class="profile-card">
-            <div class="pc-row">
-                <div class="pc-avatar" id="profileAvatar">M</div>
-                <div class="pc-info">
-                    <strong id="profileName">Foydalanuvchi</strong>
-                    <small id="profilePhone">Profilni to'ldiring</small>
-                </div>
-                <button class="pc-edit" id="profileEdit" aria-label="Tahrirlash">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+    <!-- ============ MENYU (06) ============ -->
+    <section class="screen" data-screen="menu">
+        <div class="topbar">
+            <button class="ib back" data-back="home" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Menyu</div>
+            <button class="ib" aria-label="Bildirishnomalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+        </div>
+        <div class="scroll">
+            <div class="menu-list">
+                <button class="menu-row" data-go="profile">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="mr-text">Profil</span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" data-go="orders">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></span>
+                    <span class="mr-text">Takliflar</span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" id="menuReviews">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg></span>
+                    <span class="mr-text">Sharhlar</span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" data-go="orders">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM6 8v12h12V8"/></svg></span>
+                    <span class="mr-text">Cheklar</span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" id="menuFindStore">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                    <span class="mr-text">Do'konni topish</span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" id="menuDelivery">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7M5.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></span>
+                    <span class="mr-text">Yetkazib berish</span><span class="chev">›</span>
                 </button>
             </div>
-            <div class="profile-stats">
-                <div class="ps-item"><strong id="psOrders">0</strong><small>Buyurtma</small></div>
-                <div class="ps-divider"></div>
-                <div class="ps-item"><strong id="psFav">0</strong><small>Sevimli</small></div>
-                <div class="ps-divider"></div>
-                <div class="ps-item"><strong id="psSpent">0</strong><small>Bonus</small></div>
+        </div>
+    </section>
+
+    <!-- ============ PROFIL (10) ============ -->
+    <section class="screen" data-screen="profile">
+        <div class="topbar">
+            <button class="ib back" data-back="menu" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Profil</div>
+            <button class="ib accent" data-go="profileInfo" aria-label="Tahrirlash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        </div>
+        <div class="scroll">
+            <div class="profile-hero">
+                <div class="ph-avatar" id="profAvatar">DR</div>
+                <h2 id="profName">Dilnoza Rahimova</h2>
+                <p id="profEmail">dilnoza.r@mail.uz</p>
+            </div>
+            <div class="menu-list">
+                <button class="menu-row" data-go="orders">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-3-7 3V3a1 1 0 0 1 1-1z"/></svg></span>
+                    <span class="mr-text2"><strong>Buyurtmalarim</strong><small>Buyurtmalar tarixi</small></span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" data-go="payments">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></span>
+                    <span class="mr-text2"><strong>To'lov usuli</strong><small>Kartalar va hisoblar</small></span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" data-go="favorites">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></span>
+                    <span class="mr-text2"><strong>Kitoblarim</strong><small>Sotib olingan kitoblar</small></span><span class="chev">›</span>
+                </button>
+                <button class="menu-row" id="inviteBtn">
+                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg></span>
+                    <span class="mr-text2"><strong>Do'stlarni taklif qilish</strong><small>Bonus oling</small></span><span class="chev">›</span>
+                </button>
+            </div>
+            <button class="btn-primary full mt" id="logoutBtn">Chiqish</button>
+        </div>
+    </section>
+
+    <!-- ============ BUYURTMALARIM (11) ============ -->
+    <section class="screen" data-screen="orders">
+        <div class="topbar">
+            <button class="ib back" data-back="profile" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Buyurtmalarim</div>
+            <span class="ib-spacer"></span>
+        </div>
+        <div class="scroll">
+            <div class="ftabs" id="orderTabs">
+                <button class="ftab active" data-ostatus="all">Barchasi</button>
+                <button class="ftab" data-ostatus="jarayonda">Jarayonda</button>
+                <button class="ftab" data-ostatus="yetkazildi">Yetkazildi</button>
+            </div>
+            <div id="ordersList" class="orders-list"></div>
+            <div class="empty" id="emptyOrders" style="display:none">
+                <div class="emp-ico">📦</div><h4>Buyurtmalar yo'q</h4><p>Birinchi buyurtmangizni bering</p>
+                <button class="btn-primary sm" data-go="home">Xaridga o'tish</button>
             </div>
         </div>
+    </section>
 
-        <div class="profile-menu">
-            <button class="menu-item" id="openFavorites">
-                <span class="mi-icon mi-red"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
-                <span class="mi-text"><strong>Sevimlilar</strong><small>Yoqtirgan kitoblaringiz</small></span>
-                <span class="chev">›</span>
-            </button>
-            <button class="menu-item" id="openAddresses">
-                <span class="mi-icon mi-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                <span class="mi-text"><strong>Manzillarim</strong><small id="addrCount">Yetkazib berish manzillari</small></span>
-                <span class="chev">›</span>
-            </button>
-            <button class="menu-item" id="openPayment">
-                <span class="mi-icon mi-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 11h20"/></svg></span>
-                <span class="mi-text"><strong>To'lov usullari</strong><small>Karta va naqd to'lovlar</small></span>
-                <span class="chev">›</span>
-            </button>
-            <button class="menu-item" id="themeToggle">
-                <span class="mi-icon mi-dark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
-                <span class="mi-text">
-                    <strong>Tungi rejim</strong>
-                    <small id="themeLabel">Yoritilgan rejim</small>
-                </span>
-                <label class="switch" onclick="event.stopPropagation()">
-                    <input type="checkbox" id="themeSwitch">
-                    <span class="slider"></span>
-                </label>
-            </button>
-            <button class="menu-item" id="openChat">
-                <span class="mi-icon mi-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.7 7.1L3 21l1.9-6.3A8 8 0 1 1 21 12z"/></svg></span>
-                <span class="mi-text"><strong>Admin bilan chat</strong><small>Savol va murojaatlaringiz</small></span>
-                <span class="chev-wrap"><span class="chat-unread-dot" id="chatUnreadDot" style="display:none"></span><span class="chev">›</span></span>
-            </button>
-            <button class="menu-item mi-danger" id="logoutBtn">
-                <span class="mi-icon mi-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
-                <span class="mi-text"><strong>Chiqish</strong><small>Hisobdan chiqish</small></span>
-                <span class="chev">›</span>
-            </button>
+    <!-- ============ BUYURTMA TAFSILOTLARI (16) ============ -->
+    <section class="screen" data-screen="orderDetail">
+        <div class="topbar">
+            <button class="ib back" data-back="orders" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Buyurtma tafsilotlari</div>
+            <span class="ib-spacer"></span>
         </div>
+        <div class="scroll">
+            <div id="orderTimeline" class="timeline"></div>
+            <div id="orderItems" class="od-items"></div>
+        </div>
+        <div class="screen-foot">
+            <button class="btn-primary full" id="reviewBtn">Sharh qoldirish</button>
+        </div>
+    </section>
 
-        <div class="brand-foot">Bookz · v1.1 · © 2026</div>
+    <!-- ============ QIDIRUV (07) ============ -->
+    <section class="screen" data-screen="search">
+        <div class="topbar">
+            <button class="ib back" data-back="home" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Qidiruv</div>
+            <button class="ib" aria-label="Boshqa"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+        </div>
+        <div class="scroll">
+            <div class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="searchInput" placeholder="Kitob qidirish" autocomplete="off">
+                <button class="s-clear" id="searchClear" style="display:none">×</button>
+            </div>
+
+            <div id="searchDefault">
+                <div class="sec-head sm"><h3>So'nggi qidiruvlar</h3></div>
+                <div class="tag-wrap" id="recentTags"></div>
+                <div class="sec-head sm"><h3>Tavsiya etilgan</h3></div>
+                <div class="pop-scroll" id="recoScroll"></div>
+            </div>
+            <div id="searchResults" class="book-grid" style="display:none"></div>
+            <div class="empty" id="emptySearch" style="display:none">
+                <div class="emp-ico">🔍</div><h4>Hech narsa topilmadi</h4><p>Boshqa kalit so'z sinab ko'ring</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ TO'LOV USULI (15) ============ -->
+    <section class="screen" data-screen="payments">
+        <div class="topbar">
+            <button class="ib back" data-back="profile" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">To'lov usuli</div>
+            <span class="ib-spacer"></span>
+        </div>
+        <div class="scroll">
+            <div class="pay-card red">
+                <div class="pc-top"><span>Joriy balans</span><span class="pc-chip"></span></div>
+                <div class="pc-bal">4 390 200 <small>so'm</small></div>
+                <div class="pc-bot"><span class="pc-num">•••• •••• •••• 4444</span><span>08/28</span></div>
+                <div class="pc-brand">Master Card</div>
+            </div>
+            <div class="pay-card blue">
+                <div class="pc-top"><span>Joriy balans</span><span class="pc-visa">VISA</span></div>
+                <div class="pc-bal">2 360 700 <small>so'm</small></div>
+                <div class="pc-bot"><span class="pc-num">•••• •••• •••• 2363</span><span>07/27</span></div>
+                <div class="pc-brand">Visa Card</div>
+            </div>
+        </div>
+        <div class="screen-foot">
+            <button class="btn-primary full" id="addCardBtn">Karta qo'shish</button>
+        </div>
+    </section>
+
+    <!-- ============ PROFIL MA'LUMOTLARI (18) ============ -->
+    <section class="screen" data-screen="profileInfo">
+        <div class="topbar">
+            <button class="ib back" data-back="settings" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Profil ma'lumotlari</div>
+            <span class="ib-spacer"></span>
+        </div>
+        <form class="scroll" id="profileForm" novalidate>
+            <div class="form-label">SHAXSIY</div>
+            <label class="fl">Ism</label>
+            <input class="field" type="text" id="pfName" placeholder="Ism Familiya" maxlength="50">
+            <div class="two-col">
+                <div><label class="fl">Jinsi</label><input class="field" type="text" id="pfGender" placeholder="Ayol / Erkak"></div>
+                <div><label class="fl">Tug'ilgan sana</label><input class="field" type="text" id="pfBirth" placeholder="01.01.1990"></div>
+            </div>
+            <div class="form-label">ALOQA</div>
+            <label class="fl">Email</label>
+            <input class="field" type="email" id="pfEmail" placeholder="email@example.com">
+            <label class="fl">Telefon</label>
+            <input class="field" type="tel" id="pfPhone" placeholder="+998 __ ___ __ __">
+        </form>
+        <div class="screen-foot">
+            <button class="btn-primary full" id="saveProfileBtn">Saqlash</button>
+        </div>
+    </section>
+
+    <!-- ============ TIL (19) ============ -->
+    <section class="screen" data-screen="language">
+        <div class="topbar">
+            <button class="ib back" data-back="settings" aria-label="Orqaga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <div class="tb-title">Til</div>
+            <span class="ib-spacer"></span>
+        </div>
+        <div class="scroll">
+            <div class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="langSearch" placeholder="Tilni qidirish" autocomplete="off">
+            </div>
+            <div class="lang-list" id="langList">
+                <button class="lang-row selected" data-lang="O'zbek"><span class="flag">🇺🇿</span><span class="lname">O'zbek</span><span class="radio"></span></button>
+                <button class="lang-row" data-lang="Ingliz"><span class="flag">🇬🇧</span><span class="lname">Ingliz</span><span class="radio"></span></button>
+                <button class="lang-row" data-lang="Rus"><span class="flag">🇷🇺</span><span class="lname">Rus</span><span class="radio"></span></button>
+                <button class="lang-row" data-lang="Qozoq"><span class="flag">🇰🇿</span><span class="lname">Qozoq</span><span class="radio"></span></button>
+                <button class="lang-row" data-lang="Turk"><span class="flag">🇹🇷</span><span class="lname">Turk</span><span class="radio"></span></button>
+            </div>
+        </div>
+        <div class="screen-foot">
+            <button class="btn-primary full" id="saveLangBtn">Tilni saqlash</button>
+        </div>
     </section>
 
 </div>
 
 <!-- ============ BOTTOM NAVIGATION ============ -->
 <nav class="bnav">
-    <div class="bnav-inner">
-        <button class="bn" data-nav="home">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Asosiy</span>
-        </button>
-        <button class="bn" data-nav="cart">
-            <div class="bn-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
-                <span class="bn-badge" id="cartBadge">0</span>
-            </div>
-            <span>Savat</span>
-        </button>
-        <button class="bn" data-nav="orders">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span>Buyurtma</span>
-        </button>
-        <button class="bn" data-nav="profile">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Profil</span>
-        </button>
-    </div>
+    <button class="bn active" data-nav="home" aria-label="Asosiy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+    <button class="bn" data-nav="favorites" aria-label="Sevimlilar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    <button class="bn" data-nav="cart" aria-label="Savat"><span class="bn-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span class="bn-badge" id="cartBadge">0</span></span></button>
+    <button class="bn" data-nav="settings" aria-label="Sozlamalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
 </nav>
 
 <!-- ============ SHEETS ============ -->
 <div class="sheet-bg" id="sheetBg"></div>
 
-<div class="sheet" id="productSheet">
+<!-- Kitob tafsiloti (09) -->
+<div class="sheet tall" id="productSheet">
     <div class="sheet-handle"></div>
     <div id="productDetail"></div>
 </div>
 
+<!-- Filtr (08) -->
 <div class="sheet" id="filterSheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Filter</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
+    <div class="sheet-head"><h2>Filtr</h2><button class="sheet-x" data-close-sheet>×</button></div>
     <div class="sheet-body">
+        <div class="ftabs">
+            <button class="ftab" data-fsort="popular">Ommabop</button>
+            <button class="ftab active" data-fsort="new">Yangi</button>
+            <button class="ftab" data-fsort="sale">Chegirmada</button>
+        </div>
+        <h4>Yozuvchi</h4>
+        <div class="tag-wrap" id="filterAuthors"></div>
         <h4>Kategoriya</h4>
-        <div class="filter-chips" id="filterCats"></div>
-
+        <div class="tag-wrap" id="filterCats"></div>
         <h4>Narx oralig'i (so'm)</h4>
         <div class="price-row">
             <input type="number" id="priceMin" placeholder="0" min="0" inputmode="numeric">
-            <span class="price-dash">—</span>
+            <span class="dash">—</span>
             <input type="number" id="priceMax" placeholder="∞" min="0" inputmode="numeric">
         </div>
-
-        <h4>Saralash</h4>
-        <div class="filter-chips" id="filterSort">
-            <button class="fc active" data-sort="new">Yangilar</button>
-            <button class="fc" data-sort="price-asc">Arzon</button>
-            <button class="fc" data-sort="price-desc">Qimmat</button>
-            <button class="fc" data-sort="popular">Mashhur</button>
+        <h4>Reyting</h4>
+        <div class="rate-row" id="rateRow">
+            <button class="star" data-rate="1">★</button><button class="star" data-rate="2">★</button><button class="star" data-rate="3">★</button><button class="star" data-rate="4">★</button><button class="star" data-rate="5">★</button>
         </div>
     </div>
-    <div class="sheet-foot">
-        <button class="btn-ghost" id="filterReset">Tozalash</button>
+    <div class="sheet-foot two">
         <button class="btn-primary" id="filterApply">Qo'llash</button>
+        <button class="btn-white" id="filterReset">Tozalash</button>
     </div>
 </div>
 
-<div class="sheet" id="notifSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Bildirishnomalar</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <div class="sheet-body" id="notifBody"></div>
-</div>
-
-<div class="sheet" id="addrSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Manzillarim</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <div class="sheet-body" id="addrBody"></div>
-    <div class="sheet-foot">
-        <button class="btn-primary full" id="addAddrBtn">+ Yangi manzil qo'shish</button>
-    </div>
-</div>
-
-<div class="sheet" id="addrFormSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2 id="addrFormTitle">Yangi manzil</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <form class="sheet-body" id="addrForm" novalidate>
-        <input type="hidden" id="addrId">
-        <label>Nom <span class="hint">(uy, ish, va h.k.)</span></label>
-        <input type="text" id="addrLabel" required placeholder="Uy" maxlength="20">
-        <!-- Geografiya qismi (viloyat/tuman/qishloq/uy/izoh) — umumiy UzAddress kaskadi
-             script.js'da shu joyga quyiladi (etalon: ovqat-dokoni). -->
-        <div id="addrGeo"></div>
-        <label>Telefon</label>
-        <input type="tel" id="addrPhone" required placeholder="+998 __ ___ __ __">
-        <label class="check-line"><input type="checkbox" id="addrDefault"><span>Asosiy manzil sifatida</span></label>
-    </form>
-    <div class="sheet-foot">
-        <button class="btn-ghost" data-close-sheet>Bekor qilish</button>
-        <button class="btn-primary" id="saveAddrBtn">Saqlash</button>
-    </div>
-</div>
-
-<div class="sheet" id="profileSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Profilni tahrirlash</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <form class="sheet-body" id="profileForm" novalidate>
-        <label>Ism Familiya</label>
-        <input type="text" id="pfName" placeholder="Akmal Aliyev" maxlength="50">
-        <label>Telefon raqam</label>
-        <input type="tel" id="pfPhone" placeholder="+998 __ ___ __ __">
-        <label>Email <span class="hint">(ixtiyoriy)</span></label>
-        <input type="email" id="pfEmail" placeholder="email@example.com">
-    </form>
-    <div class="sheet-foot">
-        <button class="btn-ghost" data-close-sheet>Bekor qilish</button>
-        <button class="btn-primary" id="saveProfileBtn">Saqlash</button>
-    </div>
-</div>
-
-<div class="sheet" id="favSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Sevimlilar</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <div class="sheet-body" id="favBody"></div>
-</div>
-
-<div class="sheet sheet-chat" id="chatSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head chat-head">
-        <div class="chat-head-info">
-            <div class="chat-head-avatar">A</div>
-            <div>
-                <h2>Admin bilan chat</h2>
-                <small id="chatStatus">Odatda 5 daqiqada javob beradi</small>
-            </div>
-        </div>
-        <button class="sheet-close" data-close-sheet aria-label="Yopish">×</button>
-    </div>
-    <div class="chat-body" id="chatBody"></div>
-    <form class="chat-input" id="chatForm">
-        <input type="text" id="chatInput" placeholder="Xabar yozing..." autocomplete="off" maxlength="500">
-        <button type="submit" class="chat-send" id="chatSend" aria-label="Yuborish">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
-        </button>
-    </form>
-</div>
-
-<div class="sheet" id="aboutSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Ilova haqida</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
-    <div class="sheet-body about-body">
-        <div class="about-logo"><img src="icon.svg" alt=""></div>
-        <h3>Bookz</h3>
-        <p class="ab-ver">Versiya 1.1.0</p>
-        <p class="ab-desc">Zamonaviy kitob do'koni ilovasi. Badiiy, ilmiy, tarixiy va bolalar kitoblari.</p>
-        <div class="ab-links">
-            <a href="#" class="ab-link">Foydalanish shartlari</a>
-            <a href="#" class="ab-link">Maxfiylik siyosati</a>
-            <a href="admin.html" class="ab-link">Admin panel</a>
-        </div>
-        <p class="ab-copy">© 2026 Bookz. Barcha huquqlar himoyalangan.</p>
-    </div>
-</div>
-
+<!-- Checkout -->
 <div class="sheet" id="checkoutSheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><h2>Buyurtma berish</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
+    <div class="sheet-head"><h2>Buyurtma berish</h2><button class="sheet-x" data-close-sheet>×</button></div>
     <form class="sheet-body" id="checkoutForm" novalidate>
-        <label>Ism Familiya</label>
-        <input type="text" name="name" required maxlength="50">
-        <label>Telefon raqam</label>
-        <input type="tel" name="phone" required placeholder="+998 __ ___ __ __">
-        <label>Manzil</label>
-        <textarea name="address" required rows="2" placeholder="Shahar, ko'cha, uy raqami" maxlength="200"></textarea>
-        <label>To'lov turi</label>
-        <div class="pay-options" id="payOptions">
+        <label class="fl">Ism Familiya</label>
+        <input class="field" type="text" name="name" required maxlength="50">
+        <label class="fl">Telefon raqam</label>
+        <input class="field" type="tel" name="phone" required placeholder="+998 __ ___ __ __">
+        <label class="fl">Manzil</label>
+        <textarea class="field" name="address" required rows="2" placeholder="Shahar, ko'cha, uy raqami" maxlength="200"></textarea>
+        <label class="fl">To'lov turi</label>
+        <div class="pay-opts" id="payOptions">
             <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd</span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="uzcard" disabled><span><b>💳</b> Uzcard / Humo <em class="soon-tag">Tez orada</em></span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="click" disabled><span><b>⚡</b> Click <em class="soon-tag">Tez orada</em></span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="payme" disabled><span><b>📱</b> Payme <em class="soon-tag">Tez orada</em></span></label>
+            <label class="pay-opt"><input type="radio" name="payment" value="karta"><span><b>💳</b> Karta</span></label>
         </div>
         <div class="order-sum" id="orderSum"></div>
     </form>
     <div class="sheet-foot">
-        <button class="btn-primary full" id="placeOrderBtn">
-            <span>Tasdiqlash va to'lash</span>
-        </button>
+        <button class="btn-primary full" id="placeOrderBtn">Tasdiqlash va to'lash</button>
     </div>
 </div>
 
-<!-- Custom confirm dialog -->
+<!-- Chat -->
+<div class="sheet sheet-chat" id="chatSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head chat-head">
+        <div class="chat-hi"><div class="chat-av">A</div><div><h2>Admin bilan chat</h2><small>Odatda 5 daqiqada javob beradi</small></div></div>
+        <button class="sheet-x" data-close-sheet>×</button>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <form class="chat-input" id="chatForm">
+        <input type="text" id="chatInput" placeholder="Xabar yozing..." autocomplete="off" maxlength="500">
+        <button type="submit" class="chat-send" aria-label="Yuborish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </form>
+</div>
+
+<!-- Manzil qo'shildi (20) -->
+<div class="modal-bg" id="successBg">
+    <div class="success-card">
+        <button class="sc-x" id="successClose">×</button>
+        <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3 id="successTitle">Bajarildi</h3>
+        <p id="successMsg">Amaliyot muvaffaqiyatli yakunlandi</p>
+        <button class="btn-primary full" id="successBack">Ortga qaytish</button>
+        <button class="link-red" id="successNext">Davom etish</button>
+    </div>
+</div>
+
+<!-- Confirm dialog -->
 <div class="dialog-bg" id="dialogBg">
-    <div class="dialog" id="dialog">
+    <div class="dialog">
         <div class="dialog-ico" id="dialogIco">⚠️</div>
         <h3 id="dialogTitle">Tasdiqlash</h3>
         <p id="dialogMsg">Ushbu amalni bajarishni xohlaysizmi?</p>
         <div class="dialog-acts">
-            <button class="btn-ghost" id="dialogCancel">Bekor qilish</button>
+            <button class="btn-white" id="dialogCancel">Bekor qilish</button>
             <button class="btn-primary" id="dialogOk">Tasdiqlash</button>
         </div>
     </div>
 </div>
 
-<!-- PWA Install Prompt -->
+<!-- PWA install -->
 <div class="install-prompt" id="installPrompt">
-    <div class="ip-icon">📱</div>
-    <div class="ip-text">
-        <strong>Ilovani o'rnating</strong>
-        <small>Bosh ekranga qo'shing</small>
-    </div>
-    <div class="ip-actions">
-        <button class="ip-close" id="ipClose" aria-label="Yopish">×</button>
-        <button class="ip-install" id="ipInstall">O'rnatish</button>
-    </div>
+    <div class="ip-icon">📚</div>
+    <div class="ip-text"><strong>Ilovani o'rnating</strong><small>Bosh ekranga qo'shing</small></div>
+    <div class="ip-actions"><button class="ip-close" id="ipClose">×</button><button class="ip-install" id="ipInstall">O'rnatish</button></div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+<!-- Supabase + Cloud (boshqa skriptlardan OLDIN) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="cloud.js"></script>
-<!-- Boot-loader: AVVAL Cloud.init (serverdagi do'kon ma'lumotini yuklaydi), keyin script.js.
-     CLIENT_ID — ?client= yoki bo_session orqali (QR/subdomen tizimi o'zgarmaydi). -->
 <script>
   (async () => {
     const CLIENT_ID = new URLSearchParams(location.search).get("client")
@@ -427,7 +501,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=4"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=10"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();
