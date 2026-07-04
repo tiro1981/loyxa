@@ -1,6 +1,6 @@
 # PROMPT — QR buyurtma kanalga bormaydi: HAMMA ILOVA uchun universal tuzatish
 
-> Repoga ulangan AI'ga bering. Bu 5 ilovaning HAMMASIga taalluqli (ovqat ham, qolgani ham).
+> Repoga ulangan AI'ga bering. Bu 3 ilovaning HAMMASIga taalluqli (ovqat ham, qolgani ham).
 > Avval pastdagi `[BOT_SERVER_URL]` ni o'zingizning HAQIQIY bot server manzilingiz bilan
 > almashtiring (masalan Render'dagi: https://loyxa-bot.onrender.com).
 
@@ -9,7 +9,7 @@
 MUAMMO: QR skaner qilib (mijoz qurilmasi, `?client=...`) berilgan buyurtma Telegram
 kanalga bormaydi; lekin do'kon egasi o'z brauzerida bersa — boradi.
 
-SABAB (5 ilovada ham BIR XIL): bot server manzilini topadigan kod oxirida default
+SABAB (3 ilovada ham BIR XIL): bot server manzilini topadigan kod oxirida default
 `http://localhost:3344` turibdi. Ega brauzerida `localStorage.bo_bot_api` bor → ishlaydi.
 Mijoz qurilmasida u yo'q → `localhost:3344` ga tushadi → mijoz telefonida localhost yo'q
 → buyurtma jimgina yuborilmaydi.
@@ -25,12 +25,9 @@ ALMASHTIRILADIGAN QIYMAT (hamma joyda):
 QUYIDAGI FAYL VA QATORLARDA (har ilovada bot manzili shu yerda aniqlanadi):
 
 1) ovqat-dokoni/telegram.js        — `apiBase()` ichidagi default (taxminan 22-qator)
-2) salqin-ichimliklar/telegram.js  — bot manzili defaulti (taxminan 8-qator)
-3) kitob-dokoni/script.js          — taxminan 151-qator (storefront yuborish)
-   kitob-dokoni/admin.js           — `getBotApi()` (taxminan 1316-qator)
-4) kiyim-dokoni/script.js          — taxminan 148-qator
+2) kiyim-dokoni/script.js          — taxminan 148-qator
    kiyim-dokoni/admin.js           — `getBotApi()` (taxminan 1371-qator)
-5) app/script.js                   — taxminan 501-qator
+3) app/script.js                   — taxminan 501-qator
    app/admin.js                    — `getBotApi()` (taxminan 953-qator)
 
 KO'RSATMA AI'GA:
@@ -59,6 +56,6 @@ TEKSHIRUV (har ilova uchun):
 ## Eng to'liq variant (ovqat — Cloud'ga ko'chirilgan ilova uchun)
 ovqat-dokoni Cloud'da bo'lgani uchun, unга `SUPABASE/6-...FIX.md` dagi to'liqroq yechim
 (bot manzilini admin paneldan o'zgartirib, Cloud orqali barcha qurilmaga sinxronlash)
-mos keladi. Qolgan 4 ilova Cloud'ga ko'chirilgach (`2-`, `3-`, `4-` promptlar), ularга
+mos keladi. Qolgan ilovalar Cloud'ga ko'chirilgach (`3-`, `4-` promptlar), ularга
 ham xuddi shu Cloud-sinxron yondashuvini qo'llasa bo'ladi. Hozircha yuqoridagi universal
-default-almashtirish 5 ilovaning hammasini darrov tuzatadi.
+default-almashtirish ilovalarning hammasini darrov tuzatadi.

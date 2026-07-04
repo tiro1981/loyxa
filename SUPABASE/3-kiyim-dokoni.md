@@ -1,11 +1,8 @@
-# PROMPT — kitob-dokoni va kiyim-dokoni ni Supabase'ga ko'chirish
+# PROMPT — kiyim-dokoni ni Supabase'ga ko'chirish
 
 > Oldin `SUPABASE/0-SETUP.md` ni bajaring.
-> Bu ikki ilova **egizak** — strukturasi bir xil, faqat kalit prefiksi farq qiladi:
->   - kitob-dokoni → `kitob_*`,  app nomi: `"kitob"`
->   - kiyim-dokoni → `moda_*`,   app nomi: `"kiyim"`
-> Quyidagi promptni HAR BIRIGA alohida bering (qaytib chiqqan {PREFIX} va {APP} ni mos qo'ying).
-> kitob uchun: {PREFIX}=kitob, {APP}=kitob.  kiyim uchun: {PREFIX}=moda, {APP}=kiyim.
+> kiyim-dokoni → kalit prefiksi `moda_*`,  app nomi: `"kiyim"`
+> Quyidagi promptni shu qiymatlar bilan bering: {PREFIX}=moda, {APP}=kiyim.
 
 ---
 

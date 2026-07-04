@@ -175,29 +175,6 @@ function seedDefaultApps() {
                 createdAt: new Date().toISOString()
             },
             {
-                id: 'app-salqin',
-                slug: 'salqin-ichimliklar',
-                name: 'Salqin Ichimliklar',
-                desc: 'Ichimliklar do\'koni uchun zamonaviy onlayn-magazin — katalog, savat, buyurtma va to\'liq admin paneli',
-                logo: null,
-                logoEmoji: '🥤',
-                price: 119000,
-                priceLabel: 'oyiga',
-                features: [
-                    'Ichimliklar katalogi',
-                    'Savat va buyurtma',
-                    'Karta / Click / Naqd to\'lov',
-                    'Mijoz bilan jonli chat',
-                    'Telegram bot integratsiyasi',
-                    'Admin panel (mahsulot, moliya, foydalanuvchilar)'
-                ],
-                demoUrl: 'salqin-ichimliklar/index.html',
-                adminUrl: 'salqin-ichimliklar/admin.html',
-                popular: false,
-                active: true,
-                createdAt: new Date().toISOString()
-            },
-            {
                 id: 'app-kiyim',
                 slug: 'kiyim-dokoni',
                 name: 'Kiyim Do\'koni',
@@ -216,30 +193,6 @@ function seedDefaultApps() {
                 ],
                 demoUrl: 'kiyim-dokoni/index.html',
                 adminUrl: 'kiyim-dokoni/admin.html',
-                popular: false,
-                active: true,
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'app-kitob',
-                slug: 'kitob-dokoni',
-                name: 'Kitob Olami',
-                desc: 'Onlayn kitob do\'koni uchun zamonaviy ilova — kitoblar katalogi, muallif va janrlar bo\'yicha qidiruv, savat va to\'liq admin paneli',
-                logo: null,
-                logoEmoji: '📚',
-                price: 129000,
-                priceLabel: 'oyiga',
-                features: [
-                    'Kitoblar katalogi (muallif, janr, ISBN)',
-                    'Muqova turi va format tanlash',
-                    'Savat va buyurtma tizimi',
-                    'Kuponlar va chegirmalar',
-                    'Mijoz bilan jonli chat',
-                    'Telegram bot integratsiyasi',
-                    'Admin panel (kitoblar, hisobot, mijozlar)'
-                ],
-                demoUrl: 'kitob-dokoni/index.html',
-                adminUrl: 'kitob-dokoni/admin.html',
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
@@ -270,13 +223,14 @@ function seedDefaultApps() {
             }
         ];
 
-        const APPS_VERSION = 'v3-ovqat-dokoni';
+        const APPS_VERSION = 'v4-salqin-kitob-removed';
+        const removedIds = new Set(['app-salqin', 'app-kitob']);
         const savedVersion = localStorage.getItem('bo_apps_version');
         const existing = JSON.parse(localStorage.getItem('bo_apps') || '[]');
 
         if (existing.length === 0 || savedVersion !== APPS_VERSION) {
             const defaultIds = new Set(defaults.map(d => d.id));
-            const userApps = existing.filter(a => !defaultIds.has(a.id));
+            const userApps = existing.filter(a => !defaultIds.has(a.id) && !removedIds.has(a.id));
             localStorage.setItem('bo_apps', JSON.stringify([...defaults, ...userApps]));
             localStorage.setItem('bo_apps_version', APPS_VERSION);
             return;

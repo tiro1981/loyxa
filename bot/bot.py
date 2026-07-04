@@ -69,7 +69,7 @@ SUPABASE_URL = (os.getenv("SUPABASE_URL") or "https://ctakvioxteagcwjlclnu.supab
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ"
 SUPABASE_POLL_SEC = int(os.getenv("SUPABASE_POLL_SEC", "12"))
 # Cloud app nomi -> store-bot kalit suffiksi (admin shu suffiks bilan ulaydi: <client>__<suffiks>)
-SUPABASE_APPS = {"ovqat": "ovqat", "salqin": "salqin", "kitob": "kitob", "kiyim": "kiyim", "tabby": "tabby"}
+SUPABASE_APPS = {"ovqat": "ovqat", "kiyim": "kiyim", "tabby": "tabby"}
 
 BOT_ID_RE = re.compile(r"^BOT-[A-Z0-9]+-[A-Z0-9]{5}$", re.IGNORECASE)
 

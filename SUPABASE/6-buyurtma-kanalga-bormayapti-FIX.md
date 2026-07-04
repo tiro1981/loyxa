@@ -85,7 +85,7 @@ qurilmalarga sinxron bo'ladi).
    `[Telegram] sendOrder ...` loglarini ko'ring (manzil va xato ko'rsatiladi).
 
 ## ESLATMA — boshqa ilovalar
-Xuddi shu localhost-fallback naqshi `salqin-ichimliklar`, `kitob-dokoni`,
-`kiyim-dokoni`, `app` ilovalarining telegram/bot klientlarida ham bor.
+Xuddi shu localhost-fallback naqshi `kiyim-dokoni`, `app` ilovalarining
+telegram/bot klientlarida ham bor.
 ovqat-dokoni ishlaganini ko'rgach, shu tuzatishni ularga ham qo'llang
 (har birida bot server manzilini Cloud'ga sinxronlash + localhost'ni faqat lokalда).
