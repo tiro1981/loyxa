@@ -220,11 +220,35 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
+            },
+            {
+                id: 'app-kitob',
+                slug: 'kitob-dokoni',
+                name: 'Bookz — Kitob do\'koni',
+                desc: 'Onlayn kitob do\'koni uchun zamonaviy qorong\'u ilova — kitoblar katalogi, muallif va janrlar, savat, buyurtma va to\'liq admin paneli',
+                logo: null,
+                logoEmoji: '📚',
+                price: 129000,
+                priceLabel: 'oyiga',
+                features: [
+                    'Kitoblar katalogi (muallif, janr, reyting)',
+                    'Savat va buyurtma tizimi',
+                    'Sevimlilar va manzillar',
+                    'Mijoz bilan jonli chat',
+                    'Telegram bot integratsiyasi',
+                    'QR kod (do\'kon uchun)',
+                    'Admin panel (kitoblar, hisobot, mijozlar)'
+                ],
+                demoUrl: 'kitob-dokoni/index.html',
+                adminUrl: 'kitob-dokoni/admin.html',
+                popular: false,
+                active: true,
+                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v4-salqin-kitob-removed';
-        const removedIds = new Set(['app-salqin', 'app-kitob']);
+        const APPS_VERSION = 'v5-bookz-added';
+        const removedIds = new Set(['app-salqin']);
         const savedVersion = localStorage.getItem('bo_apps_version');
         const existing = JSON.parse(localStorage.getItem('bo_apps') || '[]');
 
