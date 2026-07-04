@@ -1,6 +1,6 @@
 /* ============================================================
    uzbekistan-regions.js — O'zbekiston manzil bazasi + umumiy manzil-tanlash komponenti
-   Barcha ilovalar (ovqat, kiyim, kitob, app) AYNAN shu faylni ishlatadi —
+   Barcha ilovalar (ovqat, kiyim, kitob, kofe, app) AYNAN shu faylni ishlatadi —
    shuning uchun manzil qo'shish hamma joyda bir xil ishlaydi.
 
    YONDASHUV (ataylab): viloyat va tuman — ANIQ ochiluvchi ro'yxat (dropdown);
