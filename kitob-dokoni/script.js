@@ -139,6 +139,8 @@ onReady(() => {
     let profile = safeParse(PROFILE_KEY, {});
     let addresses = safeParse(ADDR_KEY, []);
     let activePromo = safeParse(PROMO_KEY, null);
+    let payMethod = localStorage.getItem('kitob_pay') || 'naqd';
+    let chatMsgs = safeParse('kitob_chat', []);
     let lang = localStorage.getItem(LANG_KEY) || "O'zbek";
 
     function safeParse(key, fb) { try { return JSON.parse(localStorage.getItem(key)) ?? fb; } catch { return fb; } }
@@ -173,7 +175,6 @@ onReady(() => {
         // render per screen
         if (name === 'home') { renderChips(); renderPopular(); renderGrid(); }
         if (name === 'cart') renderCart();
-        if (name === 'settings') renderSettings();
         if (name === 'profile') renderProfile();
         if (name === 'orders') renderOrders();
         if (name === 'search') { renderRecent(); renderReco(); }
@@ -197,7 +198,7 @@ onReady(() => {
 
     /* ---------- Sheets ---------- */
     const sheetBg = document.getElementById('sheetBg');
-    function openSheet(id) { document.getElementById(id)?.classList.add('show'); sheetBg.classList.add('show'); }
+    function openSheet(id) { document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show')); document.getElementById(id)?.classList.add('show'); sheetBg.classList.add('show'); }
     function closeSheet() { document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show')); sheetBg.classList.remove('show'); }
     sheetBg.onclick = closeSheet;
     document.querySelectorAll('[data-close-sheet]').forEach(b => b.onclick = closeSheet);
@@ -377,7 +378,9 @@ onReady(() => {
         if (profile.name) form.name.value = profile.name;
         if (profile.phone) form.phone.value = profile.phone;
         const def = addresses.find(a => a.default) || addresses[0];
-        if (def) form.address.value = def.full || '';
+        if (def) form.address.value = def.text || def.full || '';
+        const payRadio = form.querySelector(`input[name=payment][value="${payMethod === 'naqd' ? 'naqd' : 'karta'}"]`);
+        if (payRadio) payRadio.checked = true;
         openSheet('checkoutSheet');
     };
     document.getElementById('placeOrderBtn').onclick = () => {
@@ -525,20 +528,101 @@ onReady(() => {
         closeSheet(); goBase('home'); toast('Filtr tozalandi', 'info');
     };
 
-    /* ---------- Settings / Profile ---------- */
+    /* ---------- Profil paneli ---------- */
+    const PAY_LABEL = { naqd: 'Naqd pul (karta tez orada)', karta: 'Karta (Uzcard / Humo)', click: 'Click', payme: 'Payme' };
     function userInitials() { const n = (profile.name || 'Dilnoza Rahimova').trim().split(/\s+/); return ((n[0]?.[0] || '') + (n[1]?.[0] || '')).toUpperCase() || 'DR'; }
-    function renderSettings() {
-        document.getElementById('setAvatar').textContent = userInitials();
-        document.getElementById('setName').textContent = profile.name || 'Dilnoza Rahimova';
-        document.getElementById('langVal').textContent = lang;
-    }
     function renderProfile() {
         document.getElementById('profAvatar').textContent = userInitials();
         document.getElementById('profName').textContent = profile.name || 'Dilnoza Rahimova';
-        document.getElementById('profEmail').textContent = profile.email || 'dilnoza.r@mail.uz';
+        document.getElementById('profEmail').textContent = profile.email || profile.phone || 'dilnoza.r@mail.uz';
+        document.getElementById('langVal').textContent = lang;
+        const def = addresses.find(a => a.default) || addresses[0];
+        document.getElementById('addrSub').textContent = addresses.length ? (def ? (def.name || 'Manzil') + ' · ' + (def.text || '').slice(0, 24) : addresses.length + ' ta manzil') : 'Yetkazib berish manzillari';
+        document.getElementById('paySub').textContent = PAY_LABEL[payMethod] || 'Naqd pul';
     }
     document.getElementById('themeSwitch').onchange = e => applyTheme(e.target.checked);
-    document.getElementById('passwordRow').onclick = () => toast('Parol sozlamalari tez orada', 'info');
+    document.getElementById('helpRow').onclick = () => toast('Yordam: +998 90 123 45 67 · info@bookz.uz', 'info');
+    document.getElementById('privacyRow').onclick = () => toast('Ma\'lumotlaringiz xavfsiz saqlanadi', 'info');
+
+    /* ---------- Manzillarim ---------- */
+    const saveAddrs = () => localStorage.setItem(ADDR_KEY, JSON.stringify(addresses));
+    function renderAddrList() {
+        const wrap = document.getElementById('addrList');
+        if (!addresses.length) { wrap.innerHTML = `<div class="ai-empty"><div class="emp-ico">📍</div>Hozircha manzil yo'q<br>Yangi manzil qo'shing</div>`; return; }
+        wrap.innerHTML = addresses.map((a, i) => `<div class="addr-item">
+            <span class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div class="ai-body"><div class="ai-name">${escapeHtml(a.name || 'Manzil')}${a.default ? '<span class="ai-badge">Asosiy</span>' : ''}</div><div class="ai-text">${escapeHtml(a.text || '')}</div></div>
+            <div class="ai-acts">
+                <button class="ai-btn" data-aedit="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button class="ai-btn del" data-adel="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+            </div>
+        </div>`).join('');
+    }
+    document.getElementById('addrRow').onclick = () => { renderAddrList(); openSheet('addrSheet'); };
+    document.getElementById('addAddrBtn').onclick = () => openAddrForm(null);
+    function openAddrForm(idx) {
+        document.getElementById('addrFormTitle').textContent = idx == null ? 'Yangi manzil' : 'Manzilni tahrirlash';
+        document.getElementById('addrId').value = idx == null ? '' : idx;
+        const a = idx == null ? {} : addresses[idx];
+        document.getElementById('addrName').value = a.name || '';
+        const geo = document.getElementById('addrGeo');
+        geo.innerHTML = window.UzAddress ? UzAddress.formHTML({ idPrefix: 'ba', inputClass: 'field', selectClass: 'field', labelClass: 'fl', fieldWrapOpen: '', fieldWrapClose: '' }) : '';
+        if (window.UzAddress) {
+            UzAddress.bind(geo, { idPrefix: 'ba' });
+            if (a.region) {
+                const rs = geo.querySelector('#ba-region'); rs.value = a.region; rs.dispatchEvent(new Event('change'));
+                const ds = geo.querySelector('#ba-district'); if (ds) ds.value = a.district || '';
+                geo.querySelector('#ba-village').value = a.village || '';
+                geo.querySelector('#ba-house').value = a.house || '';
+                geo.querySelector('#ba-note').value = a.note || '';
+            }
+        }
+        openSheet('addrFormSheet');
+    }
+    document.getElementById('saveAddrBtn').onclick = () => {
+        const name = document.getElementById('addrName').value.trim() || 'Uy';
+        const geo = document.getElementById('addrGeo');
+        const res = window.UzAddress ? UzAddress.read(geo, { idPrefix: 'ba' }) : null;
+        if (!res) { toast('Viloyat, tuman va uy raqamini to\'ldiring', 'error'); return; }
+        const idx = document.getElementById('addrId').value;
+        const obj = { name, region: res.region, district: res.district, village: res.village, house: res.house, note: res.note, text: res.text };
+        if (idx === '') { obj.default = addresses.length === 0; addresses.push(obj); }
+        else { obj.default = addresses[+idx].default; addresses[+idx] = obj; }
+        saveAddrs(); renderProfile(); renderAddrList();
+        toast('Manzil saqlandi', 'success'); openSheet('addrSheet');
+    };
+    document.getElementById('addrList').addEventListener('click', e => {
+        const ed = e.target.closest('[data-aedit]'); if (ed) { openAddrForm(+ed.dataset.aedit); return; }
+        const dl = e.target.closest('[data-adel]');
+        if (dl) { const i = +dl.dataset.adel; const wasDef = addresses[i].default; addresses.splice(i, 1); if (wasDef && addresses.length) addresses[0].default = true; saveAddrs(); renderAddrList(); renderProfile(); toast('Manzil o\'chirildi', 'info'); }
+    });
+
+    /* ---------- To'lov usullari ---------- */
+    document.getElementById('payRow').onclick = () => {
+        document.querySelectorAll('#paySheet .pm-opt').forEach(o => o.classList.toggle('active', o.dataset.pay === payMethod));
+        openSheet('paySheet');
+    };
+    document.querySelectorAll('#paySheet .pm-opt:not(.soon)').forEach(o => o.onclick = () => {
+        payMethod = o.dataset.pay; localStorage.setItem('kitob_pay', payMethod);
+        document.querySelectorAll('#paySheet .pm-opt').forEach(x => x.classList.toggle('active', x === o));
+        renderProfile(); closeSheet(); toast('To\'lov usuli: Naqd pul', 'success');
+    });
+
+    /* ---------- Admin bilan chat ---------- */
+    function renderChat() {
+        const b = document.getElementById('chatBody');
+        if (!chatMsgs.length) b.innerHTML = `<div class="msg them">Assalomu alaykum! Savolingiz bo'lsa yozing 😊</div>`;
+        else b.innerHTML = `<div class="msg them">Assalomu alaykum! Savolingiz bo'lsa yozing 😊</div>` + chatMsgs.map(m => `<div class="msg ${m.from}">${escapeHtml(m.text)}</div>`).join('');
+        b.scrollTop = b.scrollHeight;
+    }
+    document.getElementById('chatRow').onclick = () => { renderChat(); openSheet('chatSheet'); };
+    document.getElementById('chatForm').onsubmit = e => {
+        e.preventDefault();
+        const inp = document.getElementById('chatInput'); const t = inp.value.trim(); if (!t) return;
+        chatMsgs.push({ from: 'me', text: t }); inp.value = '';
+        localStorage.setItem('kitob_chat', JSON.stringify(chatMsgs)); renderChat();
+        setTimeout(() => { chatMsgs.push({ from: 'them', text: 'Rahmat! Tez orada javob beramiz.' }); localStorage.setItem('kitob_chat', JSON.stringify(chatMsgs)); renderChat(); }, 900);
+    };
 
     function fillProfileForm() {
         document.getElementById('pfName').value = profile.name || 'Dilnoza Rahimova';
@@ -554,6 +638,7 @@ onReady(() => {
         profile.email = document.getElementById('pfEmail').value.trim();
         profile.phone = document.getElementById('pfPhone').value.trim();
         saveProfile();
+        renderProfile();
         showSuccess('Saqlandi', 'Profil ma\'lumotlaringiz yangilandi');
     };
 
@@ -571,20 +656,17 @@ onReady(() => {
         const q = e.target.value.toLowerCase();
         document.querySelectorAll('#langList .lang-row').forEach(r => r.style.display = r.dataset.lang.toLowerCase().includes(q) ? '' : 'none');
     };
-    document.getElementById('saveLangBtn').onclick = () => { lang = pendingLang; localStorage.setItem(LANG_KEY, lang); document.getElementById('langVal').textContent = lang; toast('Til saqlandi: ' + lang, 'success'); goBack('settings'); };
+    document.getElementById('saveLangBtn').onclick = () => { lang = pendingLang; localStorage.setItem(LANG_KEY, lang); document.getElementById('langVal').textContent = lang; toast('Til saqlandi: ' + lang, 'success'); goBack('profile'); };
 
     /* ---------- Logout ---------- */
     async function doLogout() {
         if (await showDialog({ title: 'Chiqish', message: 'Hisobdan chiqmoqchimisiz?', icon: '🚪', okText: 'Chiqish' })) {
-            profile = {}; saveProfile(); renderProfile(); renderSettings();
+            profile = {}; saveProfile(); renderProfile();
             goBase('home'); toast('Hisobdan chiqildi', 'info');
         }
     }
     document.getElementById('logoutBtn').onclick = doLogout;
-    document.getElementById('logoutBtn2').onclick = doLogout;
     document.getElementById('bellBtn').onclick = () => toast('Yangi bildirishnomalar yo\'q', 'info');
-    document.getElementById('addCardBtn').onclick = () => toast('Karta qo\'shish tez orada', 'info');
-    document.getElementById('inviteBtn').onclick = () => toast('Taklif havolasi nusxalandi', 'success');
     document.getElementById('menuReviews').onclick = () => toast('Sharhlar bo\'limi tez orada', 'info');
     document.getElementById('menuFindStore').onclick = () => toast(data.settings.address, 'info');
     document.getElementById('menuDelivery').onclick = () => toast('Yetkazib berish: 1-2 kun', 'info');
