@@ -5,7 +5,6 @@
 
 const STORE_KEY = 'kitob_store_v1';
 const CART_KEY = 'kitob_cart_v1';
-const FAV_KEY = 'kitob_favs_v1';
 const PROFILE_KEY = 'kitob_profile_v1';
 const ADDR_KEY = 'kitob_addrs_v1';
 const PROMO_KEY = 'kitob_promo';
@@ -137,7 +136,6 @@ onReady(() => {
 
     let data = Store.load();
     let cart = safeParse(CART_KEY, []);
-    let favorites = safeParse(FAV_KEY, []);
     let profile = safeParse(PROFILE_KEY, {});
     let addresses = safeParse(ADDR_KEY, []);
     let activePromo = safeParse(PROMO_KEY, null);
@@ -145,14 +143,12 @@ onReady(() => {
 
     function safeParse(key, fb) { try { return JSON.parse(localStorage.getItem(key)) ?? fb; } catch { return fb; } }
     const saveCart = () => { localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartBadge(); };
-    const saveFavs = () => localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
     const saveProfile = () => localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
     const savePromo = () => { if (activePromo) localStorage.setItem(PROMO_KEY, JSON.stringify(activePromo)); else localStorage.removeItem(PROMO_KEY); };
 
     let fState = { cat: 'all', search: '', minPrice: null, maxPrice: null, sort: 'new', author: null, rating: 0 };
-    let orderFilter = 'all', favFilter = 'all';
+    let orderFilter = 'all';
     let navStack = ['home'];
-    const BASE_SCREENS = ['home', 'favorites', 'cart', 'settings'];
 
     /* ---------- Theme ---------- */
     function applyTheme(dark) {
@@ -176,7 +172,6 @@ onReady(() => {
         document.querySelectorAll('.bn').forEach(b => b.classList.toggle('active', b.dataset.nav === name));
         // render per screen
         if (name === 'home') { renderChips(); renderPopular(); renderGrid(); }
-        if (name === 'favorites') renderFavorites();
         if (name === 'cart') renderCart();
         if (name === 'settings') renderSettings();
         if (name === 'profile') renderProfile();
@@ -241,12 +236,10 @@ onReady(() => {
     function renderPopular() {
         const top = [...data.products].filter(p => p.active && p.stock > 0).sort((a, b) => b.sold - a.sold).slice(0, 8);
         document.getElementById('popScroll').innerHTML = top.map(p => {
-            const fav = favorites.includes(p.id);
             return `<div class="pop-card" data-pid="${p.id}">
                 <div class="pop-cover"><img src="${cover(p)}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
                 <div class="pop-meta">
                     <div class="pop-info"><div class="pm-name">${escapeHtml(p.name)}</div><div class="pm-price">${money(p.price)}</div></div>
-                    <button class="pop-heart ${fav ? '' : 'off'}" data-fav="${p.id}">${fav ? '❤' : '♡'}</button>
                 </div>
             </div>`;
         }).join('');
@@ -255,11 +248,9 @@ onReady(() => {
     /* ---------- Home: grid ---------- */
     function bookCard(p) {
         const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        const fav = favorites.includes(p.id);
         return `<div class="book-card" data-pid="${p.id}">
             <div class="bc-cover">
                 ${disc ? `<span class="bc-disc">-${disc}%</span>` : ''}
-                <button class="bc-fav ${fav ? 'on' : ''}" data-fav="${p.id}">${fav ? '❤' : '♡'}</button>
                 <img src="${cover(p)}" alt="${escapeHtml(p.name)}" loading="lazy">
             </div>
             <div class="bc-body">
@@ -282,51 +273,14 @@ onReady(() => {
         grid.innerHTML = list.map(bookCard).join('');
     }
 
-    /* ---------- Favorites ---------- */
-    function renderFavorites() {
-        let list = data.products.filter(p => favorites.includes(p.id) && p.active);
-        if (favFilter === 'new') list = [...list].sort((a, b) => new Date(b.created || 0) - new Date(a.created || 0));
-        if (favFilter === 'sale') list = list.filter(p => p.oldPrice);
-        const wrap = document.getElementById('favList'), empty = document.getElementById('emptyFav');
-        if (!list.length) { wrap.innerHTML = ''; empty.style.display = ''; return; }
-        empty.style.display = 'none';
-        wrap.innerHTML = list.map(p => `<div class="rowc" data-pid="${p.id}">
-            <div class="rowc-cover"><img src="${cover(p)}" alt=""></div>
-            <div class="rowc-info">
-                <div class="rowc-name">${escapeHtml(p.name)}</div>
-                <div class="rowc-author">${escapeHtml(p.author || '')}</div>
-                <div class="rowc-stars">${stars(p.rating)}</div>
-                <div class="rowc-price">${money(p.price)}</div>
-            </div>
-            <button class="rowc-heart" data-fav="${p.id}">❤</button>
-        </div>`).join('');
-    }
-    document.querySelectorAll('#favTabs .ftab').forEach(t => t.onclick = () => {
-        document.querySelectorAll('#favTabs .ftab').forEach(x => x.classList.remove('active'));
-        t.classList.add('active'); favFilter = t.dataset.ftab; renderFavorites();
-    });
-
-    /* ---------- Favorite toggle (delegated) ---------- */
-    function toggleFav(id) {
-        id = +id;
-        const i = favorites.indexOf(id);
-        if (i >= 0) { favorites.splice(i, 1); toast('Sevimlilardan olib tashlandi', 'info'); }
-        else { favorites.push(id); toast('Sevimlilarga qo\'shildi', 'success'); }
-        saveFavs();
-        renderPopular(); renderGrid();
-        if (document.querySelector('.screen[data-screen="favorites"]').classList.contains('active')) renderFavorites();
-    }
-
     /* ---------- Product detail ---------- */
     function openDetail(id) {
         const p = data.products.find(x => x.id === +id); if (!p) return;
         const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        const fav = favorites.includes(p.id);
         const out = p.stock === 0;
         document.getElementById('productDetail').innerHTML = `
             <div class="pd-body">
                 <div class="pd-cover">
-                    <button class="pd-fav ${fav ? 'on' : ''}" data-fav="${p.id}">${fav ? '❤' : '♡'}</button>
                     <img src="${cover(p)}" alt="${escapeHtml(p.name)}">
                 </div>
                 <div class="pd-cat">${escapeHtml(catName(p.category))}</div>
@@ -647,10 +601,8 @@ onReady(() => {
     document.getElementById('successNext').onclick = () => successBg.classList.remove('show');
     successBg.onclick = e => { if (e.target === successBg) successBg.classList.remove('show'); };
 
-    /* ---------- Global delegated clicks (fav / add / open detail / cart qty) ---------- */
+    /* ---------- Global delegated clicks (add / open detail / cart qty) ---------- */
     document.addEventListener('click', e => {
-        const fav = e.target.closest('[data-fav]');
-        if (fav) { e.stopPropagation(); toggleFav(fav.dataset.fav); return; }
         const add = e.target.closest('[data-add]');
         if (add) { e.stopPropagation(); addToCart(add.dataset.add); return; }
         const inc = e.target.closest('[data-cinc]');

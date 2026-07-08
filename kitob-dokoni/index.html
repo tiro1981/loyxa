@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body class="dark">
 
@@ -59,27 +59,6 @@
             <div class="book-grid" id="bookGrid"></div>
             <div class="empty" id="emptyHome" style="display:none">
                 <div class="emp-ico">🔍</div><h4>Hech narsa topilmadi</h4><p>Boshqa kalit so'z sinab ko'ring</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============ SEVIMLILAR (12) ============ -->
-    <section class="screen" data-screen="favorites">
-        <div class="topbar">
-            <button class="ib" data-open-menu aria-label="Menyu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/></svg></button>
-            <div class="tb-title">Sevimli kitoblar</div>
-            <button class="ib" aria-label="Bildirishnomalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
-        </div>
-        <div class="scroll">
-            <div class="ftabs" id="favTabs">
-                <button class="ftab active" data-ftab="all">Ommabop</button>
-                <button class="ftab" data-ftab="new">Yangi</button>
-                <button class="ftab" data-ftab="sale">Chegirmada</button>
-            </div>
-            <div class="row-list" id="favList"></div>
-            <div class="empty" id="emptyFav" style="display:none">
-                <div class="emp-ico">🔖</div><h4>Sevimlilar bo'sh</h4><p>Yoqtirgan kitoblaringizni belgilang</p>
-                <button class="btn-primary sm" data-go="home">Kitoblarga o'tish</button>
             </div>
         </div>
     </section>
@@ -215,10 +194,6 @@
                 <button class="menu-row" data-go="payments">
                     <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></span>
                     <span class="mr-text2"><strong>To'lov usuli</strong><small>Kartalar va hisoblar</small></span><span class="chev">›</span>
-                </button>
-                <button class="menu-row" data-go="favorites">
-                    <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></span>
-                    <span class="mr-text2"><strong>Kitoblarim</strong><small>Sotib olingan kitoblar</small></span><span class="chev">›</span>
                 </button>
                 <button class="menu-row" id="inviteBtn">
                     <span class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6M19 8v6"/></svg></span>
@@ -375,7 +350,6 @@
 <!-- ============ BOTTOM NAVIGATION ============ -->
 <nav class="bnav">
     <button class="bn active" data-nav="home" aria-label="Asosiy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
-    <button class="bn" data-nav="favorites" aria-label="Sevimlilar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
     <button class="bn" data-nav="cart" aria-label="Savat"><span class="bn-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span class="bn-badge" id="cartBadge">0</span></span></button>
     <button class="bn" data-nav="settings" aria-label="Sozlamalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
 </nav>
@@ -494,7 +468,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=11"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=12"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

@@ -139,8 +139,6 @@ input, textarea { font-family: inherit; }
 .pop-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-top: 10px; }
 .pop-info .pm-name { font-size: 14px; font-weight: 700; line-height: 1.25; }
 .pop-info .pm-price { font-size: 14px; font-weight: 700; color: var(--accent); margin-top: 3px; }
-.pop-heart { color: var(--accent); font-size: 17px; line-height: 1; margin-top: 2px; }
-.pop-heart.off { color: var(--soft); }
 .reco-price { color: var(--muted); font-size: 12px; margin-top: 4px; }
 
 /* Kategoriya chiplari */
@@ -162,8 +160,6 @@ body.dark .chip.active { background: #f4f6fb; color: #10131c; }
 .bc-cover { position: relative; aspect-ratio: 3/4; }
 .bc-cover img { width: 100%; height: 100%; object-fit: cover; }
 .bc-disc { position: absolute; top: 10px; left: 10px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; }
-.bc-fav { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: rgba(10,12,20,.55); font-size: 15px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-.bc-fav.on { color: var(--accent); }
 .bc-body { padding: 12px 12px 14px; }
 .bc-author { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
 .bc-name { font-size: 14px; font-weight: 700; margin: 3px 0; line-height: 1.25; }
@@ -174,24 +170,11 @@ body.dark .chip.active { background: #f4f6fb; color: #10131c; }
 .bc-add { width: 34px; height: 34px; border-radius: 11px; background: var(--accent-grad); color: #fff; font-size: 20px; font-weight: 500; display: grid; place-items: center; line-height: 1; }
 .bc-add:active { transform: scale(.9); }
 
-/* ============ ROW LIST (Sevimlilar) ============ */
+/* ============ TABS (buyurtmalar / filtr) ============ */
 .ftabs { display: flex; gap: 22px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
 .ftab { padding: 6px 0 12px; color: var(--muted); font-size: 15px; font-weight: 600; position: relative; }
 .ftab.active { color: var(--text); }
 .ftab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; border-radius: 3px; background: var(--accent); }
-
-.row-list { display: flex; flex-direction: column; gap: 14px; }
-.rowc { display: flex; gap: 14px; align-items: center; background: var(--card); border-radius: 18px; padding: 12px; }
-.rowc-cover { width: 62px; height: 82px; border-radius: 12px; overflow: hidden; flex: 0 0 62px; }
-.rowc-cover img { width: 100%; height: 100%; object-fit: cover; }
-.rowc-info { flex: 1; min-width: 0; }
-.rowc-name { font-size: 15px; font-weight: 700; }
-.rowc-author { font-size: 12px; color: var(--muted); margin: 2px 0 5px; }
-.rowc-stars { color: var(--accent); font-size: 12px; letter-spacing: 1px; }
-.rowc-stars .off { color: var(--soft); }
-.rowc-price { font-size: 15px; font-weight: 800; color: var(--accent); margin-top: 5px; }
-.rowc-heart { color: var(--accent); font-size: 20px; align-self: flex-start; }
-.rowc-heart.off { color: var(--soft); }
 
 /* ============ SAVAT ============ */
 .cart-list { display: flex; flex-direction: column; gap: 14px; padding-top: 6px; }
@@ -414,8 +397,6 @@ textarea.field { height: auto; padding: 14px 16px; resize: none; }
 .pd-body { overflow-y: auto; padding: 4px 22px 20px; }
 .pd-cover { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 20px; overflow: hidden; margin-bottom: 18px; }
 .pd-cover img { width: 100%; height: 100%; object-fit: cover; }
-.pd-fav { position: absolute; top: 14px; right: 14px; width: 42px; height: 42px; border-radius: 50%; background: rgba(10,12,20,.5); display: grid; place-items: center; font-size: 19px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-.pd-fav.on { color: var(--accent); }
 .pd-cat { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
 .pd-name { font-size: 26px; font-weight: 800; margin: 4px 0; letter-spacing: -.4px; }
 .pd-author { font-size: 15px; color: var(--muted); margin-bottom: 16px; }
