@@ -11,23 +11,13 @@ const ADDR_KEY = 'kitob_addrs_v1';
 const PROMO_KEY = 'kitob_promo';
 const THEME_KEY = 'kitob_theme';
 const LANG_KEY = 'kitob_lang';
-const INSTALL_DISMISS_KEY = 'kitob_install_dismissed';
 const SHIPPING_BASE = 25000;
 
 function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
 function onLoad(fn){ if (document.readyState === 'complete') fn(); else window.addEventListener('load', fn); }
 
-/* ============ PWA ============ */
+/* ============ PWA (service worker) ============ */
 if ('serviceWorker' in navigator) onLoad(() => navigator.serviceWorker.register('sw.js').catch(() => {}));
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault(); deferredInstallPrompt = e;
-    const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
-    if (dismissed && (Date.now() - +dismissed) < 7 * 86400000) return;
-    const p = document.getElementById('installPrompt');
-    if (p) setTimeout(() => p.classList.add('show'), 3000);
-});
-window.addEventListener('appinstalled', () => { document.getElementById('installPrompt')?.classList.remove('show'); });
 
 /* ============ Kitob muqovasi (o'zicha yetarli SVG) ============ */
 function bookCover(title, author, c1, c2) {
@@ -672,14 +662,6 @@ onReady(() => {
         const pcard = e.target.closest('[data-pid]');
         if (pcard) openDetail(pcard.dataset.pid);
     });
-
-    /* ---------- PWA install buttons ---------- */
-    document.getElementById('ipInstall')?.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) { toast('Brauzer menyusidan "Bosh ekranga qo\'shish"', 'info'); return; }
-        deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice;
-        document.getElementById('installPrompt').classList.remove('show'); deferredInstallPrompt = null;
-    });
-    document.getElementById('ipClose')?.addEventListener('click', () => { document.getElementById('installPrompt').classList.remove('show'); localStorage.setItem(INSTALL_DISMISS_KEY, Date.now() + ''); });
 
     /* ---------- Init ---------- */
     updateCartBadge();

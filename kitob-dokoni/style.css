@@ -498,14 +498,3 @@ textarea.field { height: auto; padding: 14px 16px; resize: none; }
 .toast.success { background: #14351f; color: #7ee6a3; }
 .toast.error { background: #3a1418; color: #ff8f9c; }
 .toast.info { background: #1e2536; color: #cbd3e6; }
-
-/* ============ INSTALL PROMPT ============ */
-.install-prompt { position: fixed; left: 16px; right: 16px; bottom: calc(var(--nav-h) + 20px); max-width: 448px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 14px; display: flex; align-items: center; gap: 12px; z-index: 85; transform: translateY(160%); transition: transform .4s var(--ease); }
-.install-prompt.show { transform: translateY(0); }
-.ip-icon { font-size: 28px; }
-.ip-text { flex: 1; }
-.ip-text strong { display: block; font-size: 14px; }
-.ip-text small { color: var(--muted); font-size: 12px; }
-.ip-actions { display: flex; align-items: center; gap: 8px; }
-.ip-close { color: var(--muted); font-size: 20px; width: 28px; }
-.ip-install { background: var(--accent-grad); color: #fff; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; }

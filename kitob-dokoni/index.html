@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body class="dark">
 
@@ -482,13 +482,6 @@
     </div>
 </div>
 
-<!-- PWA install -->
-<div class="install-prompt" id="installPrompt">
-    <div class="ip-icon">📚</div>
-    <div class="ip-text"><strong>Ilovani o'rnating</strong><small>Bosh ekranga qo'shing</small></div>
-    <div class="ip-actions"><button class="ip-close" id="ipClose">×</button><button class="ip-install" id="ipInstall">O'rnatish</button></div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <!-- Supabase + Cloud (boshqa skriptlardan OLDIN) -->
@@ -501,7 +494,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=10"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=11"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();
