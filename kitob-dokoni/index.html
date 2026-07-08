@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body class="dark">
 
@@ -142,11 +142,6 @@
             </button>
 
             <div class="prof-menu">
-                <button class="set-row" data-go="orders">
-                    <span class="sr-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-3-7 3V3a1 1 0 0 1 1-1z"/></svg></span>
-                    <span class="sr-text"><strong>Buyurtmalarim</strong><small>Buyurtmalar tarixi</small></span>
-                    <span class="chev">›</span>
-                </button>
                 <button class="set-row" id="addrRow">
                     <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
                     <span class="sr-text"><strong>Manzillarim</strong><small id="addrSub">Yetkazib berish manzillari</small></span>
@@ -180,6 +175,11 @@
                 <button class="set-row" id="privacyRow">
                     <span class="sr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
                     <span class="sr-text"><strong>Maxfiylik</strong><small>Hisob xavfsizligi</small></span>
+                    <span class="chev">›</span>
+                </button>
+                <button class="set-row" data-go="orders">
+                    <span class="sr-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12a1 1 0 0 1 1 1v18l-7-3-7 3V3a1 1 0 0 1 1-1z"/></svg></span>
+                    <span class="sr-text"><strong>Buyurtmalarim</strong><small>Buyurtmalar tarixi</small></span>
                     <span class="chev">›</span>
                 </button>
                 <button class="set-row danger" id="logoutBtn">
@@ -483,7 +483,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=13"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=14"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

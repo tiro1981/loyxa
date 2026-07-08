@@ -480,6 +480,10 @@ textarea.field { height: auto; padding: 14px 16px; resize: none; }
 .toast.error { background: #3a1418; color: #ff8f9c; }
 .toast.info { background: #1e2536; color: #cbd3e6; }
 
+/* Yangi manzil formasi — har bir maydon oddiy o'ramda (balandlik cheklanmasin) */
+.addr-fld { display: block; }
+.addr-fld select.field { -webkit-appearance: none; appearance: none; }
+
 /* ============ PROFIL PANEL ============ */
 .prof-card { width: 100%; display: flex; align-items: center; gap: 14px; background: var(--card); border-radius: 18px; padding: 14px; margin-bottom: 18px; text-align: left; }
 .prof-card .ph-avatar { width: 54px; height: 54px; margin: 0; font-size: 18px; border-radius: 16px; flex: 0 0 54px; border-width: 2px; }

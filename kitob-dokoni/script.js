@@ -566,7 +566,7 @@ onReady(() => {
         const a = idx == null ? {} : addresses[idx];
         document.getElementById('addrName').value = a.name || '';
         const geo = document.getElementById('addrGeo');
-        geo.innerHTML = window.UzAddress ? UzAddress.formHTML({ idPrefix: 'ba', inputClass: 'field', selectClass: 'field', labelClass: 'fl', fieldWrapOpen: '', fieldWrapClose: '' }) : '';
+        geo.innerHTML = window.UzAddress ? UzAddress.formHTML({ idPrefix: 'ba', inputClass: 'field', selectClass: 'field', labelClass: 'fl', fieldWrapOpen: '<div class="addr-fld">', fieldWrapClose: '</div>' }) : '';
         if (window.UzAddress) {
             UzAddress.bind(geo, { idPrefix: 'ba' });
             if (a.region) {
