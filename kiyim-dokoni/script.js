@@ -141,15 +141,18 @@ function toast(msg, type = 'success') {
 }
 
 /* ---------- Telegram bot xabarnomasi (admin panelda ulangan bo'lsa) ---------- */
-// Yagona markaziy bot server (bot/README.md) — manzil kod ichida qattiq belgilanadi.
-// TODO: tasdiqlangan bot server manzili aniqlangach shu yerga qo'yiladi.
+// Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
+// shuning uchun qattiq yozilmaydi: admin panel "1. Bot server manzili"dan saqlanadi.
 const DEFAULT_BOT_API = '';
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('moda_bot_config') || 'null');
         if (!cfg || !cfg.token) return;
         const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
-        const BOT_HTTP = /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
+        const _botConfigured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
+        const BOT_HTTP = _botConfigured
+            ? _botConfigured.replace(/\/+$/, '')
+            : (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API);
         if (!BOT_HTTP) { console.warn('[bot] bot_api sozlanmagan — xabar yuborilmadi'); return; }
         fetch(`${BOT_HTTP}/store-bot/order`, {
             method: 'POST',

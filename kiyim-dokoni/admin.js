@@ -1370,10 +1370,12 @@ const BOT_CFG_KEY = 'moda_bot_config';
 // window.__CLIENT_ID boot-loader (admin.html) tomonidan hisoblab qo'yiladi
 // (URL ?client= -> bo_session -> kiyim_last_client -> 'shop' tartibida).
 const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
-// Yagona markaziy bot server (bot/README.md) — manzil kod ichida qattiq belgilanadi.
-// TODO: tasdiqlangan bot server manzili aniqlangach shu yerga qo'yiladi.
+// Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
+// shuning uchun qattiq yozilmaydi: "1. Bot server manzili" bo'limidan saqlanadi.
 const DEFAULT_BOT_API = '';
 function getBotApi() {
+    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
+    if (configured) return configured.replace(/\/+$/, '');
     return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
 }
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
@@ -1384,11 +1386,23 @@ function botErr(err) { const m = String((err && err.message) || err || ''); if (
 function renderBot() {
     const cfg = botRead();
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
+    set('botApiInput', (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || '');
     set('bot2Token', cfg.token || '');
     setBotConnectedUI(!!cfg.connected, cfg.username);
     setChannelUI(cfg);
     refreshBotStatus();
+    updateBotApiBanner();
 }
+function updateBotApiBanner() {
+    const banner = document.getElementById('botApiBanner');
+    if (!banner) return;
+    banner.style.display = getBotApi() ? 'none' : '';
+}
+document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
+    const input = document.getElementById('botApiInput');
+    input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input?.focus();
+});
 function setBotConnectedUI(connected, username) {
     const pill = document.getElementById('bot2Status');
     if (pill) { pill.className = 'bot2-status ' + (connected ? 'on' : 'off'); pill.innerHTML = '<i class="fa-solid fa-circle"></i> ' + (connected ? 'Ulangan' : 'Ulanmagan'); }
@@ -1408,6 +1422,7 @@ function setChannelUI(cfg) {
     set('bot2UserCount', String(cfg.userCount || 0));
 }
 async function refreshBotStatus() {
+    updateBotApiBanner();
     try {
         const res = await fetch(getBotApi() + '/store-bot/status?clientId=' + encodeURIComponent(SHOP_KEY) + '&_=' + Date.now(), { cache: 'no-store' });
         const data = await res.json().catch(() => ({}));
@@ -1501,6 +1516,13 @@ function setupBotPage() {
     byId('bot2ChannelTest', testChannel);
     byId('bot2ChannelDisc', disconnectChannel);
     byId('bot2BroadcastBtn', sendBroadcast);
+    document.getElementById('botApiSave')?.addEventListener('click', () => {
+        const v = (document.getElementById('botApiInput').value || '').trim().replace(/\/+$/, '');
+        if (window.Cloud) Cloud.set('bot_api', v);
+        try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
+        updateBotApiBanner();
+        toast('Bot server manzili saqlandi', 'success');
+    });
 }
 
 /* Buyurtma → Telegram kanal (do'kon boti orqali) */

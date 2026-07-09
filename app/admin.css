@@ -1294,6 +1294,19 @@ input, select { font-family: inherit; outline: none; }
 .bot2-status.on  { background: rgba(34,158,217,.14); color: #1c86b8; }
 .bot2-status.off { background: var(--border, #ECEFF3); color: var(--text-sub, #6B7280); }
 
+.bot2-banner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+  border-radius: 12px; padding: 13px 16px; margin-bottom: 18px;
+  font-size: 13.5px; line-height: 1.5;
+}
+.bot2-banner span { flex: 1; min-width: 200px; }
+.bot2-banner button {
+  background: #dc2626; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.bot2-banner button:hover { background: #b91c1c; }
+
 .bot2-card {
   background: var(--card, #fff);
   border: 1px solid var(--border, #ECEFF3);

@@ -3,8 +3,15 @@
 Bot — uzluksiz ishlovchi Telegram polling boti (aiogram v3) + aiohttp HTTP server.
 Shuning uchun uni AlwaysData'da **doimiy ishlovchi "User program"** sayti sifatida ishga tushiramiz.
 
-> Quyida `ACCOUNT` o'rniga o'zingizning AlwaysData login'ingizni yozing (masalan `tiro`).
-> SSH host: `ssh-ACCOUNT.alwaysdata.net`, foydalanuvchi: `ACCOUNT`.
+> Quyida `ACCOUNT` o'rniga o'zingizning AlwaysData login'ingizni yozing — **joriy akkaunt: `tiro21`**
+> (eski `tiro19` akkaunt o'chirilgan, shu sabab bot serveriga ulanib bo'lmayotgan edi).
+> SSH host: `ssh-tiro21.alwaysdata.net`, foydalanuvchi: `tiro21`.
+>
+> ⚠️ **Muhim:** `tiro21` akkauntida allaqachon `sms-habar` boti sayt sifatida ishlab turibdi va
+> asosiy domenni (`https://tiro21.alwaysdata.net/`) egallab turibdi. Shu bot uchun **3-qadamda**
+> yangi sayt yaratayotganda unga **alohida path yoki subdomen** bering (masalan sayt sozlamasida
+> "Path" maydoniga `/store-bot` yozing, yoki AlwaysData "Domains" bo'limidan qo'shimcha subdomen
+> so'rang) — aks holda ikkala bot bir-birining ustiga yozilib qoladi.
 
 ---
 
@@ -84,18 +91,25 @@ BROADCAST_DELAY = 0.05
 
 ---
 
-## 4) HTTP API kerakmi? (ixtiyoriy)
+## 4) HTTP API — do'kon botlari ("Bot server manzili") uchun MAJBURIY
 
-Bot ichidagi aiohttp server **standart holatda faqat localhost** (`127.0.0.1:3344`) da ishlaydi —
-bu admin panel **shu serverda** bo'lsa yetarli.
-
-Agar admin panel/ilova **boshqa joydan** bot API'siga ulanishi kerak bo'lsa:
+Bot ichidagi aiohttp server **standart holatda faqat localhost** (`127.0.0.1:3344`) da ishlaydi.
+Buyurtma boti (yagona `/orders/:botId` oqimi) uchun shu yetarli — lekin **do'kon egalari admin
+paneldan token ulaydigan "Do'kon boti" funksiyasi** (`/store-bot/connect` va h.k.) ishlashi uchun
+bu server **internetdan ochiq HTTPS manzilda** turishi SHART, chunki admin panel (brauzer) unga
+to'g'ridan-to'g'ri so'rov yuboradi.
 
 1. Env'ga qo'shing: `HOST=0.0.0.0` **va** `ADMIN_TOKEN=<kuchli_maxfiy_kalit>`.
 2. AlwaysData saytida ko'rsatilgan portga moslang (`PORT` env yoki sayt port sozlamasi).
-3. Admin panelda so'rovlarga `X-Admin-Token: <ADMIN_TOKEN>` header qo'shing.
+3. Admin panelda so'rovlarga `X-Admin-Token: <ADMIN_TOKEN>` header qo'shing (broadcast endpointi uchun).
+4. AlwaysData reverse-proxy odatda 443/HTTPS'ni o'zi ta'minlaydi — sayt sozlamasidan chiqqan
+   HTTPS manzilni (masalan `https://tiro21.alwaysdata.net/store-bot` yoki alohida subdomen)
+   **aniqlab oling**.
+5. Shu manzilni har bir ilovaning admin paneli → **Telegram Bot → "1. Bot server manzili"**
+   bo'limiga bir marta kiritib saqlang (Cloud orqali barcha qurilmalarga sinxronlashadi) —
+   shundan keyingina "Botni ulash" ishlaydi.
 
-Aks holda bu qadamni o'tkazib yuboring — Telegram qismi internet kerak qilmaydi (polling).
+Faqat buyurtma boti (`/orders/:botId`, eski oqim) kerak bo'lsa, bu qadamni o'tkazib yuborish mumkin.
 
 ---
 

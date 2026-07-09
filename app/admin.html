@@ -273,11 +273,31 @@
         <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
       </div>
 
-      <!-- 1) BOTNI ULASH (token) -->
+      <div class="bot2-banner" id="botApiBanner" style="display:none">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Bot server manzili sozlanmagan — buyurtmalar Telegram kanalga yuborilmaydi. Avval pastdagi <b>1-bosqich</b>da server manzilini saqlang.</span>
+        <button type="button" id="botApiBannerBtn">Manzilni sozlash</button>
+      </div>
+
+      <!-- 1) BOT SERVER MANZILI -->
+      <div class="bot2-card">
+        <div class="bot2-card-head">
+          <span class="bot2-ic"><i class="fa-solid fa-server"></i></span>
+          <div><h3>1. Bot server manzili</h3><p>bot.py ishlab turgan manzil — barcha qurilmalarda (shu jumladan mijoz QR'ida) sinxron ishlatiladi</p></div>
+        </div>
+        <label class="bot2-label" for="bot2ApiInput">Server URL</label>
+        <div class="bot2-channel-row">
+          <input type="text" id="bot2ApiInput" class="bot2-input" placeholder="https://mening-bot.example.com" autocomplete="off" spellcheck="false">
+          <button type="button" class="abtn primary" id="bot2ApiSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Saqlash</button>
+        </div>
+        <p class="bot2-hint">Hozirgi: <code id="bot2ApiCurrent">—</code>. <b>HTTPS</b> bo'lishi va internetdan ochiq bo'lishi shart (localhost faqat sizning kompyuteringizda ishlaydi).</p>
+      </div>
+
+      <!-- 2) BOTNI ULASH (token) -->
       <div class="bot2-card">
         <div class="bot2-card-head">
           <span class="bot2-ic"><i class="fa-brands fa-telegram"></i></span>
-          <div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div>
+          <div><h3>2. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div>
         </div>
         <label class="bot2-label" for="bot2Token">Bot tokeni</label>
         <div class="bot2-token">
@@ -303,7 +323,7 @@
       <div class="bot2-card">
         <div class="bot2-card-head">
           <span class="bot2-ic"><i class="fa-solid fa-bullhorn"></i></span>
-          <div><h3>2. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div>
+          <div><h3>3. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div>
         </div>
         <div class="bot2-steps-mini">
           <span><b>1.</b> Botni kanalingizga <b>admin</b> qiling (yozish huquqi bilan)</span>
@@ -328,7 +348,7 @@
       <div class="bot2-card">
         <div class="bot2-card-head">
           <span class="bot2-ic"><i class="fa-solid fa-paper-plane"></i></span>
-          <div><h3>3. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div>
+          <div><h3>4. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div>
         </div>
         <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
         <button type="button" class="abtn primary" id="bot2BroadcastBtn" style="margin-top:12px"><i class="fa-solid fa-paper-plane"></i> Hammaga yuborish</button>

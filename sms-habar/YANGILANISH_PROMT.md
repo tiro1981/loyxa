@@ -43,7 +43,7 @@ bersangiz, ushbu funksiyalarni qaytadan tiklash mumkin.
 ```bash
 # Lokal Mac terminalda (server ichida emas!):
 cd ~/Desktop/webilova/loyxa
-rsync -avz sms-habar/bot.py tiro19@ssh-tiro19.alwaysdata.net:loyxa/sms-habar/bot.py
+rsync -avz sms-habar/bot.py tiro21@ssh-tiro21.alwaysdata.net:loyxa/sms-habar/bot.py
 ```
 So'ng panel → Web → Saytlar → sms-habar → **Restart**.
 (Ixtiyoriy: Environment'da `CODE_TTL=120` qo'ying.)
@@ -52,7 +52,7 @@ So'ng panel → Web → Saytlar → sms-habar → **Restart**.
 `kirish.html` va `js/auth.js` ni git'ga commit qilib push qiling → Render qayta deploy qiladi.
 
 ## Tekshirish
-1. `https://tiro19.alwaysdata.net/verify/status?phone=998901234567` → JSON qaytsin.
+1. `https://tiro21.alwaysdata.net/verify/status?phone=998901234567` → JSON qaytsin.
 2. Botga telefon yuboring → kod + «🔄 Yangi kod olish» tugmasi chiqsin.
 3. Saytda ro'yxatdan o'ting → taymer 2:00 dan teskari sanasin; 0 da qizil ogohlantirish.
 4. Botda «🔄 Yangi kod olish» bosing → saytdagi taymer qayta boshlansin.

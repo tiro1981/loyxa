@@ -716,6 +716,18 @@ select.input { cursor: pointer; }
 .bot-status .bdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px rgba(255,255,255,.06); }
 .bot-status.on  { background: rgba(34,197,94,.14); color: #22c55e; }
 .bot-status.off { background: rgba(148,163,184,.16); color: var(--text-3); }
+.bot-api-banner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+  border-radius: 12px; padding: 13px 16px; margin-bottom: 16px;
+  font-size: 13.5px; line-height: 1.5;
+}
+.bot-api-banner span { flex: 1; min-width: 200px; }
+.bot-api-banner button {
+  background: #dc2626; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.bot-api-banner button:hover { background: #b91c1c; }
 .bot-stats { display: flex; gap: 16px; flex-wrap: wrap; }
 .bot-stat { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-2); }
 .bot-stat b { color: var(--text); font-weight: 800; }

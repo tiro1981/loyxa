@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"MOBILE WEB APP\\\\|^if \\(document\\\\|^}\\\\s*$\" \"/Users/tiro/Desktop/kiyim dokoni/script.js\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -c \"/Users/tiro/Desktop/webilova/kiyim dokoni/admin.js\")",
+      "Bash(curl -s \"http://localhost:5578/admin.js?nocache=1\")",
+      "Bash(curl -s \"http://localhost:5578/admin.js\")"
+    ]
+  }
+}

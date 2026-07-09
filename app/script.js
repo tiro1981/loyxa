@@ -21,7 +21,7 @@ const _clientInfo = (() => {
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
 // avtomatik ajratadi (multi-tenant). Qurilmaga xos kalitlar (savat tb_cart, joriy login
 // tb_current_user, foydalanuvchiga xos tb_user_*, tema) localStorage'da (_P bilan) qoladi.
-const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url']);
+const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url','tb_bot_api']);
 const DB = {
   _k(k) { return k.startsWith('tb_') ? _P + k : k; },
   get(k, fb) {
@@ -502,9 +502,12 @@ function sendOrderToBot(order) {
     const cfg = DB.get('tb_bot_config', null);
     if (!cfg || !cfg.token) return; // bot hali ulanmagan
     const SHOP_KEY = (CLIENT_ID || 'demo') + '__fastfood';
-    // Yagona markaziy bot server (bot/README.md) — manzil kod ichida qattiq belgilanadi.
-    const BOT_HTTP = /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
-    if (!BOT_HTTP) { console.warn('[bot] Bot server manzili sozlanmagan — administrator bilan bog\'laning'); return; }
+    const BOT_HTTP = (function () {
+      const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || '';
+      if (configured) return configured.replace(/\/+$/, '');
+      return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+    })();
+    if (!BOT_HTTP) { console.warn('[bot] Bot server manzili sozlanmagan — avval Bot sozlamalaridan server manzilini saqlang'); return; }
     fetch(`${BOT_HTTP}/store-bot/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
