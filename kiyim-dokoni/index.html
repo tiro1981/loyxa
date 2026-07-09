@@ -284,8 +284,8 @@
     <div class="sheet-head"><h2 id="addrFormTitle">Yangi manzil</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
     <form class="sheet-body" id="addrForm" novalidate>
         <input type="hidden" id="addrId">
-        <label>Nom <span class="hint">(uy, ish, va h.k.)</span></label>
-        <input type="text" id="addrLabel" required placeholder="Uy" maxlength="20">
+        <label>Ism Familiya</label>
+        <input type="text" id="addrFullName" required maxlength="60">
         <!-- Geografiya qismi (viloyat/tuman/qishloq/uy/izoh) — umumiy UzAddress kaskadi
              script.js'da shu joyga quyiladi (etalon: ovqat-dokoni). -->
         <div id="addrGeo"></div>
@@ -364,12 +364,25 @@
     <div class="sheet-handle"></div>
     <div class="sheet-head"><h2>Buyurtma berish</h2><button class="sheet-close" data-close-sheet aria-label="Yopish">×</button></div>
     <form class="sheet-body" id="checkoutForm" novalidate>
-        <label>Ism Familiya</label>
-        <input type="text" name="name" required maxlength="50">
-        <label>Telefon raqam</label>
-        <input type="tel" name="phone" required placeholder="+998 __ ___ __ __">
-        <label>Manzil</label>
-        <textarea name="address" required rows="2" placeholder="Shahar, ko'cha, uy raqami" maxlength="200"></textarea>
+        <div class="addr-card" id="checkoutAddrSummary" style="display:none">
+            <div class="addr-ico">📍</div>
+            <div class="addr-mid">
+                <div class="addr-label" id="coSummaryLabel"></div>
+                <div class="addr-full" id="coSummaryFull"></div>
+                <div style="font-size:11px;color:var(--text-soft);margin-top:2px" id="coSummaryContact"></div>
+            </div>
+            <div class="addr-acts">
+                <button type="button" id="coChangeAddrBtn" aria-label="Manzilni o'zgartirish">✏️</button>
+            </div>
+        </div>
+        <div id="checkoutAddrFields">
+            <label>Ism Familiya</label>
+            <input type="text" name="name" required maxlength="50">
+            <label>Telefon raqam</label>
+            <input type="tel" name="phone" required placeholder="+998 __ ___ __ __">
+            <!-- Geografiya qismi (viloyat/tuman/qishloq/uy/izoh) — umumiy UzAddress kaskadi, script.js'da quyiladi -->
+            <div id="coAddrGeo"></div>
+        </div>
         <label>To'lov turi</label>
         <div class="pay-options" id="payOptions">
             <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd</span></label>
@@ -427,7 +440,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=4"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=5"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

@@ -609,28 +609,50 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             <div class="tot"><span>Jami</span><span>${money(total)}</span></div>`;
         const def = addresses.find(a => a.default) || addresses[0];
         const form = document.getElementById('checkoutForm');
-        if (profile.name) form.name.value = profile.name;
+        form.name.value = (def && def.fullName) || profile.name || '';
+        form.phone.value = (def && def.phone) || profile.phone || '+998 ';
+        renderGeoCascade('coAddrGeo', 'co', def || null);
+
+        const summary = document.getElementById('checkoutAddrSummary');
+        const fields = document.getElementById('checkoutAddrFields');
         if (def) {
-            form.phone.value = def.phone || profile.phone || '';
-            form.address.value = def.full || '';
-        } else if (profile.phone) form.phone.value = profile.phone;
+            document.getElementById('coSummaryLabel').textContent = def.label || 'Manzil';
+            document.getElementById('coSummaryFull').textContent = def.full || '';
+            document.getElementById('coSummaryContact').textContent = `${def.fullName || ''}${def.fullName ? ' · ' : ''}${def.phone || ''}`;
+            summary.style.display = '';
+            fields.style.display = 'none';
+        } else {
+            summary.style.display = 'none';
+            fields.style.display = '';
+        }
         openSheet('checkoutSheet');
     };
+    document.getElementById('coChangeAddrBtn').onclick = () => openSheet('addrSheet');
 
     document.getElementById('placeOrderBtn').onclick = () => {
         const form = document.getElementById('checkoutForm');
         const fd = new FormData(form);
         const name = (fd.get('name') || '').toString().trim();
         const phone = (fd.get('phone') || '').toString().trim();
-        const address = (fd.get('address') || '').toString().trim();
-        if (!name || !phone || !address) {
+        const geo = UzAddress.read(document, { idPrefix: 'co' });
+        if (!name || !phone || !geo) {
             toast("Iltimos, barcha maydonlarni to'ldiring", 'error');
             return;
         }
+        const address = geo.text;
         if (phone.replace(/\D/g, '').length < 9) {
             toast("Telefon raqam noto'g'ri", 'error');
             return;
         }
+
+        // Birinchi marta kiritilgan manzil — keyingi buyurtmalarda qayta so'ralmasligi uchun saqlanadi
+        if (addresses.length === 0) {
+            addresses.push({ label: 'Manzil 1', fullName: name, phone,
+                region: geo.region, district: geo.district, village: geo.village, house: geo.house, note: geo.note,
+                full: address, default: true });
+            saveAddrs();
+        }
+
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
         const discount = calcDiscount(sub);
         const order = {
@@ -1032,7 +1054,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 <div class="addr-mid">
                     <div class="addr-label">${escapeHtml(a.label)} ${a.default ? '<span class="badge">Asosiy</span>' : ''}</div>
                     <div class="addr-full">${escapeHtml(a.full)}</div>
-                    <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${escapeHtml(a.phone)}</div>
+                    <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${a.fullName ? escapeHtml(a.fullName) + ' · ' : ''}${escapeHtml(a.phone)}</div>
                 </div>
                 <div class="addr-acts">
                     <button data-edit-addr="${i}" aria-label="Tahrirlash">✏️</button>
@@ -1064,11 +1086,11 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     // Kaskad formani #addrGeo ichiga quyadi, selectlarni native ko'rinish uchun
     // .select-wrap ichiga o'raydi va UzAddress.bind bilan viloyat->tuman bog'lashni o'rnatadi.
     // prefill berilsa (tahrirlash) — saqlangan qiymatlarni qo'yadi.
-    function renderAddrGeo(prefill) {
-        const box = document.getElementById('addrGeo');
-        box.innerHTML = UzAddress.formHTML({ idPrefix: 'addr' });
+    function renderGeoCascade(containerId, idPrefix, prefill) {
+        const box = document.getElementById(containerId);
+        box.innerHTML = UzAddress.formHTML({ idPrefix });
         // Native chevron + appearance reset uchun ikkala selectni .select-wrap ichiga o'raymiz.
-        ['addr-region', 'addr-district'].forEach(id => {
+        [idPrefix + '-region', idPrefix + '-district'].forEach(id => {
             const sel = box.querySelector('#' + id);
             if (sel && !sel.closest('.select-wrap')) {
                 const wrap = document.createElement('div');
@@ -1077,11 +1099,11 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 wrap.appendChild(sel);
             }
         });
-        UzAddress.bind(document, { idPrefix: 'addr' });
+        UzAddress.bind(document, { idPrefix });
 
         if (prefill) {
-            const reg = box.querySelector('#addr-region');
-            const dist = box.querySelector('#addr-district');
+            const reg = box.querySelector('#' + idPrefix + '-region');
+            const dist = box.querySelector('#' + idPrefix + '-district');
             // Viloyatni qo'yamiz va tuman ro'yxatini to'ldirish uchun change'ni ishga tushiramiz.
             if (prefill.region) {
                 reg.value = prefill.region;
@@ -1089,16 +1111,17 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 if (prefill.district) dist.value = prefill.district;
             }
             // Tarkibiy maydonlar (eski manzillarda bo'lmasligi mumkin — xatosiz o'tadi).
-            if (prefill.village) box.querySelector('#addr-village').value = prefill.village;
-            if (prefill.house) box.querySelector('#addr-house').value = prefill.house;
-            if (prefill.note) box.querySelector('#addr-note').value = prefill.note;
+            if (prefill.village) box.querySelector('#' + idPrefix + '-village').value = prefill.village;
+            if (prefill.house) box.querySelector('#' + idPrefix + '-house').value = prefill.house;
+            if (prefill.note) box.querySelector('#' + idPrefix + '-note').value = prefill.note;
         }
     }
+    function renderAddrGeo(prefill) { renderGeoCascade('addrGeo', 'addr', prefill); }
 
     function editAddr(i) {
         const a = addresses[i];
         document.getElementById('addrId').value = i;
-        document.getElementById('addrLabel').value = a.label || '';
+        document.getElementById('addrFullName').value = a.fullName || '';
         // Geografiya kaskadini saqlangan qiymatlar bilan to'ldiramiz.
         renderAddrGeo(a);
         document.getElementById('addrPhone').value = a.phone || '';
@@ -1124,24 +1147,29 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('addAddrBtn').onclick = () => {
         document.getElementById('addrForm').reset();
         document.getElementById('addrId').value = '';
+        document.getElementById('addrFullName').value = profile.name || '';
         // Geografiya kaskadini bo'sh holatda qaytadan quramiz (reset() inject qilingan
         // maydonlarni tozalamaydi, shuning uchun yangidan render qilamiz).
         renderAddrGeo(null);
+        document.getElementById('addrPhone').value = '+998 ';
         document.getElementById('addrFormTitle').textContent = 'Yangi manzil';
         openSheet('addrFormSheet');
     };
 
     document.getElementById('saveAddrBtn').onclick = () => {
         const id = document.getElementById('addrId').value;
+        const fullName = document.getElementById('addrFullName').value.trim();
         const phone = document.getElementById('addrPhone').value.trim();
 
         // Geografiya qismini umumiy UzAddress orqali o'qiymiz (majburiy: viloyat, tuman, uy).
         const addr = UzAddress.read(document, { idPrefix: 'addr' });
+        if (!fullName) { toast("Ism Familiyangizni kiriting", 'error'); return; }
         if (!addr) { toast("Viloyat, tuman va uy raqamini to'ldiring", 'error'); return; }
         if (!phone || phone.replace(/\D/g, '').length < 9) { toast("Telefon raqamni to'g'ri kiriting", 'error'); return; }
 
         const obj = {
-            label: document.getElementById('addrLabel').value.trim() || 'Manzil',
+            label: id !== '' ? addresses[+id].label : `Manzil ${addresses.length + 1}`,
+            fullName,
             // Tarkibiy maydonlar (tahrirlashda qaytarib qo'yish uchun).
             region: addr.region, district: addr.district,
             village: addr.village, house: addr.house, note: addr.note,
