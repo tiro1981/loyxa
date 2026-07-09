@@ -324,11 +324,14 @@
         </div>
         <form id="addressForm" class="ufm">
           <input type="hidden" id="addrId">
-          <label>Nomi (Uy, Ish, ...)
-            <input type="text" id="addrLabel" placeholder="Uy" required>
+          <label>Ism Familiya
+            <input type="text" id="addrFullName" required>
           </label>
           <!-- Umumiy UzAddress manzil kaskadi (viloyat/tuman/qishloq/uy/izoh) bu yerga joylashtiriladi -->
           <div id="addrCascade"></div>
+          <label>Telefon
+            <input type="tel" id="addrPhone" placeholder="+998 90 123 45 67" required>
+          </label>
           <button type="submit" class="btn-primary block">Saqlash</button>
         </form>
       </div>
@@ -524,7 +527,7 @@
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("tabby", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       for (const src of ["uzbekistan-regions.js", "script.js"]) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=5"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

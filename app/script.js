@@ -463,8 +463,8 @@ $('checkoutBtn').addEventListener('click', () => {
   const order = {
     id: 'TB-' + (1000 + DB.get('tb_orders', []).length + 1),
     userId: currentUser.id,
-    userName: currentUser.name,
-    userPhone: currentUser.phone,
+    userName: defaultAddr.fullName || currentUser.name,
+    userPhone: defaultAddr.phone || currentUser.phone,
     items, itemsText: items.map(i => `${i.name} × ${i.qty}`).join(', '),
     subtotal, deliveryFee, total: subtotal + deliveryFee,
     address: defaultAddr.address,
@@ -584,7 +584,7 @@ function renderAddresses() {
     <div class="address-item ${a.isDefault ? 'default' : ''}">
       ${a.isDefault ? '<span class="default-badge">ASOSIY</span>' : ''}
       <div class="addr-ic"><i class="fa-solid fa-location-dot"></i></div>
-      <div class="addr-info"><h4>${a.label}</h4><p>${a.address}${a.note ? ' • ' + a.note : ''}</p></div>
+      <div class="addr-info"><h4>${a.label}</h4><p>${a.address}${a.note ? ' • ' + a.note : ''}</p>${a.fullName ? `<p>${a.fullName}${a.phone ? ' · ' + a.phone : ''}</p>` : ''}</div>
       <div class="item-acts">
         ${!a.isDefault ? `<button data-default="${a.id}" title="Asosiy"><i class="fa-solid fa-star"></i></button>` : ''}
         <button data-eaddr="${a.id}" title="Tahrirlash"><i class="fa-solid fa-pen"></i></button>
@@ -615,7 +615,8 @@ function openAddressForm(id) {
     if (!a) return;
     $('addrFormTitle').textContent = 'Manzilni tahrirlash';
     $('addrId').value = a.id;
-    $('addrLabel').value = a.label;
+    $('addrFullName').value = a.fullName || '';
+    $('addrPhone').value = a.phone || '';
     // Saqlangan tarkibiy maydonlardan kaskadni to'ldiramiz
     if (a.region) {
       $('na-region').value = a.region;
@@ -631,22 +632,33 @@ function openAddressForm(id) {
     if (a.village) $('na-village').value = a.village;
     if (a.house) $('na-house').value = a.house;
     if (a.note) $('na-note').value = a.note;
-  } else $('addrFormTitle').textContent = 'Yangi manzil';
+  } else {
+    $('addrFormTitle').textContent = 'Yangi manzil';
+    $('addrFullName').value = (currentUser && currentUser.name) || '';
+    $('addrPhone').value = (currentUser && currentUser.phone) || '+998 ';
+  }
   openModal('addressFormModal');
 }
 
 $('addressForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const id = parseInt($('addrId').value);
-  const label = $('addrLabel').value.trim();
+  const fullName = $('addrFullName').value.trim();
+  const phone = $('addrPhone').value.trim();
   // Umumiy UzAddress kaskadidan to'liq manzilni o'qiymiz (majburiy: viloyat, tuman, uy)
   const addr = UzAddress.read(document, { idPrefix: 'na' });
-  if (!label || !addr) {
-    showToast('Nomi, viloyat, tuman va uy raqamini to\'ldiring');
+  if (!fullName || !phone || !addr) {
+    showToast('Ism familiya, telefon, viloyat, tuman va uy raqamini to\'ldiring');
     return;
   }
+  if (phone.replace(/\D/g, '').length < 9) {
+    showToast('Telefon raqam noto\'g\'ri');
+    return;
+  }
+  let addrs = getAddrs();
   const data = {
-    label,
+    label: id ? addrs.find(a => a.id === id).label : `Manzil ${addrs.length + 1}`,
+    fullName, phone,
     address: addr.text,   // checkout/renderAddresses `address` ni o'qiydi — shu nom saqlanadi
     note: addr.note,
     region: addr.region,
@@ -654,7 +666,6 @@ $('addressForm').addEventListener('submit', (e) => {
     village: addr.village,
     house: addr.house
   };
-  let addrs = getAddrs();
   if (id) {
     const i = addrs.findIndex(a => a.id === id);
     addrs[i] = { ...addrs[i], ...data };
