@@ -206,7 +206,6 @@ function showDialog({ title = 'Tasdiqlash', message = '', icon = '⚠️', okTex
    STOREFRONT (runs only on index.html)
    ============================================ */
 if (document.querySelector('.app .screen[data-screen="home"]')) {
-    const FAV_KEY = 'kitob_favs_v1';
     const PROFILE_KEY = 'kitob_profile_v1';
     const ADDR_KEY = 'kitob_addrs_v1';
     const THEME_KEY = 'kitob_theme';
@@ -216,7 +215,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     let data = Store.load();
     let cart = safeParse(CART_KEY, []);
-    let favorites = safeParse(FAV_KEY, []);
     let profile = safeParse(PROFILE_KEY, {});
     let addresses = safeParse(ADDR_KEY, []);
     let activePromo = safeParse(PROMO_KEY, null);
@@ -232,7 +230,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     /* ---------- Persist helpers ---------- */
     const saveCart = () => { localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartBadge(); };
-    const saveFavs = () => { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); updateProfileStats(); };
     const saveProfile = () => { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); renderProfile(); };
     const saveAddrs = () => { localStorage.setItem(ADDR_KEY, JSON.stringify(addresses)); renderAddresses(); updateAddressCount(); };
     const savePromo = () => {
@@ -340,13 +337,11 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     function productCard(p) {
         const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        const isFav = favorites.includes(p.id);
         const outOfStock = p.stock === 0;
         return `
             <div class="p-card" data-pid="${p.id}">
                 <div class="p-img">
                     ${discount ? `<span class="p-discount">-${discount}%</span>` : ''}
-                    <button class="p-fav ${isFav ? 'on' : ''}" data-fav="${p.id}" aria-label="Sevimli">${isFav ? '❤️' : '🤍'}</button>
                     <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy">
                     ${outOfStock ? '<div class="p-stockout">Tugagan</div>' : ''}
                 </div>
@@ -400,7 +395,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const p = data.products.find(x => x.id === id);
         if (!p) return;
         const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        const isFav = favorites.includes(p.id);
         const sizesHtml = (p.sizes || []).map((s,i) => `<button class="size-btn ${i===0?'active':''}" data-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');
         const outOfStock = p.stock === 0;
 
@@ -418,7 +412,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         document.getElementById('productDetail').innerHTML = `
             <div class="sheet-body">
                 <div class="pd-gallery">
-                    <button class="pd-fav ${isFav ? 'on' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '🤍'}</button>
                     <img src="${p.image}" alt="${escapeHtml(p.name)}">
                 </div>
                 <div class="pd-cat">${escapeHtml(catName(p.category))}</div>
@@ -664,22 +657,9 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     // Product card clicks
     document.addEventListener('click', e => {
-        const fav = e.target.closest('[data-fav]');
         const add = e.target.closest('[data-add]');
         const card = e.target.closest('.p-card, .trend-card');
 
-        if (fav) {
-            e.stopPropagation();
-            const id = +fav.dataset.fav;
-            if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
-            else favorites.push(id);
-            saveFavs();
-            renderProductGrid();
-            renderTrending();
-            const sheet = document.getElementById('productSheet');
-            if (sheet.classList.contains('show')) openProductDetail(id);
-            return;
-        }
         if (add) {
             e.stopPropagation();
             addToCart(+add.dataset.add);
@@ -961,7 +941,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const myOrders = data.orders.filter(o => o.self);
         const spent = myOrders.filter(o => o.status === 'yetkazildi').reduce((s, o) => s + o.total, 0);
         document.getElementById('psOrders').textContent = myOrders.length;
-        document.getElementById('psFav').textContent = favorites.length;
         const bonus = Math.floor(spent / 10000);
         document.getElementById('psSpent').textContent = bonus;
     }
@@ -1115,18 +1094,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         toast(id ? 'Manzil yangilandi' : "Manzil qo'shildi", 'success');
     };
 
-    /* ============ FAVORITES ============ */
-    document.getElementById('openFavorites').onclick = () => {
-        const favProds = data.products.filter(p => favorites.includes(p.id));
-        const body = document.getElementById('favBody');
-        if (favProds.length === 0) {
-            body.innerHTML = `<div class="empty-state"><div class="emp-ico">❤️</div><h4>Sevimlilar yo'q</h4><p>Yoqqan kitoblarga ❤️ bosing</p></div>`;
-        } else {
-            body.innerHTML = `<div class="product-grid">${favProds.map(productCard).join('')}</div>`;
-        }
-        openSheet('favSheet');
-    };
-
     /* ============ MISC PROFILE ACTIONS ============ */
     document.getElementById('aboutLink').onclick = () => openSheet('aboutSheet');
     document.getElementById('openPayment').onclick = () => toast('Tez kunda qo\'shiladi', 'info');
@@ -1135,7 +1102,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('logoutBtn').onclick = async () => {
         const ok = await showDialog({
             title: 'Hisobdan chiqish',
-            message: 'Profilingiz ushbu qurilmadan o\'chiriladi. Sevimlilar va savatcha saqlanadi.',
+            message: 'Profilingiz ushbu qurilmadan o\'chiriladi. Savatcha saqlanadi.',
             icon: '👋',
             okText: 'Chiqish',
             danger: true,
