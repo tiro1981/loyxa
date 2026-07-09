@@ -244,35 +244,11 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
-            },
-            {
-                id: 'app-kofe',
-                slug: 'kofe',
-                name: 'Kofe — Mobil buyurtma',
-                desc: 'Kofexona uchun zamonaviy mobil buyurtma ilovasi — menyu, mahsulot varianti (o\'lcham, sut), savat, yetkazib berish va buyurtma holati',
-                logo: null,
-                logoEmoji: '☕',
-                price: 139000,
-                priceLabel: 'oyiga',
-                features: [
-                    'Kofe menyusi (Issiq, Sovuq, Desert, Choy)',
-                    'O\'lcham va sut turini tanlash',
-                    'Savat va yetkazib berish buyurtmasi',
-                    'Buyurtma holati (kuryer, xarita, timeline)',
-                    'Sodiqlik ballari tizimi',
-                    'Telegram bot integratsiyasi',
-                    'QR kod va to\'liq admin panel'
-                ],
-                demoUrl: 'kofe/index.html',
-                adminUrl: 'kofe/admin.html',
-                popular: true,
-                active: true,
-                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v6-kofe-added';
-        const removedIds = new Set(['app-salqin']);
+        const APPS_VERSION = 'v7-kofe-removed';
+        const removedIds = new Set(['app-salqin', 'app-kofe']);
         const savedVersion = localStorage.getItem('bo_apps_version');
         const existing = JSON.parse(localStorage.getItem('bo_apps') || '[]');
 

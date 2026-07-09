@@ -25,7 +25,7 @@ Supabase loyihangiz: **loyxa** (tiro1981). Yangi loyiha kerak emas.
 
 ```sql
 create table app_state (
-  app        text not null,          -- 'ovqat' | 'kiyim' | 'kitob' | 'kofe' | 'tabby'
+  app        text not null,          -- 'ovqat' | 'kiyim' | 'kitob' | 'tabby'
   client_id  text not null,          -- do'kon identifikatori (?client= yoki bo_session)
   key        text not null,          -- localStorage kaliti (masalan 'products','orders','catalog')
   value      jsonb,                  -- saqlanadigan ma'lumot (har qanday JSON)
