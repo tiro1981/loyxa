@@ -5,6 +5,27 @@
 // Telefon raqamni faqat raqamlarga keltirish (taqqoslash uchun)
 const digits = (s) => String(s || '').replace(/\D/g, '');
 
+// +998 XX XXX XX XX formatiga avtomatik moslash (9 xonali raqam: 2+3+2+2).
+// `skipIfLetters` — true bo'lsa, foydalanuvchi harf kiritsa (masalan username) mask qo'llanmaydi.
+function formatUzPhone(raw) {
+    let v = digits(raw);
+    if (v.startsWith('998')) v = v.substring(3);
+    v = v.substring(0, 9);
+    let f = '+998 ';
+    if (v.length > 0) f += v.substring(0, 2);
+    if (v.length > 2) f += ' ' + v.substring(2, 5);
+    if (v.length > 5) f += ' ' + v.substring(5, 7);
+    if (v.length > 7) f += ' ' + v.substring(7, 9);
+    return f;
+}
+function attachPhoneMask(input, { skipIfLetters = false } = {}) {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+        if (skipIfLetters && /[a-zA-Z_]/.test(e.target.value)) return;   // username kiritilmoqda — mask qo'llanmaydi
+        e.target.value = formatUzPhone(e.target.value);
+    });
+}
+
 // ===== Telegram OTP tasdiqlash sozlamalari (ro'yxatdan o'tishda telefon tasdiqlash) =====
 // ↓↓↓ BU IKKI QIYMATNI O'ZINGIZNIKI BILAN ALMASHTIRING (aks holda tasdiqlash ishlamaydi) ↓↓↓
 const BOT_USERNAME = "onlinebiznes_smsbot";   // platforma boti @username (@ siz), masalan: onlinebiznes_bot
@@ -99,6 +120,7 @@ const VERIFY_TTL = 120;      // kod amal qilish muddati (soniya) — server CODE
 let _verifyTickInt = null;   // mahalliy 1s sanoq
 let _verifyPollInt = null;   // serverga so'rov (3s)
 let _verifyRemaining = 0;    // qolgan soniya
+let _verifyTimerTargetId = 'verifyTimer';   // qaysi taymer div'ga chizish (registratsiya yoki parolni tiklash)
 
 function stopVerifyTimers() {
     if (_verifyTickInt) { clearInterval(_verifyTickInt); _verifyTickInt = null; }
@@ -106,7 +128,7 @@ function stopVerifyTimers() {
 }
 
 function renderVerifyTimer() {
-    const el = document.getElementById('verifyTimer');
+    const el = document.getElementById(_verifyTimerTargetId);
     if (!el) return;
     const base = 'display:block;margin-top:12px;text-align:center;font-weight:600;'
         + 'font-size:15px;padding:10px 12px;border-radius:10px;';
@@ -138,8 +160,9 @@ async function pollVerifyStatus(phone) {
     } catch (e) { /* jim — tarmoq vaqtincha uzilgan bo'lishi mumkin */ }
 }
 
-function startVerifyCountdown(phone) {
+function startVerifyCountdown(phone, targetId) {
     stopVerifyTimers();
+    _verifyTimerTargetId = targetId || 'verifyTimer';
     _verifyRemaining = VERIFY_TTL;   // oyna ochilishi bilan darrov 2:00 dan teskari sanoq
     renderVerifyTimer();
     _verifyTickInt = setInterval(() => {
@@ -213,6 +236,129 @@ function openVerifyStep(username, phone, password) {
     };
 }
 
+/* ===== PAROLNI TIKLASH (forgot password) =====
+   1) telefon kiritish -> 2) Telegram OTP tasdiqlash (registratsiyadagi bilan bir xil
+   mexanizm — BOT_SERVER/verify/check) -> 3) yangi parolni ikki marta kiritib saqlash. */
+
+/* Barcha "parolni tiklash" bosqichlarini yopib, Kirish formasini qaytaradi. */
+function resetForgotSteps() {
+    stopVerifyTimers();
+    _verifyRemaining = 0;
+    ['forgotPhoneStep', 'forgotVerifyStep', 'forgotNewPassStep'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    const timer = document.getElementById('forgotVerifyTimer');
+    if (timer) timer.style.display = 'none';
+    const code = document.getElementById('forgotCode');
+    if (code) code.value = '';
+    const clientFormEl = document.getElementById('clientForm');
+    if (clientFormEl) clientFormEl.style.display = '';   // openForgotPhoneStep qo'ygan inline none'ni tozalash
+}
+
+function backToLoginFromForgot() {
+    resetForgotSteps();
+    if (typeof window.switchRole === 'function') window.switchRole('client');
+}
+
+/* 1-bosqich: telefon kiritish */
+function openForgotPhoneStep() {
+    stopVerifyTimers();
+    const clientFormEl = document.getElementById('clientForm');
+    const step = document.getElementById('forgotPhoneStep');
+    const input = document.getElementById('forgotPhone');
+    if (!step || !input) return;
+    if (clientFormEl) clientFormEl.style.display = 'none';
+    input.value = '+998 ';
+    step.style.display = 'block';
+    try { input.focus(); } catch (e) {}
+}
+
+/* 2-bosqich: Telegram OTP tasdiqlash — tasdiqlangach yangi parol bosqichiga o'tadi. */
+function openForgotVerifyStep(phone) {
+    const phoneStep = document.getElementById('forgotPhoneStep');
+    const step = document.getElementById('forgotVerifyStep');
+    const link = document.getElementById('forgotBotLink');
+    const input = document.getElementById('forgotCode');
+    const btn = document.getElementById('forgotConfirmCode');
+    if (!step || !link || !input || !btn) return;
+    if (phoneStep) phoneStep.style.display = 'none';
+    step.style.display = 'block';
+    link.href = 'https://t.me/' + BOT_USERNAME + '?start=verify';
+    input.value = '';
+    try { input.focus(); } catch (e) {}
+    btn.disabled = false;
+    startVerifyCountdown(phone, 'forgotVerifyTimer');   // sanoq taymerini ishga tushiramiz
+    btn.onclick = async () => {
+        const code = digitsOnly(input.value);
+        if (code.length !== 4) {
+            window.showToast && window.showToast("4 xonali kod kiriting", 'error');
+            return;
+        }
+        btn.disabled = true;
+        try {
+            const r = await fetch(BOT_SERVER.replace(/\/+$/, '') + '/verify/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, code }),
+            });
+            const data = await r.json().catch(() => ({}));
+            if (data.ok) {
+                stopVerifyTimers();
+                openForgotNewPassStep(phone);
+            } else {
+                window.showToast && window.showToast(data.error || "Kod tasdiqlanmadi", 'error');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            window.showToast && window.showToast("Server bilan ulanib bo'lmadi", 'error');
+            btn.disabled = false;
+        }
+    };
+}
+
+/* 3-bosqich: yangi parolni ikki marta kiritib saqlash. */
+function openForgotNewPassStep(phone) {
+    const verifyStepEl = document.getElementById('forgotVerifyStep');
+    const step = document.getElementById('forgotNewPassStep');
+    const p1 = document.getElementById('forgotNewPass');
+    const p2 = document.getElementById('forgotNewPassConfirm');
+    const btn = document.getElementById('forgotSavePass');
+    if (!step || !p1 || !p2 || !btn) return;
+    if (verifyStepEl) verifyStepEl.style.display = 'none';
+    p1.value = '';
+    p2.value = '';
+    step.style.display = 'block';
+    try { p1.focus(); } catch (e) {}
+    btn.onclick = () => {
+        const pass1 = p1.value;
+        const pass2 = p2.value;
+        if (pass1.length < 6) {
+            window.showToast && window.showToast("Parol kamida 6 ta belgidan iborat bo'lsin", 'error');
+            return;
+        }
+        if (pass1 !== pass2) {
+            window.showToast && window.showToast("Parollar mos kelmadi", 'error');
+            return;
+        }
+        try {
+            const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            const user = subs.find((s) => digits(s.phone) === digits(phone));
+            if (!user) {
+                window.showToast && window.showToast("Hisob topilmadi", 'error');
+                return;
+            }
+            user.password = pass1;
+            localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+            window.showToast && window.showToast("Parol muvaffaqiyatli yangilandi! Endi kirishingiz mumkin.", 'success');
+            backToLoginFromForgot();
+        } catch (err) {
+            console.error(err);
+            window.showToast && window.showToast("Xatolik yuz berdi", 'error');
+        }
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- ROLE TABS ---------- */
@@ -220,10 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('.auth-form');
 
     function switchRole(role) {
-        resetVerifyStep();   // tab almashganda "Telefonni tasdiqlang" blokini yashiramiz
+        resetVerifyStep();    // tab almashganda "Telefonni tasdiqlang" blokini yashiramiz
+        resetForgotSteps();   // ...va "Parolni tiklash" bosqichlarini ham
         tabs.forEach(t => t.classList.toggle('active', t.dataset.role === role));
         forms.forEach(f => f.classList.toggle('active', f.dataset.role === role));
     }
+    window.switchRole = switchRole;   // backToLoginFromForgot() dan chaqirish uchun
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => switchRole(tab.dataset.role));
@@ -241,6 +389,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlTab = new URLSearchParams(window.location.search).get('tab');
     if (urlTab && document.querySelector(`.role-tab[data-role="${urlTab}"]`)) {
         switchRole(urlTab);
+    }
+
+    /* ---------- LOGIN MAYDONI: +998 avtomatik + telefon mask ----------
+       "login" maydoni telefon YOKI username qabul qiladi — shuning uchun
+       foydalanuvchi harf kiritsa (username) mask o'chadi, faqat raqam
+       kiritilsa +998 XX XXX XX XX formatiga avtomatik moslanadi. */
+    const loginInput = document.querySelector('#clientForm [name="login"]');
+    if (loginInput) {
+        if (!loginInput.value) loginInput.value = '+998 ';
+        attachPhoneMask(loginInput, { skipIfLetters: true });
+    }
+
+    /* ---------- PAROLNI UNUTDINGIZMI ---------- */
+    const forgotLink = document.querySelector('.forgot-link');
+    if (forgotLink) {
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openForgotPhoneStep();
+        });
+    }
+    document.querySelectorAll('#forgotBackLink1').forEach((link) => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            backToLoginFromForgot();
+        });
+    });
+    const forgotPhoneInput = document.getElementById('forgotPhone');
+    attachPhoneMask(forgotPhoneInput);
+    const forgotSendBtn = document.getElementById('forgotSendCode');
+    if (forgotSendBtn) {
+        forgotSendBtn.addEventListener('click', () => {
+            const phone = (forgotPhoneInput && forgotPhoneInput.value || '').trim();
+            if (digits(phone).length < 9) {
+                window.showToast && window.showToast("To'g'ri telefon raqam kiriting", 'error');
+                return;
+            }
+            try {
+                const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+                const user = subs.find((s) => digits(s.phone) === digits(phone));
+                if (!user) {
+                    window.showToast && window.showToast("Bu raqam bilan ro'yxatdan o'tilmagan", 'error');
+                    return;
+                }
+                openForgotVerifyStep(phone);
+            } catch (err) {
+                console.error(err);
+                window.showToast && window.showToast('Xatolik yuz berdi', 'error');
+            }
+        });
     }
 
     /* ---------- PASSWORD TOGGLE ---------- */
@@ -370,19 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerForm) {
         // Phone mask
         const phoneInput = registerForm.querySelector('[name="phone"]');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', (e) => {
-                let v = e.target.value.replace(/\D/g, '');
-                if (v.startsWith('998')) v = v.substring(3);
-                v = v.substring(0, 9);
-                let f = '+998 ';
-                if (v.length > 0) f += v.substring(0, 2);
-                if (v.length > 2) f += ' ' + v.substring(2, 5);
-                if (v.length > 5) f += ' ' + v.substring(5, 7);
-                if (v.length > 7) f += ' ' + v.substring(7, 9);
-                e.target.value = f;
-            });
-        }
+        attachPhoneMask(phoneInput);
 
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();

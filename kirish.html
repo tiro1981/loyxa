@@ -180,6 +180,50 @@
                     <button id="verifyConfirm" class="btn btn-primary btn-block btn-lg" style="margin-top:10px">Tasdiqlash</button>
                 </div>
 
+                <!-- Parolni tiklash — 1) telefon kiritish bosqichi -->
+                <div id="forgotPhoneStep" style="display:none">
+                    <h3 style="margin:0 0 6px">Parolni tiklash</h3>
+                    <p class="auth-sub">Ro'yxatdan o'tgan telefon raqamingizni kiriting — tasdiqlash kodi Telegram orqali yuboriladi.</p>
+                    <div class="auth-input">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" id="forgotPhone" placeholder="+998 90 123 45 67">
+                    </div>
+                    <button id="forgotSendCode" class="btn btn-primary btn-block btn-lg" style="margin-top:10px">Kod yuborish</button>
+                    <p class="auth-foot"><a href="#" id="forgotBackLink1">Kirish sahifasiga qaytish</a></p>
+                </div>
+
+                <!-- Parolni tiklash — 2) Telegram OTP tasdiqlash bosqichi -->
+                <div id="forgotVerifyStep" style="display:none">
+                    <h3 style="margin:0 0 6px">Telefonni tasdiqlang</h3>
+                    <p class="auth-sub">1) Botni oching va telefon raqamingizni yuboring. 2) Kelgan 4 xonali kodni kiriting. Kod 2 daqiqa amal qiladi.</p>
+                    <a id="forgotBotLink" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-block btn-lg">
+                        <i class="fa-brands fa-telegram"></i> Telegram botni ochish
+                    </a>
+                    <div id="forgotVerifyTimer" style="display:none"></div>
+                    <div class="auth-input" style="margin-top:12px">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="tel" id="forgotCode" inputmode="numeric" maxlength="4" placeholder="4 xonali kod" autocomplete="one-time-code">
+                    </div>
+                    <button id="forgotConfirmCode" class="btn btn-primary btn-block btn-lg" style="margin-top:10px">Tasdiqlash</button>
+                </div>
+
+                <!-- Parolni tiklash — 3) yangi parol o'rnatish bosqichi -->
+                <div id="forgotNewPassStep" style="display:none">
+                    <h3 style="margin:0 0 6px">Yangi parol o'rnating</h3>
+                    <p class="auth-sub">Hisobingiz uchun yangi parol yarating.</p>
+                    <div class="auth-input">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="forgotNewPass" placeholder="Kamida 6 ta belgi" minlength="6" autocomplete="new-password">
+                        <button type="button" class="eye-btn" data-toggle><i class="fa-regular fa-eye"></i></button>
+                    </div>
+                    <div class="auth-input" style="margin-top:12px">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="forgotNewPassConfirm" placeholder="Parolni qayta kiriting" minlength="6" autocomplete="new-password">
+                        <button type="button" class="eye-btn" data-toggle><i class="fa-regular fa-eye"></i></button>
+                    </div>
+                    <button id="forgotSavePass" class="btn btn-primary btn-block btn-lg" style="margin-top:10px">Parolni saqlash</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -187,6 +231,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="js/main.js?v=9"></script>
-    <script src="js/auth.js?v=11"></script>
+    <script src="js/auth.js?v=12"></script>
 </body>
 </html>
