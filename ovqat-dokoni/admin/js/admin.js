@@ -755,9 +755,24 @@
         '</div>' +
       '</div>' +
 
+      '<div class="bot-api-banner" id="botApiBanner" style="display:none">' +
+        '<span>⚠️ Bot server manzili sozlanmagan — buyurtmalar Telegram kanalga yuborilmaydi. Pastdagi <b>1-bosqich</b>dan saqlang.</span>' +
+        '<button type="button" id="botApiBannerBtn">Manzilni sozlash</button>' +
+      '</div>' +
+
+      '<div class="card"><div class="card-head"><h3>1. Bot server manzili</h3></div><div class="card-pad">' +
+        '<div class="field"><label>Bot server manzili (URL)</label>' +
+          '<div class="qr-url-row">' +
+            '<input class="input" id="botApiInput" placeholder="https://mening-bot.example.com"/>' +
+            '<button class="btn btn--primary" id="botApiSave">Saqlash</button>' +
+          '</div>' +
+          '<p class="bot-note">bot.py ishlab turgan manzil. Hozirgi: <code id="botApiUrl">—</code>. Mijoz buyurtmasi shu serverga yuboriladi — <b>HTTPS</b> bo\'lishi va internetdan ochiq bo\'lishi shart (localhost faqat sizning kompyuteringizda ishlaydi).</p>' +
+        '</div>' +
+      '</div></div>' +
+
       '<div class="bot-grid">' +
 
-        '<div class="card"><div class="card-head"><h3>1. Botni ulash</h3></div><div class="card-pad">' +
+        '<div class="card"><div class="card-head"><h3>2. Botni ulash</h3></div><div class="card-pad">' +
           '<div class="field"><label>Bot tokeni</label>' +
             '<div class="bot-token">' +
               '<input class="input" id="botToken" type="password" placeholder="123456789:AAE-..." value="' + esc(tokenVal) + '"/>' +
@@ -777,7 +792,7 @@
             '</div>' : '') +
         '</div></div>' +
 
-        '<div class="card"><div class="card-head"><h3>2. Buyurtma kanali</h3></div><div class="card-pad">' +
+        '<div class="card"><div class="card-head"><h3>3. Buyurtma kanali</h3></div><div class="card-pad">' +
           '<div class="field"><label>Kanal username yoki ID</label>' +
             '<input class="input" id="botChannel" placeholder="@kanal_nomi" value="' + esc(channel) + '"/>' +
             '<p class="bot-hint">Botni kanalga admin qiling, so\'ng shu yerga username yozing</p>' +
@@ -791,7 +806,7 @@
 
       '</div>' +
 
-      '<div class="card"><div class="card-head"><h3>3. Mijozlarga ommaviy xabar</h3></div><div class="card-pad">' +
+      '<div class="card"><div class="card-head"><h3>4. Mijozlarga ommaviy xabar</h3></div><div class="card-pad">' +
         '<textarea class="input" id="botBroadcast" rows="3" placeholder="Barcha bot obunachilariga yuboriladigan xabar..."></textarea>' +
         '<button class="btn btn--primary btn--block" id="botBroadcastBtn" style="margin-top:12px">' + ICON.broadcast + ' Hammaga yuborish</button>' +
       '</div></div>' +
@@ -805,13 +820,6 @@
           '<li>Kanal username (masalan <code>@mening_dokonim</code>) ni kiritib <b>Kanalni ulang</b>.</li>' +
           '<li>Endi har bir yangi buyurtma avtomatik kanalga yuboriladi. ✅</li>' +
         '</ol>' +
-        '<div class="field" style="margin-top:6px"><label>Bot server manzili (URL)</label>' +
-          '<div class="qr-url-row">' +
-            '<input class="input" id="botApiInput" placeholder="https://mening-bot.example.com"/>' +
-            '<button class="btn btn--primary" id="botApiSave">Saqlash</button>' +
-          '</div>' +
-          '<p class="bot-note">bot.py ishlab turgan manzil. Hozirgi: <code id="botApiUrl">—</code>. Mijoz buyurtmasi shu serverga yuboriladi — <b>HTTPS</b> bo\'lishi va internetdan ochiq bo\'lishi shart (localhost faqat sizning kompyuteringizda ishlaydi).</p>' +
-        '</div>' +
       '</div></div>' +
 
     '</div>';
@@ -1008,6 +1016,12 @@
         const cur = (window.Cloud ? Cloud.get("bot_api", "") : "") || localStorage.getItem("bo_bot_api") || "";
         apiInput.value = cur;
       }
+      updateBotApiBanner();
+      const bannerBtn = el("botApiBannerBtn");
+      if (bannerBtn) bannerBtn.addEventListener("click", () => {
+        el("botApiInput")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        el("botApiInput")?.focus();
+      });
       const apiSave = el("botApiSave");
       if (apiSave) apiSave.addEventListener("click", () => {
         let v = (el("botApiInput").value || "").trim().replace(/\/+$/, "");
@@ -1237,7 +1251,18 @@
     return m;
   }
 
+  // Telegram.API_URL bo'sh qaytarsa (nazariy holat — DEFAULT_BOT_API buni odatda
+  // oldini oladi) — toast tez yo'qolib ketadi, shuning uchun doimiy ko'rinadigan
+  // banner ham chiqaramiz (1-bosqichga yo'naltiradi).
+  function updateBotApiBanner() {
+    const banner = el("botApiBanner");
+    if (!banner) return;
+    const api = window.Telegram ? Telegram.API_URL : "";
+    banner.style.display = api ? "none" : "";
+  }
+
   async function botRefreshStatus() {
+    updateBotApiBanner();
     if (!window.Telegram) { botStatus = null; if (activeSection === "bot") render(); return; }
     const txt = el("botStatusText");
     if (txt) txt.textContent = "Tekshirilmoqda…";

@@ -141,6 +141,10 @@ function toast(msg, type = 'success') {
 }
 
 /* ---------- Telegram bot xabarnomasi (admin panelda ulangan bo'lsa) ---------- */
+// Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
+// serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionда ham
+// standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
+const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('moda_bot_config') || 'null');
@@ -149,7 +153,7 @@ function notifyTelegramBot(order) {
         const _botConfigured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
         const BOT_HTTP = _botConfigured
             ? _botConfigured.replace(/\/+$/, '')
-            : (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '');
+            : (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API);
         if (!BOT_HTTP) { console.warn('[bot] bot_api sozlanmagan — xabar yuborilmadi'); return; }
         fetch(`${BOT_HTTP}/store-bot/order`, {
             method: 'POST',

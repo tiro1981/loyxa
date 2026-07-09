@@ -14,6 +14,10 @@ const Telegram = (() => {
 
   // Bot server manzili — Cloud("bot_api") (admin sozlaydi, mijozga ham sinxron),
   // aks holda localStorage, aks holda localhost. Har chaqiruvда yangidan o'qiymiz.
+  // Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
+  // serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionda ham
+  // standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
+  const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
   function apiBase() {
     const configured =
       (window.Cloud && Cloud.get('bot_api')) ||
@@ -21,7 +25,7 @@ const Telegram = (() => {
       localStorage.getItem('ovqat_bot_http_url') || '';
     if (configured) return configured.replace(/\/+$/, '');
     if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
-    return '';
+    return DEFAULT_BOT_API;
   }
 
   async function request(path, opts = {}) {

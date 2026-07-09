@@ -960,11 +960,17 @@ setInterval(() => {
 // ====== Do'kon boti — token asosida (yagona bot) ======
 const APP_SLUG = 'fastfood';
 const SHOP_KEY = (CLIENT_ID || 'demo') + '__' + APP_SLUG;
+// Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
+// serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionда ham
+// standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
+// Do'kon o'zining alohida bot serveri bo'lsa, "Bot server manzili" bo'limidan
+// ustidan yozib qo'yishi mumkin (Cloud/localStorage'dagi qiymat doim ustuvor).
+const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
 function getBotApi() {
   const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
   if (configured) return configured.replace(/\/+$/, '');
   if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
-  return '';
+  return DEFAULT_BOT_API;
 }
 function getBotCfg() { return DB.get('tb_bot_config', null) || {}; }
 function saveBotCfg(cfg) { DB.set('tb_bot_config', cfg); }
@@ -985,9 +991,10 @@ function renderBot() {
   setChannelUI(cfg);
   refreshBotStatus();
   renderBotApiSettings();
+  updateBotApiBanner();
 }
 
-// 4) Bot server manzili — sozlash UI
+// 1) Bot server manzili — sozlash UI
 function renderBotApiSettings() {
   const cur = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
   const input = document.getElementById('bot2ApiInput');
@@ -1003,8 +1010,23 @@ document.getElementById('bot2ApiSaveBtn')?.addEventListener('click', () => {
   try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
   if (input) input.value = v;
   renderBotApiSettings();
+  updateBotApiBanner();
   toast(v ? 'Bot server manzili saqlandi' : 'Standart manzilga qaytarildi', 'success');
   refreshBotStatus();
+});
+
+// getBotApi() bo'sh qaytarsa (nazariy holat — DEFAULT_BOT_API buni odatda oldini oladi,
+// lekin kelajakda o'zgarishi mumkin) — toast 2-3 soniyada yo'qolib ketadi va ko'rinmay
+// qolishi mumkin, shuning uchun doimiy ko'rinadigan banner ham chiqaramiz.
+function updateBotApiBanner() {
+  const banner = document.getElementById('botApiBanner');
+  if (!banner) return;
+  banner.style.display = getBotApi() ? 'none' : '';
+}
+document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
+  const input = document.getElementById('bot2ApiInput');
+  input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  input?.focus();
 });
 
 function setBotConnectedUI(connected, username) {
@@ -1030,12 +1052,14 @@ const BOT_API_UNSET_MSG = "Bot server manzili sozlanmagan — avval Bot sozlamal
 // befoyda fetch'ga urinmasdan aniq xabar ko'rsatamiz.
 function botApiOrWarn(showToast) {
   const api = getBotApi();
+  updateBotApiBanner();
   if (!api) { if (showToast) toast(BOT_API_UNSET_MSG, 'error'); return ''; }
   return api;
 }
 
 async function refreshBotStatus() {
   const api = getBotApi();
+  updateBotApiBanner();
   if (!api) { console.warn('[bot]', BOT_API_UNSET_MSG); return; }
   try {
     const res = await fetch(api + '/store-bot/status?clientId=' + encodeURIComponent(SHOP_KEY));

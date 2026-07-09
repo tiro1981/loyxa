@@ -138,10 +138,14 @@ function notifyTelegramBot(order) {
         const cfg = JSON.parse(localStorage.getItem('kitob_bot_config') || 'null');
         if (!cfg || !cfg.token) return;
         const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
+        // Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
+        // serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionда ham
+        // standart (fallback) manzil bor.
+        const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
         const BOT_HTTP = (function () {
             const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
             if (configured) return configured.replace(/\/+$/, '');
-            return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+            return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
         })();
         if (!BOT_HTTP) return;
         fetch(`${BOT_HTTP}/store-bot/order`, {
