@@ -55,12 +55,13 @@ window.Cloud = (function () {
         const query = _sb
           .from("app_state").select("key,value")
           .eq("app", this.app).eq("client_id", this.client);
-        // MUHIM: tarmoq sekin yoki uzilgan bo'lsa sahifa QOTIB qolmasin. So'rovni 6 soniyalik
+        // MUHIM: tarmoq sekin yoki uzilgan bo'lsa sahifa QOTIB qolmasin. So'rovni qisqa
         // timeout bilan poygaga qo'yamiz — javob kelmasa localStorage rejimiga o'tib davom etamiz.
-        const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 6000));
+        // (Oldin 6000ms edi — sahifa har ochilishda sezilarli "qotib qolish" hissi berardi.)
+        const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 2500));
         const res = await Promise.race([query, timeout]);
         if (res && res.__timeout) {
-          console.warn("[Cloud] init: server 6s ichida javob bermadi — localStorage rejimida davom etamiz.");
+          console.warn("[Cloud] init: server 2.5s ichida javob bermadi — localStorage rejimida davom etamiz.");
           this.mode = "local";
           return;
         }
