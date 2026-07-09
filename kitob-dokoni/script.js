@@ -576,14 +576,26 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const def = addresses.find(a => a.default) || addresses[0];
         const form = document.getElementById('checkoutForm');
         form.name.value = (def && def.fullName) || profile.name || '';
-        if (def) {
-            form.phone.value = def.phone || profile.phone || '';
-        } else if (profile.phone) form.phone.value = profile.phone;
+        form.phone.value = (def && def.phone) || profile.phone || '+998 ';
         populateRegionSelect('coRegion', def ? def.region || '' : '');
         populateDistrictSelect('coDistrict', def ? def.region || '' : '', def ? def.district || '' : '');
         document.getElementById('coStreet').value = def ? def.street || '' : '';
+
+        const summary = document.getElementById('checkoutAddrSummary');
+        const fields = document.getElementById('checkoutAddrFields');
+        if (def) {
+            document.getElementById('coSummaryLabel').textContent = def.label || 'Manzil';
+            document.getElementById('coSummaryFull').textContent = def.full || '';
+            document.getElementById('coSummaryContact').textContent = `${def.fullName || ''}${def.fullName ? ' · ' : ''}${def.phone || ''}`;
+            summary.style.display = '';
+            fields.style.display = 'none';
+        } else {
+            summary.style.display = 'none';
+            fields.style.display = '';
+        }
         openSheet('checkoutSheet');
     };
+    document.getElementById('coChangeAddrBtn').onclick = () => openSheet('addrSheet');
 
     document.getElementById('placeOrderBtn').onclick = () => {
         const form = document.getElementById('checkoutForm');
@@ -602,6 +614,13 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             toast("Telefon raqam noto'g'ri", 'error');
             return;
         }
+
+        // Birinchi marta kiritilgan manzil — keyingi buyurtmalarda qayta so'ralmasligi uchun saqlanadi
+        if (addresses.length === 0) {
+            addresses.push({ label: 'Manzil 1', fullName: name, region, district, street, full: address, phone, default: true });
+            saveAddrs();
+        }
+
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
         const discount = calcDiscount(sub);
         const order = {
