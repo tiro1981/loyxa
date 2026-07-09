@@ -111,6 +111,7 @@ const Store = {
 };
 
 /* ---------- Utilities ---------- */
+function normPhone(p) { return (p || '').replace(/\D/g, ''); }
 function money(n) {
     if (n == null || isNaN(n)) return "0 so'm";
     return Math.round(n).toLocaleString('en-US').replace(/,/g, ' ') + " so'm";
@@ -137,7 +138,12 @@ function notifyTelegramBot(order) {
         const cfg = JSON.parse(localStorage.getItem('kitob_bot_config') || 'null');
         if (!cfg || !cfg.token) return;
         const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
-        const BOT_HTTP = (localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, '');
+        const BOT_HTTP = (function () {
+            const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
+            if (configured) return configured.replace(/\/+$/, '');
+            return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+        })();
+        if (!BOT_HTTP) return;
         fetch(`${BOT_HTTP}/store-bot/order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -623,9 +629,17 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
         const discount = calcDiscount(sub);
+        // Telefon raqami bo'yicha mos mijozni topamiz (admin panel buyurtmalar sonini
+        // hisoblashi uchun data.orders[].customerId to'g'ri bo'lishi kerak).
+        if (!Array.isArray(data.customers)) data.customers = [];
+        let matchedCustomer = data.customers.find(c => normPhone(c.phone) === normPhone(phone));
+        if (!matchedCustomer) {
+            matchedCustomer = { id: Date.now(), name, email: '', phone, joined: new Date().toISOString(), active: true };
+            data.customers.push(matchedCustomer);
+        }
         const order = {
             id: Math.max(1000, ...data.orders.map(o => o.id)) + 1,
-            customerId: null,
+            customerId: matchedCustomer.id,
             name, phone, address,
             items: cart.map(c => ({ pid: c.id, name: c.name, qty: c.qty, price: c.price, size: c.size })),
             total: sub + SHIPPING_BASE - discount,
@@ -1122,6 +1136,20 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         else addresses.push(obj);
         if (!addresses.some(a => a.default) && addresses.length > 0) addresses[0].default = true;
         saveAddrs();
+
+        // Mijozni admin panel bilan sinxronlash uchun data.customers'ga yozamiz
+        // (avval faqat qurilma-lokal 'kitob_addrs_v1'ga yozilar edi — admin buni ko'rmasdi).
+        (function upsertCustomer() {
+            if (!Array.isArray(data.customers)) data.customers = [];
+            const idx = data.customers.findIndex(c => normPhone(c.phone) === normPhone(phone));
+            if (idx >= 0) {
+                data.customers[idx] = { ...data.customers[idx], name: fullName, phone };
+            } else {
+                data.customers.push({ id: Date.now(), name: fullName, email: '', phone, joined: new Date().toISOString(), active: true });
+            }
+            Store.save(data);
+        })();
+
         openSheet('addrSheet');
         toast(id ? 'Manzil yangilandi' : "Manzil qo'shildi", 'success');
     };

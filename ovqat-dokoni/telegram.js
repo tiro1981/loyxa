@@ -15,12 +15,13 @@ const Telegram = (() => {
   // Bot server manzili — Cloud("bot_api") (admin sozlaydi, mijozga ham sinxron),
   // aks holda localStorage, aks holda localhost. Har chaqiruvда yangidan o'qiymiz.
   function apiBase() {
-    return (
+    const configured =
       (window.Cloud && Cloud.get('bot_api')) ||
       localStorage.getItem('bo_bot_api') ||
-      localStorage.getItem('ovqat_bot_http_url') ||
-      'http://localhost:3344'
-    ).replace(/\/+$/, '');
+      localStorage.getItem('ovqat_bot_http_url') || '';
+    if (configured) return configured.replace(/\/+$/, '');
+    if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
+    return '';
   }
 
   async function request(path, opts = {}) {
@@ -57,6 +58,10 @@ const Telegram = (() => {
   }
 
   async function sendOrder(order) {
+    if (!apiBase()) {
+      console.error('[Telegram] bot server manzili (bot_api) sozlanmagan — buyurtma kanalga yuborilmadi. Admin paneldan bot serverini saqlang.');
+      return { ok: false, error: 'bot_api sozlanmagan' };
+    }
     try {
       const payload = {
         id: String(order.id),

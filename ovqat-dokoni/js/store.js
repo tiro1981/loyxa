@@ -122,6 +122,27 @@ window.Store = (function () {
     state.orders = list;   // mahalliy nusxa (mijoz "Buyurtmalarim" ko'rinishi uchun)
   }
   const getOrders = () => ordersAll();
+
+  /* --- customers ---
+     Mijozlar umumiy "customers" kalitida saqlanadi (admin ham shu yerdan o'qiydi). */
+  function customersAll() {
+    const cloud = window.Cloud ? Cloud.get("customers", null) : null;
+    return Array.isArray(cloud) ? cloud : [];
+  }
+  function customersSave(list) { if (window.Cloud) Cloud.set("customers", list); }
+  function upsertCustomer({ fullName, phone }) {
+    if (!fullName || !phone) return;
+    const norm = (p) => (p || "").replace(/\D/g, "");
+    const list = customersAll();
+    const idx = list.findIndex((c) => norm(c.phone) === norm(phone));
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], name: fullName, phone };
+    } else {
+      list.push({ id: Date.now(), name: fullName, phone, joined: nowLabel(), status: "faol" });
+    }
+    customersSave(list);
+  }
+
   function placeOrder({ payment, address, addressObj, note } = {}) {
     // Buyurtma item'lari o'zini-o'zi yetarli (nom/narx) — bot kanalга yuborganda kerak
     const items = state.cart.map((c) => {
@@ -144,6 +165,7 @@ window.Store = (function () {
     };
     all.unshift(order);
     ordersSave(all);
+    upsertCustomer({ fullName: order.userName, phone: order.phone });
     clearCart();
     save(); emit("orders:change");
     return order;
@@ -163,6 +185,7 @@ window.Store = (function () {
     const id = Math.max(0, ...state.addresses.map((x) => x.id)) + 1;
     state.addresses.push({ id, isDefault: state.addresses.length === 0, ...a });
     save(); emit("address:change");
+    if (a && a.fullName && a.phone) upsertCustomer({ fullName: a.fullName, phone: a.phone });
   }
   function removeAddress(id) {
     state.addresses = state.addresses.filter((a) => a.id !== Number(id));
@@ -198,6 +221,7 @@ window.Store = (function () {
     cartCount, cartSubtotal, deliveryFee, discount, cartTotal, applyPromo,
     getFavorites, isFavorite, toggleFavorite,
     getOrders, placeOrder,
+    customersAll, upsertCustomer,
     getAddresses, defaultAddress, addAddress, removeAddress, setDefaultAddress,
     setTheme, toggleTheme,
     updateUser,

@@ -79,6 +79,7 @@ function initAdmin() {
     setupMessagesPage();
     setupNotifications();
     setupBotPage();
+    setupQrPage();
 
     renderDashboard();
     updateNavBadge();
@@ -114,7 +115,7 @@ function navigate(page) {
         dashboard: 'Dashboard', products: 'Kitoblar', orders: 'Buyurtmalar',
         customers: 'Mijozlar', categories: 'Kategoriyalar', coupons: 'Kuponlar',
         reports: 'Hisobot', settings: 'Sozlamalar', messages: 'Habarlar',
-        bot: 'Telegram Bot'
+        bot: 'Telegram Bot', qrcode: "Do'kon havolasi"
     };
     document.getElementById('pageTitle').textContent = titles[page] || page;
     document.getElementById('sidebar').classList.remove('open');
@@ -129,6 +130,7 @@ function navigate(page) {
     if (page === 'settings') renderSettings();
     if (page === 'messages') renderMessageThreads();
     if (page === 'bot') renderBot();
+    if (page === 'qrcode') renderQrPage();
 }
 
 function closeAllModals() {
@@ -1311,7 +1313,11 @@ function renderConversation(chatKey, openLayout) {
 // ====== Do'kon boti — token asosida (yagona bot) ======
 const BOT_CFG_KEY = 'kitob_bot_config';
 const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
-function getBotApi() { return (localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, ''); }
+function getBotApi() {
+    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
+    if (configured) return configured.replace(/\/+$/, '');
+    return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+}
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
 function botWrite(cfg) { localStorage.setItem(BOT_CFG_KEY, JSON.stringify(cfg)); }
 function updateBotBadge() {
@@ -1325,6 +1331,8 @@ function renderBot() {
     const cfg = botRead();
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
     set('bot2Token', cfg.token || '');
+    const apiInput = document.getElementById('botApiInput');
+    if (apiInput) apiInput.value = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || '';
     setBotConnectedUI(!!cfg.connected, cfg.username);
     setChannelUI(cfg);
     refreshBotStatus();
@@ -1381,7 +1389,10 @@ async function connectBot() {
 }
 function disconnectBot() {
     confirmAction('Botni uzish', 'Botni uzasizmi? Buyurtmalar kanalga yuborilmaydi.', async () => {
-        try { await fetch(getBotApi() + '/store-bot/disconnect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY }) }).then(r => r.json().catch(() => ({}))); } catch (e) {}
+        try {
+            const res = await fetch(getBotApi() + '/store-bot/disconnect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY }) });
+            if (!res.ok) console.warn('[bot] disconnect xato:', res.status);
+        } catch (e) { console.warn('[bot] disconnect xato:', e); }
         const cfg = botRead(); cfg.connected = false; cfg.channel = null; botWrite(cfg);
         setBotConnectedUI(false); setChannelUI(cfg); toast('Bot uzildi', 'info');
     });
@@ -1401,7 +1412,10 @@ async function connectChannel() {
 }
 function disconnectChannel() {
     confirmAction('Kanalni uzish', 'Kanalni uzasizmi? Buyurtmalar yuborilmaydi.', async () => {
-        try { await fetch(getBotApi() + '/store-bot/set-channel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, clear: true }) }).then(r => r.json().catch(() => ({}))); } catch (e) {}
+        try {
+            const res = await fetch(getBotApi() + '/store-bot/set-channel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, clear: true }) });
+            if (!res.ok) console.warn('[bot] channel disconnect xato:', res.status);
+        } catch (e) { console.warn('[bot] channel disconnect xato:', e); }
         const cfg = botRead(); cfg.channel = null; botWrite(cfg); setChannelUI(cfg); toast('Kanal uzildi', 'info');
     });
 }
@@ -1441,6 +1455,58 @@ function setupBotPage() {
     byId('bot2ChannelTest', testChannel);
     byId('bot2ChannelDisc', disconnectChannel);
     byId('bot2BroadcastBtn', sendBroadcast);
+    byId('botApiSave', () => {
+        const v = (document.getElementById('botApiInput').value || '').trim().replace(/\/+$/, '');
+        if (window.Cloud) Cloud.set('bot_api', v);
+        try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
+        toast('Bot server manzili saqlandi', 'success');
+    });
+}
+
+/* ============================================
+   DO'KON HAVOLASI / QR KOD
+   ============================================ */
+function qrClientId() { return window.__CLIENT_ID || 'shop'; }
+function qrStoreUrl() {
+    const u = new URL('index.html', location.href);
+    u.search = '';
+    const cid = qrClientId();
+    if (cid) u.searchParams.set('client', cid);
+    return u.href;
+}
+function qrApiSrc(url, size) {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size + '&margin=10&qzone=1&data=' + encodeURIComponent(url);
+}
+function renderQrPage() {
+    const url = qrStoreUrl();
+    const input = document.getElementById('qrUrlInput');
+    if (input) input.value = url;
+    const img = document.getElementById('qrCodeImg');
+    if (img) img.src = qrApiSrc(url, 440);
+}
+function setupQrPage() {
+    const byId = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+    byId('qrCopyBtn', () => {
+        navigator.clipboard.writeText(qrStoreUrl())
+            .then(() => toast('Havola nusxalandi', 'success'))
+            .catch(() => toast("Nusxalab bo'lmadi", 'error'));
+    });
+    byId('qrOpenBtn', () => window.open(qrStoreUrl(), '_blank'));
+    byId('qrDownloadBtn', async () => {
+        const url = qrStoreUrl();
+        try {
+            const res = await fetch(qrApiSrc(url, 600));
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'qr-kod.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+            toast('QR kod yuklab olindi', 'success');
+        } catch (e) { window.open(qrApiSrc(url, 600), '_blank'); }
+    });
 }
 
 /* Buyurtma → Telegram kanal (do'kon boti orqali) */

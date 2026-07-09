@@ -1367,8 +1367,14 @@ function renderConversation(chatKey, openLayout) {
    ============================================ */
 // ====== Do'kon boti — token asosida (yagona bot) ======
 const BOT_CFG_KEY = 'moda_bot_config';
-const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kiyim';
-function getBotApi() { return (localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, ''); }
+// window.__CLIENT_ID boot-loader (admin.html) tomonidan hisoblab qo'yiladi
+// (URL ?client= -> bo_session -> kiyim_last_client -> 'shop' tartibida).
+const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
+function getBotApi() {
+    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
+    if (configured) return configured.replace(/\/+$/, '');
+    return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+}
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
 function botWrite(cfg) { localStorage.setItem(BOT_CFG_KEY, JSON.stringify(cfg)); }
 function _shopName() { try { const d = (typeof Store !== 'undefined') ? Store.load() : {}; return (d.settings && (d.settings.storeName || d.settings.shopName)) || 'Moda Style'; } catch { return 'Moda Style'; } }
@@ -1377,6 +1383,7 @@ function botErr(err) { const m = String((err && err.message) || err || ''); if (
 function renderBot() {
     const cfg = botRead();
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
+    set('botApiInput', (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || '');
     set('bot2Token', cfg.token || '');
     setBotConnectedUI(!!cfg.connected, cfg.username);
     setChannelUI(cfg);
@@ -1410,7 +1417,7 @@ async function refreshBotStatus() {
         cfg.channel = data.channel || null; cfg.sentCount = data.sentCount || 0; cfg.userCount = data.userCount || 0;
         botWrite(cfg);
         setBotConnectedUI(cfg.connected, cfg.username); setChannelUI(cfg);
-    } catch (e) {}
+    } catch (e) { console.warn('[bot] status xato:', e); }
 }
 
 function _btnBusy(btn, on, txt) { if (!btn) return; btn.disabled = on; if (on) { btn.dataset._t = btn.innerHTML; btn.innerHTML = '⏳ ' + (txt || 'Yuborilmoqda...'); } else if (btn.dataset._t) { btn.innerHTML = btn.dataset._t; delete btn.dataset._t; } }
@@ -1419,7 +1426,7 @@ async function connectBot() {
     const tokenEl = document.getElementById('bot2Token');
     const token = (tokenEl?.value || botRead().token || '').trim();
     if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri", 'error'); tokenEl?.focus(); return; }
-    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token, storeUrl: (function(){ try { var u=new URL('index.html', location.href); var c=new URLSearchParams(location.search).get('client')||(JSON.parse(localStorage.getItem('bo_session')||'{}').clientId||''); if(c)u.searchParams.set('client',c); return u.href; } catch(e){ return ''; } })() };
+    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token, storeUrl: (function(){ try { var u=new URL('index.html', location.href); var c=window.__CLIENT_ID || ''; if(c)u.searchParams.set('client',c); return u.href; } catch(e){ return ''; } })() };
     const btn = document.getElementById('bot2ConnectBtn');
     _btnBusy(btn, true, 'Ulanmoqda...');
     try {
@@ -1494,6 +1501,12 @@ function setupBotPage() {
     byId('bot2ChannelTest', testChannel);
     byId('bot2ChannelDisc', disconnectChannel);
     byId('bot2BroadcastBtn', sendBroadcast);
+    document.getElementById('botApiSave')?.addEventListener('click', () => {
+        const v = (document.getElementById('botApiInput').value || '').trim().replace(/\/+$/, '');
+        if (window.Cloud) Cloud.set('bot_api', v);
+        try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
+        toast('Bot server manzili saqlandi', 'success');
+    });
 }
 
 /* Buyurtma → Telegram kanal (do'kon boti orqali) */

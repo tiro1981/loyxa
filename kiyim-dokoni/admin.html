@@ -461,6 +461,17 @@
                     <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
                 </div>
 
+                <!-- 0) BOT SERVER MANZILI -->
+                <div class="bot2-card">
+                    <div class="bot2-card-head"><span class="bot2-ic">🌐</span><div><h3>0. Bot server manzili</h3><p>Bot xabarlarini qabul qiluvchi server URL manzili (masalan: https://bot.mysite.uz)</p></div></div>
+                    <label class="bot2-label" for="botApiInput">Server manzili</label>
+                    <div class="bot2-channel-row">
+                        <input type="text" id="botApiInput" class="bot2-input" placeholder="https://bot.mysite.uz" autocomplete="off" spellcheck="false">
+                        <button type="button" class="btn btn-primary" id="botApiSave">💾 Saqlash</button>
+                    </div>
+                    <p class="bot2-hint">Localhost/LAN'da ishlayotgan bo'lsangiz bo'sh qoldirsangiz ham bo'ladi.</p>
+                </div>
+
                 <!-- 1) BOTNI ULASH -->
                 <div class="bot2-card">
                     <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
@@ -716,8 +727,11 @@
     <!-- Boot-loader: AVVAL Cloud.init, keyin script.js (Store) va admin.js. -->
     <script>
       (async () => {
-        const CLIENT_ID = new URLSearchParams(location.search).get("client")
+        const _urlClient = new URLSearchParams(location.search).get("client");
+        if (_urlClient) { try { localStorage.setItem("kiyim_last_client", _urlClient); } catch(e){} }
+        const CLIENT_ID = _urlClient
           || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+          || (function(){ try { return localStorage.getItem("kiyim_last_client"); } catch(e){ return null; } })()
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }

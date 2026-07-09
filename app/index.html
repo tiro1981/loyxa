@@ -521,7 +521,10 @@
        CLIENT_ID — ?client= yoki bo_session orqali (QR tizimi o'zgarmaydi). -->
   <script>
     (async () => {
-      const CLIENT_ID = new URLSearchParams(location.search).get("client")
+      const _urlClient = new URLSearchParams(location.search).get("client");
+      if (_urlClient) { try { localStorage.setItem("app_last_client", _urlClient); } catch(e){} }
+      const CLIENT_ID = _urlClient
+        || (function(){ try { return localStorage.getItem("app_last_client") || null; } catch(e){ return null; } })()
         || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
         || "demo";
       window.__CLIENT_ID = CLIENT_ID;

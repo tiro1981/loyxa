@@ -81,12 +81,6 @@
     { id: "payme", name: "Payme",        val: 0, color: "#22d3ee" },
   ];
 
-  // Mijozlar — bo'sh (foydalanuvchilar ro'yxatdan o'tgach to'ladi)
-  const USERS = [];
-
-  // Buyurtmalardagi mijoz ismlari
-  const ORDER_CUSTOMERS = [];
-
   // Habarlar umumiy Cloud "messages" kalitida saqlanadi: [{from:'user'|'admin', text, time}].
   // Storefront chat shu yerga yozadi — shuning uchun mijoz xabari admin panelda ko'rinadi.
   function loadMessages() {
@@ -134,6 +128,26 @@
     return (window.DATA && window.DATA.orders) ? window.DATA.orders : [];
   }
   function saveOrders(list) { if (window.Cloud) Cloud.set("orders", list); }
+  // Mijozlar umumiy Cloud "customers" kalitidan o'qiladi (storefront shu yerga yozadi).
+  function loadUsers() {
+    const cloud = window.Cloud ? Cloud.get("customers", null) : null;
+    return Array.isArray(cloud) ? cloud : [];
+  }
+
+  // Eski localStorage'dagi bot server manzilini Cloud'ga ko'chiramiz (bir marta) —
+  // shunda mijoz qurilmalari (QR) ham bot manzilini oladi.
+  // Izoh: admin.js boot-loader (admin/index.html) tomonidan Cloud.init tugagach
+  // <script> sifatida yuklanadi, shuning uchun bu yerda Cloud allaqachon tayyor.
+  (function migrateBotApiToCloud() {
+    if (!window.Cloud) return;
+    const inCloud = Cloud.get('bot_api', '');
+    const inLocal = localStorage.getItem('bo_bot_api') || localStorage.getItem('ovqat_bot_http_url') || '';
+    if (!inCloud && inLocal) {
+      Cloud.set('bot_api', inLocal.replace(/\/+$/, ''));
+      console.log('[admin] bot_api Cloud\'ga ko\'chirildi:', inLocal);
+    }
+  })();
+
   // Katalogni saqlash yordamchisi
   const saveCatalog = () => { if (window.DATA && window.DATA.saveCatalog) window.DATA.saveCatalog(); };
 
@@ -612,6 +626,13 @@
 
   // --- FOYDALANUVCHILAR ---
   function viewUsers() {
+    const orders = loadOrders();
+    const norm = (p) => (p || "").replace(/\D/g, "");
+    const USERS = loadUsers().map((u) => {
+      const userOrders = orders.filter((o) => norm(o.phone) === norm(u.phone));
+      const spent = userOrders.filter((o) => o.status === "done").reduce((s, o) => s + (o.total || 0), 0);
+      return { av: u.av || "👤", name: u.name, phone: u.phone, orders: userOrders.length, spent, joined: u.joined, status: u.status || "faol" };
+    });
     const rows = USERS.map((u) =>
       '<tr>' +
         '<td><div class="cell-prod"><span class="u-av">' + u.av + '</span><b>' + u.name + '</b></div></td>' +

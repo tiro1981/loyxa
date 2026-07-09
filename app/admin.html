@@ -334,6 +334,20 @@
         <button type="button" class="abtn primary" id="bot2BroadcastBtn" style="margin-top:12px"><i class="fa-solid fa-paper-plane"></i> Hammaga yuborish</button>
         <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
       </div>
+
+      <!-- 4) BOT SERVER MANZILI -->
+      <div class="bot2-card">
+        <div class="bot2-card-head">
+          <span class="bot2-ic"><i class="fa-solid fa-server"></i></span>
+          <div><h3>4. Bot server manzili</h3><p>bot.py ishlab turgan manzil — barcha qurilmalarda (shu jumladan mijoz QR'ida) sinxron ishlatiladi</p></div>
+        </div>
+        <label class="bot2-label" for="bot2ApiInput">Server URL</label>
+        <div class="bot2-channel-row">
+          <input type="text" id="bot2ApiInput" class="bot2-input" placeholder="https://mening-bot.example.com" autocomplete="off" spellcheck="false">
+          <button type="button" class="abtn primary" id="bot2ApiSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Saqlash</button>
+        </div>
+        <p class="bot2-hint">Hozirgi: <code id="bot2ApiCurrent">—</code>. <b>HTTPS</b> bo'lishi va internetdan ochiq bo'lishi shart (localhost faqat sizning kompyuteringizda ishlaydi).</p>
+      </div>
     </section>
 
     <!-- ============ QR KOD ============ -->

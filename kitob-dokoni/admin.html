@@ -56,6 +56,7 @@
 
                 <div class="nav-label">Integratsiya</div>
                 <button class="nav-link" data-page="bot"><span class="ni">✈️</span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
+                <button class="nav-link" data-page="qrcode"><span class="ni">🔗</span> Do'kon havolasi</button>
             </nav>
 
             <div class="sidebar-bot">
@@ -464,6 +465,16 @@
                     <span class="bot2-status off" id="bot2Status">● Ulanmagan</span>
                 </div>
 
+                <!-- 0) BOT SERVER MANZILI -->
+                <div class="bot2-card">
+                    <div class="bot2-card-head"><span class="bot2-ic">🌐</span><div><h3>Bot server manzili</h3><p>bot.py ishlab turgan server manzili (localhost bo'lmasa majburiy)</p></div></div>
+                    <div class="bot2-channel-row">
+                        <input type="text" id="botApiInput" class="bot2-input" placeholder="https://mening-bot.example.com" autocomplete="off">
+                        <button type="button" class="btn btn-primary" id="botApiSave">Saqlash</button>
+                    </div>
+                    <p class="bot2-hint">Bu — botingiz uchun buyurtma xabarlarini yuboradigan serveringizning manzili. Bo'sh qoldirsangiz, faqat kompyuteringizda (localhost) ishlaydi.</p>
+                </div>
+
                 <!-- 1) BOTNI ULASH -->
                 <div class="bot2-card">
                     <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
@@ -509,6 +520,35 @@
                     <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
                     <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
                     <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
+                </div>
+            </section>
+
+            <!-- ============ DO'KON HAVOLASI / QR ============ -->
+            <section class="page" data-page="qrcode">
+                <div class="panel">
+                    <div class="panel-head"><h3>Do'kon havolasi va QR kod</h3></div>
+                    <div class="panel-body" style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+                        <div style="flex:0 0 auto;text-align:center">
+                            <div style="background:#fff;padding:12px;border-radius:12px;display:inline-block;border:1px solid var(--border)">
+                                <img id="qrCodeImg" alt="QR kod" width="220" height="220" style="display:block">
+                            </div>
+                            <p style="margin-top:8px;color:var(--text-muted);font-size:12px">Mijozlar shu QR kodni skanerlab do'koningizni ochadi</p>
+                        </div>
+                        <div style="flex:1 1 280px;min-width:240px">
+                            <div class="form">
+                                <div class="form-row full">
+                                    <label>Do'koningiz havolasi</label>
+                                    <input type="text" id="qrUrlInput" readonly>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+                                <button type="button" class="btn btn-primary" id="qrCopyBtn">🔗 Havolani nusxalash</button>
+                                <button type="button" class="btn btn-ghost" id="qrDownloadBtn">⬇️ QR kodni yuklab olish</button>
+                                <button type="button" class="btn btn-ghost" id="qrOpenBtn">↗️ Ochish</button>
+                            </div>
+                            <p class="bot2-hint" style="margin-top:14px">Ushbu havola (yoki QR kod) sizning do'koningizga (<code>?client=</code> parametri bilan) olib boradi. Uni ijtimoiy tarmoqlarda, vizitka yoki reklamada ulashing — mijozlar boshqa do'konga emas, aynan sizning do'koningizga tushadi.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -676,8 +716,11 @@
     <!-- Boot-loader: AVVAL Cloud.init, keyin script.js (Store) va admin.js. -->
     <script>
       (async () => {
-        const CLIENT_ID = new URLSearchParams(location.search).get("client")
+        const _urlClient = new URLSearchParams(location.search).get("client");
+        if (_urlClient) { try { localStorage.setItem("kitob_last_client", _urlClient); } catch(e){} }
+        const CLIENT_ID = _urlClient
           || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+          || (function(){ try { return localStorage.getItem("kitob_last_client"); } catch(e){ return null; } })()
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }

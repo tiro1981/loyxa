@@ -441,8 +441,11 @@
 <script src="cloud.js?v=2"></script>
 <script>
   (async () => {
-    const CLIENT_ID = new URLSearchParams(location.search).get("client")
+    const _urlClient = new URLSearchParams(location.search).get("client");
+    if (_urlClient) { try { localStorage.setItem("kitob_last_client", _urlClient); } catch(e){} }
+    const CLIENT_ID = _urlClient
       || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+      || (function(){ try { return localStorage.getItem("kitob_last_client"); } catch(e){ return null; } })()
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }

@@ -1,8 +1,12 @@
 // ========== CLIENT NAMESPACE ==========
 const _urlP = new URLSearchParams(window.location.search);
-const CLIENT_ID = _urlP.get('client') || (() => {
-  try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; }
-})() || 'demo';
+const _urlClient = _urlP.get('client');
+if (_urlClient) { try { localStorage.setItem('app_last_client', _urlClient); } catch (e) {} }
+const CLIENT_ID = _urlClient
+  || (() => { try { return localStorage.getItem('app_last_client') || null; } catch { return null; } })()
+  || (() => {
+    try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; }
+  })() || 'demo';
 const _P = CLIENT_ID + '_';
 
 // Mijoz haqida ma'lumot (biznes nomi, manzili — restorant brending uchun)
@@ -17,7 +21,7 @@ const _clientInfo = (() => {
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
 // avtomatik ajratadi (multi-tenant). Qurilmaga xos kalitlar (savat tb_cart, joriy login
 // tb_current_user, foydalanuvchiga xos tb_user_*, tema) localStorage'da (_P bilan) qoladi.
-const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url']);
+const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url','tb_bot_api']);
 const DB = {
   _k(k) { return k.startsWith('tb_') ? _P + k : k; },
   get(k, fb) {
@@ -498,7 +502,12 @@ function sendOrderToBot(order) {
     const cfg = DB.get('tb_bot_config', null);
     if (!cfg || !cfg.token) return; // bot hali ulanmagan
     const SHOP_KEY = (CLIENT_ID || 'demo') + '__fastfood';
-    const BOT_HTTP = (localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || 'http://localhost:3344').replace(/\/+$/, '');
+    const BOT_HTTP = (function () {
+      const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || '';
+      if (configured) return configured.replace(/\/+$/, '');
+      return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+    })();
+    if (!BOT_HTTP) { console.warn('[bot] Bot server manzili sozlanmagan — avval Bot sozlamalaridan server manzilini saqlang'); return; }
     fetch(`${BOT_HTTP}/store-bot/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -675,10 +684,36 @@ $('addressForm').addEventListener('submit', (e) => {
     addrs.push(data);
   }
   setAddrs(addrs);
+  upsertCustomerFromAddress(fullName, phone);
   closeModal('addressFormModal');
   renderAddresses();
   showToast('Manzil saqlandi');
 });
+
+// Manzil saqlanganda mijozni admin panelning "Foydalanuvchilar" ro'yxatiga
+// (Cloud-sync qilinadigan tb_users) qo'shadi/yangilaydi — telefon bo'yicha dedupe.
+function upsertCustomerFromAddress(fullName, phone) {
+  const users = DB.get('tb_users', []);
+  const norm = (p) => (p || '').replace(/\D/g, '');
+  const phoneNorm = norm(phone);
+  const existing = users.find(u => norm(u.phone) === phoneNorm);
+  if (existing) {
+    existing.name = fullName || existing.name;
+    existing.phone = phone;
+  } else {
+    users.push({
+      id: Date.now(),
+      name: fullName,
+      email: '',
+      phone,
+      orders: 0,
+      status: 'new',
+      joinDate: new Date().toISOString(),
+      password: ''
+    });
+  }
+  DB.set('tb_users', users);
+}
 
 // ========== PAYMENT METHODS ==========
 // Faqat naqd pul faol — karta/Click/Payme "tez orada". Modal statik (renderPayments shart emas).
