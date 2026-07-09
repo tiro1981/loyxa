@@ -575,11 +575,13 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             <div class="tot"><span>Jami</span><span>${money(total)}</span></div>`;
         const def = addresses.find(a => a.default) || addresses[0];
         const form = document.getElementById('checkoutForm');
-        if (profile.name) form.name.value = profile.name;
+        form.name.value = (def && def.fullName) || profile.name || '';
         if (def) {
             form.phone.value = def.phone || profile.phone || '';
-            form.address.value = def.full || '';
         } else if (profile.phone) form.phone.value = profile.phone;
+        populateRegionSelect('coRegion', def ? def.region || '' : '');
+        populateDistrictSelect('coDistrict', def ? def.region || '' : '', def ? def.district || '' : '');
+        document.getElementById('coStreet').value = def ? def.street || '' : '';
         openSheet('checkoutSheet');
     };
 
@@ -588,11 +590,14 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const fd = new FormData(form);
         const name = (fd.get('name') || '').toString().trim();
         const phone = (fd.get('phone') || '').toString().trim();
-        const address = (fd.get('address') || '').toString().trim();
-        if (!name || !phone || !address) {
+        const region = document.getElementById('coRegion').value.trim();
+        const district = document.getElementById('coDistrict').value.trim();
+        const street = document.getElementById('coStreet').value.trim();
+        if (!name || !phone || !region || !district || !street) {
             toast("Iltimos, barcha maydonlarni to'ldiring", 'error');
             return;
         }
+        const address = `${region}, ${district}, ${street}`;
         if (phone.replace(/\D/g, '').length < 9) {
             toast("Telefon raqam noto'g'ri", 'error');
             return;
@@ -1010,13 +1015,13 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     }
 
     /* ---------- Region/District dropdowns ---------- */
-    function populateRegionSelect(selectedRegion = '') {
-        const sel = document.getElementById('addrRegion');
+    function populateRegionSelect(selId, selectedRegion = '') {
+        const sel = document.getElementById(selId);
         sel.innerHTML = '<option value="">Tanlang...</option>' +
             Object.keys(UZ_REGIONS).map(r => `<option value="${escapeHtml(r)}" ${r === selectedRegion ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('');
     }
-    function populateDistrictSelect(region, selectedDistrict = '') {
-        const sel = document.getElementById('addrDistrict');
+    function populateDistrictSelect(selId, region, selectedDistrict = '') {
+        const sel = document.getElementById(selId);
         if (!region || !UZ_REGIONS[region]) {
             sel.innerHTML = '<option value="">Avval viloyatni tanlang</option>';
             sel.disabled = true;
@@ -1027,15 +1032,18 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             UZ_REGIONS[region].map(d => `<option value="${escapeHtml(d)}" ${d === selectedDistrict ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
     }
     document.getElementById('addrRegion').onchange = e => {
-        populateDistrictSelect(e.target.value);
+        populateDistrictSelect('addrDistrict', e.target.value);
+    };
+    document.getElementById('coRegion').onchange = e => {
+        populateDistrictSelect('coDistrict', e.target.value);
     };
 
     function editAddr(i) {
         const a = addresses[i];
         document.getElementById('addrId').value = i;
         document.getElementById('addrFullName').value = a.fullName || '';
-        populateRegionSelect(a.region || '');
-        populateDistrictSelect(a.region || '', a.district || '');
+        populateRegionSelect('addrRegion', a.region || '');
+        populateDistrictSelect('addrDistrict', a.region || '', a.district || '');
         document.getElementById('addrStreet').value = a.street || a.full || '';
         document.getElementById('addrPhone').value = a.phone || '';
         document.getElementById('addrDefault').checked = !!a.default;
@@ -1062,8 +1070,8 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         document.getElementById('addrId').value = '';
         document.getElementById('addrFullName').value = profile.name || '';
         document.getElementById('addrPhone').value = '+998 ';
-        populateRegionSelect('');
-        populateDistrictSelect('');
+        populateRegionSelect('addrRegion', '');
+        populateDistrictSelect('addrDistrict', '');
         document.getElementById('addrFormTitle').textContent = 'Yangi manzil';
         openSheet('addrFormSheet');
     };

@@ -364,8 +364,20 @@
         <input type="text" name="name" required maxlength="50">
         <label>Telefon raqam</label>
         <input type="tel" name="phone" required placeholder="+998 __ ___ __ __">
-        <label>Manzil</label>
-        <textarea name="address" required rows="2" placeholder="Shahar, ko'cha, uy raqami" maxlength="200"></textarea>
+        <label>Viloyat / Shahar</label>
+        <div class="select-wrap">
+            <select id="coRegion" required>
+                <option value="">Tanlang...</option>
+            </select>
+        </div>
+        <label>Tuman</label>
+        <div class="select-wrap">
+            <select id="coDistrict" required disabled>
+                <option value="">Avval viloyatni tanlang</option>
+            </select>
+        </div>
+        <label>Ko'cha, uy raqami, kvartira</label>
+        <input type="text" id="coStreet" required placeholder="Amir Temur ko'chasi, 12-uy, 23-xonadon" maxlength="200">
         <label>To'lov turi</label>
         <div class="pay-options" id="payOptions">
             <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd</span></label>
