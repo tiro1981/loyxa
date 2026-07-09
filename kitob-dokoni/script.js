@@ -985,7 +985,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 <div class="addr-mid">
                     <div class="addr-label">${escapeHtml(a.label)} ${a.default ? '<span class="badge">Asosiy</span>' : ''}</div>
                     <div class="addr-full">${escapeHtml(a.full)}</div>
-                    <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${escapeHtml(a.phone)}</div>
+                    <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${a.fullName ? escapeHtml(a.fullName) + ' · ' : ''}${escapeHtml(a.phone)}</div>
                 </div>
                 <div class="addr-acts">
                     <button data-edit-addr="${i}" aria-label="Tahrirlash">✏️</button>
@@ -1033,6 +1033,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     function editAddr(i) {
         const a = addresses[i];
         document.getElementById('addrId').value = i;
+        document.getElementById('addrFullName').value = a.fullName || '';
         populateRegionSelect(a.region || '');
         populateDistrictSelect(a.region || '', a.district || '');
         document.getElementById('addrStreet').value = a.street || a.full || '';
@@ -1059,6 +1060,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('addAddrBtn').onclick = () => {
         document.getElementById('addrForm').reset();
         document.getElementById('addrId').value = '';
+        document.getElementById('addrFullName').value = profile.name || '';
         document.getElementById('addrPhone').value = '+998 ';
         populateRegionSelect('');
         populateDistrictSelect('');
@@ -1068,11 +1070,13 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     document.getElementById('saveAddrBtn').onclick = () => {
         const id = document.getElementById('addrId').value;
+        const fullName = document.getElementById('addrFullName').value.trim();
         const region = document.getElementById('addrRegion').value.trim();
         const district = document.getElementById('addrDistrict').value.trim();
         const street = document.getElementById('addrStreet').value.trim();
         const phone = document.getElementById('addrPhone').value.trim();
 
+        if (!fullName) { toast("Ism Familiyangizni kiriting", 'error'); return; }
         if (!region) { toast("Viloyat / shaharni tanlang", 'error'); return; }
         if (!district) { toast("Tumanni tanlang", 'error'); return; }
         if (!street) { toast("Ko'cha va uy raqamini kiriting", 'error'); return; }
@@ -1080,6 +1084,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
         const obj = {
             label: id !== '' ? addresses[+id].label : `Manzil ${addresses.length + 1}`,
+            fullName,
             region, district, street,
             full: `${region}, ${district}, ${street}`,
             phone,
