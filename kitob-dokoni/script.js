@@ -1033,7 +1033,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     function editAddr(i) {
         const a = addresses[i];
         document.getElementById('addrId').value = i;
-        document.getElementById('addrLabel').value = a.label || '';
         populateRegionSelect(a.region || '');
         populateDistrictSelect(a.region || '', a.district || '');
         document.getElementById('addrStreet').value = a.street || a.full || '';
@@ -1060,6 +1059,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('addAddrBtn').onclick = () => {
         document.getElementById('addrForm').reset();
         document.getElementById('addrId').value = '';
+        document.getElementById('addrPhone').value = '+998 ';
         populateRegionSelect('');
         populateDistrictSelect('');
         document.getElementById('addrFormTitle').textContent = 'Yangi manzil';
@@ -1079,7 +1079,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         if (!phone || phone.replace(/\D/g, '').length < 9) { toast("Telefon raqamni to'g'ri kiriting", 'error'); return; }
 
         const obj = {
-            label: document.getElementById('addrLabel').value.trim() || 'Manzil',
+            label: id !== '' ? addresses[+id].label : `Manzil ${addresses.length + 1}`,
             region, district, street,
             full: `${region}, ${district}, ${street}`,
             phone,
