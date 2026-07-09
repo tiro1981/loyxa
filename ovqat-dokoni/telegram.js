@@ -12,18 +12,10 @@ const Telegram = (() => {
     'shop'
   ) + '__ovqat';
 
-  // Bot server manzili — Cloud("bot_api") (admin sozlaydi, mijozga ham sinxron),
-  // aks holda localStorage, aks holda localhost. Har chaqiruvда yangidan o'qiymiz.
-  // Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
-  // serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionda ham
-  // standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
-  const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
+  // Yagona markaziy bot server (bot/README.md) — manzil kod ichida qattiq belgilanadi.
+  // TODO: tasdiqlangan bot server manzili aniqlangach shu yerga qo'yiladi.
+  const DEFAULT_BOT_API = '';
   function apiBase() {
-    const configured =
-      (window.Cloud && Cloud.get('bot_api')) ||
-      localStorage.getItem('bo_bot_api') ||
-      localStorage.getItem('ovqat_bot_http_url') || '';
-    if (configured) return configured.replace(/\/+$/, '');
     if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
     return DEFAULT_BOT_API;
   }
@@ -63,7 +55,7 @@ const Telegram = (() => {
 
   async function sendOrder(order) {
     if (!apiBase()) {
-      console.error('[Telegram] bot server manzili (bot_api) sozlanmagan — buyurtma kanalga yuborilmadi. Admin paneldan bot serverini saqlang.');
+      console.warn('[Telegram] bot server manzili hali sozlanmagan (DEFAULT_BOT_API bo\'sh) — buyurtma kanalga yuborilmadi.');
       return { ok: false, error: 'bot_api sozlanmagan' };
     }
     try {

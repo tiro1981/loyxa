@@ -1313,13 +1313,10 @@ function renderConversation(chatKey, openLayout) {
 // ====== Do'kon boti — token asosida (yagona bot) ======
 const BOT_CFG_KEY = 'kitob_bot_config';
 const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
-// Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
-// serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionда ham
-// standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
-const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
+// Yagona markaziy bot server (bot/README.md) — manzil kod ichida qattiq belgilanadi.
+// TODO: tasdiqlangan bot server manzili aniqlangach shu yerga qo'yiladi.
+const DEFAULT_BOT_API = '';
 function getBotApi() {
-    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
-    if (configured) return configured.replace(/\/+$/, '');
     return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
 }
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
@@ -1335,17 +1332,9 @@ function renderBot() {
     const cfg = botRead();
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
     set('bot2Token', cfg.token || '');
-    const apiInput = document.getElementById('botApiInput');
-    if (apiInput) apiInput.value = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || '';
     setBotConnectedUI(!!cfg.connected, cfg.username);
     setChannelUI(cfg);
     refreshBotStatus();
-    updateBotApiBanner();
-}
-function updateBotApiBanner() {
-    const banner = document.getElementById('botApiBanner');
-    if (!banner) return;
-    banner.style.display = getBotApi() ? 'none' : '';
 }
 function setBotConnectedUI(connected, username) {
     const pill = document.getElementById('bot2Status');
@@ -1375,7 +1364,6 @@ async function refreshBotStatus() {
         cfg.channel = data.channel || null; cfg.sentCount = data.sentCount || 0; cfg.userCount = data.userCount || 0;
         botWrite(cfg);
         setBotConnectedUI(cfg.connected, cfg.username); setChannelUI(cfg);
-        updateBotApiBanner();
     } catch (e) {}
 }
 
@@ -1466,19 +1454,6 @@ function setupBotPage() {
     byId('bot2ChannelTest', testChannel);
     byId('bot2ChannelDisc', disconnectChannel);
     byId('bot2BroadcastBtn', sendBroadcast);
-    byId('botApiSave', () => {
-        const v = (document.getElementById('botApiInput').value || '').trim().replace(/\/+$/, '');
-        if (window.Cloud) Cloud.set('bot_api', v);
-        try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
-        toast('Bot server manzili saqlandi', 'success');
-        updateBotApiBanner();
-        refreshBotStatus();
-    });
-    document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
-        const input = document.getElementById('botApiInput');
-        input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        input?.focus();
-    });
 }
 
 /* ============================================

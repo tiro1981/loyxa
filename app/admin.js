@@ -16,7 +16,7 @@ const _clientInfo = (() => {
 // ========== SHARED DB — har mijozga alohida prefix ==========
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
 // avtomatik ajratadi (multi-tenant). Boshqa (qurilmaga xos) kalitlar localStorage'da qoladi.
-const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url','tb_bot_api']);
+const CLOUD_KEYS = new Set(['tb_foods','tb_orders','tb_users','tb_settings','tb_messages','tb_admin_account','tb_bot_config','tb_store_url']);
 const DB = {
   _k(k) { return k.startsWith('tb_') ? _P + k : k; },
   get(k, fb = null) {
@@ -92,17 +92,7 @@ function escapeBrand(s) {
 function onAdminReady(fn){ if (document.readyState !== 'loading') setTimeout(fn, 0); else window.addEventListener('DOMContentLoaded', fn); }
 onAdminReady(() => {
   try { showApp(); } catch (err) { console.error('init error:', err); }
-  try { migrateBotApiToCloud(); } catch (err) { console.error('migrateBotApiToCloud error:', err); }
 });
-
-// Avval devtools orqali localStorage'ga qo'lda yozilgan bo_bot_api bo'lsa —
-// Cloud'ga (tb_bot_api) ko'chiramiz, shunda barcha qurilmalarda (mijoz QR'i ham) ishlaydi.
-function migrateBotApiToCloud() {
-  if (!window.Cloud) return;
-  const inCloud = DB.get('tb_bot_api', '');
-  const inLocal = localStorage.getItem('bo_bot_api') || '';
-  if (!inCloud && inLocal) DB.set('tb_bot_api', inLocal.replace(/\/+$/, ''));
-}
 
 document.getElementById('adminLogoutBtn').addEventListener('click', () => {
   // BiznesOnline mijoz dashbordiga qaytish
@@ -961,14 +951,12 @@ setInterval(() => {
 const APP_SLUG = 'fastfood';
 const SHOP_KEY = (CLIENT_ID || 'demo') + '__' + APP_SLUG;
 // Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
-// serveriga ulanadi (har biri o'z tokeni bilan). Shu sabab productionда ham
-// standart (fallback) manzil bor — yangi client/brauzerda bu qadam kerak bo'lmaydi.
-// Do'kon o'zining alohida bot serveri bo'lsa, "Bot server manzili" bo'limidan
-// ustidan yozib qo'yishi mumkin (Cloud/localStorage'dagi qiymat doim ustuvor).
-const DEFAULT_BOT_API = 'https://tiro19.alwaysdata.net';
+// serveriga ulanadi (har biri o'z tokeni bilan). Manzil kod ichida qattiq
+// belgilanadi (foydalanuvchiga ko'rinadigan sozlash maydoni yo'q — DEFAULT_BOT_API
+// tasdiqlangan haqiqiy manzil bilan almashtirilishi kerak, bot/bot.py joylashgan
+// AlwaysData HTTPS manzili).
+const DEFAULT_BOT_API = ''; // TODO: tasdiqlangan bot server manzili shu yerga
 function getBotApi() {
-  const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
-  if (configured) return configured.replace(/\/+$/, '');
   if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
   return DEFAULT_BOT_API;
 }
@@ -990,44 +978,7 @@ function renderBot() {
   setBotConnectedUI(!!cfg.connected, cfg.username);
   setChannelUI(cfg);
   refreshBotStatus();
-  renderBotApiSettings();
-  updateBotApiBanner();
 }
-
-// 1) Bot server manzili — sozlash UI
-function renderBotApiSettings() {
-  const cur = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
-  const input = document.getElementById('bot2ApiInput');
-  if (input && !input.value) input.value = cur;
-  const curEl = document.getElementById('bot2ApiCurrent');
-  if (curEl) curEl.textContent = cur || getBotApi() || '(sozlanmagan)';
-}
-document.getElementById('bot2ApiSaveBtn')?.addEventListener('click', () => {
-  const input = document.getElementById('bot2ApiInput');
-  let v = (input?.value || '').trim().replace(/\/+$/, '');
-  if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
-  DB.set('tb_bot_api', v);
-  try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
-  if (input) input.value = v;
-  renderBotApiSettings();
-  updateBotApiBanner();
-  toast(v ? 'Bot server manzili saqlandi' : 'Standart manzilga qaytarildi', 'success');
-  refreshBotStatus();
-});
-
-// getBotApi() bo'sh qaytarsa (nazariy holat — DEFAULT_BOT_API buni odatda oldini oladi,
-// lekin kelajakda o'zgarishi mumkin) — toast 2-3 soniyada yo'qolib ketadi va ko'rinmay
-// qolishi mumkin, shuning uchun doimiy ko'rinadigan banner ham chiqaramiz.
-function updateBotApiBanner() {
-  const banner = document.getElementById('botApiBanner');
-  if (!banner) return;
-  banner.style.display = getBotApi() ? 'none' : '';
-}
-document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
-  const input = document.getElementById('bot2ApiInput');
-  input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  input?.focus();
-});
 
 function setBotConnectedUI(connected, username) {
   const pill = document.getElementById('bot2Status');
@@ -1047,19 +998,17 @@ function setChannelUI(cfg) {
   setText('bot2UserCount', String(cfg.userCount || 0));
 }
 
-const BOT_API_UNSET_MSG = "Bot server manzili sozlanmagan — avval Bot sozlamalaridan server manzilini saqlang";
+const BOT_API_UNSET_MSG = "Bot server manzili sozlanmagan — administrator bilan bog'laning";
 // getBotApi() bo'sh qatorga tenglashsa (production'da localhost fallback yo'q) —
 // befoyda fetch'ga urinmasdan aniq xabar ko'rsatamiz.
 function botApiOrWarn(showToast) {
   const api = getBotApi();
-  updateBotApiBanner();
   if (!api) { if (showToast) toast(BOT_API_UNSET_MSG, 'error'); return ''; }
   return api;
 }
 
 async function refreshBotStatus() {
   const api = getBotApi();
-  updateBotApiBanner();
   if (!api) { console.warn('[bot]', BOT_API_UNSET_MSG); return; }
   try {
     const res = await fetch(api + '/store-bot/status?clientId=' + encodeURIComponent(SHOP_KEY));
