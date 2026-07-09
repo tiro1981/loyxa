@@ -1,16 +1,16 @@
 {
-  "name": "Bookz — Kitob Do'koni",
-  "short_name": "Bookz",
-  "description": "Zamonaviy kiyim-kechak do'koni. Erkaklar, ayollar va bolalar uchun.",
+  "name": "Kitob Olami — Onlayn Kitob Do'koni",
+  "short_name": "Kitob Olami",
+  "description": "Zamonaviy onlayn kitob do'koni. Badiiy, ilmiy, bolalar va darslik kitoblari.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#111827",
+  "background_color": "#faf6ee",
+  "theme_color": "#92400e",
   "lang": "uz",
   "dir": "ltr",
-  "categories": ["shopping", "lifestyle"],
+  "categories": ["shopping", "books", "education"],
   "icons": [
     {
       "src": "icon.svg",

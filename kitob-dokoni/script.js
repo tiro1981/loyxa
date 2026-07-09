@@ -1,74 +1,104 @@
-/* ============================================================
-   BOOKZ — Storefront (v2.0) — Bookz UI maketiga mos
-   ============================================================ */
-'use strict';
+/* ============================================
+   KITOB OLAMI — Storefront Script (v1.0)
+   ============================================ */
 
 const STORE_KEY = 'kitob_store_v1';
 const CART_KEY = 'kitob_cart_v1';
-const PROFILE_KEY = 'kitob_profile_v1';
-const ADDR_KEY = 'kitob_addrs_v1';
-const PROMO_KEY = 'kitob_promo';
-const THEME_KEY = 'kitob_theme';
-const LANG_KEY = 'kitob_lang';
-const SHIPPING_BASE = 25000;
+const INSTALL_DISMISS_KEY = 'kitob_install_dismissed';
 
-function onReady(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
-function onLoad(fn){ if (document.readyState === 'complete') fn(); else window.addEventListener('load', fn); }
-
-/* ============ PWA (service worker) ============ */
-if ('serviceWorker' in navigator) onLoad(() => navigator.serviceWorker.register('sw.js').catch(() => {}));
-
-/* ============ Kitob muqovasi (o'zicha yetarli SVG) ============ */
-function bookCover(title, author, c1, c2) {
-    const words = String(title).split(' ');
-    let l1 = title, l2 = '';
-    if (words.length > 2) { const m = Math.ceil(words.length / 2); l1 = words.slice(0, m).join(' '); l2 = words.slice(m).join(' '); }
-    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='560' viewBox='0 0 400 560'>`
-        + `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs>`
-        + `<rect width='400' height='560' rx='22' fill='url(#g)'/>`
-        + `<text x='30' y='70' fill='rgba(255,255,255,.78)' font-family='Inter,Arial,sans-serif' font-size='19' font-weight='700' letter-spacing='2'>${esc(author.toUpperCase())}</text>`
-        + `<text x='30' y='${l2 ? 262 : 292}' fill='#fff' font-family='Inter,Arial,sans-serif' font-size='40' font-weight='800'>${esc(l1)}</text>`
-        + (l2 ? `<text x='30' y='308' fill='#fff' font-family='Inter,Arial,sans-serif' font-size='40' font-weight='800'>${esc(l2)}</text>` : '')
-        + `</svg>`;
-    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+/* ============ PWA: Service Worker ============ */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
 }
 
-/* ============ Default demo data ============ */
+/* ============ PWA: Install Prompt ============ */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
+    if (dismissed && (Date.now() - +dismissed) < 7 * 86400000) return;
+    const prompt = document.getElementById('installPrompt');
+    if (prompt) setTimeout(() => prompt.classList.add('show'), 2500);
+});
+
+window.addEventListener('appinstalled', () => {
+    const prompt = document.getElementById('installPrompt');
+    if (prompt) prompt.classList.remove('show');
+    if (typeof toast === 'function') toast('Ilova o\'rnatildi! 🎉', 'success');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const ipInstall = document.getElementById('ipInstall');
+    const ipClose = document.getElementById('ipClose');
+    const prompt = document.getElementById('installPrompt');
+    if (ipInstall) ipInstall.onclick = async () => {
+        if (!deferredInstallPrompt) {
+            toast('Brauzer menyusidan "Bosh ekranga qo\'shish" ni tanlang', 'info');
+            return;
+        }
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') prompt.classList.remove('show');
+        deferredInstallPrompt = null;
+    };
+    if (ipClose) ipClose.onclick = () => {
+        prompt.classList.remove('show');
+        localStorage.setItem(INSTALL_DISMISS_KEY, Date.now() + '');
+    };
+});
+
+/* ---------- Default Demo Data ---------- */
 const DEFAULT_DATA = {
-    products: [
-        { id: 1, name: "O'tkan kunlar", author: "Abdulla Qodiriy", category: "badiiy", price: 45000, oldPrice: 55000, image: bookCover("O'tkan kunlar", "Abdulla Qodiriy", "#7f1d2e", "#b91c3c"), desc: "O'zbek adabiyotining ilk romani. Otabek va Kumushbibi sevgisi orqali XIX asr Turkiston hayoti tasvirlangan.", pages: 416, rating: 4.9, stock: 40, sold: 842, active: true, created: "2026-06-20" },
-        { id: 2, name: "Sarob", author: "Abdulla Qahhor", category: "badiiy", price: 38000, image: bookCover("Sarob", "Abdulla Qahhor", "#e11d48", "#f97316"), desc: "Ijtimoiy-psixologik roman insonning ichki kurashi, orzu va haqiqat o'rtasidagi ziddiyatni mahorat bilan ochib beradi.", pages: 912, rating: 4.5, stock: 25, sold: 736, active: true, created: "2026-06-18" },
-        { id: 3, name: "Ikki eshik orasi", author: "O'tkir Hoshimov", category: "badiiy", price: 52000, image: bookCover("Ikki eshik orasi", "O'tkir Hoshimov", "#4c1d95", "#6d5bd0"), desc: "Urush va urushdan keyingi yillar — bir necha avlod taqdiri orqali xalq hayoti va ma'naviyati aks etgan roman.", pages: 544, rating: 4.9, stock: 30, sold: 690, active: true, created: "2026-06-25" },
-        { id: 4, name: "Shum bola", author: "G'afur G'ulom", category: "bolalar", price: 29000, image: bookCover("Shum bola", "G'afur G'ulom", "#0f766e", "#14b8a6"), desc: "Sho'x va topqir bola boshidan kechirgan qiziqarli sarguzashtlar. Bolalar va kattalar sevib o'qiydigan asar.", pages: 176, rating: 4.7, stock: 50, sold: 615, active: true, created: "2026-06-10" },
-        { id: 5, name: "Kecha va kunduz", author: "Cho'lpon", category: "badiiy", price: 41000, image: bookCover("Kecha va kunduz", "Cho'lpon", "#0c4a4a", "#0e7490"), desc: "Zebi obrazida o'zbek ayolining fojiali taqdiri, mustamlaka davri jamiyati ochib berilgan mumtoz roman.", pages: 288, rating: 4.8, stock: 18, sold: 588, active: true, created: "2026-06-28" },
-        { id: 6, name: "Mehrobdan chayon", author: "Abdulla Qodiriy", category: "tarix", price: 43000, image: bookCover("Mehrobdan chayon", "Abdulla Qodiriy", "#b45309", "#f59e0b"), desc: "Xon saroyi kotibi Anvar hayoti orqali o'rta asr saroy hayoti, mehr-muhabbat va xiyonat tasvirlangan roman.", pages: 320, rating: 4.6, stock: 22, sold: 421, active: true, created: "2026-06-12" },
-        { id: 7, name: "Navoiy", author: "Oybek", category: "tarix", price: 47000, image: bookCover("Navoiy", "Oybek", "#1e3a8a", "#3b82f6"), desc: "Buyuk shoir va davlat arbobi Alisher Navoiy hayoti va ijodiga bag'ishlangan tarixiy roman.", pages: 480, rating: 4.7, stock: 27, sold: 356, active: true, created: "2026-06-05" },
-        { id: 8, name: "Sinchalak", author: "Abdulla Qahhor", category: "badiiy", price: 33000, image: bookCover("Sinchalak", "Abdulla Qahhor", "#831843", "#db2777"), desc: "Qishloq hayoti, mehnat va inson xarakterlari haqidagi qissa. Sodda tilda chuqur ma'no.", pages: 208, rating: 4.4, stock: 35, sold: 298, active: true, created: "2026-06-02" },
-    ],
+    products: [],
+
     orders: [],
+
     customers: [],
+
     categories: [
-        { id: 'badiiy', name: "Badiiy", icon: "📖", active: true },
-        { id: 'ilmiy', name: "Ilmiy", icon: "🔬", active: true },
-        { id: 'tarix', name: "Tarix", icon: "🏛️", active: true },
-        { id: 'bolalar', name: "Bolalar", icon: "🧸", active: true },
-        { id: 'sheriyat', name: "She'riyat", icon: "🖋️", active: true },
-        { id: 'biznes', name: "Biznes", icon: "💼", active: true },
+        { id: 'badiiy', name: "Badiiy adabiyot", icon: "📖", desc: "Romanlar, qissalar va hikoyalar", active: true },
+        { id: 'ilmiy', name: "Ilmiy-ommabop", icon: "🔬", desc: "Fan va bilimga oid kitoblar", active: true },
+        { id: 'bolalar', name: "Bolalar adabiyoti", icon: "🧸", desc: "Bolalar uchun kitoblar va ertaklar", active: true },
+        { id: 'tarix', name: "Tarix", icon: "🏛️", desc: "Tarixiy asarlar va xotiralar", active: true },
+        { id: 'biznes', name: "Biznes va iqtisod", icon: "💼", desc: "Biznes, moliya va menejment", active: true },
+        { id: 'psixologiya', name: "Psixologiya", icon: "🧠", desc: "Shaxsiy rivojlanish va psixologiya", active: true },
+        { id: 'diniy', name: "Diniy", icon: "🕌", desc: "Diniy va ma'naviy kitoblar", active: true },
+        { id: 'darslik', name: "Darsliklar", icon: "🎓", desc: "Maktab va o'quv darsliklari", active: true },
     ],
-    coupons: [],
+
+    coupons: [
+        { id: 1, code: "KITOB10", type: "percent", value: 10, maxUses: 100, used: 23, expires: "2026-12-31", active: true },
+        { id: 2, code: "MUTOLAA20", type: "percent", value: 20, maxUses: 50, used: 12, expires: "2026-08-31", active: true },
+        { id: 3, code: "VIP30", type: "percent", value: 30, maxUses: 20, used: 7, expires: "2026-07-15", active: true },
+        { id: 4, code: "BEPULYETKAZISH", type: "fixed", value: 25000, maxUses: 200, used: 89, expires: "2026-06-30", active: true },
+    ],
+
     settings: {
-        storeName: "Bookz", address: "Toshkent sh., Amir Temur ko'chasi 42",
-        phone: "+998 90 123 45 67", email: "info@bookz.uz", workHours: "Dush-Yak: 09:00 - 21:00",
-        payments: { naqd: true, karta: true },
-        shipping: [{ zone: "Toshkent shahri", price: 25000 }, { zone: "Toshkent viloyati", price: 40000 }, { zone: "Boshqa viloyatlar", price: 60000 }],
+        storeName: "Kitob Olami",
+        address: "Toshkent sh., Navoiy ko'chasi 30",
+        phone: "+998 90 123 45 67",
+        email: "info@kitobolami.uz",
+        workHours: "Dush-Yak: 09:00 - 20:00",
+        payments: { naqd: true, uzcard: true, payme: true, click: true },
+        notifications: { email: true, sms: false, telegram: true },
+        shipping: [
+            { zone: "Toshkent shahri", price: 15000 },
+            { zone: "Toshkent viloyati", price: 25000 },
+            { zone: "Boshqa viloyatlar", price: 35000 },
+        ],
     },
+
+    // Foydalanuvchi <-> Admin chat suhbatlari
     chats: [],
 };
 
+/* ---------- Uzbekistan regions & districts ---------- */
 const UZ_REGIONS = window.UZ_REGIONS || {};
 
-/* ============ Store (Cloud/Supabase) ============ */
+/* ---------- Storage ---------- */
 const Store = {
     load() {
         const parsed = window.Cloud ? Cloud.get("store", null) : null;
@@ -76,24 +106,32 @@ const Store = {
         return { ...DEFAULT_DATA, ...parsed };
     },
     save(data) { if (window.Cloud) Cloud.set("store", data); },
+    reset() { this.save(DEFAULT_DATA); },
+    clear() { if (window.Cloud) Cloud.remove("store"); localStorage.removeItem(CART_KEY); }
 };
 
-/* ============ Helpers ============ */
-function money(n) { if (n == null || isNaN(n)) return "0 so'm"; return Math.round(n).toLocaleString('en-US').replace(/,/g, ' ') + " so'm"; }
-function escapeHtml(s) { return (s ?? '').toString().replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function toast(msg, type = 'success') {
-    const t = document.getElementById('toast'); if (!t) return;
-    t.className = 'toast ' + type; t.textContent = msg;
-    requestAnimationFrame(() => t.classList.add('show'));
-    clearTimeout(window.__tt); window.__tt = setTimeout(() => t.classList.remove('show'), 2500);
+/* ---------- Utilities ---------- */
+function money(n) {
+    if (n == null || isNaN(n)) return "0 so'm";
+    return Math.round(n).toLocaleString('en-US').replace(/,/g, ' ') + " so'm";
 }
-function stars(r) {
-    r = Math.round(r || 0);
-    let s = ''; for (let i = 1; i <= 5; i++) s += i <= r ? '★' : `<span class="off">★</span>`;
-    return s;
+function formatDate(d) {
+    if (!d) return '';
+    const dt = new Date(d);
+    if (isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+function toast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    requestAnimationFrame(() => t.classList.add('show'));
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-/* ============ Telegram bot (admin panelda ulangan bo'lsa) ============ */
+/* ---------- Telegram bot xabarnomasi (admin panelda ulangan bo'lsa) ---------- */
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('kitob_bot_config') || 'null');
@@ -101,603 +139,1178 @@ function notifyTelegramBot(order) {
         const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
         const BOT_HTTP = (localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, '');
         fetch(`${BOT_HTTP}/store-bot/order`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 clientId: SHOP_KEY,
-                order: { id: String(order.id), userName: order.name, phone: order.phone, address: order.address,
-                    items: (order.items || []).map(i => ({ name: i.name, qty: i.qty, price: i.price })), total: order.total }
+                order: {
+                    id: String(order.id),
+                    userName: order.name,
+                    phone: order.phone,
+                    address: order.address,
+                    items: (order.items || []).map(i => ({
+                        name: i.name + (i.size ? ' (' + i.size + ')' : ''),
+                        qty: i.qty,
+                        price: i.price,
+                    })),
+                    total: order.total,
+                }
             })
-        }).then(r => r.json().catch(() => ({ ok: false })))
-          .then(res => { if (res && res.ok) { cfg.sentCount = (cfg.sentCount || 0) + 1; localStorage.setItem('kitob_bot_config', JSON.stringify(cfg)); } })
-          .catch(err => console.warn('[bot] HTTP xato:', err.message));
-    } catch (e) { console.warn('notifyTelegramBot error:', e); }
+        })
+            .then(r => r.json().catch(() => ({ ok: false })))
+            .then(res => {
+                if (res && res.ok) {
+                    cfg.sentCount = (cfg.sentCount || 0) + 1;
+                    localStorage.setItem('kitob_bot_config', JSON.stringify(cfg));
+                } else {
+                    console.warn('[bot] yuborilmadi:', res && res.error);
+                }
+            })
+            .catch(err => console.warn('[bot] HTTP xato (3344):', err.message));
+    } catch (e) {
+        console.warn('notifyTelegramBot error:', e);
+    }
 }
 
-/* ============ Confirm dialog ============ */
-function showDialog({ title = 'Tasdiqlash', message = '', icon = '⚠️', okText = 'Tasdiqlash', cancelText = 'Bekor qilish' } = {}) {
+/* ---------- Custom confirm dialog (replaces window.confirm) ---------- */
+function showDialog({ title = 'Tasdiqlash', message = '', icon = '⚠️', okText = 'Tasdiqlash', cancelText = 'Bekor qilish', danger = false } = {}) {
     return new Promise(resolve => {
-        const bg = document.getElementById('dialogBg'); if (!bg) return resolve(false);
+        const bg = document.getElementById('dialogBg');
+        if (!bg) return resolve(false);
         document.getElementById('dialogTitle').textContent = title;
         document.getElementById('dialogMsg').textContent = message;
         document.getElementById('dialogIco').textContent = icon;
-        const ok = document.getElementById('dialogOk'), cancel = document.getElementById('dialogCancel');
-        ok.textContent = okText; cancel.textContent = cancelText;
+        const ok = document.getElementById('dialogOk');
+        const cancel = document.getElementById('dialogCancel');
+        ok.textContent = okText;
+        cancel.textContent = cancelText;
+        ok.style.background = danger ? 'var(--danger)' : '';
+        ok.style.color = danger ? '#fff' : '';
         bg.classList.add('show');
-        const done = v => { bg.classList.remove('show'); ok.onclick = null; cancel.onclick = null; resolve(v); };
-        ok.onclick = () => done(true); cancel.onclick = () => done(false);
+        const done = val => {
+            bg.classList.remove('show');
+            ok.onclick = null;
+            cancel.onclick = null;
+            bg.onclick = null;
+            ok.style.background = '';
+            ok.style.color = '';
+            resolve(val);
+        };
+        ok.onclick = () => done(true);
+        cancel.onclick = () => done(false);
+        bg.onclick = e => { if (e.target === bg) done(false); };
     });
 }
 
-/* ============================================================
-   ASOSIY ILOVA
-   ============================================================ */
-onReady(() => {
-    if (!document.querySelector('.phone')) return;
+/* ============================================
+   STOREFRONT (runs only on index.html)
+   ============================================ */
+if (document.querySelector('.app .screen[data-screen="home"]')) {
+    const FAV_KEY = 'kitob_favs_v1';
+    const PROFILE_KEY = 'kitob_profile_v1';
+    const ADDR_KEY = 'kitob_addrs_v1';
+    const THEME_KEY = 'kitob_theme';
+    const NOTIF_KEY = 'kitob_notif_seen';
+    const PROMO_KEY = 'kitob_promo';
+    const SHIPPING_BASE = 15000;
 
     let data = Store.load();
     let cart = safeParse(CART_KEY, []);
+    let favorites = safeParse(FAV_KEY, []);
     let profile = safeParse(PROFILE_KEY, {});
     let addresses = safeParse(ADDR_KEY, []);
     let activePromo = safeParse(PROMO_KEY, null);
-    let payMethod = localStorage.getItem('kitob_pay') || 'naqd';
-    let chatMsgs = safeParse('kitob_chat', []);
-    let lang = localStorage.getItem(LANG_KEY) || "O'zbek";
 
-    function safeParse(key, fb) { try { return JSON.parse(localStorage.getItem(key)) ?? fb; } catch { return fb; } }
+    function safeParse(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+        catch { return fallback; }
+    }
+
+    let fState = { cat: 'all', search: '', minPrice: null, maxPrice: null, sort: 'new' };
+    let orderStatusFilter = 'all';
+    let currentScreen = 'home';
+
+    /* ---------- Persist helpers ---------- */
     const saveCart = () => { localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartBadge(); };
-    const saveProfile = () => localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    const savePromo = () => { if (activePromo) localStorage.setItem(PROMO_KEY, JSON.stringify(activePromo)); else localStorage.removeItem(PROMO_KEY); };
-
-    let fState = { cat: 'all', search: '', minPrice: null, maxPrice: null, sort: 'new', author: null, rating: 0 };
-    let orderFilter = 'all';
-    let navStack = ['home'];
+    const saveFavs = () => { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); updateProfileStats(); };
+    const saveProfile = () => { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); renderProfile(); };
+    const saveAddrs = () => { localStorage.setItem(ADDR_KEY, JSON.stringify(addresses)); renderAddresses(); updateAddressCount(); };
+    const savePromo = () => {
+        if (activePromo) localStorage.setItem(PROMO_KEY, JSON.stringify(activePromo));
+        else localStorage.removeItem(PROMO_KEY);
+    };
 
     /* ---------- Theme ---------- */
     function applyTheme(dark) {
         document.documentElement.classList.toggle('dark', dark);
         document.body.classList.toggle('dark', dark);
-        const sw = document.getElementById('themeSwitch'); if (sw) sw.checked = dark;
+        document.getElementById('themeSwitch').checked = dark;
+        document.getElementById('themeLabel').textContent = dark ? 'Qorong\'i rejim yoqilgan' : 'Yoritilgan rejim';
         localStorage.setItem(THEME_KEY, dark ? '1' : '0');
-        const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.content = dark ? '#0b0d14' : '#f4f5f9';
     }
-    applyTheme(localStorage.getItem(THEME_KEY) !== '0');
+    applyTheme(localStorage.getItem(THEME_KEY) === '1');
 
-    /* ---------- Navigation ---------- */
-    function showScreen(name, push = true) {
-        const el = document.querySelector(`.screen[data-screen="${name}"]`);
-        if (!el) return;
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        el.classList.add('active');
-        el.querySelector('.scroll')?.scrollTo(0, 0);
-        if (push) { if (navStack[navStack.length - 1] !== name) navStack.push(name); }
-        // bottom nav active
+    /* ---------- Screen navigation ---------- */
+    const NAV_ORDER = ['home', 'cart', 'orders', 'profile'];
+    function switchScreen(name) {
+        currentScreen = name;
+        document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.dataset.screen === name));
         document.querySelectorAll('.bn').forEach(b => b.classList.toggle('active', b.dataset.nav === name));
-        // render per screen
-        if (name === 'home') { renderChips(); renderPopular(); renderGrid(); }
+        // Sliding pill indicator
+        const inner = document.querySelector('.bnav-inner');
+        if (inner) inner.style.setProperty('--active', NAV_ORDER.indexOf(name));
+        window.scrollTo({ top: 0, behavior: 'instant' });
         if (name === 'cart') renderCart();
-        if (name === 'profile') renderProfile();
         if (name === 'orders') renderOrders();
-        if (name === 'search') { renderRecent(); renderReco(); }
-        if (name === 'profileInfo') fillProfileForm();
-        if (name === 'language') renderLang();
+        if (name === 'profile') renderProfile();
     }
-    function goBase(name) { navStack = [name]; showScreen(name, false); }
-    function goBack(fallback) {
-        navStack.pop();
-        const prev = navStack[navStack.length - 1] || fallback || 'home';
-        showScreen(prev, false);
-    }
-
-    document.querySelectorAll('.bn').forEach(b => b.onclick = () => goBase(b.dataset.nav));
-    document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => showScreen(b.dataset.go));
-    document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => goBack(b.dataset.back));
-    document.querySelectorAll('[data-open-menu]').forEach(b => b.onclick = () => showScreen('menu'));
-    document.getElementById('menuBtn').onclick = () => showScreen('menu');
-    document.getElementById('homeSearchOpen').onclick = () => showScreen('search');
-    document.getElementById('popAll').onclick = () => { fState.cat = 'all'; document.querySelector('.scroll')?.scrollTo(0, 0); };
+    document.querySelectorAll('.bn').forEach(b => b.onclick = () => switchScreen(b.dataset.nav));
+    document.querySelectorAll('[data-go]').forEach(el => el.onclick = () => switchScreen(el.dataset.go));
 
     /* ---------- Sheets ---------- */
     const sheetBg = document.getElementById('sheetBg');
-    function openSheet(id) { document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show')); document.getElementById(id)?.classList.add('show'); sheetBg.classList.add('show'); }
-    function closeSheet() { document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show')); sheetBg.classList.remove('show'); }
+    function openSheet(id) {
+        document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show'));
+        const sheet = document.getElementById(id);
+        if (!sheet) return;
+        sheet.classList.add('show');
+        sheetBg.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeSheet() {
+        document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show'));
+        sheetBg.classList.remove('show');
+        document.body.style.overflow = '';
+    }
     sheetBg.onclick = closeSheet;
     document.querySelectorAll('[data-close-sheet]').forEach(b => b.onclick = closeSheet);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
-    /* ---------- Cover fallback ---------- */
-    function cover(p) { return p.image || bookCover(p.name || 'Kitob', p.author || '', '#7f1d2e', '#b91c3c'); }
-    function catName(id) { return (data.categories.find(c => c.id === id) || {}).name || id; }
-
-    /* ---------- Home: chips ---------- */
+    /* ============ CATEGORY CHIPS ============ */
     function renderChips() {
         const wrap = document.getElementById('catChips');
         const cats = [{ id: 'all', name: 'Hammasi', icon: '✨' }, ...data.categories.filter(c => c.active !== false)];
-        wrap.innerHTML = cats.map(c => `<button class="chip ${c.id === fState.cat ? 'active' : ''}" data-chip="${c.id}"><span>${c.icon || ''}</span> ${escapeHtml(c.name)}</button>`).join('');
-        wrap.querySelectorAll('.chip').forEach(c => c.onclick = () => { fState.cat = c.dataset.chip; renderChips(); renderGrid(); });
+        wrap.innerHTML = cats.map(c => `
+            <button class="chip ${c.id === fState.cat ? 'active' : ''}" data-chip="${c.id}">
+                <span>${c.icon || ''}</span> ${c.name}
+            </button>`).join('');
+        wrap.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+            fState.cat = c.dataset.chip;
+            renderChips();
+            renderProductGrid();
+            updateFilterIndicator();
+        });
     }
 
-    function getFiltered() {
+    /* ============ PRODUCTS ============ */
+    function getFilteredProducts() {
         let list = data.products.filter(p => p.active);
         if (fState.cat !== 'all') list = list.filter(p => p.category === fState.cat);
-        if (fState.author) list = list.filter(p => p.author === fState.author);
-        if (fState.rating) list = list.filter(p => (p.rating || 0) >= fState.rating);
-        if (fState.search) { const q = fState.search.toLowerCase().trim(); list = list.filter(p => p.name.toLowerCase().includes(q) || (p.author || '').toLowerCase().includes(q) || (p.desc || '').toLowerCase().includes(q)); }
+        if (fState.search) {
+            const q = fState.search.toLowerCase().trim();
+            list = list.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                (p.author || '').toLowerCase().includes(q) ||
+                (p.desc || '').toLowerCase().includes(q) ||
+                catName(p.category).toLowerCase().includes(q)
+            );
+        }
         if (fState.minPrice) list = list.filter(p => p.price >= fState.minPrice);
         if (fState.maxPrice) list = list.filter(p => p.price <= fState.maxPrice);
+
         switch (fState.sort) {
-            case 'price-asc': list.sort((a, b) => a.price - b.price); break;
-            case 'price-desc': list.sort((a, b) => b.price - a.price); break;
-            case 'popular': list.sort((a, b) => b.sold - a.sold); break;
-            case 'sale': list = list.filter(p => p.oldPrice).sort((a, b) => b.sold - a.sold); break;
-            default: list.sort((a, b) => new Date(b.created || 0) - new Date(a.created || 0));
+            case 'price-asc': list.sort((a,b) => a.price - b.price); break;
+            case 'price-desc': list.sort((a,b) => b.price - a.price); break;
+            case 'popular': list.sort((a,b) => b.sold - a.sold); break;
+            default: list.sort((a,b) => new Date(b.created) - new Date(a.created));
         }
         return list;
     }
 
-    /* ---------- Home: popular ---------- */
-    function renderPopular() {
-        const top = [...data.products].filter(p => p.active && p.stock > 0).sort((a, b) => b.sold - a.sold).slice(0, 8);
-        document.getElementById('popScroll').innerHTML = top.map(p => {
-            return `<div class="pop-card" data-pid="${p.id}">
-                <div class="pop-cover"><img src="${cover(p)}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
-                <div class="pop-meta">
-                    <div class="pop-info"><div class="pm-name">${escapeHtml(p.name)}</div><div class="pm-price">${money(p.price)}</div></div>
+    function escapeHtml(s) {
+        return (s ?? '').toString().replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function catName(id) {
+        const c = data.categories.find(x => x.id === id);
+        return c ? c.name : id;
+    }
+
+    function productCard(p) {
+        const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+        const isFav = favorites.includes(p.id);
+        const outOfStock = p.stock === 0;
+        return `
+            <div class="p-card" data-pid="${p.id}">
+                <div class="p-img">
+                    ${discount ? `<span class="p-discount">-${discount}%</span>` : ''}
+                    <button class="p-fav ${isFav ? 'on' : ''}" data-fav="${p.id}" aria-label="Sevimli">${isFav ? '❤️' : '🤍'}</button>
+                    <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy">
+                    ${outOfStock ? '<div class="p-stockout">Tugagan</div>' : ''}
+                </div>
+                <div class="p-body">
+                    <div class="p-cat">${escapeHtml(catName(p.category))}</div>
+                    <div class="p-name">${escapeHtml(p.name)}</div>
+                    ${p.author ? `<div class="p-author">${escapeHtml(p.author)}</div>` : ''}
+                    <div class="p-row">
+                        <div class="p-prices">
+                            <span class="p-price">${money(p.price)}</span>
+                            ${p.oldPrice ? `<span class="p-old">${money(p.oldPrice)}</span>` : ''}
+                        </div>
+                        ${outOfStock ? '' : `<button class="p-add" data-add="${p.id}" aria-label="Qo'shish">+</button>`}
+                    </div>
                 </div>
             </div>`;
-        }).join('');
     }
 
-    /* ---------- Home: grid ---------- */
-    function bookCard(p) {
-        const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        return `<div class="book-card" data-pid="${p.id}">
-            <div class="bc-cover">
-                ${disc ? `<span class="bc-disc">-${disc}%</span>` : ''}
-                <img src="${cover(p)}" alt="${escapeHtml(p.name)}" loading="lazy">
-            </div>
-            <div class="bc-body">
-                <div class="bc-author">${escapeHtml(p.author || catName(p.category))}</div>
-                <div class="bc-name">${escapeHtml(p.name)}</div>
-                ${p.rating ? `<div class="bc-rate">★ ${p.rating}</div>` : ''}
-                <div class="bc-row">
-                    <div><span class="bc-price">${money(p.price).replace(" so'm", '')}</span><span class="bc-price" style="font-size:12px;font-weight:600"> so'm</span>${p.oldPrice ? `<span class="bc-old">${money(p.oldPrice).replace(" so'm", '')}</span>` : ''}</div>
-                    <button class="bc-add" data-add="${p.id}">+</button>
-                </div>
-            </div>
-        </div>`;
-    }
-    function renderGrid() {
-        const list = getFiltered();
-        const grid = document.getElementById('bookGrid'), empty = document.getElementById('emptyHome');
+    function renderProductGrid() {
+        const list = getFilteredProducts();
+        const grid = document.getElementById('productGrid');
+        const empty = document.getElementById('emptyHome');
         document.getElementById('gridCount').textContent = list.length;
-        if (!list.length) { grid.innerHTML = ''; empty.style.display = ''; return; }
-        empty.style.display = 'none';
-        grid.innerHTML = list.map(bookCard).join('');
+        if (list.length === 0) {
+            grid.innerHTML = '';
+            empty.style.display = 'block';
+        } else {
+            empty.style.display = 'none';
+            grid.innerHTML = list.map(productCard).join('');
+        }
     }
 
-    /* ---------- Product detail ---------- */
-    function openDetail(id) {
-        const p = data.products.find(x => x.id === +id); if (!p) return;
-        const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
-        const out = p.stock === 0;
+    function renderTrending() {
+        const top = [...data.products].filter(p => p.active && p.stock > 0).sort((a,b) => b.sold - a.sold).slice(0, 8);
+        document.getElementById('trendingScroll').innerHTML = top.map(p => `
+            <div class="trend-card" data-pid="${p.id}">
+                <div class="img">
+                    <span class="fire-badge">🔥 Hit</span>
+                    <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy">
+                </div>
+                <div class="body">
+                    <h4>${escapeHtml(p.name)}</h4>
+                    ${p.author ? `<div class="trend-author">${escapeHtml(p.author)}</div>` : ''}
+                    <div class="price">${money(p.price)}</div>
+                </div>
+            </div>`).join('');
+    }
+
+    /* ============ PRODUCT DETAIL ============ */
+    function openProductDetail(id) {
+        const p = data.products.find(x => x.id === id);
+        if (!p) return;
+        const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+        const isFav = favorites.includes(p.id);
+        const sizesHtml = (p.sizes || []).map((s,i) => `<button class="size-btn ${i===0?'active':''}" data-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');
+        const outOfStock = p.stock === 0;
+
+        const specs = [
+            p.publisher ? ['Nashriyot', p.publisher] : null,
+            p.year ? ['Nashr yili', p.year] : null,
+            p.pages ? ['Sahifalar', p.pages + ' bet'] : null,
+            p.lang ? ['Til', p.lang] : null,
+            p.isbn ? ['ISBN', p.isbn] : null,
+        ].filter(Boolean);
+        const specsHtml = specs.map(([k,v]) =>
+            `<div class="pd-spec"><span>${k}</span><strong>${escapeHtml(String(v))}</strong></div>`
+        ).join('');
+
         document.getElementById('productDetail').innerHTML = `
-            <div class="pd-body">
-                <div class="pd-cover">
-                    <img src="${cover(p)}" alt="${escapeHtml(p.name)}">
+            <div class="sheet-body">
+                <div class="pd-gallery">
+                    <button class="pd-fav ${isFav ? 'on' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '🤍'}</button>
+                    <img src="${p.image}" alt="${escapeHtml(p.name)}">
                 </div>
                 <div class="pd-cat">${escapeHtml(catName(p.category))}</div>
                 <h2 class="pd-name">${escapeHtml(p.name)}</h2>
-                ${p.author ? `<div class="pd-author">${escapeHtml(p.author)}</div>` : ''}
-                ${(p.pages || p.rating) ? `<div class="pd-stats">
-                    ${p.pages ? `<div class="pd-stat"><strong>${p.pages}</strong><small>Sahifa</small></div>` : ''}
-                    <div class="pd-stat"><strong>${p.sold >= 500 ? '500+' : p.sold}</strong><small>Sotildi</small></div>
-                    ${p.rating ? `<div class="pd-stat"><strong>${p.rating} ★</strong><small>Reyting</small></div>` : ''}
-                </div>` : ''}
+                ${p.author ? `<div class="pd-author">✍️ ${escapeHtml(p.author)}</div>` : ''}
                 <div class="pd-prices">
                     <span class="pd-price">${money(p.price)}</span>
                     ${p.oldPrice ? `<span class="pd-old">${money(p.oldPrice)}</span>` : ''}
-                    ${disc ? `<span class="pd-disc">-${disc}%</span>` : ''}
+                    ${discount ? `<span class="pd-discount">-${discount}%</span>` : ''}
                 </div>
-                <div class="pd-sec"><h4>Tavsif</h4><p class="pd-desc">${escapeHtml(p.desc || 'Tavsif mavjud emas.')}</p></div>
+                ${sizesHtml ? `<div class="pd-section"><h4>Muqova turi</h4><div class="size-row">${sizesHtml}</div></div>` : ''}
+                <div class="pd-section">
+                    <h4>Tavsif</h4>
+                    <p class="pd-desc">${escapeHtml(p.desc || 'Tavsif mavjud emas.')}</p>
+                </div>
+                ${specsHtml ? `<div class="pd-section"><h4>Kitob haqida</h4><div class="pd-specs">${specsHtml}</div></div>` : ''}
+                <div class="pd-section">
+                    <p style="font-size:12px;color:var(--text-muted)">Zaxirada: ${p.stock} dona • Sotilgan: ${p.sold} ta</p>
+                </div>
             </div>
             <div class="sheet-foot">
-                <button class="btn-primary full" id="pdAdd" ${out ? 'disabled style="opacity:.5"' : ''}>${out ? 'Kitob tugagan' : 'Bu kitobni sotib olish'}</button>
+                <button class="btn-primary full" id="addFromDetail" ${outOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
+                    ${outOfStock ? 'Kitob tugagan' : 'Savatga qo\'shish'}
+                </button>
             </div>`;
         openSheet('productSheet');
-        const add = document.getElementById('pdAdd');
-        if (add && !out) add.onclick = () => { addToCart(p.id); closeSheet(); };
+
+        document.querySelectorAll('#productDetail .size-btn').forEach(b => b.onclick = () => {
+            document.querySelectorAll('#productDetail .size-btn').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+        });
+        const addBtn = document.getElementById('addFromDetail');
+        if (addBtn && !outOfStock) addBtn.onclick = () => {
+            const size = document.querySelector('#productDetail .size-btn.active')?.dataset.size || '';
+            addToCart(p.id, size);
+            closeSheet();
+        };
     }
 
-    /* ---------- Cart ---------- */
-    function addToCart(id) {
-        const p = data.products.find(x => x.id === +id); if (!p) return;
+    /* ============ CART ============ */
+    function addToCart(id, size = '') {
+        const p = data.products.find(x => x.id === id);
+        if (!p) return;
         if (p.stock === 0) { toast('Kitob tugagan', 'error'); return; }
-        const ex = cart.find(c => c.id === p.id);
-        if (ex) { if (ex.qty >= p.stock) { toast('Zaxira yetarli emas', 'error'); return; } ex.qty += 1; }
-        else cart.push({ id: p.id, name: p.name, price: p.price, image: cover(p), qty: 1 });
+        const sz = size || (p.sizes && p.sizes[0]) || '';
+        const existing = cart.find(c => c.id === id && c.size === sz);
+        if (existing) {
+            if (existing.qty >= p.stock) { toast('Zaxira yetarli emas', 'error'); return; }
+            existing.qty += 1;
+        } else {
+            cart.push({ id, name: p.name, price: p.price, image: p.image, size: sz, qty: 1 });
+        }
         saveCart();
         toast(p.name + " savatga qo'shildi", 'success');
     }
+
     function updateCartBadge() {
-        const n = cart.reduce((s, i) => s + i.qty, 0);
-        const b = document.getElementById('cartBadge');
-        if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
+        const count = cart.reduce((s, i) => s + i.qty, 0);
+        const badge = document.getElementById('cartBadge');
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.classList.toggle('show', count > 0);
     }
+
     function calcDiscount(sub) {
         if (!activePromo) return 0;
-        return activePromo.type === 'percent' ? Math.round(sub * activePromo.value / 100) : Math.min(activePromo.value, sub);
+        const coupon = data.coupons.find(c => c.code === activePromo);
+        if (!coupon || !coupon.active) return 0;
+        if (coupon.type === 'percent') return Math.round(sub * coupon.value / 100);
+        return Math.min(coupon.value, sub);
     }
+
     function renderCart() {
-        const wrap = document.getElementById('cartList'), empty = document.getElementById('emptyCart'), foot = document.getElementById('cartFoot');
-        if (!cart.length) { wrap.innerHTML = ''; empty.style.display = ''; foot.style.display = 'none'; return; }
-        empty.style.display = 'none'; foot.style.display = '';
-        wrap.innerHTML = cart.map(c => `<div class="cart-item">
-            <div class="ci-cover"><img src="${c.image}" alt=""></div>
-            <div class="ci-info">
-                <div class="ci-name">${escapeHtml(c.name)}</div>
-                <div class="ci-price">${money(c.price * c.qty)}</div>
-                <div class="ci-qty">
-                    <button class="qbtn" data-cdec="${c.id}">−</button>
-                    <span class="qn">${c.qty}</span>
-                    <button class="qbtn" data-cinc="${c.id}">+</button>
+        const list = document.getElementById('cartList');
+        const empty = document.getElementById('emptyCart');
+        const foot = document.getElementById('cartFooter');
+        if (cart.length === 0) {
+            list.innerHTML = '';
+            empty.style.display = 'block';
+            foot.style.display = 'none';
+            return;
+        }
+        empty.style.display = 'none';
+        foot.style.display = 'block';
+        list.innerHTML = cart.map((c, i) => `
+            <div class="cart-card">
+                <div class="cart-img"><img src="${c.image}" alt="${escapeHtml(c.name)}"></div>
+                <div class="cart-mid">
+                    <div>
+                        <div class="cname">${escapeHtml(c.name)}</div>
+                        ${c.size ? `<div class="csize">${escapeHtml(c.size)}</div>` : ''}
+                    </div>
+                    <div class="cart-bottom">
+                        <div class="qty">
+                            <button data-cdec="${i}" aria-label="Kamaytirish">−</button>
+                            <span>${c.qty}</span>
+                            <button data-cinc="${i}" aria-label="Ko'paytirish">+</button>
+                        </div>
+                        <div class="cprice">${money(c.price * c.qty)}</div>
+                    </div>
                 </div>
-            </div>
-            <button class="ci-remove" data-crem="${c.id}">×</button>
-        </div>`).join('');
+            </div>`).join('');
+
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        const disc = calcDiscount(sub), total = sub + SHIPPING_BASE - disc;
+        const discount = calcDiscount(sub);
+        const total = sub + SHIPPING_BASE - discount;
+
         document.getElementById('cartSub').textContent = money(sub);
         document.getElementById('cartShip').textContent = money(SHIPPING_BASE);
         document.getElementById('cartTotal').textContent = money(total);
-        const dr = document.getElementById('cartDiscRow');
-        if (disc > 0) { dr.style.display = ''; document.getElementById('cartDisc').textContent = '− ' + money(disc); } else dr.style.display = 'none';
+        const discountRow = document.getElementById('cartDiscountRow');
+        if (discount > 0) {
+            discountRow.style.display = 'flex';
+            document.getElementById('cartDiscount').textContent = '− ' + money(discount);
+        } else {
+            discountRow.style.display = 'none';
+        }
+        if (activePromo) document.getElementById('promoInput').value = activePromo;
     }
+
     document.getElementById('clearCartBtn').onclick = async () => {
-        if (!cart.length) return;
-        if (await showDialog({ title: 'Savatni tozalash', message: 'Barcha kitoblar olib tashlansinmi?', icon: '🗑️', okText: 'Tozalash' })) { cart = []; saveCart(); renderCart(); }
-    };
-    document.getElementById('promoApply').onclick = () => {
-        const code = document.getElementById('promoInput').value.trim().toUpperCase();
-        if (!code) return;
-        const c = (data.coupons || []).find(x => x.code?.toUpperCase() === code);
-        if (!c || !c.active) { toast('Promo-kod topilmadi', 'error'); return; }
-        activePromo = { code: c.code, type: c.type, value: c.value }; savePromo(); renderCart();
-        toast('Promo-kod qo\'llandi', 'success');
+        if (cart.length === 0) return;
+        const ok = await showDialog({
+            title: 'Savatchani tozalash',
+            message: 'Barcha kitoblar savatchadan olib tashlanadi.',
+            icon: '🗑',
+            okText: 'Tozalash',
+            danger: true,
+        });
+        if (!ok) return;
+        cart = [];
+        activePromo = null;
+        savePromo();
+        saveCart();
+        renderCart();
+        toast('Savatcha tozalandi', 'info');
     };
 
-    /* ---------- Checkout ---------- */
+    document.getElementById('promoApply').onclick = () => {
+        const code = document.getElementById('promoInput').value.trim().toUpperCase();
+        if (!code) { activePromo = null; savePromo(); renderCart(); return; }
+        const coupon = data.coupons.find(c => c.code === code);
+        if (!coupon) { toast('Promo-kod topilmadi', 'error'); return; }
+        if (!coupon.active) { toast('Promo-kod faol emas', 'error'); return; }
+        if (coupon.expires && new Date(coupon.expires) < new Date()) { toast('Promo-kod muddati tugagan', 'error'); return; }
+        if (coupon.used >= coupon.maxUses) { toast('Promo-kod limiti tugagan', 'error'); return; }
+        activePromo = code;
+        savePromo();
+        renderCart();
+        toast(`Promo-kod qo'llandi: -${coupon.type === 'percent' ? coupon.value + '%' : money(coupon.value)}`, 'success');
+    };
+
     document.getElementById('checkoutBtn').onclick = () => {
-        if (!cart.length) { toast('Savat bo\'sh', 'error'); return; }
+        if (cart.length === 0) { toast("Savatcha bo'sh", 'error'); return; }
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        const disc = calcDiscount(sub), total = sub + SHIPPING_BASE - disc;
-        document.getElementById('orderSum').innerHTML =
-            cart.map(c => `<div><span>${escapeHtml(c.name)} × ${c.qty}</span><span>${money(c.price * c.qty)}</span></div>`).join('')
-            + (disc > 0 ? `<div><span>Chegirma</span><span style="color:var(--success)">− ${money(disc)}</span></div>` : '')
-            + `<div><span>Yetkazib berish</span><span>${money(SHIPPING_BASE)}</span></div>`
-            + `<div class="tot"><span>Jami</span><span>${money(total)}</span></div>`;
+        const discount = calcDiscount(sub);
+        const total = sub + SHIPPING_BASE - discount;
+        document.getElementById('orderSum').innerHTML = `
+            ${cart.map(c => `<div><span>${escapeHtml(c.name)} × ${c.qty}</span><span>${money(c.price * c.qty)}</span></div>`).join('')}
+            ${discount > 0 ? `<div><span>Chegirma</span><span style="color:var(--success)">− ${money(discount)}</span></div>` : ''}
+            <div><span>Yetkazib berish</span><span>${money(SHIPPING_BASE)}</span></div>
+            <div class="tot"><span>Jami</span><span>${money(total)}</span></div>`;
+        const def = addresses.find(a => a.default) || addresses[0];
         const form = document.getElementById('checkoutForm');
         if (profile.name) form.name.value = profile.name;
-        if (profile.phone) form.phone.value = profile.phone;
-        const def = addresses.find(a => a.default) || addresses[0];
-        if (def) form.address.value = def.text || def.full || '';
-        const payRadio = form.querySelector(`input[name=payment][value="${payMethod === 'naqd' ? 'naqd' : 'karta'}"]`);
-        if (payRadio) payRadio.checked = true;
+        if (def) {
+            form.phone.value = def.phone || profile.phone || '';
+            form.address.value = def.full || '';
+        } else if (profile.phone) form.phone.value = profile.phone;
         openSheet('checkoutSheet');
     };
+
     document.getElementById('placeOrderBtn').onclick = () => {
         const form = document.getElementById('checkoutForm');
         const fd = new FormData(form);
         const name = (fd.get('name') || '').toString().trim();
         const phone = (fd.get('phone') || '').toString().trim();
         const address = (fd.get('address') || '').toString().trim();
-        if (!name || !phone || !address) { toast('Barcha maydonlarni to\'ldiring', 'error'); return; }
-        if (phone.replace(/\D/g, '').length < 9) { toast('Telefon raqam noto\'g\'ri', 'error'); return; }
+        if (!name || !phone || !address) {
+            toast("Iltimos, barcha maydonlarni to'ldiring", 'error');
+            return;
+        }
+        if (phone.replace(/\D/g, '').length < 9) {
+            toast("Telefon raqam noto'g'ri", 'error');
+            return;
+        }
         const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        const disc = calcDiscount(sub);
+        const discount = calcDiscount(sub);
         const order = {
             id: Math.max(1000, ...data.orders.map(o => o.id)) + 1,
-            customerId: null, name, phone, address,
-            items: cart.map(c => ({ pid: c.id, name: c.name, qty: c.qty, price: c.price })),
-            total: sub + SHIPPING_BASE - disc, payment: fd.get('payment'),
-            status: 'yangi', note: '', date: new Date().toISOString().slice(0, 10),
-            self: true, promo: activePromo || null, discount: disc,
+            customerId: null,
+            name, phone, address,
+            items: cart.map(c => ({ pid: c.id, name: c.name, qty: c.qty, price: c.price, size: c.size })),
+            total: sub + SHIPPING_BASE - discount,
+            payment: fd.get('payment'),
+            status: 'yangi',
+            note: '',
+            date: new Date().toISOString().slice(0,10),
+            self: true,
+            promo: activePromo || null,
+            discount,
         };
         data.orders.unshift(order);
         Store.save(data);
+
+        // Telegram botga buyurtmani yuborish (admin panelda ulangan bo'lsa)
         notifyTelegramBot(order);
-        if (!profile.name) { profile = { name, phone }; saveProfile(); }
-        cart = []; activePromo = null; savePromo(); saveCart();
+
+        if (!profile.name) {
+            profile = { name, phone };
+            saveProfile();
+        }
+
+        cart = [];
+        activePromo = null;
+        savePromo();
+        saveCart();
         closeSheet();
-        navStack = ['home', 'menu', 'profile', 'orders'];
-        showScreen('orders', false);
+        switchScreen('orders');
         toast('Buyurtmangiz qabul qilindi! 🎉', 'success');
         form.reset();
     };
 
-    /* ---------- Orders ---------- */
-    const STATUS_LABEL = { yangi: 'Yangi', jarayonda: 'Jarayonda', yetkazilmoqda: 'Yo\'lda', yetkazildi: 'Yetkazildi', bekor: 'Bekor' };
-    function renderOrders() {
-        let list = data.orders.filter(o => o.self);
-        if (orderFilter === 'jarayonda') list = list.filter(o => ['yangi', 'jarayonda', 'yetkazilmoqda'].includes(o.status));
-        else if (orderFilter === 'yetkazildi') list = list.filter(o => o.status === 'yetkazildi');
-        const wrap = document.getElementById('ordersList'), empty = document.getElementById('emptyOrders');
-        if (!list.length) { wrap.innerHTML = ''; empty.style.display = ''; return; }
-        empty.style.display = 'none';
-        wrap.innerHTML = list.map(o => {
-            const first = data.products.find(p => p.id === (o.items[0] || {}).pid);
-            const img = first ? cover(first) : bookCover(o.items[0]?.name || 'Kitob', '', '#7f1d2e', '#b91c3c');
-            const st = o.status === 'yangi' ? 'jarayonda' : o.status;
-            return `<div class="order-card" data-oid="${o.id}">
-                <div class="oc-cover"><img src="${img}" alt=""></div>
-                <div class="oc-info">
-                    <div class="oc-name">${escapeHtml(o.items[0]?.name || 'Buyurtma')}</div>
-                    <div class="oc-id">Buyurtma ID: ${o.id}</div>
-                    <div class="oc-price">${money(o.total)}</div>
-                </div>
-                <span class="oc-badge ${st}">${STATUS_LABEL[o.status] || o.status}</span>
-            </div>`;
-        }).join('');
-        wrap.querySelectorAll('.order-card').forEach(c => c.onclick = () => openOrderDetail(+c.dataset.oid));
-    }
-    document.querySelectorAll('#orderTabs .ftab').forEach(t => t.onclick = () => {
-        document.querySelectorAll('#orderTabs .ftab').forEach(x => x.classList.remove('active'));
-        t.classList.add('active'); orderFilter = t.dataset.ostatus; renderOrders();
+    // Cart qty events
+    document.addEventListener('click', e => {
+        const inc = e.target.dataset.cinc;
+        const dec = e.target.dataset.cdec;
+        if (inc != null) {
+            const item = cart[+inc];
+            const product = data.products.find(p => p.id === item.id);
+            if (product && item.qty >= product.stock) { toast('Zaxira yetarli emas', 'error'); return; }
+            item.qty++;
+            saveCart();
+            renderCart();
+        }
+        if (dec != null) {
+            const i = +dec;
+            cart[i].qty--;
+            if (cart[i].qty <= 0) cart.splice(i, 1);
+            saveCart();
+            renderCart();
+        }
     });
 
-    function openOrderDetail(oid) {
-        const o = data.orders.find(x => x.id === oid); if (!o) return;
-        const steps = [
-            { k: 'berildi', t: 'Buyurtma berildi', d: 'Buyurtmangiz muvaffaqiyatli qabul qilindi' },
-            { k: 'tolov', t: 'To\'lov', d: 'To\'lovingiz muvaffaqiyatli amalga oshirildi' },
-            { k: 'tasdiq', t: 'Tasdiqlandi', d: 'Buyurtmangiz tasdiqlandi. Tez orada yetkaziladi' },
-            { k: 'jarayon', t: 'Jarayonda', d: 'Buyurtmangiz yetkazishga tayyorlanmoqda' },
-            { k: 'yetkaz', t: 'Yetkazildi', d: 'Buyurtmangiz sizga yetkazildi' },
-        ];
-        const order = ['yangi', 'jarayonda', 'yetkazilmoqda', 'yetkazildi'];
-        let reached = 3; // yangi -> first 2 done
-        if (o.status === 'yangi') reached = 2;
-        else if (o.status === 'jarayonda') reached = 4;
-        else if (o.status === 'yetkazilmoqda') reached = 4;
-        else if (o.status === 'yetkazildi') reached = 5;
-        else if (o.status === 'bekor') reached = 2;
-        document.getElementById('orderTimeline').innerHTML = steps.map((s, i) => {
-            const done = i < reached;
-            return `<div class="tl-item ${done ? 'done' : 'pending'}">
-                <div class="tl-dot ${done ? 'done' : 'pending'}">${done ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>` : '<i></i>'}</div>
-                <div class="tl-body"><div class="tl-head"><span class="tl-title">${s.t}</span></div><div class="tl-desc">${s.d}</div></div>
-            </div>`;
-        }).join('');
-        document.getElementById('orderItems').innerHTML =
-            o.items.map(i => `<div class="od-line"><span>${escapeHtml(i.name)} × ${i.qty}</span><b>${money(i.price * i.qty)}</b></div>`).join('')
-            + `<div class="od-line"><span>Yetkazib berish</span><b>${money(SHIPPING_BASE)}</b></div>`
-            + `<div class="od-line tot"><span>Jami</span><b>${money(o.total)}</b></div>`;
-        showScreen('orderDetail');
-    }
-    document.getElementById('reviewBtn').onclick = () => toast('Sharhingiz uchun rahmat! ⭐', 'success');
+    // Product card clicks
+    document.addEventListener('click', e => {
+        const fav = e.target.closest('[data-fav]');
+        const add = e.target.closest('[data-add]');
+        const card = e.target.closest('.p-card, .trend-card');
 
-    /* ---------- Search ---------- */
-    const RECENT = ['San\'at tarixi', 'Roman', 'Informatika', 'Bolalar', 'She\'riyat', 'Ilmiy'];
-    function renderRecent() {
-        document.getElementById('recentTags').innerHTML = RECENT.map(t => `<button class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('');
-        document.querySelectorAll('#recentTags .tag').forEach(t => t.onclick = () => { document.getElementById('searchInput').value = t.dataset.tag; doSearch(t.dataset.tag); });
-    }
-    function renderReco() {
-        const top = [...data.products].filter(p => p.active).sort((a, b) => b.rating - a.rating).slice(0, 6);
-        document.getElementById('recoScroll').innerHTML = top.map(p => `<div class="pop-card" data-pid="${p.id}">
-            <div class="pop-cover"><img src="${cover(p)}" alt=""></div>
-            <div class="pop-meta"><div class="pop-info"><div class="pm-name">${escapeHtml(p.name)}</div><div class="reco-price">${money(p.price)} · ★ ${p.rating}</div></div></div>
-        </div>`).join('');
-    }
-    function doSearch(q) {
-        const def = document.getElementById('searchDefault'), res = document.getElementById('searchResults'), empty = document.getElementById('emptySearch');
-        document.getElementById('searchClear').style.display = q ? '' : 'none';
-        if (!q.trim()) { def.style.display = ''; res.style.display = 'none'; empty.style.display = 'none'; return; }
-        def.style.display = 'none';
-        const ql = q.toLowerCase();
-        const list = data.products.filter(p => p.active && (p.name.toLowerCase().includes(ql) || (p.author || '').toLowerCase().includes(ql) || catName(p.category).toLowerCase().includes(ql)));
-        if (!list.length) { res.style.display = 'none'; empty.style.display = ''; return; }
-        empty.style.display = 'none'; res.style.display = '';
-        res.innerHTML = list.map(bookCard).join('');
-    }
-    document.getElementById('searchInput').oninput = e => doSearch(e.target.value);
-    document.getElementById('searchClear').onclick = () => { document.getElementById('searchInput').value = ''; doSearch(''); };
+        if (fav) {
+            e.stopPropagation();
+            const id = +fav.dataset.fav;
+            if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
+            else favorites.push(id);
+            saveFavs();
+            renderProductGrid();
+            renderTrending();
+            const sheet = document.getElementById('productSheet');
+            if (sheet.classList.contains('show')) openProductDetail(id);
+            return;
+        }
+        if (add) {
+            e.stopPropagation();
+            addToCart(+add.dataset.add);
+            return;
+        }
+        if (card && !e.target.closest('button')) {
+            openProductDetail(+card.dataset.pid);
+        }
+    });
 
-    /* ---------- Filter sheet ---------- */
+    /* ============ SEARCH ============ */
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    let searchTimer;
+    searchInput.oninput = e => {
+        searchClear.style.display = e.target.value ? 'flex' : 'none';
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            fState.search = e.target.value;
+            renderProductGrid();
+        }, 200);
+    };
+    searchClear.onclick = () => {
+        searchInput.value = '';
+        searchClear.style.display = 'none';
+        fState.search = '';
+        renderProductGrid();
+        searchInput.focus();
+    };
+
+    /* ============ FILTER SHEET ============ */
+    function updateFilterIndicator() {
+        const active = (fState.cat !== 'all') || fState.minPrice || fState.maxPrice || fState.sort !== 'new';
+        document.getElementById('filterDot').style.display = active ? 'block' : 'none';
+    }
+
     document.getElementById('filterBtn').onclick = () => {
-        const authors = [...new Set(data.products.map(p => p.author).filter(Boolean))];
-        document.getElementById('filterAuthors').innerHTML = authors.map(a => `<button class="tag ${fState.author === a ? 'active' : ''}" data-fauthor="${escapeHtml(a)}">${escapeHtml(a)}</button>`).join('');
-        document.getElementById('filterCats').innerHTML = [{ id: 'all', name: 'Hammasi' }, ...data.categories].map(c => `<button class="tag ${fState.cat === c.id ? 'active' : ''}" data-fcat="${c.id}">${escapeHtml(c.name)}</button>`).join('');
+        document.getElementById('filterCats').innerHTML = [{id:'all',name:'Hammasi'}, ...data.categories]
+            .map(c => `<button class="fc ${c.id === fState.cat ? 'active' : ''}" data-fcat="${c.id}">${escapeHtml(c.name)}</button>`).join('');
         document.getElementById('priceMin').value = fState.minPrice || '';
         document.getElementById('priceMax').value = fState.maxPrice || '';
-        document.querySelectorAll('#rateRow .star').forEach(s => s.classList.toggle('on', +s.dataset.rate <= fState.rating));
-        document.querySelectorAll('#filterSheet .ftab').forEach(t => t.classList.toggle('active', t.dataset.fsort === fState.sort || (fState.sort === 'new' && t.dataset.fsort === 'new')));
+        document.querySelectorAll('#filterSort .fc').forEach(b => b.classList.toggle('active', b.dataset.sort === fState.sort));
+
+        document.querySelectorAll('#filterCats .fc').forEach(b => b.onclick = () => {
+            document.querySelectorAll('#filterCats .fc').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+        });
+        document.querySelectorAll('#filterSort .fc').forEach(b => b.onclick = () => {
+            document.querySelectorAll('#filterSort .fc').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+        });
         openSheet('filterSheet');
     };
-    document.querySelectorAll('#filterSheet .ftab').forEach(t => t.onclick = () => {
-        document.querySelectorAll('#filterSheet .ftab').forEach(x => x.classList.remove('active')); t.classList.add('active'); fState.sort = t.dataset.fsort;
-    });
-    document.getElementById('filterAuthors').onclick = e => { const b = e.target.closest('[data-fauthor]'); if (!b) return; const a = b.dataset.fauthor; fState.author = fState.author === a ? null : a; document.querySelectorAll('#filterAuthors .tag').forEach(x => x.classList.toggle('active', x.dataset.fauthor === fState.author)); };
-    document.getElementById('filterCats').onclick = e => { const b = e.target.closest('[data-fcat]'); if (!b) return; fState.cat = b.dataset.fcat; document.querySelectorAll('#filterCats .tag').forEach(x => x.classList.toggle('active', x.dataset.fcat === fState.cat)); };
-    document.querySelectorAll('#rateRow .star').forEach(s => s.onclick = () => { fState.rating = fState.rating === +s.dataset.rate ? 0 : +s.dataset.rate; document.querySelectorAll('#rateRow .star').forEach(x => x.classList.toggle('on', +x.dataset.rate <= fState.rating)); });
+
     document.getElementById('filterApply').onclick = () => {
-        fState.minPrice = +document.getElementById('priceMin').value || null;
-        fState.maxPrice = +document.getElementById('priceMax').value || null;
-        closeSheet(); goBase('home'); toast('Filtr qo\'llandi', 'success');
+        const cat = document.querySelector('#filterCats .fc.active')?.dataset.fcat || 'all';
+        const sort = document.querySelector('#filterSort .fc.active')?.dataset.sort || 'new';
+        const mn = +document.getElementById('priceMin').value || null;
+        const mx = +document.getElementById('priceMax').value || null;
+        if (mn && mx && mn > mx) { toast("Min narx max'dan katta bo'lmasligi kerak", 'error'); return; }
+        fState = { ...fState, cat, sort, minPrice: mn, maxPrice: mx };
+        renderChips();
+        renderProductGrid();
+        updateFilterIndicator();
+        closeSheet();
+        toast("Filter qo'llandi", 'info');
     };
+
     document.getElementById('filterReset').onclick = () => {
-        fState = { cat: 'all', search: '', minPrice: null, maxPrice: null, sort: 'new', author: null, rating: 0 };
-        closeSheet(); goBase('home'); toast('Filtr tozalandi', 'info');
+        fState = { cat: 'all', search: fState.search, minPrice: null, maxPrice: null, sort: 'new' };
+        renderChips();
+        renderProductGrid();
+        updateFilterIndicator();
+        closeSheet();
+        toast('Filter tozalandi', 'info');
     };
 
-    /* ---------- Profil paneli ---------- */
-    const PAY_LABEL = { naqd: 'Naqd pul (karta tez orada)', karta: 'Karta (Uzcard / Humo)', click: 'Click', payme: 'Payme' };
-    function userInitials() { const n = (profile.name || 'Dilnoza Rahimova').trim().split(/\s+/); return ((n[0]?.[0] || '') + (n[1]?.[0] || '')).toUpperCase() || 'DR'; }
-    function renderProfile() {
-        document.getElementById('profAvatar').textContent = userInitials();
-        document.getElementById('profName').textContent = profile.name || 'Dilnoza Rahimova';
-        document.getElementById('profEmail').textContent = profile.email || profile.phone || 'dilnoza.r@mail.uz';
-        document.getElementById('langVal').textContent = lang;
-        const def = addresses.find(a => a.default) || addresses[0];
-        document.getElementById('addrSub').textContent = addresses.length ? (def ? (def.name || 'Manzil') + ' · ' + (def.text || '').slice(0, 24) : addresses.length + ' ta manzil') : 'Yetkazib berish manzillari';
-        document.getElementById('paySub').textContent = PAY_LABEL[payMethod] || 'Naqd pul';
-    }
-    document.getElementById('themeSwitch').onchange = e => applyTheme(e.target.checked);
-    document.getElementById('helpRow').onclick = () => toast('Yordam: +998 90 123 45 67 · info@bookz.uz', 'info');
-    document.getElementById('privacyRow').onclick = () => toast('Ma\'lumotlaringiz xavfsiz saqlanadi', 'info');
+    document.getElementById('emptyReset').onclick = () => {
+        fState = { cat: 'all', search: '', minPrice: null, maxPrice: null, sort: 'new' };
+        searchInput.value = '';
+        searchClear.style.display = 'none';
+        renderChips();
+        renderProductGrid();
+        updateFilterIndicator();
+    };
 
-    /* ---------- Manzillarim ---------- */
-    const saveAddrs = () => localStorage.setItem(ADDR_KEY, JSON.stringify(addresses));
-    function renderAddrList() {
-        const wrap = document.getElementById('addrList');
-        if (!addresses.length) { wrap.innerHTML = `<div class="ai-empty"><div class="emp-ico">📍</div>Hozircha manzil yo'q<br>Yangi manzil qo'shing</div>`; return; }
-        wrap.innerHTML = addresses.map((a, i) => `<div class="addr-item">
-            <span class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-            <div class="ai-body"><div class="ai-name">${escapeHtml(a.name || 'Manzil')}${a.default ? '<span class="ai-badge">Asosiy</span>' : ''}</div><div class="ai-text">${escapeHtml(a.text || '')}</div></div>
-            <div class="ai-acts">
-                <button class="ai-btn" data-aedit="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
-                <button class="ai-btn del" data-adel="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
-            </div>
-        </div>`).join('');
+    /* ============ SEE-ALL ============ */
+    document.getElementById('seeAllTrending').onclick = () => {
+        fState.sort = 'popular';
+        renderProductGrid();
+        updateFilterIndicator();
+        document.getElementById('gridTitle').textContent = 'Mashhur kitoblar';
+        document.getElementById('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    /* ============ NOTIFICATIONS ============ */
+    function timeAgo(iso) {
+        const d = new Date(iso);
+        if (isNaN(d)) return '';
+        const diff = Date.now() - d.getTime();
+        const min = Math.floor(diff / 60000);
+        if (min < 1) return 'Hozir';
+        if (min < 60) return min + ' daqiqa oldin';
+        const hr = Math.floor(min / 60);
+        if (hr < 24) return hr + ' soat oldin';
+        const day = Math.floor(hr / 24);
+        if (day === 1) return 'Kecha';
+        if (day < 7) return day + ' kun oldin';
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
-    document.getElementById('addrRow').onclick = () => { renderAddrList(); openSheet('addrSheet'); };
-    document.getElementById('addAddrBtn').onclick = () => openAddrForm(null);
-    function openAddrForm(idx) {
-        document.getElementById('addrFormTitle').textContent = idx == null ? 'Yangi manzil' : 'Manzilni tahrirlash';
-        document.getElementById('addrId').value = idx == null ? '' : idx;
-        const a = idx == null ? {} : addresses[idx];
-        document.getElementById('addrName').value = a.name || '';
-        const geo = document.getElementById('addrGeo');
-        geo.innerHTML = window.UzAddress ? UzAddress.formHTML({ idPrefix: 'ba', inputClass: 'field', selectClass: 'field', labelClass: 'fl', fieldWrapOpen: '<div class="addr-fld">', fieldWrapClose: '</div>' }) : '';
-        if (window.UzAddress) {
-            UzAddress.bind(geo, { idPrefix: 'ba' });
-            if (a.region) {
-                const rs = geo.querySelector('#ba-region'); rs.value = a.region; rs.dispatchEvent(new Event('change'));
-                const ds = geo.querySelector('#ba-district'); if (ds) ds.value = a.district || '';
-                geo.querySelector('#ba-village').value = a.village || '';
-                geo.querySelector('#ba-house').value = a.house || '';
-                geo.querySelector('#ba-note').value = a.note || '';
+
+    function getNotifications() {
+        const notifs = [];
+        // 1. Admin chat messages — eng yuqorida
+        const chat = (data.chats || []).find(c => c.key === chatUserKey);
+        if (chat && Array.isArray(chat.messages)) {
+            const adminMsgs = chat.messages.filter(m => m.from === 'admin');
+            const lastAdmin = adminMsgs[adminMsgs.length - 1];
+            if (lastAdmin) {
+                notifs.push({
+                    icon: '💬',
+                    title: chat.unreadUser > 0 ? 'Admin sizga yozdi' : 'Admin javobi',
+                    text: lastAdmin.text.length > 90 ? lastAdmin.text.slice(0, 90) + '…' : lastAdmin.text,
+                    time: timeAgo(lastAdmin.time),
+                    action: 'chat',
+                    unread: chat.unreadUser > 0,
+                });
             }
         }
+        // 2. Order status updates
+        data.orders.filter(o => o.self).slice(0, 6).forEach(o => {
+            notifs.push({
+                icon: o.status === 'yetkazildi' ? '✅' : o.status === 'yangi' ? '🛍️' : o.status === 'bekor' ? '❌' : '🚚',
+                title: `Buyurtma #${o.id}`,
+                text: o.status === 'yetkazildi' ? 'Yetkazib berildi' :
+                      o.status === 'yangi' ? 'Qabul qilindi' :
+                      o.status === 'jarayonda' ? 'Tayyorlanmoqda' :
+                      o.status === 'yetkazilmoqda' ? "Yo'lda" :
+                      o.status === 'bekor' ? 'Bekor qilindi' : 'Holat yangilandi',
+                time: formatDate(o.date),
+            });
+        });
+        // 3. Promos
+        notifs.push({ icon: '🎁', title: 'Yangi promotsiya', text: 'YANGI10 kod bilan 10% chegirma', time: 'Bugun' });
+        notifs.push({ icon: '🔥', title: 'Yangi kolleksiya', text: "Bahor kolleksiyasi keldi — birinchi bo'lib ko'ring", time: 'Kecha' });
+        return notifs;
+    }
+
+    document.getElementById('bellBtn').onclick = () => {
+        const list = getNotifications();
+        document.getElementById('notifBody').innerHTML = list.length === 0
+            ? '<div class="empty-state"><div class="emp-ico">🔕</div><h4>Bildirishnomalar yo\'q</h4><p>Hozircha yangi bildirishnomalar yo\'q</p></div>'
+            : list.map(n => `
+                <div class="notif-item ${n.unread ? 'unread' : ''}" ${n.action ? `data-action="${n.action}"` : ''}>
+                    <div class="notif-icon">${n.icon}</div>
+                    <div class="notif-content">
+                        <strong>${escapeHtml(n.title)}</strong>
+                        <small>${escapeHtml(n.text)}</small>
+                        <span class="notif-time">${escapeHtml(n.time)}</span>
+                    </div>
+                    ${n.unread ? '<span class="notif-dot"></span>' : ''}
+                </div>`).join('');
+        // Click-through for chat notification
+        document.querySelectorAll('#notifBody [data-action="chat"]').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.onclick = () => { closeSheet(); setTimeout(openChat, 280); };
+        });
+        document.getElementById('bellDot').style.display = 'none';
+        localStorage.setItem(NOTIF_KEY, Date.now() + '');
+        openSheet('notifSheet');
+    };
+
+    function checkUnseenNotifs() {
+        const last = +(localStorage.getItem(NOTIF_KEY) || 0);
+        const chat = (data.chats || []).find(c => c.key === chatUserKey);
+        const hasUnreadChat = chat && chat.unreadUser > 0;
+        const hasOrder = data.orders.some(o => o.self && new Date(o.date).getTime() > last - 86400000);
+        document.getElementById('bellDot').style.display = (hasUnreadChat || hasOrder) ? 'block' : 'none';
+    }
+
+    /* ============ ORDERS ============ */
+    document.querySelectorAll('#orderTabs .ot').forEach(t => t.onclick = () => {
+        document.querySelectorAll('#orderTabs .ot').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        orderStatusFilter = t.dataset.ostatus;
+        renderOrders();
+    });
+
+    function renderOrders() {
+        const myOrders = data.orders.filter(o => o.self);
+        let list = myOrders;
+        if (orderStatusFilter !== 'all') list = list.filter(o => o.status === orderStatusFilter);
+        const ul = document.getElementById('ordersList');
+        const empty = document.getElementById('emptyOrders');
+        if (list.length === 0) {
+            ul.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+        ul.innerHTML = list.map(o => {
+            const thumbs = o.items.slice(0, 3).map(i => {
+                const p = data.products.find(x => x.id === i.pid);
+                return p ? `<img src="${p.image}" alt="">` : '';
+            }).join('');
+            const more = o.items.length > 3 ? `<div class="more">+${o.items.length - 3}</div>` : '';
+            const statusLabel = { yangi: 'Yangi', jarayonda: 'Jarayonda', yetkazilmoqda: "Yo'lda", yetkazildi: 'Yetkazildi', bekor: 'Bekor' }[o.status] || o.status;
+            return `
+                <div class="order-card">
+                    <div class="oc-head">
+                        <div class="oc-id">#${o.id}</div>
+                        <span class="status-pill ${o.status}">${statusLabel}</span>
+                    </div>
+                    <div class="oc-meta">${formatDate(o.date)} • ${o.items.length} kitob</div>
+                    <div class="oc-thumbs">${thumbs}${more}</div>
+                    <div class="oc-foot">
+                        <div class="oc-total">${money(o.total)}</div>
+                        <button class="oc-btn" data-order-detail="${o.id}">Batafsil</button>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('[data-order-detail]');
+        if (!btn) return;
+        const o = data.orders.find(x => x.id === +btn.dataset.orderDetail);
+        if (!o) return;
+        const statusLabel = { yangi: 'Yangi', jarayonda: 'Jarayonda', yetkazilmoqda: "Yo'lda", yetkazildi: 'Yetkazildi', bekor: 'Bekor' }[o.status] || o.status;
+        const payLabel = { naqd: '💵 Naqd', uzcard: '💳 Uzcard / Humo', karta: '💳 Karta', click: '⚡ Click', payme: '📱 Payme' }[o.payment] || o.payment;
+        document.getElementById('productDetail').innerHTML = `
+            <div class="sheet-body">
+                <div style="text-align:center;margin-bottom:18px">
+                    <span class="status-pill ${o.status}" style="font-size:12px;padding:6px 14px">${statusLabel}</span>
+                    <h2 style="font-family:'Manrope',sans-serif;font-size:22px;font-weight:800;margin-top:10px;letter-spacing:-0.02em">Buyurtma #${o.id}</h2>
+                    <p style="color:var(--text-muted);font-size:13px;margin-top:2px">${formatDate(o.date)}</p>
+                </div>
+                <div style="background:var(--surface-2);border-radius:16px;padding:14px;margin-bottom:14px">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--text-muted)">Manzil</span><strong style="text-align:right;max-width:60%">${escapeHtml(o.address)}</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--text-muted)">Telefon</span><strong>${escapeHtml(o.phone)}</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--text-muted)">To'lov</span><strong>${payLabel}</strong></div>
+                </div>
+                <h4 style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Kitoblar</h4>
+                ${o.items.map(i => {
+                    const p = data.products.find(x => x.id === i.pid);
+                    return `
+                    <div style="display:flex;gap:10px;padding:10px;background:var(--surface-2);border-radius:12px;margin-bottom:6px;align-items:center">
+                        <img src="${p ? p.image : ''}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;background:var(--surface-3)">
+                        <div style="flex:1;min-width:0">
+                            <div style="font-weight:600;font-size:13px">${escapeHtml(i.name)}</div>
+                            <div style="font-size:11px;color:var(--text-muted)">${escapeHtml(i.size || '—')} • ${i.qty} dona</div>
+                        </div>
+                        <div style="font-weight:800;font-size:14px;font-family:'Manrope',sans-serif">${money(i.price * i.qty)}</div>
+                    </div>`;
+                }).join('')}
+                <div style="display:flex;justify-content:space-between;padding:16px;background:var(--accent-soft);color:var(--accent);border-radius:14px;margin-top:10px;font-weight:800;font-size:16px;font-family:'Manrope',sans-serif">
+                    <span>Jami:</span><span>${money(o.total)}</span>
+                </div>
+            </div>`;
+        openSheet('productSheet');
+    });
+
+    /* ============ PROFILE ============ */
+    function renderProfile() {
+        document.getElementById('profileAvatar').textContent = (profile.name || 'M').charAt(0).toUpperCase();
+        document.getElementById('profileName').textContent = profile.name || 'Foydalanuvchi';
+        document.getElementById('profilePhone').textContent = profile.phone || "Profilni to'ldiring";
+        updateAddressCount();
+        updateProfileStats();
+    }
+
+    function updateAddressCount() {
+        const el = document.getElementById('addrCount');
+        if (!el) return;
+        el.textContent = addresses.length > 0 ? `${addresses.length} ta manzil` : 'Yetkazib berish manzillari';
+    }
+
+    function updateProfileStats() {
+        const myOrders = data.orders.filter(o => o.self);
+        const spent = myOrders.filter(o => o.status === 'yetkazildi').reduce((s, o) => s + o.total, 0);
+        document.getElementById('psOrders').textContent = myOrders.length;
+        document.getElementById('psFav').textContent = favorites.length;
+        const bonus = Math.floor(spent / 10000);
+        document.getElementById('psSpent').textContent = bonus;
+    }
+
+    document.getElementById('themeSwitch').onchange = e => applyTheme(e.target.checked);
+    document.getElementById('themeToggle').onclick = e => {
+        if (e.target.tagName === 'INPUT' || e.target.classList.contains('slider')) return;
+        const sw = document.getElementById('themeSwitch');
+        sw.checked = !sw.checked;
+        applyTheme(sw.checked);
+    };
+
+    document.getElementById('profileEdit').onclick = () => {
+        document.getElementById('pfName').value = profile.name || '';
+        document.getElementById('pfPhone').value = profile.phone || '';
+        document.getElementById('pfEmail').value = profile.email || '';
+        openSheet('profileSheet');
+    };
+    document.getElementById('saveProfileBtn').onclick = () => {
+        const name = document.getElementById('pfName').value.trim();
+        const phone = document.getElementById('pfPhone').value.trim();
+        const email = document.getElementById('pfEmail').value.trim();
+        if (!name) { toast('Ismni kiriting', 'error'); return; }
+        profile = { name, phone, email };
+        saveProfile();
+        closeSheet();
+        toast('Profil yangilandi', 'success');
+    };
+
+    /* ============ ADDRESSES ============ */
+    document.getElementById('openAddresses').onclick = () => { renderAddresses(); openSheet('addrSheet'); };
+
+    function renderAddresses() {
+        const body = document.getElementById('addrBody');
+        if (addresses.length === 0) {
+            body.innerHTML = `<div class="empty-state"><div class="emp-ico">📍</div><h4>Manzillar yo'q</h4><p>Birinchi manzilingizni qo'shing</p></div>`;
+            return;
+        }
+        body.innerHTML = addresses.map((a, i) => `
+            <div class="addr-card ${a.default ? 'default' : ''}" data-addr="${i}">
+                <div class="addr-ico">${a.label === 'Uy' ? '🏠' : a.label === 'Ish' ? '🏢' : '📍'}</div>
+                <div class="addr-mid">
+                    <div class="addr-label">${escapeHtml(a.label)} ${a.default ? '<span class="badge">Asosiy</span>' : ''}</div>
+                    <div class="addr-full">${escapeHtml(a.full)}</div>
+                    <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${escapeHtml(a.phone)}</div>
+                </div>
+                <div class="addr-acts">
+                    <button data-edit-addr="${i}" aria-label="Tahrirlash">✏️</button>
+                    <button data-del-addr="${i}" aria-label="O'chirish">🗑</button>
+                </div>
+            </div>`).join('');
+        body.querySelectorAll('.addr-card').forEach(c => c.onclick = (e) => {
+            if (e.target.closest('button')) return;
+            const i = +c.dataset.addr;
+            addresses.forEach((a, idx) => a.default = idx === i);
+            saveAddrs();
+            toast('Asosiy manzil o\'zgartirildi', 'success');
+        });
+        body.querySelectorAll('[data-edit-addr]').forEach(b => b.onclick = (e) => {
+            e.stopPropagation();
+            editAddr(+b.dataset.editAddr);
+        });
+        body.querySelectorAll('[data-del-addr]').forEach(b => b.onclick = (e) => {
+            e.stopPropagation();
+            delAddr(+b.dataset.delAddr);
+        });
+    }
+
+    /* ---------- Region/District dropdowns ---------- */
+    function populateRegionSelect(selectedRegion = '') {
+        const sel = document.getElementById('addrRegion');
+        sel.innerHTML = '<option value="">Tanlang...</option>' +
+            Object.keys(UZ_REGIONS).map(r => `<option value="${escapeHtml(r)}" ${r === selectedRegion ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('');
+    }
+    function populateDistrictSelect(region, selectedDistrict = '') {
+        const sel = document.getElementById('addrDistrict');
+        if (!region || !UZ_REGIONS[region]) {
+            sel.innerHTML = '<option value="">Avval viloyatni tanlang</option>';
+            sel.disabled = true;
+            return;
+        }
+        sel.disabled = false;
+        sel.innerHTML = '<option value="">Tanlang...</option>' +
+            UZ_REGIONS[region].map(d => `<option value="${escapeHtml(d)}" ${d === selectedDistrict ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
+    }
+    document.getElementById('addrRegion').onchange = e => {
+        populateDistrictSelect(e.target.value);
+    };
+
+    function editAddr(i) {
+        const a = addresses[i];
+        document.getElementById('addrId').value = i;
+        document.getElementById('addrLabel').value = a.label || '';
+        populateRegionSelect(a.region || '');
+        populateDistrictSelect(a.region || '', a.district || '');
+        document.getElementById('addrStreet').value = a.street || a.full || '';
+        document.getElementById('addrPhone').value = a.phone || '';
+        document.getElementById('addrDefault').checked = !!a.default;
+        document.getElementById('addrFormTitle').textContent = 'Manzilni tahrirlash';
         openSheet('addrFormSheet');
     }
-    document.getElementById('saveAddrBtn').onclick = () => {
-        const name = document.getElementById('addrName').value.trim() || 'Uy';
-        const geo = document.getElementById('addrGeo');
-        const res = window.UzAddress ? UzAddress.read(geo, { idPrefix: 'ba' }) : null;
-        if (!res) { toast('Viloyat, tuman va uy raqamini to\'ldiring', 'error'); return; }
-        const idx = document.getElementById('addrId').value;
-        const obj = { name, region: res.region, district: res.district, village: res.village, house: res.house, note: res.note, text: res.text };
-        if (idx === '') { obj.default = addresses.length === 0; addresses.push(obj); }
-        else { obj.default = addresses[+idx].default; addresses[+idx] = obj; }
-        saveAddrs(); renderProfile(); renderAddrList();
-        toast('Manzil saqlandi', 'success'); openSheet('addrSheet');
-    };
-    document.getElementById('addrList').addEventListener('click', e => {
-        const ed = e.target.closest('[data-aedit]'); if (ed) { openAddrForm(+ed.dataset.aedit); return; }
-        const dl = e.target.closest('[data-adel]');
-        if (dl) { const i = +dl.dataset.adel; const wasDef = addresses[i].default; addresses.splice(i, 1); if (wasDef && addresses.length) addresses[0].default = true; saveAddrs(); renderAddrList(); renderProfile(); toast('Manzil o\'chirildi', 'info'); }
-    });
-
-    /* ---------- To'lov usullari ---------- */
-    document.getElementById('payRow').onclick = () => {
-        document.querySelectorAll('#paySheet .pm-opt').forEach(o => o.classList.toggle('active', o.dataset.pay === payMethod));
-        openSheet('paySheet');
-    };
-    document.querySelectorAll('#paySheet .pm-opt:not(.soon)').forEach(o => o.onclick = () => {
-        payMethod = o.dataset.pay; localStorage.setItem('kitob_pay', payMethod);
-        document.querySelectorAll('#paySheet .pm-opt').forEach(x => x.classList.toggle('active', x === o));
-        renderProfile(); closeSheet(); toast('To\'lov usuli: Naqd pul', 'success');
-    });
-
-    /* ---------- Admin bilan chat ---------- */
-    function renderChat() {
-        const b = document.getElementById('chatBody');
-        if (!chatMsgs.length) b.innerHTML = `<div class="msg them">Assalomu alaykum! Savolingiz bo'lsa yozing 😊</div>`;
-        else b.innerHTML = `<div class="msg them">Assalomu alaykum! Savolingiz bo'lsa yozing 😊</div>` + chatMsgs.map(m => `<div class="msg ${m.from}">${escapeHtml(m.text)}</div>`).join('');
-        b.scrollTop = b.scrollHeight;
+    async function delAddr(i) {
+        const ok = await showDialog({
+            title: 'Manzilni o\'chirish',
+            message: 'Ushbu manzil ro\'yxatdan olib tashlanadi.',
+            icon: '🗑',
+            okText: 'O\'chirish',
+            danger: true,
+        });
+        if (!ok) return;
+        addresses.splice(i, 1);
+        if (!addresses.some(a => a.default) && addresses.length > 0) addresses[0].default = true;
+        saveAddrs();
+        toast('Manzil o\'chirildi', 'info');
     }
-    document.getElementById('chatRow').onclick = () => { renderChat(); openSheet('chatSheet'); };
+
+    document.getElementById('addAddrBtn').onclick = () => {
+        document.getElementById('addrForm').reset();
+        document.getElementById('addrId').value = '';
+        populateRegionSelect('');
+        populateDistrictSelect('');
+        document.getElementById('addrFormTitle').textContent = 'Yangi manzil';
+        openSheet('addrFormSheet');
+    };
+
+    document.getElementById('saveAddrBtn').onclick = () => {
+        const id = document.getElementById('addrId').value;
+        const region = document.getElementById('addrRegion').value.trim();
+        const district = document.getElementById('addrDistrict').value.trim();
+        const street = document.getElementById('addrStreet').value.trim();
+        const phone = document.getElementById('addrPhone').value.trim();
+
+        if (!region) { toast("Viloyat / shaharni tanlang", 'error'); return; }
+        if (!district) { toast("Tumanni tanlang", 'error'); return; }
+        if (!street) { toast("Ko'cha va uy raqamini kiriting", 'error'); return; }
+        if (!phone || phone.replace(/\D/g, '').length < 9) { toast("Telefon raqamni to'g'ri kiriting", 'error'); return; }
+
+        const obj = {
+            label: document.getElementById('addrLabel').value.trim() || 'Manzil',
+            region, district, street,
+            full: `${region}, ${district}, ${street}`,
+            phone,
+            default: document.getElementById('addrDefault').checked,
+        };
+        if (obj.default) addresses.forEach(a => a.default = false);
+        if (id !== '') addresses[+id] = obj;
+        else addresses.push(obj);
+        if (!addresses.some(a => a.default) && addresses.length > 0) addresses[0].default = true;
+        saveAddrs();
+        openSheet('addrSheet');
+        toast(id ? 'Manzil yangilandi' : "Manzil qo'shildi", 'success');
+    };
+
+    /* ============ FAVORITES ============ */
+    document.getElementById('openFavorites').onclick = () => {
+        const favProds = data.products.filter(p => favorites.includes(p.id));
+        const body = document.getElementById('favBody');
+        if (favProds.length === 0) {
+            body.innerHTML = `<div class="empty-state"><div class="emp-ico">❤️</div><h4>Sevimlilar yo'q</h4><p>Yoqqan kitoblarga ❤️ bosing</p></div>`;
+        } else {
+            body.innerHTML = `<div class="product-grid">${favProds.map(productCard).join('')}</div>`;
+        }
+        openSheet('favSheet');
+    };
+
+    /* ============ MISC PROFILE ACTIONS ============ */
+    document.getElementById('aboutLink').onclick = () => openSheet('aboutSheet');
+    document.getElementById('openPayment').onclick = () => toast('Tez kunda qo\'shiladi', 'info');
+    document.getElementById('openChat').onclick = () => openChat();
+
+    document.getElementById('logoutBtn').onclick = async () => {
+        const ok = await showDialog({
+            title: 'Hisobdan chiqish',
+            message: 'Profilingiz ushbu qurilmadan o\'chiriladi. Sevimlilar va savatcha saqlanadi.',
+            icon: '👋',
+            okText: 'Chiqish',
+            danger: true,
+        });
+        if (!ok) return;
+        profile = {};
+        localStorage.removeItem(PROFILE_KEY);
+        renderProfile();
+        toast('Hisobdan chiqildi', 'info');
+    };
+
+    /* ============ CHAT (user ↔ admin) ============ */
+    const CHAT_USER_KEY = 'kitob_chat_user';
+    let chatUserKey = localStorage.getItem(CHAT_USER_KEY);
+    if (!chatUserKey) {
+        chatUserKey = 'u_' + Math.random().toString(36).slice(2, 11);
+        localStorage.setItem(CHAT_USER_KEY, chatUserKey);
+    }
+
+    function getMyChat() {
+        if (!Array.isArray(data.chats)) data.chats = [];
+        let chat = data.chats.find(c => c.key === chatUserKey);
+        if (!chat) {
+            chat = {
+                key: chatUserKey,
+                userName: profile.name || 'Mehmon',
+                userPhone: profile.phone || '',
+                messages: [],
+                lastActive: new Date().toISOString(),
+                unreadAdmin: 0, // admin uchun o'qilmagan (userdan kelgan)
+                unreadUser: 0,  // user uchun o'qilmagan (admindan kelgan)
+            };
+            data.chats.unshift(chat);
+            Store.save(data);
+        }
+        // Profile yangilangan bo'lsa name/phone yangilab qo'yamiz
+        if (profile.name && chat.userName !== profile.name) chat.userName = profile.name;
+        if (profile.phone && chat.userPhone !== profile.phone) chat.userPhone = profile.phone;
+        return chat;
+    }
+
+    function formatTime(iso) {
+        const d = new Date(iso);
+        if (isNaN(d)) return '';
+        return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+    function dayLabel(iso) {
+        const d = new Date(iso);
+        const today = new Date(); today.setHours(0,0,0,0);
+        const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+        const day = new Date(d); day.setHours(0,0,0,0);
+        if (day.getTime() === today.getTime()) return 'Bugun';
+        if (day.getTime() === yesterday.getTime()) return 'Kecha';
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function renderChat() {
+        const chat = getMyChat();
+        const body = document.getElementById('chatBody');
+        if (!chat.messages || chat.messages.length === 0) {
+            body.innerHTML = `
+                <div class="chat-empty">
+                    <div class="emp-ico">💬</div>
+                    <h4>Suhbatni boshlang</h4>
+                    <p>Admin sizga 5 daqiqada javob beradi. Savol yoki murojaatingizni yozing.</p>
+                </div>`;
+            return;
+        }
+        let html = '';
+        let lastDay = '';
+        chat.messages.forEach(m => {
+            const dl = dayLabel(m.time);
+            if (dl !== lastDay) {
+                html += `<div class="chat-day">${dl}</div>`;
+                lastDay = dl;
+            }
+            html += `
+                <div class="chat-msg from-${m.from}">
+                    ${escapeHtml(m.text)}
+                    <span class="chat-time">${formatTime(m.time)}</span>
+                </div>`;
+        });
+        body.innerHTML = html;
+        // scroll to bottom
+        requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
+    }
+
+    function openChat() {
+        // Re-load data in case admin updated
+        data = Store.load();
+        const chat = getMyChat();
+        chat.unreadUser = 0; // mark admin xabarlar o'qildi
+        Store.save(data);
+        updateChatUnreadDot();
+        renderChat();
+        openSheet('chatSheet');
+        setTimeout(() => document.getElementById('chatInput').focus(), 350);
+    }
+
+    function sendChatMessage(text) {
+        text = text.trim();
+        if (!text) return;
+        data = Store.load();
+        const chat = getMyChat();
+        chat.messages.push({
+            from: 'user',
+            text,
+            time: new Date().toISOString(),
+        });
+        chat.lastActive = new Date().toISOString();
+        chat.unreadAdmin = (chat.unreadAdmin || 0) + 1;
+        Store.save(data);
+        renderChat();
+    }
+
     document.getElementById('chatForm').onsubmit = e => {
         e.preventDefault();
-        const inp = document.getElementById('chatInput'); const t = inp.value.trim(); if (!t) return;
-        chatMsgs.push({ from: 'me', text: t }); inp.value = '';
-        localStorage.setItem('kitob_chat', JSON.stringify(chatMsgs)); renderChat();
-        setTimeout(() => { chatMsgs.push({ from: 'them', text: 'Rahmat! Tez orada javob beramiz.' }); localStorage.setItem('kitob_chat', JSON.stringify(chatMsgs)); renderChat(); }, 900);
+        const inp = document.getElementById('chatInput');
+        const v = inp.value;
+        if (!v.trim()) return;
+        sendChatMessage(v);
+        inp.value = '';
+        inp.focus();
     };
 
-    function fillProfileForm() {
-        document.getElementById('pfName').value = profile.name || 'Dilnoza Rahimova';
-        document.getElementById('pfGender').value = profile.gender || 'Ayol';
-        document.getElementById('pfBirth').value = profile.birth || '05.03.1996';
-        document.getElementById('pfEmail').value = profile.email || 'dilnoza.r@mail.uz';
-        document.getElementById('pfPhone').value = profile.phone || '+998 90 123 45 67';
+    function updateChatUnreadDot() {
+        const dot = document.getElementById('chatUnreadDot');
+        if (!dot) return;
+        const chat = (data.chats || []).find(c => c.key === chatUserKey);
+        const has = chat && chat.unreadUser > 0;
+        dot.style.display = has ? 'inline-block' : 'none';
     }
-    document.getElementById('saveProfileBtn').onclick = () => {
-        profile.name = document.getElementById('pfName').value.trim();
-        profile.gender = document.getElementById('pfGender').value.trim();
-        profile.birth = document.getElementById('pfBirth').value.trim();
-        profile.email = document.getElementById('pfEmail').value.trim();
-        profile.phone = document.getElementById('pfPhone').value.trim();
-        saveProfile();
-        renderProfile();
-        showSuccess('Saqlandi', 'Profil ma\'lumotlaringiz yangilandi');
-    };
 
-    /* ---------- Language ---------- */
-    let pendingLang = lang;
-    function renderLang() {
-        pendingLang = lang;
-        document.querySelectorAll('#langList .lang-row').forEach(r => r.classList.toggle('selected', r.dataset.lang === lang));
-    }
-    document.querySelectorAll('#langList .lang-row').forEach(r => r.onclick = () => {
-        pendingLang = r.dataset.lang;
-        document.querySelectorAll('#langList .lang-row').forEach(x => x.classList.toggle('selected', x === r));
-    });
-    document.getElementById('langSearch').oninput = e => {
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll('#langList .lang-row').forEach(r => r.style.display = r.dataset.lang.toLowerCase().includes(q) ? '' : 'none');
-    };
-    document.getElementById('saveLangBtn').onclick = () => { lang = pendingLang; localStorage.setItem(LANG_KEY, lang); document.getElementById('langVal').textContent = lang; toast('Til saqlandi: ' + lang, 'success'); goBack('profile'); };
-
-    /* ---------- Logout ---------- */
-    async function doLogout() {
-        if (await showDialog({ title: 'Chiqish', message: 'Hisobdan chiqmoqchimisiz?', icon: '🚪', okText: 'Chiqish' })) {
-            profile = {}; saveProfile(); renderProfile();
-            goBase('home'); toast('Hisobdan chiqildi', 'info');
+    // Cross-tab sync: admin javob bersa darhol ko'rinadi
+    window.addEventListener('storage', e => {
+        if (e.key !== STORE_KEY) return;
+        data = Store.load();
+        updateChatUnreadDot();
+        checkUnseenNotifs();
+        const sheet = document.getElementById('chatSheet');
+        if (sheet && sheet.classList.contains('show')) {
+            const chat = getMyChat();
+            chat.unreadUser = 0;
+            Store.save(data);
+            renderChat();
+        } else {
+            // Yangi admin xabari kelganda toast ko'rsatamiz
+            const chat = (data.chats || []).find(c => c.key === chatUserKey);
+            if (chat && chat.unreadUser > 0) {
+                const last = chat.messages[chat.messages.length - 1];
+                if (last && last.from === 'admin') {
+                    toast('💬 Admin sizga javob yozdi', 'info');
+                    // Bell dotni animatsiyalash
+                    const dot = document.getElementById('bellDot');
+                    if (dot) {
+                        dot.style.display = 'block';
+                        dot.classList.remove('shake');
+                        void dot.offsetWidth;
+                        dot.classList.add('shake');
+                    }
+                }
+            }
         }
-    }
-    document.getElementById('logoutBtn').onclick = doLogout;
-    document.getElementById('bellBtn').onclick = () => toast('Yangi bildirishnomalar yo\'q', 'info');
-    document.getElementById('menuReviews').onclick = () => toast('Sharhlar bo\'limi tez orada', 'info');
-    document.getElementById('menuFindStore').onclick = () => toast(data.settings.address, 'info');
-    document.getElementById('menuDelivery').onclick = () => toast('Yetkazib berish: 1-2 kun', 'info');
-
-    /* ---------- Success modal ---------- */
-    const successBg = document.getElementById('successBg');
-    function showSuccess(title, msg) {
-        document.getElementById('successTitle').textContent = title;
-        document.getElementById('successMsg').textContent = msg;
-        successBg.classList.add('show');
-    }
-    document.getElementById('successClose').onclick = () => successBg.classList.remove('show');
-    document.getElementById('successBack').onclick = () => { successBg.classList.remove('show'); goBack('settings'); };
-    document.getElementById('successNext').onclick = () => successBg.classList.remove('show');
-    successBg.onclick = e => { if (e.target === successBg) successBg.classList.remove('show'); };
-
-    /* ---------- Global delegated clicks (add / open detail / cart qty) ---------- */
-    document.addEventListener('click', e => {
-        const add = e.target.closest('[data-add]');
-        if (add) { e.stopPropagation(); addToCart(add.dataset.add); return; }
-        const inc = e.target.closest('[data-cinc]');
-        if (inc) { const c = cart.find(x => x.id === +inc.dataset.cinc); const p = data.products.find(x => x.id === +inc.dataset.cinc); if (c && (!p || c.qty < p.stock)) { c.qty++; saveCart(); renderCart(); } return; }
-        const dec = e.target.closest('[data-cdec]');
-        if (dec) { const c = cart.find(x => x.id === +dec.dataset.cdec); if (c) { c.qty--; if (c.qty <= 0) cart = cart.filter(x => x.id !== c.id); saveCart(); renderCart(); } return; }
-        const rem = e.target.closest('[data-crem]');
-        if (rem) { cart = cart.filter(x => x.id !== +rem.dataset.crem); saveCart(); renderCart(); return; }
-        const pcard = e.target.closest('[data-pid]');
-        if (pcard) openDetail(pcard.dataset.pid);
     });
 
-    /* ---------- Init ---------- */
+    /* ============ INIT ============ */
+    renderChips();
+    renderTrending();
+    renderProductGrid();
     updateCartBadge();
-    showScreen('home', false);
-});
+    updateFilterIndicator();
+    checkUnseenNotifs();
+    renderProfile();
+    updateChatUnreadDot();
+
+    // Active screen on bottom nav
+    document.querySelectorAll('.bn').forEach(b => b.classList.toggle('active', b.dataset.nav === 'home'));
+}

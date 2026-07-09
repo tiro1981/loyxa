@@ -1,25 +1,24 @@
 /* ============================================
-   MODA STYLE — Admin Panel Styles
+   KITOB OLAMI — Admin Panel Styles
    ============================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    /* === Bookz Admin — navy + qizil === */
-    --sidebar-bg: #0c0f18;
-    --sidebar-bg-hover: #161c2b;
-    --sidebar-text: #8b93a7;
+    --sidebar-bg: #2a1c12;
+    --sidebar-bg-hover: #3a2818;
+    --sidebar-text: #cbb79c;
     --sidebar-text-active: #ffffff;
-    --accent: #ff3b4e;
-    --accent-dark: #e11d3a;
-    --accent-light: #2a0f18;
-    --bg: #f0f2f5;
+    --accent: #b45309;
+    --accent-dark: #92400e;
+    --accent-light: #fbeee2;
+    --bg: #faf7f1;
     --surface: #ffffff;
-    --text: #1f2937;
-    --text-muted: #6b7280;
-    --text-light: #9ca3af;
-    --border: #e5e7eb;
-    --border-soft: #f1f3f5;
+    --text: #2a1c12;
+    --text-muted: #8a7a6a;
+    --text-light: #b3a594;
+    --border: #ece4d6;
+    --border-soft: #f5efe5;
     --success: #10b981;
     --success-bg: #d1fae5;
     --warning: #f59e0b;
@@ -28,9 +27,9 @@
     --danger-bg: #fee2e2;
     --info: #3b82f6;
     --info-bg: #dbeafe;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow: 0 2px 8px rgba(0,0,0,0.06);
-    --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+    --shadow-sm: 0 1px 2px rgba(74,44,24,0.05);
+    --shadow: 0 2px 8px rgba(74,44,24,0.08);
+    --shadow-lg: 0 12px 32px rgba(74,44,24,0.14);
     --radius: 12px;
     --radius-sm: 8px;
     --r-pill: 999px;
@@ -39,23 +38,13 @@
 }
 
 body.dark {
-    /* === Bookz — qorong'u navy === */
-    --bg: #0a0b12;
-    --surface: #141826;
-    --surface-2: #1c2234;
-    --text: #f5f6fa;
-    --text-muted: #9aa3b8;
-    --text-light: #6b7488;
-    --border: #232b40;
-    --border-soft: #171c2b;
-    --accent-light: #2a0f18;
-    --success-bg: #12321f;
-    --warning-bg: #33240a;
-    --danger-bg: #37131a;
-    --info-bg: #142744;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-    --shadow: 0 2px 10px rgba(0,0,0,0.45);
-    --shadow-lg: 0 16px 40px rgba(0,0,0,0.6);
+    --bg: #161009;
+    --surface: #211910;
+    --text: #f5ecdd;
+    --text-muted: #b3a48f;
+    --text-light: #7d6e5c;
+    --border: #352819;
+    --border-soft: #211910;
 }
 
 body {
@@ -1936,32 +1925,6 @@ img { max-width: 100%; display: block; }
     .bot-copy-btn { padding: 12px; justify-content: center; }
 }
 
-/* ===== Mahsulot rasmlari (5 tagacha) ===== */
-.img-previews { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-.img-prev {
-    position: relative; width: 74px; height: 74px;
-    border-radius: 10px; overflow: hidden;
-    border: 1.5px solid var(--border); background: var(--surface-2);
-}
-.img-prev.main { border-color: var(--accent); }
-.img-prev img { width: 100%; height: 100%; object-fit: cover; }
-.img-main-tag {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: var(--accent); color: #fff;
-    font-size: 9px; font-weight: 600; text-align: center; padding: 2px;
-}
-.img-del {
-    position: absolute; top: 3px; right: 3px;
-    width: 20px; height: 20px; border-radius: 50%; border: none;
-    background: rgba(0,0,0,0.6); color: #fff; cursor: pointer;
-    font-size: 15px; line-height: 1; padding: 0;
-    display: flex; align-items: center; justify-content: center;
-}
-.img-del:hover { background: #ef4444; }
-.img-empty { color: var(--text-muted); font-size: 13px; padding: 6px 0; }
-.img-url-add { display: flex; gap: 8px; margin-bottom: 10px; }
-.img-url-add input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 14px; }
-
 /* ============================================================
    ====== UNIFIED BOT PANEL (bot2-) — barcha ilovalarda bir xil
    ============================================================ */
@@ -2038,27 +2001,4 @@ img { max-width: 100%; display: block; }
   .bot2-grid { grid-template-columns: 1fr; }
   .bot2-preview { position: static; max-width: 360px; margin: 0 auto; width: 100%; }
   .bot2-row2 { grid-template-columns: 1fr; }
-}
-
-/* ============ QR KOD ============ */
-.qr-grid { display: grid; grid-template-columns: minmax(0,360px) 1fr; gap: 20px; align-items: start; }
-.qr-preview-card .panel-body { display: flex; flex-direction: column; align-items: center; }
-.qr-frame {
-  width: 320px; max-width: 100%; aspect-ratio: 1 / 1;
-  display: flex; align-items: center; justify-content: center;
-  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-}
-.qr-frame img { width: 100%; height: auto; border-radius: var(--radius-sm); }
-.qr-state { color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px; }
-.qr-shop-name { margin-top: 16px; font-size: 18px; font-weight: 700; color: var(--text); }
-.qr-scan-hint { margin-top: 4px; color: var(--text-muted); font-size: 13px; }
-.qr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.qr-sep { border: none; border-top: 1px solid var(--border-soft); margin: 20px 0; }
-.qr-custom-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.qr-custom-row .search-input { min-width: 180px; }
-
-@media (max-width: 760px) {
-  .qr-grid { grid-template-columns: 1fr; }
-  .qr-preview-card .panel-body { align-items: center; }
 }

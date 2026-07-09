@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
-    <title>Admin Panel — Bookz</title>
+    <title>Admin Panel — Kitob Olami</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0b12">
-    <meta name="application-name" content="Bookz Admin">
+    <meta name="theme-color" content="#2a1c12">
+    <meta name="application-name" content="Kitob Admin">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bookz Admin">
+    <meta name="apple-mobile-web-app-title" content="Kitob Admin">
     <meta name="format-detection" content="telephone=no">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon-192.svg">
@@ -20,9 +20,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=4">
+    <link rel="stylesheet" href="admin.css?v=3">
 </head>
-<body class="dark">
+<body>
 
     <!-- ============ ADMIN LAYOUT ============ -->
     <div class="admin-app" id="adminApp">
@@ -31,9 +31,9 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-top">
                 <div class="brand">
-                    <div class="logo-mark">📖</div>
+                    <div class="logo-mark">📚</div>
                     <div class="brand-text">
-                        <strong>Bookz</strong>
+                        <strong>Kitob Olami</strong>
                         <small>Admin Panel</small>
                     </div>
                 </div>
@@ -56,7 +56,6 @@
 
                 <div class="nav-label">Integratsiya</div>
                 <button class="nav-link" data-page="bot"><span class="ni">✈️</span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
-                <button class="nav-link" data-page="qr"><span class="ni">📱</span> QR Kod</button>
             </nav>
 
             <div class="sidebar-bot">
@@ -126,6 +125,7 @@
                     <div class="stat-card">
                         <div class="stat-head">
                             <span class="stat-icon" style="background:#ede9fe;color:#6c63ff">💰</span>
+                            <span class="trend up">+12.5%</span>
                         </div>
                         <div class="stat-val" id="kpiRevenue">0 so'm</div>
                         <div class="stat-label">Jami savdo</div>
@@ -133,6 +133,7 @@
                     <div class="stat-card">
                         <div class="stat-head">
                             <span class="stat-icon" style="background:#fef3c7;color:#d97706">🛍️</span>
+                            <span class="trend up">+8.2%</span>
                         </div>
                         <div class="stat-val" id="kpiOrders">0</div>
                         <div class="stat-label">Buyurtmalar (bugun: <span id="kpiOrdersToday">0</span>)</div>
@@ -140,6 +141,7 @@
                     <div class="stat-card">
                         <div class="stat-head">
                             <span class="stat-icon" style="background:#dcfce7;color:#16a34a">👥</span>
+                            <span class="trend up">+5.1%</span>
                         </div>
                         <div class="stat-val" id="kpiCustomers">0</div>
                         <div class="stat-label">Mijozlar (yangi: <span id="kpiCustomersNew">0</span>)</div>
@@ -147,6 +149,7 @@
                     <div class="stat-card">
                         <div class="stat-head">
                             <span class="stat-icon" style="background:#fce7f3;color:#db2777">📦</span>
+                            <span class="trend down">-2.4%</span>
                         </div>
                         <div class="stat-val" id="kpiProducts">0</div>
                         <div class="stat-label">Kitoblar (aktiv: <span id="kpiProductsActive">0</span>)</div>
@@ -458,7 +461,7 @@
             <section class="page" data-page="bot">
                 <div class="bot2-topbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
                     <div><h2 style="margin:0">Telegram Bot</h2><p style="margin:2px 0 0;color:var(--text-muted,#6b7280);font-size:13px">O'z botingizni ulang — yangi buyurtmalar Telegram kanalingizga avtomatik yuboriladi</p></div>
-                    <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
+                    <span class="bot2-status off" id="bot2Status">● Ulanmagan</span>
                 </div>
 
                 <!-- 1) BOTNI ULASH -->
@@ -509,47 +512,6 @@
                 </div>
             </section>
 
-            <!-- ============ QR KOD ============ -->
-            <section class="page" data-page="qr">
-                <div class="page-toolbar">
-                    <div>
-                        <h2 style="margin:0">QR Kod</h2>
-                        <p style="margin:2px 0 0;color:var(--text-muted,#6b7280);font-size:13px">Do'koningiz QR kodi — mijozlar telefonida skanerlab to'g'ridan-to'g'ri do'konga kiradi</p>
-                    </div>
-                </div>
-
-                <div class="qr-grid">
-                    <!-- QR rasm karta -->
-                    <div class="panel qr-preview-card">
-                        <div class="panel-body" style="text-align:center">
-                            <div class="qr-frame" id="qrFrame">
-                                <img id="qrImg" alt="QR Kod" width="320" height="320" style="display:none">
-                                <div class="qr-state" id="qrState">QR yuklanmoqda…</div>
-                            </div>
-                            <div class="qr-shop-name" id="qrShopName">Bookz</div>
-                            <div class="qr-scan-hint">📷 Telefon bilan skaner qiling</div>
-                        </div>
-                    </div>
-
-                    <!-- Manzil + tugmalar karta -->
-                    <div class="panel qr-info-card">
-                        <div class="panel-head"><h3>Do'kon manzili</h3></div>
-                        <div class="panel-body">
-                            <label class="bot2-label" for="qrUrl">Ilova manzili (URL)</label>
-                            <input type="text" id="qrUrl" class="search-input" readonly spellcheck="false" style="width:100%;font-size:13px">
-                            <p class="bot2-hint">Bu havola QR kodga yozilgan. Mijoz skanerlasa shu sahifa ochiladi.</p>
-
-                            <div class="qr-actions">
-                                <button type="button" class="btn btn-primary" id="qrCopyBtn">📋 Nusxalash</button>
-                                <button type="button" class="btn btn-ghost" id="qrDownloadBtn">⬇️ Yuklab olish</button>
-                                <button type="button" class="btn btn-ghost" id="qrPrintBtn">🖨️ Chop etish</button>
-                                <button type="button" class="btn btn-ghost" id="qrOpenBtn">🔗 Ochish</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
         </div>
     </div>
 
@@ -565,31 +527,46 @@
             </div>
             <form id="productForm" class="form form-grid">
                 <input type="hidden" id="pId">
-                <div class="form-row full"><label>Nomi *</label><input type="text" id="pName" required></div>
-                <div class="form-row"><label>Kategoriya *</label><select id="pCat" required></select></div>
+                <div class="form-row full"><label>Kitob nomi *</label><input type="text" id="pName" required></div>
+                <div class="form-row"><label>Muallif *</label><input type="text" id="pAuthor" required placeholder="Masalan: Abdulla Qodiriy"></div>
+                <div class="form-row"><label>Janr (kategoriya) *</label><select id="pCat" required></select></div>
+                <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required min="0"></div>
+                <div class="form-row"><label>Eski narx (ixtiyoriy)</label><input type="number" id="pOld" min="0"></div>
+                <div class="form-row"><label>Zaxira (dona) *</label><input type="number" id="pStock" required min="0" value="10"></div>
                 <div class="form-row"><label>Holat</label>
                     <label class="switch"><input type="checkbox" id="pActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label>
                 </div>
-                <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required min="0"></div>
-                <div class="form-row"><label>Eski narx (ixtiyoriy)</label><input type="number" id="pOld" min="0"></div>
-                <div class="form-row"><label>Zaxira *</label><input type="number" id="pStock" required min="0" value="10"></div>
-                <div class="form-row"><label>Muallif</label><input type="text" id="pAuthor" placeholder="Masalan: Abdulla Qodiriy"></div>
-                <div class="form-row"><label>Sahifa soni</label><input type="number" id="pPages" min="0" placeholder="320"></div>
-                <div class="form-row"><label>Reyting (0–5)</label><input type="number" id="pRating" min="0" max="5" step="0.1" placeholder="4.5"></div>
+                <div class="form-row"><label>Nashriyot</label><input type="text" id="pPublisher" placeholder="Masalan: Sharq"></div>
+                <div class="form-row"><label>Nashr yili</label><input type="number" id="pYear" min="1900" max="2100" placeholder="2024"></div>
+                <div class="form-row"><label>Sahifalar soni</label><input type="number" id="pPages" min="1" placeholder="320"></div>
+                <div class="form-row"><label>Til</label>
+                    <select id="pLang">
+                        <option value="O'zbek">O'zbek</option>
+                        <option value="Rus">Rus</option>
+                        <option value="Ingliz">Ingliz</option>
+                        <option value="Arab">Arab</option>
+                    </select>
+                </div>
+                <div class="form-row"><label>ISBN</label><input type="text" id="pIsbn" placeholder="978-9943-..."></div>
+                <div class="form-row full"><label>Muqova rasmi (URL) *</label><input type="url" id="pImage" required placeholder="https://..."></div>
                 <div class="form-row full">
-                    <label>Rasmlar (5 tagacha) *</label>
-                    <div class="img-previews" id="pImagesPreview"></div>
-                    <div class="img-url-add">
-                        <input type="url" id="pImageUrl" placeholder="Rasm URL kiriting...">
-                        <button type="button" class="btn-mini" id="addImageUrlBtn">+ URL qo'shish</button>
-                    </div>
-                    <div class="drop-zone" id="dropZone">
-                        <div>📤</div>
-                        <p>Rasmlarni bu yerga tashlang yoki <span>tanlash uchun bosing</span> — 5 tagacha</p>
-                        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                    <label>Muqova turi / format</label>
+                    <div class="check-row" id="pSizes">
+                        <label><input type="checkbox" value="Qattiq muqova" checked><span>Qattiq muqova</span></label>
+                        <label><input type="checkbox" value="Yumshoq muqova"><span>Yumshoq muqova</span></label>
+                        <label><input type="checkbox" value="Audiokitob"><span>Audiokitob</span></label>
+                        <label><input type="checkbox" value="Elektron"><span>Elektron (PDF)</span></label>
                     </div>
                 </div>
-                <div class="form-row full"><label>Tavsif</label><textarea id="pDesc" rows="3"></textarea></div>
+                <div class="form-row full">
+                    <label>Muqova rasmini yuklash (drag & drop)</label>
+                    <div class="drop-zone" id="dropZone">
+                        <div>📤</div>
+                        <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+                </div>
+                <div class="form-row full"><label>Annotatsiya (tavsif)</label><textarea id="pDesc" rows="3" placeholder="Kitob haqida qisqacha..."></textarea></div>
                 <div class="form-row full" style="display:flex;gap:10px;justify-content:flex-end">
                     <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
                     <button type="submit" class="btn btn-primary">Saqlash</button>
@@ -632,16 +609,16 @@
                 <div class="form-row"><label>Nomi</label><input type="text" id="catName" required></div>
                 <div class="form-row"><label>Ikona (emoji)</label>
                     <div class="emoji-pick" id="emojiPick">
-                        <button type="button" data-emoji="👔">👔</button>
-                        <button type="button" data-emoji="👗">👗</button>
-                        <button type="button" data-emoji="🧒">🧒</button>
-                        <button type="button" data-emoji="👟">👟</button>
-                        <button type="button" data-emoji="👜">👜</button>
-                        <button type="button" data-emoji="🧥">🧥</button>
-                        <button type="button" data-emoji="👒">👒</button>
-                        <button type="button" data-emoji="🧢">🧢</button>
-                        <button type="button" data-emoji="🕶️">🕶️</button>
-                        <button type="button" data-emoji="⌚">⌚</button>
+                        <button type="button" data-emoji="📖">📖</button>
+                        <button type="button" data-emoji="🔬">🔬</button>
+                        <button type="button" data-emoji="🧸">🧸</button>
+                        <button type="button" data-emoji="🏛️">🏛️</button>
+                        <button type="button" data-emoji="💼">💼</button>
+                        <button type="button" data-emoji="🧠">🧠</button>
+                        <button type="button" data-emoji="🕌">🕌</button>
+                        <button type="button" data-emoji="🎓">🎓</button>
+                        <button type="button" data-emoji="📚">📚</button>
+                        <button type="button" data-emoji="✍️">✍️</button>
                     </div>
                     <input type="text" id="catIcon" required placeholder="Yoki o'zingiz yozing">
                 </div>
@@ -704,7 +681,7 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js?v=4", "admin.js?v=4"]) {
+        for (const src of ["script.js?v=1", "admin.js?v=1"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

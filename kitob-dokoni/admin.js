@@ -1,5 +1,5 @@
 /* ============================================
-   BOOKZ — Admin Panel Logic
+   KITOB OLAMI — Admin Panel Logic
    ============================================ */
 
 const STATUSES = ['yangi', 'jarayonda', 'yetkazilmoqda', 'yetkazildi', 'bekor'];
@@ -10,16 +10,14 @@ let currentPage = 'dashboard';
 let productPage = 1;
 const PRODS_PER_PAGE = 8;
 let pFilters = { search: '', cat: 'all', status: 'all' };
-let formImages = []; // mahsulot formasidagi rasmlar (5 tagacha)
-const MAX_IMAGES = 5;
 let orderStatusTab = 'all';
 let reportRange = 'week';
 
 /* Login olib tashlandi — to'g'ridan-to'g'ri admin panelni ishga tushuramiz.
-   MUHIM: cloud boot-loader admin.js'ni sahifa tayyor bo'lgach (readyState=complete) qo'shadi.
-   initAdmin'ni TO'G'RIDAN-TO'G'RI chaqirsak, u pastda e'lon qilingan `let` o'zgaruvchilardan
-   (masalan __adminInited) OLDIN ishlaydi va TDZ xatosi bilan to'xtaydi — natijada tugmalar
-   bog'lanmay qoladi ("qotib qolish"). Shuning uchun setTimeout bilan BUTUN skript bajarilgach chaqiramiz. */
+   Platforma bu skriptni sahifa to'liq yuklangandan keyin dinamik qo'shadi (Cloud.init dan so'ng),
+   shuning uchun readyState allaqachon "complete" bo'ladi. setTimeout bilan kechiktirilishi shart —
+   aks holda initAdmin() shu qatorda SINXRON chaqiriladi va faylning pastida e'lon qilingan
+   const'lar (masalan BOT_CFG_KEY) hali ishga tushmagan bo'ladi (TDZ xatosi). */
 document.addEventListener('DOMContentLoaded', initAdmin);
 if (document.readyState === 'interactive' || document.readyState === 'complete') setTimeout(initAdmin, 0);
 
@@ -46,8 +44,8 @@ function initAdmin() {
         }
     });
 
-    // Dark mode — Bookz'da standart qorong'u (faqat '0' bo'lsa yoritilgan)
-    if (localStorage.getItem('kitob_dark') !== '0') document.body.classList.add('dark');
+    // Dark mode
+    if (localStorage.getItem('kitob_dark') === '1') document.body.classList.add('dark');
     document.getElementById('darkToggle').onclick = () => {
         document.body.classList.toggle('dark');
         localStorage.setItem('kitob_dark', document.body.classList.contains('dark') ? '1' : '0');
@@ -81,7 +79,6 @@ function initAdmin() {
     setupMessagesPage();
     setupNotifications();
     setupBotPage();
-    setupQrPage();
 
     renderDashboard();
     updateNavBadge();
@@ -117,7 +114,7 @@ function navigate(page) {
         dashboard: 'Dashboard', products: 'Kitoblar', orders: 'Buyurtmalar',
         customers: 'Mijozlar', categories: 'Kategoriyalar', coupons: 'Kuponlar',
         reports: 'Hisobot', settings: 'Sozlamalar', messages: 'Habarlar',
-        bot: 'Telegram Bot', qr: 'QR Kod'
+        bot: 'Telegram Bot'
     };
     document.getElementById('pageTitle').textContent = titles[page] || page;
     document.getElementById('sidebar').classList.remove('open');
@@ -132,7 +129,6 @@ function navigate(page) {
     if (page === 'settings') renderSettings();
     if (page === 'messages') renderMessageThreads();
     if (page === 'bot') renderBot();
-    if (page === 'qr') renderQrImg();
 }
 
 function closeAllModals() {
@@ -255,7 +251,7 @@ function renderDonutChart() {
     document.getElementById('donutLegend').innerHTML = entries.map(([cat, val], i) => `
         <div class="legend-item">
             <span class="legend-dot" style="background:${colors[i % colors.length]}"></span>
-            <span>${capitalize(cat)}</span>
+            <span>${catLabel(cat)}</span>
             <strong>${money(val)}</strong>
         </div>`).join('');
 }
@@ -298,7 +294,7 @@ function setupProductsPage() {
 
     document.getElementById('productForm').onsubmit = saveProductForm;
 
-    // Drop zone — bir nechta rasm (5 tagacha)
+    // Drop zone
     const dz = document.getElementById('dropZone');
     const fi = document.getElementById('fileInput');
     dz.onclick = () => fi.click();
@@ -306,74 +302,20 @@ function setupProductsPage() {
     dz.ondragleave = () => dz.classList.remove('dragover');
     dz.ondrop = e => {
         e.preventDefault(); dz.classList.remove('dragover');
-        if (e.dataTransfer.files.length) loadImageFiles(e.dataTransfer.files);
+        if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
     };
-    fi.onchange = e => { if (e.target.files.length) loadImageFiles(e.target.files); fi.value = ''; };
-
-    // URL orqali rasm qo'shish
-    document.getElementById('addImageUrlBtn').onclick = () => {
-        const inp = document.getElementById('pImageUrl');
-        const url = inp.value.trim();
-        if (!url) return;
-        addFormImage(url);
-        inp.value = '';
-    };
-
+    fi.onchange = e => { if (e.target.files[0]) loadImageFile(e.target.files[0]); };
 }
 
-/* ===== MAHSULOT RASMLARI (5 tagacha) ===== */
-function renderImagePreviews() {
-    const wrap = document.getElementById('pImagesPreview');
-    if (!wrap) return;
-    if (!formImages.length) {
-        wrap.innerHTML = '<div class="img-empty">Hali rasm yo\'q — yuklang yoki URL qo\'shing</div>';
-        return;
-    }
-    wrap.innerHTML = formImages.map((src, i) => `
-        <div class="img-prev ${i === 0 ? 'main' : ''}">
-            <img src="${src}" alt="">
-            ${i === 0 ? '<span class="img-main-tag">Asosiy</span>' : ''}
-            <button type="button" class="img-del" data-rm="${i}" title="O'chirish">×</button>
-        </div>`).join('');
-    wrap.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
-        formImages.splice(+b.dataset.rm, 1);
-        renderImagePreviews();
-    });
+function catLabel(id) {
+    const c = data.categories.find(x => x.id === id);
+    return c ? c.name : capitalize(id);
 }
 
-function addFormImage(src) {
-    if (!src) return;
-    if (formImages.length >= MAX_IMAGES) { toast(`Ko'pi bilan ${MAX_IMAGES} ta rasm`, 'error'); return; }
-    formImages.push(src);
-    renderImagePreviews();
-}
-
-// Faylni canvas orqali kichraytirib (localStorage to'lib ketmasligi uchun) data-URL ga o'qiydi
-function readImageResized(file, max, cb) {
-    if (!file.type || !file.type.startsWith('image/')) { toast('Faqat rasm fayllari', 'error'); return; }
+function loadImageFile(file) {
     const reader = new FileReader();
-    reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-            const scale = Math.min(1, max / Math.max(img.width, img.height));
-            const cv = document.createElement('canvas');
-            cv.width = Math.round(img.width * scale);
-            cv.height = Math.round(img.height * scale);
-            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-            cb(cv.toDataURL('image/jpeg', 0.82));
-        };
-        img.onerror = () => toast('Rasm yuklanmadi', 'error');
-        img.src = ev.target.result;
-    };
+    reader.onload = e => { document.getElementById('pImage').value = e.target.result; toast('Rasm yuklandi'); };
     reader.readAsDataURL(file);
-}
-
-function loadImageFiles(files) {
-    const slots = MAX_IMAGES - formImages.length;
-    if (slots <= 0) { toast(`Ko'pi bilan ${MAX_IMAGES} ta rasm`, 'error'); return; }
-    const arr = [...files].slice(0, slots);
-    if (files.length > slots) toast(`Faqat ${slots} ta rasm qo'shildi (jami ${MAX_IMAGES} ta)`, 'error');
-    arr.forEach(f => readImageResized(f, 900, src => addFormImage(src)));
 }
 
 function filteredProducts() {
@@ -395,16 +337,16 @@ function renderProducts() {
 
     const tbody = document.getElementById('productsTable');
     if (pageList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-ico">📦</div>Kitob topilmadi</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-ico">📚</div>Kitob topilmadi</div></td></tr>`;
     } else {
         tbody.innerHTML = pageList.map(p => `
             <tr>
                 <td><img src="${p.image}" alt="${p.name}" class="tbl-img"></td>
                 <td>
                     <div class="tbl-name">${p.name}</div>
-                    <div class="tbl-sub">ID: ${p.id} • ${p.sold} sotilgan</div>
+                    <div class="tbl-sub">${p.author ? p.author + ' • ' : ''}${p.sold} sotilgan</div>
                 </td>
-                <td>${capitalize(p.category)}</td>
+                <td>${catLabel(p.category)}</td>
                 <td>
                     <strong>${money(p.price)}</strong>
                     ${p.oldPrice ? `<div class="tbl-sub" style="text-decoration:line-through">${money(p.oldPrice)}</div>` : ''}
@@ -445,43 +387,50 @@ window.openProductForm = function(id) {
         document.getElementById('productFormTitle').textContent = 'Kitobni tahrirlash';
         document.getElementById('pId').value = p.id;
         document.getElementById('pName').value = p.name;
+        document.getElementById('pAuthor').value = p.author || '';
         document.getElementById('pCat').value = p.category;
         document.getElementById('pPrice').value = p.price;
         document.getElementById('pOld').value = p.oldPrice || '';
         document.getElementById('pStock').value = p.stock;
-        formImages = (Array.isArray(p.images) && p.images.length) ? [...p.images] : (p.image ? [p.image] : []);
+        document.getElementById('pImage').value = p.image;
+        document.getElementById('pPublisher').value = p.publisher || '';
+        document.getElementById('pYear').value = p.year || '';
+        document.getElementById('pPages').value = p.pages || '';
+        document.getElementById('pLang').value = p.lang || "O'zbek";
+        document.getElementById('pIsbn').value = p.isbn || '';
         document.getElementById('pDesc').value = p.desc || '';
         document.getElementById('pActive').checked = p.active;
-        document.getElementById('pAuthor').value = p.author || '';
-        document.getElementById('pPages').value = p.pages || '';
-        document.getElementById('pRating').value = p.rating || '';
+        document.querySelectorAll('#pSizes input').forEach(c => c.checked = (p.sizes || []).includes(c.value));
     } else {
         document.getElementById('productFormTitle').textContent = 'Yangi kitob';
         document.getElementById('pId').value = '';
         document.getElementById('pActive').checked = true;
-        formImages = [];
+        document.querySelectorAll('#pSizes input').forEach(c => c.checked = (c.value === 'Qattiq muqova'));
     }
-    renderImagePreviews();
     openModal('productModal');
 };
 
 function saveProductForm(e) {
     e.preventDefault();
-    if (!formImages.length) { toast('Kamida 1 ta rasm qo\'shing', 'error'); return; }
     const id = document.getElementById('pId').value;
+    const sizes = [...document.querySelectorAll('#pSizes input:checked')].map(i => i.value);
     const obj = {
         name: document.getElementById('pName').value,
-        author: document.getElementById('pAuthor').value.trim(),
+        author: document.getElementById('pAuthor').value,
         category: document.getElementById('pCat').value,
         price: +document.getElementById('pPrice').value,
         oldPrice: +document.getElementById('pOld').value || null,
         stock: +document.getElementById('pStock').value,
+        image: document.getElementById('pImage').value,
+        publisher: document.getElementById('pPublisher').value,
+        year: +document.getElementById('pYear').value || null,
         pages: +document.getElementById('pPages').value || null,
-        rating: +document.getElementById('pRating').value || null,
-        images: [...formImages],
-        image: formImages[0], // asosiy rasm (karta/jadval/savat uchun)
+        lang: document.getElementById('pLang').value,
+        isbn: document.getElementById('pIsbn').value,
         desc: document.getElementById('pDesc').value,
         active: document.getElementById('pActive').checked,
+        sizes,
+        colors: [],
     };
     if (id) {
         const p = data.products.find(x => x.id === +id);
@@ -599,7 +548,7 @@ window.viewOrder = function(id) {
                     <div class="oi-img">${i.qty}×</div>
                     <div>
                         <div class="oi-name">${i.name}</div>
-                        <div class="oi-meta">O'lcham: ${i.size || '—'}</div>
+                        <div class="oi-meta">${i.size || '—'}</div>
                     </div>
                     <div class="oi-price">${money(i.price * i.qty)}</div>
                 </div>`).join('')}
@@ -1005,7 +954,7 @@ function renderReports() {
                         <strong>${t.p.name}</strong>
                     </div>
                 </td>
-                <td>${capitalize(t.p.category)}</td>
+                <td>${catLabel(t.p.category)}</td>
                 <td>${t.qty} dona</td>
                 <td><strong>${money(t.rev)}</strong></td>
             </tr>`).join('');
@@ -1049,7 +998,7 @@ function exportCsv() {
         const d = new Date(o.date);
         return d >= from && d <= to;
     });
-    const rows = [['ID', 'Sana', 'Mijoz', 'Telefon', 'Manzil', 'Kitoblar', 'Summa', 'To\'lov', 'Holat']];
+    const rows = [['ID', 'Sana', 'Mijoz', 'Telefon', 'Manzil', 'Mahsulotlar', 'Summa', 'To\'lov', 'Holat']];
     orders.forEach(o => rows.push([o.id, o.date, o.name, o.phone, o.address, o.items.map(i => `${i.name} x${i.qty}`).join('; '), o.total, o.payment, STATUS_LABELS[o.status]]));
     const csv = rows.map(r => r.map(c => `"${(c+'').replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
@@ -1129,7 +1078,7 @@ function setupSettingsPage() {
     };
 
     document.getElementById('clearDataBtn').onclick = () => {
-        confirmAction('Barchasini o\'chirish', 'Bu amal kitoblar, buyurtmalar, mijozlar va barcha ma\'lumotlarni o\'chiradi. Davom etasizmi?', () => {
+        confirmAction('Barchasini o\'chirish', 'Bu amal mahsulotlar, buyurtmalar, mijozlar va barcha ma\'lumotlarni o\'chiradi. Davom etasizmi?', () => {
             Store.clear();
             toast('Barcha ma\'lumotlar o\'chirildi', 'success');
             setTimeout(() => location.reload(), 800);
@@ -1365,7 +1314,11 @@ const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => {
 function getBotApi() { return (localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || 'http://localhost:3344').replace(/\/+$/, ''); }
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
 function botWrite(cfg) { localStorage.setItem(BOT_CFG_KEY, JSON.stringify(cfg)); }
-function _shopName() { try { const d = (typeof Store !== 'undefined') ? Store.load() : {}; return (d.settings && (d.settings.storeName || d.settings.shopName)) || 'Bookz'; } catch { return 'Bookz'; } }
+function updateBotBadge() {
+    const side = document.getElementById('navBotBadge');
+    if (side) side.style.display = botRead().connected ? '' : 'none';
+}
+function _shopName() { try { const d = (typeof Store !== 'undefined') ? Store.load() : {}; return (d.settings && (d.settings.storeName || d.settings.shopName)) || 'Kitob Olami'; } catch { return 'Kitob Olami'; } }
 function botErr(err) { const m = String((err && err.message) || err || ''); if (/Failed to fetch|NetworkError|load failed|ERR_/i.test(m)) return "Bot serveriga ulanib bo'lmadi — «cd bot && python3 bot.py» ishlab turibdimi? (" + getBotApi() + ')'; return m || 'Xato'; }
 
 function renderBot() {
@@ -1378,7 +1331,7 @@ function renderBot() {
 }
 function setBotConnectedUI(connected, username) {
     const pill = document.getElementById('bot2Status');
-    if (pill) { pill.className = 'bot2-status ' + (connected ? 'on' : 'off'); pill.innerHTML = '<i class="fa-solid fa-circle"></i> ' + (connected ? 'Ulangan' : 'Ulanmagan'); }
+    if (pill) { pill.className = 'bot2-status ' + (connected ? 'on' : 'off'); pill.textContent = '● ' + (connected ? 'Ulangan' : 'Ulanmagan'); }
     const side = document.getElementById('navBotBadge'); if (side) side.style.display = connected ? '' : 'none';
     const c = document.getElementById('bot2ConnectBtn'); if (c) c.style.display = connected ? 'none' : '';
     const d = document.getElementById('bot2DisconnectBtn'); if (d) d.style.display = connected ? '' : 'none';
@@ -1413,7 +1366,7 @@ async function connectBot() {
     const tokenEl = document.getElementById('bot2Token');
     const token = (tokenEl?.value || botRead().token || '').trim();
     if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) { toast("Token formati noto'g'ri", 'error'); tokenEl?.focus(); return; }
-    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token, storeUrl: (function(){ try { var u=new URL('index.html', location.href); var c=new URLSearchParams(location.search).get('client')||(JSON.parse(localStorage.getItem('bo_session')||'{}').clientId||''); if(c)u.searchParams.set('client',c); return u.href; } catch(e){ return ''; } })() };
+    const payload = { clientId: SHOP_KEY, shopName: _shopName(), token };
     const btn = document.getElementById('bot2ConnectBtn');
     _btnBusy(btn, true, 'Ulanmoqda...');
     try {
@@ -1456,7 +1409,7 @@ async function testChannel() {
     if (!botRead().channel) { toast('Avval kanal ulang', 'error'); return; }
     const btn = document.getElementById('bot2ChannelTest'); _btnBusy(btn, true, 'Yuborilmoqda...');
     try {
-        const res = await fetch(getBotApi() + '/store-bot/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, order: { id: 'TEST', userName: 'Test mijoz', phone: '+998 90 000 00 00', address: 'Sinov manzil', items: [{ name: 'Sinov kitob', qty: 1, price: 10000 }], total: 10000 } }) });
+        const res = await fetch(getBotApi() + '/store-bot/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, order: { id: 'TEST', userName: 'Test mijoz', phone: '+998 90 000 00 00', address: 'Sinov manzil', items: [{ name: 'Sinov mahsulot', qty: 1, price: 10000 }], total: 10000 } }) });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.ok) throw new Error(data.error || 'Yuborilmadi');
         const cfg = botRead(); cfg.sentCount = data.sentCount || (cfg.sentCount || 0) + 1; botWrite(cfg); setChannelUI(cfg);
@@ -1509,106 +1462,6 @@ window.notifyBotNewOrder = function (order) {
             .catch(err => console.warn('[bot] HTTP xato:', err.message));
     } catch (err) { console.error('notifyBotNewOrder error:', err); }
 };
-
-/* ============ QR KOD (platformaning standart tizimi) ============ */
-
-/* Joriy do'kon client_id'si — boot-loader hisoblab qo'ygan window.__CLIENT_ID'dan foydalanamiz */
-function qrClientId() {
-    return window.__CLIENT_ID || 'shop';
-}
-
-/* Do'kon havolasi: shu papkadagi index.html + ?client=<id>
-   (admin.html storefront index.html bilan bir papkada — "../" KERAK EMAS). */
-function qrStoreUrl() {
-    const u = new URL('index.html', location.href);
-    // ?client= dan boshqa eski parametrlarni tozalab, faqat client qo'shamiz
-    u.search = '';
-    const cid = qrClientId();
-    if (cid) u.searchParams.set('client', cid);
-    return u.href;
-}
-
-/* QR rasm manbasi — tashqi API (internet kerak). size: ko'rsatish 320, yuklab olish/chop etish 600 */
-function qrApiSrc(url, size) {
-    return 'https://api.qrserver.com/v1/create-qr-code/?size=' + size + 'x' + size +
-        '&margin=10&qzone=1&data=' + encodeURIComponent(url);
-}
-
-/* QR sahifasi ochilganda chaqiriladi — rasm + do'kon nomi + manzilni tiklaydi */
-function renderQrImg() {
-    const url = qrStoreUrl();
-
-    // Manzil inputi va do'kon nomi
-    const urlInput = document.getElementById('qrUrl');
-    if (urlInput) urlInput.value = url;
-    const nameEl = document.getElementById('qrShopName');
-    if (nameEl) nameEl.textContent = _shopName();
-
-    // QR rasmni yuklash — holatni boshqaramiz
-    const img = document.getElementById('qrImg');
-    const state = document.getElementById('qrState');
-    if (!img || !state) return;
-
-    state.style.display = '';
-    state.textContent = 'QR yuklanmoqda…';
-    img.style.display = 'none';
-
-    img.onload = () => { state.style.display = 'none'; img.style.display = ''; };
-    img.onerror = () => { img.style.display = 'none'; state.style.display = ''; state.textContent = '⚠️ QR yuklanmadi (internet kerak)'; };
-    img.src = qrApiSrc(url, 320);
-}
-
-/* Tugma ishlovchilarini ulaymiz (initAdmin'da bir marta) */
-function setupQrPage() {
-    const byId = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
-
-    // Nusxalash — havolani clipboard'ga
-    byId('qrCopyBtn', () => {
-        const url = qrStoreUrl();
-        navigator.clipboard.writeText(url)
-            .then(() => toast('Havola nusxalandi', 'success'))
-            .catch(() => toast('Nusxalab bo\'lmadi', 'error'));
-    });
-
-    // Ochish — do'kon sahifasini yangi oynada
-    byId('qrOpenBtn', () => { window.open(qrStoreUrl(), '_blank'); });
-
-    // Yuklab olish — 600px QR'ni blob qilib PNG sifatida saqlaymiz
-    byId('qrDownloadBtn', () => {
-        const src = qrApiSrc(qrStoreUrl(), 600);
-        fetch(src)
-            .then(r => r.blob())
-            .then(blob => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'qr-kod.png';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-                toast('QR yuklab olindi', 'success');
-            })
-            .catch(() => { window.open(src, '_blank'); }); // xato bo'lsa shunchaki ochamiz
-    });
-
-    // Chop etish — yangi oynaga QR + do'kon nomi + URL chiqarib print qilamiz
-    byId('qrPrintBtn', () => {
-        const url = qrStoreUrl();
-        const name = _shopName();
-        const w = window.open('', '_blank', 'width=480,height=640');
-        if (!w) { toast('Pop-up bloklangan', 'error'); return; }
-        w.document.write(
-            '<!doctype html><html><head><meta charset="utf-8"><title>QR — ' + name + '</title>' +
-            '<style>body{font-family:system-ui,Arial,sans-serif;text-align:center;padding:32px;margin:0}' +
-            'h1{font-size:22px;margin:0 0 4px}p{color:#555;word-break:break-all;font-size:13px;margin:16px auto 0;max-width:340px}' +
-            'img{margin:24px auto 0;display:block}</style></head><body>' +
-            '<h1>' + name + '</h1><div>📷 Telefon bilan skaner qiling</div>' +
-            '<img src="' + qrApiSrc(url, 600) + '" width="360" height="360" onload="window.print()">' +
-            '<p>' + url + '</p></body></html>'
-        );
-        w.document.close();
-    });
-}
 
 /* ============ HELPERS ============ */
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }

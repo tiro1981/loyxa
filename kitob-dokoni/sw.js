@@ -1,10 +1,10 @@
 /* ============================================
-   BOOKZ — Service Worker (PWA)
+   KITOB OLAMI — Service Worker (PWA)
    Strategy: network-first for app shell (HTML/CSS/JS),
              cache-first for static images.
    ============================================ */
 
-const CACHE_NAME = 'bookz-v3';
+const CACHE_NAME = 'kitob-olami-v2';
 const SHELL = [
     './',
     './index.html',
