@@ -122,13 +122,14 @@ window.Store = (function () {
     state.orders = list;   // mahalliy nusxa (mijoz "Buyurtmalarim" ko'rinishi uchun)
   }
   const getOrders = () => ordersAll();
-  function placeOrder({ payment, address, note } = {}) {
+  function placeOrder({ payment, address, addressObj, note } = {}) {
     // Buyurtma item'lari o'zini-o'zi yetarli (nom/narx) — bot kanalга yuborganda kerak
     const items = state.cart.map((c) => {
       const p = product(c.id) || {};
       return { id: c.id, qty: c.qty, name: p.name || ("#" + c.id), price: p.price || 0 };
     });
     const all = ordersAll().slice();
+    const addr = addressObj || defaultAddress();
     const order = {
       id: "ORD-" + (1043 + all.length),
       date: nowLabel(),
@@ -136,10 +137,10 @@ window.Store = (function () {
       items,
       total: cartTotal(),
       payment: payment || "cash",
-      address: address || (defaultAddress() && defaultAddress().text) || "",
+      address: address || (addr && addr.text) || "",
       note: note || "",
-      userName: (state.user && state.user.name) || "Mijoz",
-      phone: (state.user && state.user.phone) || "",
+      userName: (addr && addr.fullName) || (state.user && state.user.name) || "Mijoz",
+      phone: (addr && addr.phone) || (state.user && state.user.phone) || "",
     };
     all.unshift(order);
     ordersSave(all);

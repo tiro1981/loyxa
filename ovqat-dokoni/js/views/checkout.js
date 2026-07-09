@@ -38,6 +38,7 @@ window.Views.checkout = function (root, params) {
           '<div class="row-text">' +
             '<div class="row-title">' + a.label + '</div>' +
             '<div class="row-sub">' + a.text + '</div>' +
+            (a.fullName ? '<div class="row-sub">' + a.fullName + (a.phone ? ' · ' + a.phone : '') + '</div>' : '') +
           '</div>' +
           '<div class="pay-radio' + (on ? ' on' : '') + '"></div>' +
         '</div>'
@@ -148,23 +149,33 @@ window.Views.checkout = function (root, params) {
   // --- Yangi manzil qo'shish (sheet ichida forma) ---
   root.querySelector('#co-add-addr').addEventListener('click', function () {
     UI.sheet(
-      '<div class="field"><label>Nomi</label>' +
-        '<input class="input" id="na-label" placeholder="Uy, Ish, Boshqa..."></div>' +
+      '<div class="field"><label>Ism Familiya</label>' +
+        '<input class="input" id="na-fullname" required></div>' +
       // Avtomatik manzil: viloyat -> tuman (ro'yxat) + qishloq/uy/izoh (qo'lda) — umumiy UzAddress komponenti
       UzAddress.formHTML({ idPrefix: 'na' }) +
+      '<div class="field"><label>Telefon</label>' +
+        '<input class="input" id="na-phone" type="tel" placeholder="+998 90 123 45 67"></div>' +
       '<button class="btn btn--primary btn--block" id="na-save" style="margin-top:6px">Saqlash</button>',
       { title: 'Yangi manzil' }
     );
     // Viloyat tanlanganda tumanlar to'ldirilsin
     UzAddress.bind(document, { idPrefix: 'na' });
+    document.getElementById('na-fullname').value = (Store.user && Store.user.name) || '';
+    document.getElementById('na-phone').value = (Store.user && Store.user.phone) || '+998 ';
     document.getElementById('na-save').addEventListener('click', function () {
-      const label = (document.getElementById('na-label').value || '').trim();
+      const fullName = (document.getElementById('na-fullname').value || '').trim();
+      const phone = (document.getElementById('na-phone').value || '').trim();
       const addr = UzAddress.read(document, { idPrefix: 'na' });
-      if (!label || !addr) {
-        UI.toast('Nomi, viloyat, tuman va uy raqamini to\'ldiring', 'err');
+      if (!fullName || !phone || !addr) {
+        UI.toast('Ism familiya, telefon, viloyat, tuman va uy raqamini to\'ldiring', 'err');
         return;
       }
-      Store.addAddress({ label: label, icon: '📍', text: addr.text,
+      if (phone.replace(/\D/g, '').length < 9) {
+        UI.toast('Telefon raqam noto\'g\'ri', 'err');
+        return;
+      }
+      const label = 'Manzil ' + (Store.getAddresses().length + 1);
+      Store.addAddress({ label: label, icon: '📍', text: addr.text, fullName: fullName, phone: phone,
         region: addr.region, district: addr.district, village: addr.village, house: addr.house, note: addr.note });
       // addAddress qiymat qaytarmaydi — oxirgi qo'shilgan manzilni tanlaymiz
       const list = Store.getAddresses();
@@ -205,6 +216,7 @@ window.Views.checkout = function (root, params) {
     const order = Store.placeOrder({
       payment: sel.payment,
       address: addr.text,
+      addressObj: addr,
       note: sel.note
     });
 
@@ -216,8 +228,8 @@ window.Views.checkout = function (root, params) {
       });
       Telegram.sendOrder({
         id: order.id,
-        userName: (Store.user && Store.user.name) || '',
-        phone: (Store.user && Store.user.phone) || '',
+        userName: order.userName || '',
+        phone: order.phone || '',
         address: order.address,
         items: tgItems,
         total: order.total

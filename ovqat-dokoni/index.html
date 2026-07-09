@@ -43,7 +43,7 @@
         "js/views/checkout.js", "js/views/orders.js", "js/views/profile.js", "js/views/subpages.js"
       ];
       for (const src of scripts) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=5"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
       if (window.UI && UI.go) UI.go("home");   // barcha skript yuklangach boshlang'ich render
     })();

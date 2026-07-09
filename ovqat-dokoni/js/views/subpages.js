@@ -59,23 +59,33 @@ window.Views.addresses = function (root) {
   // Yangi manzil qo'shish sheet'i — saqlangach ro'yxatni qayta chizadi
   function openAddSheet() {
     UI.sheet(
-      '<div class="field"><label>Nomi (Uy / Ish)</label>' +
-        '<input class="input" id="na-label" placeholder="Masalan: Uy"></div>' +
+      '<div class="field"><label>Ism Familiya</label>' +
+        '<input class="input" id="na-fullname" required></div>' +
       // Avtomatik manzil: viloyat -> tuman (ro'yxat) + qishloq/uy/izoh (qo'lda) — umumiy UzAddress komponenti
       UzAddress.formHTML({ idPrefix: "na" }) +
+      '<div class="field"><label>Telefon</label>' +
+        '<input class="input" id="na-phone" type="tel" placeholder="+998 90 123 45 67"></div>' +
       '<button class="btn btn--primary btn--block" id="na-save" style="margin-top:6px">Saqlash</button>',
       { title: "Yangi manzil" }
     );
     // Viloyat tanlanganda tumanlar to'ldirilsin (sheet DOM'ga qo'yilgandan keyin)
     UzAddress.bind(document, { idPrefix: "na" });
+    document.getElementById("na-fullname").value = (Store.user && Store.user.name) || "";
+    document.getElementById("na-phone").value = (Store.user && Store.user.phone) || "+998 ";
     document.getElementById("na-save").onclick = function () {
-      const label = (document.getElementById("na-label").value || "").trim();
+      const fullName = (document.getElementById("na-fullname").value || "").trim();
+      const phone = (document.getElementById("na-phone").value || "").trim();
       const addr = UzAddress.read(document, { idPrefix: "na" });
-      if (!label || !addr) {
-        UI.toast("Nomi, viloyat, tuman va uy raqamini to'ldiring", "err");
+      if (!fullName || !phone || !addr) {
+        UI.toast("Ism familiya, telefon, viloyat, tuman va uy raqamini to'ldiring", "err");
         return;
       }
-      Store.addAddress({ label: label, icon: "📍", text: addr.text,
+      if (phone.replace(/\D/g, "").length < 9) {
+        UI.toast("Telefon raqam noto'g'ri", "err");
+        return;
+      }
+      const label = "Manzil " + (Store.getAddresses().length + 1);
+      Store.addAddress({ label: label, icon: "📍", text: addr.text, fullName: fullName, phone: phone,
         region: addr.region, district: addr.district, village: addr.village, house: addr.house, note: addr.note });
       UI.closeSheet();
       UI.toast("Manzil qo'shildi", "ok");
@@ -116,6 +126,7 @@ window.Views.addresses = function (root) {
             ${a.isDefault ? '<span style="margin-left:8px;font-size:11px;font-weight:700;color:var(--green);background:rgba(34,197,94,.14);padding:2px 8px;border-radius:var(--r-pill)">Asosiy</span>' : ""}
           </div>
           <div class="row-sub">${a.text}</div>
+          ${a.fullName ? `<div class="row-sub">${a.fullName}${a.phone ? " · " + a.phone : ""}</div>` : ""}
         </div>
         <button class="icon-btn addr-del" data-id="${a.id}" aria-label="O'chirish">${ICONS.trash}</button>
       </div>`).join("");
