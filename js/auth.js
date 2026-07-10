@@ -65,8 +65,9 @@ function assignAppByParam(clientId) {
 
 /* Telegram OTP tasdiqlangach chaqiriladi — akkaunt SHU YERDA yaratiladi (avval emas).
    Ilgari registerForm submit ichida bo'lgan "akkaunt yaratish" kodi shu yerga ko'chirildi. */
-function finishRegistration(username, phone, password) {
+async function finishRegistration(username, phone, password) {
     try {
+        const passwordHash = await hashPassword(password);
         const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
         // MUHIM: bu ID Supabase'da har bir do'konning ma'lumotini ("app_state" jadvali)
         // ajratib turadi. Ilgari "1000 + subs.length + 1" edi — bu deyarli har bir
@@ -87,7 +88,7 @@ function finishRegistration(username, phone, password) {
             username,
             businessName: username,   // ko'rsatish uchun (dashboard/admin) — username bilan bir xil
             phone,
-            password,
+            password: passwordHash,
             // App hali tanlanmagan — bo'sh
             app: null,
             appName: null,
@@ -341,7 +342,7 @@ function openForgotNewPassStep(phone) {
     p2.value = '';
     step.style.display = 'block';
     try { p1.focus(); } catch (e) {}
-    btn.onclick = () => {
+    btn.onclick = async () => {
         const pass1 = p1.value;
         const pass2 = p2.value;
         if (pass1.length < 6) {
@@ -359,7 +360,7 @@ function openForgotNewPassStep(phone) {
                 window.showToast && window.showToast("Hisob topilmadi", 'error');
                 return;
             }
-            user.password = pass1;
+            user.password = await hashPassword(pass1);
             localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
             window.showToast && window.showToast("Parol muvaffaqiyatli yangilandi! Endi kirishingiz mumkin.", 'success');
             backToLoginFromForgot();
@@ -499,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- CLIENT LOGIN ---------- */
     const clientForm = document.getElementById('clientForm');
     if (clientForm) {
-        clientForm.addEventListener('submit', (e) => {
+        clientForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const login = clientForm.login.value.trim();
             const password = clientForm.password.value;
@@ -510,27 +511,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Oddiy kirish formasiga admin login/parol terilsa — boshqaruv paneli ochiladi.
                 // (Alohida ko'rinadigan "Admin" tugmasi yo'q — maxfiy)
                 const admin = JSON.parse(localStorage.getItem('bo_admin') || 'null');
-                if (admin && admin.username
-                    && login.toLowerCase() === String(admin.username).toLowerCase()
-                    && password === admin.password) {
-                    localStorage.setItem('bo_session', JSON.stringify({
-                        type: 'admin',
-                        username: admin.username,
-                        name: admin.name,
-                        loggedAt: Date.now()
-                    }));
-                    window.showToast && window.showToast('Admin paneliga kirildi', 'success');
-                    setTimeout(() => { window.location.href = 'admin.html'; }, 700);
-                    return;
+                if (admin && admin.username && login.toLowerCase() === String(admin.username).toLowerCase()) {
+                    const adminCheck = await verifyPassword(password, admin.password);
+                    if (adminCheck.ok) {
+                        if (adminCheck.upgradedHash) {
+                            admin.password = adminCheck.upgradedHash;
+                            localStorage.setItem('bo_admin', JSON.stringify(admin));
+                        }
+                        localStorage.setItem('bo_session', JSON.stringify({
+                            type: 'admin',
+                            username: admin.username,
+                            name: admin.name,
+                            loggedAt: Date.now()
+                        }));
+                        window.showToast && window.showToast('Admin paneliga kirildi', 'success');
+                        setTimeout(() => { window.location.href = 'admin.html'; }, 700);
+                        return;
+                    }
                 }
 
                 const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
                 // Telefon (raqamlar bo'yicha) yoki foydalanuvchi nomi (katta-kichik harf farqsiz)
-                const user = subs.find(s => {
+                const candidates = subs.filter(s => {
                     const byPhone = loginDigits.length >= 7 && digits(s.phone) === loginDigits;
                     const byUsername = s.username && s.username.toLowerCase() === login.toLowerCase();
-                    return (byPhone || byUsername) && s.password === password;
+                    return byPhone || byUsername;
                 });
+                let user = null;
+                let subsChanged = false;
+                for (const c of candidates) {
+                    const check = await verifyPassword(password, c.password);
+                    if (check.ok) {
+                        if (check.upgradedHash) { c.password = check.upgradedHash; subsChanged = true; }
+                        user = c;
+                        break;
+                    }
+                }
+                if (subsChanged) localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
 
                 if (!user) {
                     window.showToast && window.showToast("Login yoki parol noto'g'ri", 'error');
@@ -636,14 +653,19 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- ADMIN LOGIN ---------- */
     const adminForm = document.getElementById('adminForm');
     if (adminForm) {
-        adminForm.addEventListener('submit', (e) => {
+        adminForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = adminForm.user.value.trim();
             const password = adminForm.password.value;
 
             try {
                 const admin = JSON.parse(localStorage.getItem('bo_admin') || '{}');
-                if (user === admin.username && password === admin.password) {
+                const check = user === admin.username ? await verifyPassword(password, admin.password) : { ok: false };
+                if (check.ok) {
+                    if (check.upgradedHash) {
+                        admin.password = check.upgradedHash;
+                        localStorage.setItem('bo_admin', JSON.stringify(admin));
+                    }
                     localStorage.setItem('bo_session', JSON.stringify({
                         type: 'admin',
                         username: admin.username,

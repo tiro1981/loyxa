@@ -10,9 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- SESSIYANI TEKSHIRISH ---------- */
     const session = getSession();
     if (!session || session.type !== 'admin') {
-        // sessiya yo'q — kirish sahifasiga
-        // (lekin sahifani yopib qo'ymasdan, faqat ogohlantirish demo uchun)
-        // Realda: window.location.href = 'kirish.html';
+        // Sessiya yo'q yoki admin emas — kirish sahifasiga yo'naltiramiz.
+        // Sahifa tarkibi (mijozlar ma'lumoti va h.k.) hozircha keyingi
+        // skript qatorlarida chizilmasin deb, funksiyani shu yerda to'xtatamiz.
+        window.location.href = 'kirish.html';
+        return;
     }
 
     /* ---------- ADMIN PROFIL ---------- */
@@ -179,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showModal('clientModal');
     }
 
-    document.getElementById('clientEditForm').addEventListener('submit', (e) => {
+    document.getElementById('clientEditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('editClientId').value;
         const subs = getClients();
@@ -191,8 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
         subs[idx].phone = document.getElementById('editPhone').value.trim();
         subs[idx].price = parseInt(document.getElementById('editPrice').value, 10) || 0;
         subs[idx].status = document.getElementById('editStatus').value;
+        // MUHIM: parol endi ochiq matnda emas, xeshlab saqlanadi (js/main.js — hashPassword).
+        // Haqiqiy "parolni tiklash havolasi" oqimi Supabase Auth ulanganda (2-bosqich) qo'shiladi.
         const newPass = document.getElementById('editPassword').value.trim();
-        if (newPass) subs[idx].password = newPass;
+        if (newPass) subs[idx].password = await hashPassword(newPass);
 
         localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
         hideModal('clientModal');
@@ -431,12 +435,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const botTokenEl = document.getElementById('setBotToken');
         if (botTokenEl) botTokenEl.value = localStorage.getItem('bo_bot_token') || '';
     }
-    document.getElementById('saveAdmin').addEventListener('click', () => {
+    document.getElementById('saveAdmin').addEventListener('click', async () => {
         const a = JSON.parse(localStorage.getItem('bo_admin') || '{}');
         a.name = document.getElementById('setAdmName').value.trim();
         a.username = document.getElementById('setAdmUser').value.trim();
         const np = document.getElementById('setAdmPass').value.trim();
-        if (np) a.password = np;
+        if (np) a.password = await hashPassword(np);
         localStorage.setItem('bo_admin', JSON.stringify(a));
         document.getElementById('adminName').textContent = a.name;
         document.getElementById('adminAvatar').textContent = (a.name || 'A')[0].toUpperCase();

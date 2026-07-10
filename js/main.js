@@ -2,6 +2,34 @@
 // Umumiy funksiyalar: navigatsiya, animatsiyalar, smooth scroll, toast
 'use strict';
 
+/* ---------- PAROL XESHLASH (SHA-256, Web Crypto API) ----------
+   Parollar endi localStorage'da OCHIQ MATN holida saqlanmaydi. Bu haqiqiy
+   server-tomon autentifikatsiya EMAS (butun platforma hali localStorage
+   asosida ishlagani uchun — buni Supabase Auth beradi, keyingi bosqich),
+   lekin kamida parol qiymati kodda/DevTools'da ochiq ko'rinib turmaydi.
+   Eski (xeshlanmagan) yozuvlar bilan ham mos ishlaydi — muvaffaqiyatli
+   solishtirilgan zahoti xeshga "yangilab" qo'yiladi (bosqichma-bosqich
+   migratsiya, foydalanuvchini qayta ro'yxatdan o'tkazish shart emas). */
+const PW_HASH_PREFIX = 'sha256:';
+async function hashPassword(plain) {
+    const enc = new TextEncoder().encode(String(plain));
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    const hex = Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    return PW_HASH_PREFIX + hex;
+}
+// Kiritilgan parolni saqlangan qiymat bilan solishtiradi.
+// Qaytaradi: { ok, upgradedHash } — upgradedHash bo'lsa, chaqiruvchi shu
+// qiymatni saqlangan joyga yozib qo'yishi kerak (eski oddiy-matn -> xesh).
+async function verifyPassword(plain, stored) {
+    if (!stored) return { ok: false, upgradedHash: null };
+    if (String(stored).startsWith(PW_HASH_PREFIX)) {
+        const h = await hashPassword(plain);
+        return { ok: h === stored, upgradedHash: null };
+    }
+    const ok = String(stored) === String(plain);
+    return { ok, upgradedHash: ok ? await hashPassword(plain) : null };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- NAVBAR SCROLL EFFECT ---------- */
