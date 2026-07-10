@@ -1384,14 +1384,23 @@ const BOT_CFG_KEY = 'moda_bot_config';
 const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
 // Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
 // shuning uchun qattiq yozilmaydi: "1. Bot server manzili" bo'limidan saqlanadi.
-const DEFAULT_BOT_API = '';
+// MUHIM: bu nom script.js dagi global `const DEFAULT_BOT_API` bilan to'qnashmasligi uchun
+// noyob nom ishlatamiz (admin.html ikkala skriptni ham yuklaydi — bir xil global nom
+// SyntaxError berib, admin.js ni butunlay ishlamay qoldirardi = panel "qotib qolgan").
+const ADMIN_DEFAULT_BOT_API = '';
 function getBotApi() {
     const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
     if (configured) return configured.replace(/\/+$/, '');
-    return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
+    return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : ADMIN_DEFAULT_BOT_API;
 }
 function botRead() { try { return JSON.parse(localStorage.getItem(BOT_CFG_KEY) || 'null') || {}; } catch { return {}; } }
 function botWrite(cfg) { localStorage.setItem(BOT_CFG_KEY, JSON.stringify(cfg)); }
+// Sidebar'dagi "Telegram Bot" yonidagi indikator — bot ulangan bo'lsa ko'rinadi.
+// (initAdmin bu funksiyani chaqirardi, ammo u e'lon qilinmagan edi = ReferenceError.)
+function updateBotBadge() {
+    const badge = document.getElementById('navBotBadge');
+    if (badge) badge.style.display = botRead().connected ? '' : 'none';
+}
 function _shopName() { try { const d = (typeof Store !== 'undefined') ? Store.load() : {}; return (d.settings && (d.settings.storeName || d.settings.shopName)) || 'Moda Style'; } catch { return 'Moda Style'; } }
 function botErr(err) { const m = String((err && err.message) || err || ''); if (/Failed to fetch|NetworkError|load failed|ERR_/i.test(m)) return "Bot serveriga ulanib bo'lmadi — «cd bot && python3 bot.py» ishlab turibdimi? (" + getBotApi() + ')'; return m || 'Xato'; }
 

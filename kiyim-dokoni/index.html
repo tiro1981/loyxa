@@ -437,9 +437,12 @@
   (async () => {
     const _urlClient = new URLSearchParams(location.search).get("client");
     if (_urlClient) { try { localStorage.setItem("kiyim_last_client", _urlClient); } catch(e){} }
+    // Ustuvorlik app/ bilan bir xil: ?client -> oxirgi ochilgan do'kon (kiyim_last_client)
+    // -> platforma sessiyasi -> default. QR/havola bilan kirgan mijozda ?client bo'lgani
+    // uchun u har doim ustun; ?client bo'lmaganda ham to'g'ri do'kon ochiladi.
     const CLIENT_ID = _urlClient
+      || (function(){ try { return localStorage.getItem("kiyim_last_client") || null; } catch(e){ return null; } })()
       || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
-      || (function(){ try { return localStorage.getItem("kiyim_last_client"); } catch(e){ return null; } })()
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
