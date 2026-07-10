@@ -95,6 +95,18 @@ function initAdmin() {
         if (currentPage === 'messages') renderMessageThreads();
         if (currentPage === 'messages' && currentChatKey) renderConversation(currentChatKey, false);
     });
+
+    // Cloud FONDA yangilanganda (server ma'lumoti kelgach) — panelni qayta chizamiz.
+    // Panel darrov ochiladi, so'ng eng yangi ma'lumot sokin yangilanadi ("qotish" yo'q).
+    window.addEventListener('cloud:updated', () => {
+        try {
+            data = Store.load();
+            navigate(currentPage || 'dashboard');
+            updateNavBadge();
+            updateMsgBadge();
+            updateBotBadge();
+        } catch (err) { console.error('cloud:updated (admin):', err); }
+    });
 }
 
 function setupDropdown(btnId, menuId) {

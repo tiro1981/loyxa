@@ -50,11 +50,11 @@ window.Cloud = (function () {
         if (!_sb) console.warn("[Cloud] Supabase sozlanmagan — localStorage rejimida ishlayapti.");
         return;
       }
+      // Supabase so'rovi (thenable — Promise.race chaqirilganda ishga tushadi)
+      const query = _sb
+        .from("app_state").select("key,value")
+        .eq("app", this.app).eq("client_id", this.client);
       try {
-        // Supabase so'rovi (thenable — Promise.race chaqirilganda ishga tushadi)
-        const query = _sb
-          .from("app_state").select("key,value")
-          .eq("app", this.app).eq("client_id", this.client);
         // MUHIM: tarmoq sekin yoki uzilgan bo'lsa sahifa QOTIB qolmasin. So'rovni qisqa
         // timeout bilan poygaga qo'yamiz — javob kelmasa localStorage rejimiga o'tib davom etamiz.
         // (Oldin 6000ms edi — sahifa har ochilishda sezilarli "qotib qolish" hissi berardi.)
@@ -63,6 +63,17 @@ window.Cloud = (function () {
         if (res && res.__timeout) {
           console.warn("[Cloud] init: server 2.5s ichida javob bermadi — localStorage rejimida davom etamiz.");
           this.mode = "local";
+          // MUHIM: so'rovni tashlab yubormaymiz. QR skaner qilgan YANGI mijoz qurilmasida
+          // hali hech qanday keshlangan ma'lumot yo'q — server sekin javob bersa (2.5s dan
+          // ko'p), haqiqiy katalog butunlay yo'qolib, do'kon doim bo'sh ko'rinardi. Endi kech
+          // kelgan javobni ham qo'llab, "cloud:updated" orqali sahifani yangilaymiz.
+          query.then(({ data, error }) => {
+            if (error || !data) return;
+            this._cache = {};
+            data.forEach((r) => { this._cache[r.key] = r.value; });
+            this.mode = "cloud";
+            try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e2) {}
+          }).catch((e2) => console.error("[Cloud] init (late):", e2));
           return;
         }
         const { data, error } = res;

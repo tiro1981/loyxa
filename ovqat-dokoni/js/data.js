@@ -111,5 +111,22 @@ window.DATA = (function () {
   // Ilk ishga tushirishda standart kategoriyalarni serverga yozib qo'yamiz
   if (window.Cloud && !Cloud.get("catalog")) saveCatalog();
 
-  return { clientId: CLIENT_ID, categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog };
+  // Server javobi kech kelganda (Cloud "cloud:updated" hodisasi) katalogni qayta yuklaymiz.
+  // Massivlarni O'ZGARTIRAMIZ (o'rnini bosmasdan) — chunki DATA.products/categories
+  // shu massivlarga havola qilingan, shu bilan ular ham yangilanadi.
+  function reloadCatalog() {
+    try {
+      const _saved = window.Cloud ? Cloud.get("catalog", null) : null;
+      if (_saved && Array.isArray(_saved.products)) {
+        products.length = 0;
+        products.push(..._saved.products);
+      }
+      if (_saved && Array.isArray(_saved.categories) && _saved.categories.length) {
+        categories.length = 0;
+        categories.push(..._saved.categories);
+      }
+    } catch (e) {}
+  }
+
+  return { clientId: CLIENT_ID, categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog, reloadCatalog };
 })();

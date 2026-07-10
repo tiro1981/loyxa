@@ -74,7 +74,7 @@
 
   <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../cloud.js?v=2"></script>
+  <script src="../cloud.js?v=3"></script>
 
   <!-- Boot-loader: AVVAL Cloud.init, keyin data -> telegram -> admin.
        admin.js readyState guard bilan o'zi ishga tushadi. -->
@@ -87,7 +87,7 @@
       try { await Cloud.init("ovqat", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       const scripts = ["../js/data.js", "../telegram.js", "js/admin.js"];
       for (const src of scripts) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=5"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

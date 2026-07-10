@@ -189,6 +189,16 @@ Store.on("orders:change", () => {
   if (cur === "orders") render();
 });
 
+// Cloud FONDA yangilanganda (server ma'lumoti kech kelgach) — katalogni qayta yuklab,
+// joriy ko'rinishni qayta chizamiz. Sahifa darrov ochiladi, so'ng eng yangi do'kon
+// ma'lumoti sokin yangilanadi ("qotish" yo'q).
+window.addEventListener("cloud:updated", () => {
+  try {
+    if (window.DATA && DATA.reloadCatalog) DATA.reloadCatalog();
+    render();
+  } catch (e) { console.error("cloud:updated (ovqat):", e); }
+});
+
 /* ---------------- Boot ---------------- */
 // Cloud (Supabase) async — ilova skriptlari index.html boot-loader tomonidan
 // Cloud.init tugagach yuklanadi va loader UI.go("home") ni o'zi chaqiradi

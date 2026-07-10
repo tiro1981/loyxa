@@ -71,15 +71,29 @@ window.Cloud = (function () {
 
       // 2) Birinchi tashrif (mirror bo'sh): menyu bo'sh chizilib keyin "sakramasligi" uchun
       //    bir martagina server javobini kutamiz, ammo timeout bilan cheklab.
+      const query = _sb
+        .from("app_state").select("key,value")
+        .eq("app", this.app).eq("client_id", this.client);
       try {
-        const query = _sb
-          .from("app_state").select("key,value")
-          .eq("app", this.app).eq("client_id", this.client);
         const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 2500));
         const res = await Promise.race([query, timeout]);
         if (res && res.__timeout) {
           console.warn("[Cloud] init: server 2.5s ichida javob bermadi — localStorage rejimida davom etamiz.");
           this.mode = "local";
+          // MUHIM: so'rovni tashlab yubormaymiz. QR skaner qilgan YANGI mijoz qurilmasida
+          // mirror bo'lmaydi — server 2.5s dan sekin javob bersa (masalan restoran wifi/mobil
+          // tarmoq), oldingi versiya bu javobni butunlay tashlab yuborar edi va menyu doim
+          // bo'sh ko'rinardi. Endi kech kelgan javobni ham qo'llab, "cloud:updated" orqali
+          // UI'ni (menyu ro'yxatini) qayta chizamiz.
+          query.then(({ data, error }) => {
+            if (error || !data) return;
+            const c = {};
+            data.forEach((r) => { c[r.key] = r.value; });
+            this._cache = c;
+            this._saveMirror(c);
+            this.mode = "cloud";
+            try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e2) {}
+          }).catch((e2) => console.error("[Cloud] init (late):", e2));
           return;
         }
         const { data, error } = res;

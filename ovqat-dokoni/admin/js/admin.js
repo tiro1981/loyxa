@@ -1334,4 +1334,14 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+
+  // Cloud FONDA yangilanganda (server ma'lumoti kech kelgach) — katalogni qayta yuklab,
+  // joriy bo'limni qayta chizamiz. Panel darrov ochiladi, so'ng eng yangi ma'lumot
+  // sokin yangilanadi ("qotish" yo'q).
+  window.addEventListener("cloud:updated", () => {
+    try {
+      if (window.DATA && DATA.reloadCatalog) DATA.reloadCatalog();
+      render();
+    } catch (e) { console.error("cloud:updated (admin):", e); }
+  });
 })();
