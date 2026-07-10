@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz">
-<head>
+<html lang="uz"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
     <title>Admin Panel — Kitob Olami</title>
@@ -18,9 +17,14 @@
     <link rel="apple-touch-icon" href="icon-192.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=3">
+    <link rel="stylesheet" href="admin.css?v=4">
+
+    
+    
+
+    
 </head>
 <body>
 
@@ -31,7 +35,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-top">
                 <div class="brand">
-                    <div class="logo-mark">📚</div>
+                    <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
                     <div class="brand-text">
                         <strong>Kitob Olami</strong>
                         <small>Admin Panel</small>
@@ -42,21 +46,21 @@
 
             <nav class="side-nav">
                 <div class="nav-label">Asosiy</div>
-                <button class="nav-link active" data-page="dashboard"><span class="ni">📊</span> Dashboard</button>
-                <button class="nav-link" data-page="products"><span class="ni">📦</span> Kitoblar</button>
-                <button class="nav-link" data-page="orders"><span class="ni">🛍️</span> Buyurtmalar<span class="nav-badge" id="navOrdersBadge">0</span></button>
-                <button class="nav-link" data-page="customers"><span class="ni">👥</span> Mijozlar</button>
-                <button class="nav-link" data-page="messages"><span class="ni">💬</span> Habarlar<span class="nav-badge" id="navMsgBadge">0</span></button>
+                <button class="nav-link active" data-page="dashboard"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span> Dashboard</button>
+                <button class="nav-link" data-page="products"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></span> Kitoblar</button>
+                <button class="nav-link" data-page="orders"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span> Buyurtmalar<span class="nav-badge" id="navOrdersBadge">0</span></button>
+                <button class="nav-link" data-page="customers"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span> Mijozlar</button>
+                <button class="nav-link" data-page="messages"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></span> Habarlar<span class="nav-badge" id="navMsgBadge">0</span></button>
 
                 <div class="nav-label">Sozlash</div>
-                <button class="nav-link" data-page="categories"><span class="ni">📂</span> Kategoriyalar</button>
-                <button class="nav-link" data-page="coupons"><span class="ni">🏷️</span> Kuponlar</button>
-                <button class="nav-link" data-page="reports"><span class="ni">📈</span> Hisobot</button>
-                <button class="nav-link" data-page="settings"><span class="ni">⚙️</span> Sozlamalar</button>
+                <button class="nav-link" data-page="categories"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></span> Kategoriyalar</button>
+                <button class="nav-link" data-page="coupons"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></span> Kuponlar</button>
+                <button class="nav-link" data-page="reports"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span> Hisobot</button>
+                <button class="nav-link" data-page="settings"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span> Sozlamalar</button>
 
                 <div class="nav-label">Integratsiya</div>
-                <button class="nav-link" data-page="bot"><span class="ni">✈️</span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
-                <button class="nav-link" data-page="qrcode"><span class="ni">🔗</span> Do'kon havolasi</button>
+                <button class="nav-link" data-page="bot"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22 11 13 2 9 22 2Z"></path></svg></span> Telegram Bot<span class="nav-badge" id="navBotBadge" style="background:#0088cc;display:none">●</span></button>
+                <button class="nav-link" data-page="qrcode"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Do'kon havolasi</button>
             </nav>
 
             <div class="sidebar-bot">
@@ -67,7 +71,7 @@
                         <small>Boshqaruvchi</small>
                     </div>
                 </div>
-                <a href="index.html" class="logout" id="logoutBtn"><span>🏠</span> Saytga qaytish</a>
+                <a href="index.html" class="logout" id="logoutBtn"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span> Saytga qaytish</a>
             </div>
         </aside>
 
@@ -77,21 +81,21 @@
             <!-- HEADER -->
             <header class="topbar">
                 <button class="hamburger" id="hamburger">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
                 <h1 class="page-title" id="pageTitle">Dashboard</h1>
 
                 <div class="topbar-search">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                     <input type="text" id="globalSearch" placeholder="Qidirish...">
                 </div>
 
                 <div class="topbar-actions">
-                    <button class="t-icon" id="darkToggle" title="Tema">🌙</button>
+                    <button class="t-icon" id="darkToggle" title="Tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg></button>
 
                     <div class="dropdown">
                         <button class="t-icon" id="notifBtn" title="Bildirishnomalar">
-                            🔔
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                             <span class="t-badge" id="notifBadge">0</span>
                         </button>
                         <div class="dd-menu" id="notifMenu">
@@ -111,10 +115,10 @@
                             <span class="caret">▾</span>
                         </button>
                         <div class="dd-menu right" id="userMenu">
-                            <a class="dd-item">👤 Profil</a>
-                            <a class="dd-item">⚙️ Sozlamalar</a>
+                            <a class="dd-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Profil</a>
+                            <a class="dd-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Sozlamalar</a>
                             <div class="dd-sep"></div>
-                            <a class="dd-item" href="index.html">🏠 Saytga qaytish</a>
+                            <a class="dd-item" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Saytga qaytish</a>
                         </div>
                     </div>
                 </div>
@@ -125,7 +129,7 @@
                 <div class="stat-grid">
                     <div class="stat-card">
                         <div class="stat-head">
-                            <span class="stat-icon" style="background:#ede9fe;color:#6c63ff">💰</span>
+                            <span class="stat-icon" style="background:#ede9fe;color:#6c63ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
                             <span class="trend up">+12.5%</span>
                         </div>
                         <div class="stat-val" id="kpiRevenue">0 so'm</div>
@@ -133,7 +137,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-head">
-                            <span class="stat-icon" style="background:#fef3c7;color:#d97706">🛍️</span>
+                            <span class="stat-icon" style="background:#fef3c7;color:#d97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span>
                             <span class="trend up">+8.2%</span>
                         </div>
                         <div class="stat-val" id="kpiOrders">0</div>
@@ -141,7 +145,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-head">
-                            <span class="stat-icon" style="background:#dcfce7;color:#16a34a">👥</span>
+                            <span class="stat-icon" style="background:#dcfce7;color:#16a34a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
                             <span class="trend up">+5.1%</span>
                         </div>
                         <div class="stat-val" id="kpiCustomers">0</div>
@@ -149,7 +153,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-head">
-                            <span class="stat-icon" style="background:#fce7f3;color:#db2777">📦</span>
+                            <span class="stat-icon" style="background:#fce7f3;color:#db2777"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></span>
                             <span class="trend down">-2.4%</span>
                         </div>
                         <div class="stat-val" id="kpiProducts">0</div>
@@ -207,7 +211,7 @@
                 <div class="page-toolbar">
                     <div class="filters">
                         <div class="search-input">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                             <input type="text" id="pSearch" placeholder="Kitob qidirish...">
                         </div>
                         <select id="pCatFilter" class="select"><option value="all">Barcha kategoriya</option></select>
@@ -278,7 +282,7 @@
                 <div class="page-toolbar">
                     <div class="filters">
                         <div class="search-input">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                             <input type="text" id="cSearch" placeholder="Mijoz qidirish...">
                         </div>
                     </div>
@@ -350,10 +354,10 @@
                 </div>
 
                 <div class="stat-grid">
-                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#ede9fe;color:#6c63ff">💰</span></div><div class="stat-val" id="rpRevenue">0</div><div class="stat-label">Davr savdosi</div></div>
-                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fef3c7;color:#d97706">🛍️</span></div><div class="stat-val" id="rpOrders">0</div><div class="stat-label">Buyurtmalar</div></div>
-                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#dcfce7;color:#16a34a">📊</span></div><div class="stat-val" id="rpAvg">0</div><div class="stat-label">O'rtacha chek</div></div>
-                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fce7f3;color:#db2777">📦</span></div><div class="stat-val" id="rpSold">0</div><div class="stat-label">Sotilgan dona</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#ede9fe;color:#6c63ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span></div><div class="stat-val" id="rpRevenue">0</div><div class="stat-label">Davr savdosi</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fef3c7;color:#d97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg></span></div><div class="stat-val" id="rpOrders">0</div><div class="stat-label">Buyurtmalar</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#dcfce7;color:#16a34a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span></div><div class="stat-val" id="rpAvg">0</div><div class="stat-label">O'rtacha chek</div></div>
+                    <div class="stat-card"><div class="stat-head"><span class="stat-icon" style="background:#fce7f3;color:#db2777"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></span></div><div class="stat-val" id="rpSold">0</div><div class="stat-label">Sotilgan dona</div></div>
                 </div>
 
                 <div class="panel">
@@ -377,14 +381,14 @@
                 <div class="messages-layout">
                     <aside class="msg-sidebar">
                         <div class="msg-search">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                             <input type="text" id="msgSearch" placeholder="Mijozni qidirish...">
                         </div>
                         <div class="msg-threads" id="msgThreads"></div>
                     </aside>
                     <main class="msg-main" id="msgMain">
                         <div class="msg-empty" id="msgEmpty">
-                            <div class="emp-ico">💬</div>
+                            <div class="emp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div>
                             <h4>Suhbatni tanlang</h4>
                             <p>Chap tomondan mijoz suhbatini tanlang</p>
                         </div>
@@ -396,13 +400,13 @@
                                     <strong id="msgConvName">Mijoz</strong>
                                     <small id="msgConvPhone">—</small>
                                 </div>
-                                <button class="msg-conv-del" id="msgConvDel" aria-label="O'chirish">🗑</button>
+                                <button class="msg-conv-del" id="msgConvDel" aria-label="O'chirish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
                             </header>
                             <div class="msg-conv-body" id="msgConvBody"></div>
                             <form class="msg-conv-input" id="msgConvForm">
                                 <input type="text" id="msgConvInput" placeholder="Javob yozing..." autocomplete="off" maxlength="500">
                                 <button type="submit" class="msg-send" aria-label="Yuborish">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>
                                 </button>
                             </form>
                         </div>
@@ -466,13 +470,13 @@
                 </div>
 
                 <div class="bot2-banner" id="botApiBanner" style="display:none">
-                  <span>⚠️ Bot server manzili sozlanmagan — buyurtmalar Telegram kanalga yuborilmaydi. Avval pastdagi <b>1-bosqich</b>da server manzilini saqlang.</span>
+                  <span>Bot server manzili sozlanmagan — buyurtmalar Telegram kanalga yuborilmaydi. Avval pastdagi <b>1-bosqich</b>da server manzilini saqlang.</span>
                   <button type="button" id="botApiBannerBtn">Manzilni sozlash</button>
                 </div>
 
                 <!-- 1) BOT SERVER MANZILI -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">🌐</span><div><h3>1. Bot server manzili</h3><p>bot.py ishlab turgan server manzili (localhost bo'lmasa majburiy)</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span><div><h3>1. Bot server manzili</h3><p>bot.py ishlab turgan server manzili (localhost bo'lmasa majburiy)</p></div></div>
                     <div class="bot2-channel-row">
                         <input type="text" id="botApiInput" class="bot2-input" placeholder="https://mening-bot.example.com" autocomplete="off">
                         <button type="button" class="btn btn-primary" id="botApiSave">Saqlash</button>
@@ -482,19 +486,19 @@
 
                 <!-- 2) BOTNI ULASH -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>2. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22 11 13 2 9 22 2Z"></path></svg></span><div><h3>2. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
                     <label class="bot2-label" for="bot2Token">Bot tokeni</label>
                     <div class="bot2-token">
                         <input type="password" id="bot2Token" placeholder="123456789:AAE-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
-                        <button type="button" class="bot2-eye" id="bot2Eye" aria-label="Ko'rsatish">👁</button>
+                        <button type="button" class="bot2-eye" id="bot2Eye" aria-label="Ko'rsatish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
                     </div>
                     <p class="bot2-hint">Telegram → <b>@BotFather</b> → <code>/newbot</code> → tokenni nusxalab joylang.</p>
                     <div class="bot2-actions">
-                        <button type="button" class="btn btn-primary" id="bot2ConnectBtn">✈️ Botni ulash</button>
-                        <button type="button" class="btn btn-danger" id="bot2DisconnectBtn" style="display:none">🔌 Botni uzish</button>
+                        <button type="button" class="btn btn-primary" id="bot2ConnectBtn">Botni ulash</button>
+                        <button type="button" class="btn btn-danger" id="bot2DisconnectBtn" style="display:none">Botni uzish</button>
                     </div>
                     <div class="bot2-connected" id="bot2BotInfo" style="display:none">
-                        <span class="bot2-av">✈️</span>
+                        <span class="bot2-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22 11 13 2 9 22 2Z"></path></svg></span>
                         <div class="bot2-meta"><div class="bot2-name" id="bot2Username">@bot</div><div class="bot2-sub">Faol — buyurtmalarni yuboradi</div></div>
                         <a href="#" target="_blank" rel="noopener" class="btn btn-ghost" id="bot2OpenLink">Ochish</a>
                     </div>
@@ -502,28 +506,28 @@
 
                 <!-- 2) BUYURTMA KANALI -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">📢</span><div><h3>3. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg></span><div><h3>3. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div></div>
                     <div class="bot2-steps-mini">
                         <span><b>1.</b> Botni kanalingizga <b>admin</b> qiling (yozish huquqi bilan)</span>
                         <span><b>2.</b> Kanal username yoki ID sini yozib <b>Ulash</b> bosing</span>
                     </div>
                     <div class="bot2-channel-row">
                         <input type="text" id="bot2Channel" class="bot2-input" placeholder="@mening_kanalim yoki -1001234567890" autocomplete="off">
-                        <button type="button" class="btn btn-primary" id="bot2ChannelBtn">🔌 Ulash</button>
+                        <button type="button" class="btn btn-primary" id="bot2ChannelBtn">Ulash</button>
                     </div>
                     <div class="bot2-connected" id="bot2ChannelInfo" style="display:none">
-                        <span class="bot2-av ok">✅</span>
+                        <span class="bot2-av ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span>
                         <div class="bot2-meta"><div class="bot2-name" id="bot2ChannelName">—</div><div class="bot2-sub"><span id="bot2SentCount">0</span> ta buyurtma yuborilgan</div></div>
-                        <button type="button" class="btn btn-ghost" id="bot2ChannelTest">📨 Test</button>
-                        <button type="button" class="btn btn-danger" id="bot2ChannelDisc">🔌 Uzish</button>
+                        <button type="button" class="btn btn-ghost" id="bot2ChannelTest">Test</button>
+                        <button type="button" class="btn btn-danger" id="bot2ChannelDisc">Uzish</button>
                     </div>
                 </div>
 
                 <!-- 3) MIJOZLARGA XABAR -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">📨</span><div><h3>4. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span><div><h3>4. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div></div>
                     <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
-                    <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
+                    <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">Hammaga yuborish</button>
                     <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>
                 </div>
             </section>
@@ -543,13 +547,13 @@
                             <div class="form">
                                 <div class="form-row full">
                                     <label>Do'koningiz havolasi</label>
-                                    <input type="text" id="qrUrlInput" readonly>
+                                    <input type="text" id="qrUrlInput" readonly="">
                                 </div>
                             </div>
                             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-                                <button type="button" class="btn btn-primary" id="qrCopyBtn">🔗 Havolani nusxalash</button>
-                                <button type="button" class="btn btn-ghost" id="qrDownloadBtn">⬇️ QR kodni yuklab olish</button>
-                                <button type="button" class="btn btn-ghost" id="qrOpenBtn">↗️ Ochish</button>
+                                <button type="button" class="btn btn-primary" id="qrCopyBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Havolani nusxalash</button>
+                                <button type="button" class="btn btn-ghost" id="qrDownloadBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> QR kodni yuklab olish</button>
+                                <button type="button" class="btn btn-ghost" id="qrOpenBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Ochish</button>
                             </div>
                             <p class="bot2-hint" style="margin-top:14px">Ushbu havola (yoki QR kod) sizning do'koningizga (<code>?client=</code> parametri bilan) olib boradi. Uni ijtimoiy tarmoqlarda, vizitka yoki reklamada ulashing — mijozlar boshqa do'konga emas, aynan sizning do'koningizga tushadi.</p>
                         </div>
@@ -568,18 +572,18 @@
         <div class="modal-inner modal-lg">
             <div class="modal-head">
                 <h3 id="productFormTitle">Yangi kitob</h3>
-                <button class="modal-x" data-close-modal>×</button>
+                <button class="modal-x" data-close-modal="">×</button>
             </div>
             <form id="productForm" class="form form-grid">
                 <input type="hidden" id="pId">
-                <div class="form-row full"><label>Kitob nomi *</label><input type="text" id="pName" required></div>
-                <div class="form-row"><label>Muallif *</label><input type="text" id="pAuthor" required placeholder="Masalan: Abdulla Qodiriy"></div>
-                <div class="form-row"><label>Janr (kategoriya) *</label><select id="pCat" required></select></div>
-                <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required min="0"></div>
+                <div class="form-row full"><label>Kitob nomi *</label><input type="text" id="pName" required=""></div>
+                <div class="form-row"><label>Muallif *</label><input type="text" id="pAuthor" required="" placeholder="Masalan: Abdulla Qodiriy"></div>
+                <div class="form-row"><label>Janr (kategoriya) *</label><select id="pCat" required=""></select></div>
+                <div class="form-row"><label>Narx (so'm) *</label><input type="number" id="pPrice" required="" min="0"></div>
                 <div class="form-row"><label>Eski narx (ixtiyoriy)</label><input type="number" id="pOld" min="0"></div>
-                <div class="form-row"><label>Zaxira (dona) *</label><input type="number" id="pStock" required min="0" value="10"></div>
+                <div class="form-row"><label>Zaxira (dona) *</label><input type="number" id="pStock" required="" min="0" value="10"></div>
                 <div class="form-row"><label>Holat</label>
-                    <label class="switch"><input type="checkbox" id="pActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label>
+                    <label class="switch"><input type="checkbox" id="pActive" checked=""><span class="slider"></span><span class="sw-label">Aktiv</span></label>
                 </div>
                 <div class="form-row"><label>Nashriyot</label><input type="text" id="pPublisher" placeholder="Masalan: Sharq"></div>
                 <div class="form-row"><label>Nashr yili</label><input type="number" id="pYear" min="1900" max="2100" placeholder="2024"></div>
@@ -593,27 +597,27 @@
                     </select>
                 </div>
                 <div class="form-row"><label>ISBN</label><input type="text" id="pIsbn" placeholder="978-9943-..."></div>
-                <div class="form-row full"><label>Muqova rasmi (URL) *</label><input type="url" id="pImage" required placeholder="https://..."></div>
+                <div class="form-row full"><label>Muqova rasmi (URL) *</label><input type="url" id="pImage" required="" placeholder="https://..."></div>
                 <div class="form-row full">
                     <label>Muqova turi / format</label>
                     <div class="check-row" id="pSizes">
-                        <label><input type="checkbox" value="Qattiq muqova" checked><span>Qattiq muqova</span></label>
+                        <label><input type="checkbox" value="Qattiq muqova" checked=""><span>Qattiq muqova</span></label>
                         <label><input type="checkbox" value="Yumshoq muqova"><span>Yumshoq muqova</span></label>
                         <label><input type="checkbox" value="Audiokitob"><span>Audiokitob</span></label>
                         <label><input type="checkbox" value="Elektron"><span>Elektron (PDF)</span></label>
                     </div>
                 </div>
                 <div class="form-row full">
-                    <label>Muqova rasmini yuklash (drag & drop)</label>
+                    <label>Muqova rasmini yuklash (drag &amp; drop)</label>
                     <div class="drop-zone" id="dropZone">
-                        <div>📤</div>
+                        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
                         <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
-                        <input type="file" id="fileInput" accept="image/*" hidden>
+                        <input type="file" id="fileInput" accept="image/*" hidden="">
                     </div>
                 </div>
                 <div class="form-row full"><label>Annotatsiya (tavsif)</label><textarea id="pDesc" rows="3" placeholder="Kitob haqida qisqacha..."></textarea></div>
                 <div class="form-row full" style="display:flex;gap:10px;justify-content:flex-end">
-                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="button" class="btn btn-ghost" data-close-modal="">Bekor qilish</button>
                     <button type="submit" class="btn btn-primary">Saqlash</button>
                 </div>
             </form>
@@ -625,7 +629,7 @@
         <div class="modal-inner modal-md">
             <div class="modal-head">
                 <h3>Buyurtma tafsiloti</h3>
-                <button class="modal-x" data-close-modal>×</button>
+                <button class="modal-x" data-close-modal="">×</button>
             </div>
             <div id="orderModalBody"></div>
         </div>
@@ -636,7 +640,7 @@
         <div class="modal-inner modal-md">
             <div class="modal-head">
                 <h3>Mijoz profili</h3>
-                <button class="modal-x" data-close-modal>×</button>
+                <button class="modal-x" data-close-modal="">×</button>
             </div>
             <div id="customerModalBody"></div>
         </div>
@@ -647,11 +651,11 @@
         <div class="modal-inner">
             <div class="modal-head">
                 <h3 id="catModalTitle">Yangi kategoriya</h3>
-                <button class="modal-x" data-close-modal>×</button>
+                <button class="modal-x" data-close-modal="">×</button>
             </div>
             <form id="catForm" class="form">
                 <input type="hidden" id="catId">
-                <div class="form-row"><label>Nomi</label><input type="text" id="catName" required></div>
+                <div class="form-row"><label>Nomi</label><input type="text" id="catName" required=""></div>
                 <div class="form-row"><label>Ikona (emoji)</label>
                     <div class="emoji-pick" id="emojiPick">
                         <button type="button" data-emoji="📖">📖</button>
@@ -665,12 +669,12 @@
                         <button type="button" data-emoji="📚">📚</button>
                         <button type="button" data-emoji="✍️">✍️</button>
                     </div>
-                    <input type="text" id="catIcon" required placeholder="Yoki o'zingiz yozing">
+                    <input type="text" id="catIcon" required="" placeholder="Yoki o'zingiz yozing">
                 </div>
                 <div class="form-row"><label>Tavsif</label><textarea id="catDesc" rows="2"></textarea></div>
-                <div class="form-row"><label class="switch"><input type="checkbox" id="catActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
+                <div class="form-row"><label class="switch"><input type="checkbox" id="catActive" checked=""><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
                 <div style="display:flex;gap:10px;justify-content:flex-end">
-                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="button" class="btn btn-ghost" data-close-modal="">Bekor qilish</button>
                     <button type="submit" class="btn btn-primary">Saqlash</button>
                 </div>
             </form>
@@ -682,18 +686,18 @@
         <div class="modal-inner">
             <div class="modal-head">
                 <h3 id="couponModalTitle">Yangi kupon</h3>
-                <button class="modal-x" data-close-modal>×</button>
+                <button class="modal-x" data-close-modal="">×</button>
             </div>
             <form id="couponForm" class="form form-grid">
                 <input type="hidden" id="cpId">
-                <div class="form-row full"><label>Kod</label><input type="text" id="cpCode" required style="text-transform:uppercase"></div>
+                <div class="form-row full"><label>Kod</label><input type="text" id="cpCode" required="" style="text-transform:uppercase"></div>
                 <div class="form-row"><label>Turi</label><select id="cpType"><option value="percent">Foiz (%)</option><option value="fixed">Belgilangan summa</option></select></div>
-                <div class="form-row"><label>Miqdor</label><input type="number" id="cpValue" required min="0"></div>
-                <div class="form-row"><label>Max foydalanish</label><input type="number" id="cpMax" required min="1" value="100"></div>
-                <div class="form-row"><label>Amal qilish muddati</label><input type="date" id="cpExpires" required></div>
-                <div class="form-row full"><label class="switch"><input type="checkbox" id="cpActive" checked><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
+                <div class="form-row"><label>Miqdor</label><input type="number" id="cpValue" required="" min="0"></div>
+                <div class="form-row"><label>Max foydalanish</label><input type="number" id="cpMax" required="" min="1" value="100"></div>
+                <div class="form-row"><label>Amal qilish muddati</label><input type="date" id="cpExpires" required=""></div>
+                <div class="form-row full"><label class="switch"><input type="checkbox" id="cpActive" checked=""><span class="slider"></span><span class="sw-label">Aktiv</span></label></div>
                 <div class="form-row full" style="display:flex;gap:10px;justify-content:flex-end">
-                    <button type="button" class="btn btn-ghost" data-close-modal>Bekor qilish</button>
+                    <button type="button" class="btn btn-ghost" data-close-modal="">Bekor qilish</button>
                     <button type="submit" class="btn btn-primary">Saqlash</button>
                 </div>
             </form>
@@ -729,10 +733,11 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js?v=4", "admin.js?v=2"]) {
+        for (const src of ["script.js?v=4", "admin.js?v=3"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();
     </script>
-</body>
-</html>
+
+
+</body></html>

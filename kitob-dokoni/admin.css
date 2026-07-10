@@ -76,9 +76,9 @@ img { max-width: 100%; display: block; }
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 18px;
     box-shadow: 0 4px 12px rgba(108,99,255,0.3);
 }
+.logo-mark svg { width: 20px; height: 20px; }
 
 /* ============ BUTTONS ============ */
 .btn {
@@ -137,7 +137,8 @@ img { max-width: 100%; display: block; }
     to { transform: translateY(0); opacity: 1; }
 }
 .login-logo { display: flex; justify-content: center; margin-bottom: 18px; }
-.login-logo .logo-mark { width: 56px; height: 56px; font-size: 22px; border-radius: 14px; }
+.login-logo .logo-mark { width: 56px; height: 56px; border-radius: 14px; }
+.login-logo .logo-mark svg { width: 26px; height: 26px; }
 .login-card h1 { text-align: center; font-size: 26px; font-weight: 800; margin-bottom: 6px; }
 .login-sub { text-align: center; color: var(--text-muted); margin-bottom: 28px; font-size: 14px; }
 .login-row {
@@ -259,7 +260,8 @@ img { max-width: 100%; display: block; }
     color: #fff;
     border-left-color: var(--accent);
 }
-.ni { font-size: 17px; width: 22px; text-align: center; }
+.ni { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ni svg { width: 18px; height: 18px; }
 .nav-badge {
     margin-left: auto;
     background: var(--accent);
@@ -369,10 +371,10 @@ img { max-width: 100%; display: block; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
     position: relative;
     transition: background 0.2s;
 }
+.t-icon svg { width: 19px; height: 19px; }
 .t-icon:hover { background: var(--bg); }
 .t-badge {
     position: absolute;
@@ -449,7 +451,9 @@ img { max-width: 100%; display: block; }
 .dd-notif-body small { color: var(--text-muted); font-size: 12px; }
 
 .dd-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 16px;
     font-size: 13px;
     color: var(--text);
@@ -571,8 +575,8 @@ img { max-width: 100%; display: block; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
 }
+.stat-icon svg { width: 20px; height: 20px; }
 .trend {
     font-size: 12px;
     font-weight: 700;
@@ -770,9 +774,9 @@ img { max-width: 100%; display: block; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
     transition: all 0.2s;
 }
+.icon-act svg { width: 15px; height: 15px; }
 .icon-act:hover { background: var(--accent); color: #fff; }
 .icon-act.danger:hover { background: var(--danger); }
 
@@ -917,12 +921,15 @@ img { max-width: 100%; display: block; }
 }
 .copy-btn {
     padding: 2px 6px;
+    display: inline-flex;
+    align-items: center;
     background: rgba(108,99,255,0.2);
     border-radius: 4px;
     font-size: 11px;
     transition: background 0.2s;
 }
 .copy-btn:hover { background: rgba(108,99,255,0.4); }
+.copy-btn svg { width: 13px; height: 13px; }
 
 /* ============ RANGE BUTTONS ============ */
 .rng-btn {
@@ -1517,7 +1524,8 @@ img { max-width: 100%; display: block; }
     padding: 50px 24px;
     color: var(--text-muted);
 }
-.msg-no-threads .emp-ico { font-size: 44px; margin-bottom: 12px; opacity: 0.6; }
+.msg-no-threads .emp-ico { display: flex; align-items: center; justify-content: center; margin-bottom: 12px; opacity: 0.45; }
+.msg-no-threads .emp-ico svg { width: 40px; height: 40px; }
 .msg-no-threads h4 { color: var(--text); margin-bottom: 4px; font-size: 15px; }
 .msg-no-threads p { font-size: 13px; }
 .msg-main {
@@ -1536,7 +1544,8 @@ img { max-width: 100%; display: block; }
     padding: 30px;
     text-align: center;
 }
-.msg-empty .emp-ico { font-size: 56px; margin-bottom: 16px; opacity: 0.5; }
+.msg-empty .emp-ico { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; opacity: 0.4; }
+.msg-empty .emp-ico svg { width: 48px; height: 48px; }
 .msg-empty h4 { color: var(--text); margin-bottom: 4px; font-size: 16px; }
 .msg-empty p { font-size: 13px; }
 .msg-conversation {
@@ -1669,7 +1678,8 @@ img { max-width: 100%; display: block; }
     justify-content: center;
     color: var(--text-muted);
 }
-.msg-conv-empty .emp-ico { font-size: 44px; margin-bottom: 10px; opacity: 0.5; }
+.msg-conv-empty .emp-ico { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; opacity: 0.45; }
+.msg-conv-empty .emp-ico svg { width: 40px; height: 40px; }
 .msg-conv-input {
     display: flex;
     gap: 8px;
@@ -1954,6 +1964,7 @@ img { max-width: 100%; display: block; }
   padding: 22px; margin-bottom: 18px;
 }
 .bot2-card-head { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
+.bot2-ic svg, .bot2-av svg, .bot2-eye svg { width: 20px; height: 20px; }
 .bot2-ic { width: 46px; height: 46px; flex-shrink: 0; border-radius: 13px; background: linear-gradient(135deg, #2AABEE, #229ED9); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .bot2-card-head h3 { font-size: 16px; margin: 0; color: var(--text, var(--ink, #1f2937)); }
 .bot2-card-head p { font-size: 12.5px; margin: 2px 0 0; color: var(--text-sub, var(--text-muted, var(--muted, #6b7280))); }

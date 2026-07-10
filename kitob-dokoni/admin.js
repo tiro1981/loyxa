@@ -2,6 +2,22 @@
    KITOB OLAMI — Admin Panel Logic
    ============================================ */
 
+/* ============ Oddiy chiziqli ikonalar (emoji o'rniga) ============ */
+const ICONS = {
+    view: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.85 19.85 0 0 1 4.22-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a19.86 19.86 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    block: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+    bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2Z"/></svg>',
+};
+
 const STATUSES = ['yangi', 'jarayonda', 'yetkazilmoqda', 'yetkazildi', 'bekor'];
 const STATUS_LABELS = { yangi: 'Yangi', jarayonda: 'Jarayonda', yetkazilmoqda: 'Yetkazilmoqda', yetkazildi: 'Yetkazildi', bekor: 'Bekor qilindi' };
 
@@ -95,18 +111,6 @@ function initAdmin() {
         if (currentPage === 'messages') renderMessageThreads();
         if (currentPage === 'messages' && currentChatKey) renderConversation(currentChatKey, false);
     });
-
-    // Cloud FONDA yangilanganda (server ma'lumoti kelgach) — panelni qayta chizamiz.
-    // Panel darrov ochiladi, so'ng eng yangi ma'lumot sokin yangilanadi ("qotish" yo'q).
-    window.addEventListener('cloud:updated', () => {
-        try {
-            data = Store.load();
-            navigate(currentPage || 'dashboard');
-            updateNavBadge();
-            updateMsgBadge();
-            updateBotBadge();
-        } catch (err) { console.error('cloud:updated (admin):', err); }
-    });
 }
 
 function setupDropdown(btnId, menuId) {
@@ -178,9 +182,9 @@ function setupNotifications() {
     const lowStock = data.products.filter(p => p.stock < 5 && p.active).slice(0, 3);
     const newMessages = (data.chats || []).filter(c => (c.unreadAdmin || 0) > 0).slice(0, 5);
     const items = [
-        ...newMessages.map(c => ({ icon: '💬', title: `Yangi xabar — ${c.userName || 'Mehmon'}`, sub: c.messages[c.messages.length-1]?.text.slice(0, 60) || '' })),
-        ...newOrders.map(o => ({ icon: '🛍️', title: `Yangi buyurtma #${o.id}`, sub: `${o.name} — ${money(o.total)}` })),
-        ...lowStock.map(p => ({ icon: '⚠️', title: 'Zaxira tugayapti', sub: `${p.name} — ${p.stock} dona qoldi` })),
+        ...newMessages.map(c => ({ icon: ICONS.message, title: `Yangi xabar — ${c.userName || 'Mehmon'}`, sub: c.messages[c.messages.length-1]?.text.slice(0, 60) || '' })),
+        ...newOrders.map(o => ({ icon: ICONS.bag, title: `Yangi buyurtma #${o.id}`, sub: `${o.name} — ${money(o.total)}` })),
+        ...lowStock.map(p => ({ icon: ICONS.warn, title: 'Zaxira tugayapti', sub: `${p.name} — ${p.stock} dona qoldi` })),
     ];
     document.getElementById('notifBadge').textContent = items.length;
     document.getElementById('notifBadge').style.display = items.length > 0 ? 'block' : 'none';
@@ -369,9 +373,9 @@ function renderProducts() {
                 <td><span class="status ${p.active ? 'active' : 'inactive'}">${p.active ? 'Aktiv' : 'Arxiv'}</span></td>
                 <td>
                     <div class="row-acts">
-                        <button class="icon-act" onclick="viewProduct(${p.id})" title="Ko'rish">👁</button>
-                        <button class="icon-act" onclick="openProductForm(${p.id})" title="Tahrirlash">✏️</button>
-                        <button class="icon-act danger" onclick="deleteProduct(${p.id})" title="O'chirish">🗑</button>
+                        <button class="icon-act" onclick="viewProduct(${p.id})" title="Ko'rish">${ICONS.view}</button>
+                        <button class="icon-act" onclick="openProductForm(${p.id})" title="Tahrirlash">${ICONS.edit}</button>
+                        <button class="icon-act danger" onclick="deleteProduct(${p.id})" title="O'chirish">${ICONS.trash}</button>
                     </div>
                 </td>
             </tr>`).join('');
@@ -535,8 +539,8 @@ function renderOrders() {
             <td><span class="status ${o.status}">${STATUS_LABELS[o.status]}</span></td>
             <td>
                 <div class="row-acts">
-                    <button class="icon-act" onclick="viewOrder(${o.id})" title="Ko'rish">👁</button>
-                    <button class="icon-act danger" onclick="deleteOrder(${o.id})" title="O'chirish">🗑</button>
+                    <button class="icon-act" onclick="viewOrder(${o.id})" title="Ko'rish">${ICONS.view}</button>
+                    <button class="icon-act danger" onclick="deleteOrder(${o.id})" title="O'chirish">${ICONS.trash}</button>
                 </div>
             </td>
         </tr>`).join('');
@@ -663,8 +667,8 @@ function renderCustomers() {
                 <td><span class="status ${c.active ? 'active' : 'inactive'}">${c.active ? 'Aktiv' : 'Bloklangan'}</span></td>
                 <td>
                     <div class="row-acts">
-                        <button class="icon-act" onclick="viewCustomer(${c.id})" title="Ko'rish">👁</button>
-                        <button class="icon-act" onclick="toggleCustomer(${c.id})" title="Bloklash/Aktiv">${c.active ? '🚫' : '✅'}</button>
+                        <button class="icon-act" onclick="viewCustomer(${c.id})" title="Ko'rish">${ICONS.view}</button>
+                        <button class="icon-act" onclick="toggleCustomer(${c.id})" title="Bloklash/Aktiv">${c.active ? ICONS.block : ICONS.check}</button>
                     </div>
                 </td>
             </tr>`;
@@ -741,8 +745,8 @@ function renderCategories() {
         return `
             <div class="cat-card">
                 <div class="cat-actions">
-                    <button class="icon-act" onclick="openCategoryForm('${c.id}')">✏️</button>
-                    <button class="icon-act danger" onclick="deleteCategory('${c.id}')">🗑</button>
+                    <button class="icon-act" onclick="openCategoryForm('${c.id}')">${ICONS.edit}</button>
+                    <button class="icon-act danger" onclick="deleteCategory('${c.id}')">${ICONS.trash}</button>
                 </div>
                 <span class="cat-emoji">${c.icon}</span>
                 <strong>${c.name}</strong>
@@ -821,7 +825,7 @@ function renderCoupons() {
     tbody.innerHTML = data.coupons.map(c => `
         <tr>
             <td>
-                <span class="coupon-code">${c.code}<button class="copy-btn" onclick="copyCode('${c.code}')">📋</button></span>
+                <span class="coupon-code">${c.code}<button class="copy-btn" onclick="copyCode('${c.code}')">${ICONS.copy}</button></span>
             </td>
             <td>${c.type === 'percent' ? 'Foiz' : 'Belgilangan'}</td>
             <td><strong>${c.type === 'percent' ? c.value + '%' : money(c.value)}</strong></td>
@@ -831,8 +835,8 @@ function renderCoupons() {
             <td><span class="status ${c.active ? 'active' : 'inactive'}">${c.active ? 'Aktiv' : 'Tugagan'}</span></td>
             <td>
                 <div class="row-acts">
-                    <button class="icon-act" onclick="openCouponForm(${c.id})">✏️</button>
-                    <button class="icon-act danger" onclick="deleteCoupon(${c.id})">🗑</button>
+                    <button class="icon-act" onclick="openCouponForm(${c.id})">${ICONS.edit}</button>
+                    <button class="icon-act danger" onclick="deleteCoupon(${c.id})">${ICONS.trash}</button>
                 </div>
             </td>
         </tr>`).join('');
@@ -1138,9 +1142,9 @@ function renderSettings() {
     (s.shipping || []).forEach(addShipRow);
 
     const notifs = [
-        { key: 'email', name: 'Email orqali', icon: '📧' },
-        { key: 'sms', name: 'SMS orqali', icon: '💬' },
-        { key: 'telegram', name: 'Telegram orqali', icon: '✈️' },
+        { key: 'email', name: 'Email orqali', icon: ICONS.mail },
+        { key: 'sms', name: 'SMS orqali', icon: ICONS.message },
+        { key: 'telegram', name: 'Telegram orqali', icon: ICONS.send },
     ];
     document.getElementById('notifSettings').innerHTML = notifs.map(n => `
         <div class="pay-item">
@@ -1248,7 +1252,7 @@ function renderMessageThreads() {
     }
 
     if (chats.length === 0) {
-        list.innerHTML = `<div class="msg-no-threads"><div class="emp-ico">💬</div><h4>Suhbatlar yo'q</h4><p>Hozircha hech qaysi mijoz xabar yubormagan</p></div>`;
+        list.innerHTML = `<div class="msg-no-threads"><div class="emp-ico">${ICONS.message}</div><h4>Suhbatlar yo'q</h4><p>Hozircha hech qaysi mijoz xabar yubormagan</p></div>`;
         return;
     }
 
@@ -1302,7 +1306,7 @@ function renderConversation(chatKey, openLayout) {
 
     const body = document.getElementById('msgConvBody');
     if (!chat.messages || chat.messages.length === 0) {
-        body.innerHTML = `<div class="msg-conv-empty"><div class="emp-ico">💬</div><p>Hozircha xabarlar yo'q</p></div>`;
+        body.innerHTML = `<div class="msg-conv-empty"><div class="emp-ico">${ICONS.message}</div><p>Hozircha xabarlar yo'q</p></div>`;
         return;
     }
     let html = '';
@@ -1449,7 +1453,7 @@ async function testChannel() {
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.ok) throw new Error(data.error || 'Yuborilmadi');
         const cfg = botRead(); cfg.sentCount = data.sentCount || (cfg.sentCount || 0) + 1; botWrite(cfg); setChannelUI(cfg);
-        toast('Test habar kanalga yuborildi ✅', 'success');
+        toast('Test habar kanalga yuborildi', 'success');
     } catch (err) { toast(botErr(err), 'error'); } finally { _btnBusy(btn, false); }
 }
 async function sendBroadcast() {
@@ -1462,14 +1466,14 @@ async function sendBroadcast() {
         const res = await fetch(getBotApi() + '/store-bot/broadcast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: SHOP_KEY, text }) });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.ok) throw new Error(data.error || 'Yuborilmadi');
-        if (resEl) resEl.textContent = `✅ Yuborildi: ${data.sent} / ${data.total} ta` + (data.failed ? ` (xato: ${data.failed})` : '');
+        if (resEl) resEl.textContent = `Yuborildi: ${data.sent} / ${data.total} ta` + (data.failed ? ` (xato: ${data.failed})` : '');
         if (ta) ta.value = ''; toast(data.total ? `Yuborildi: ${data.sent} ta` : 'Hali hech kim botga /start yozmagan', data.total ? 'success' : 'info');
     } catch (err) { if (resEl) resEl.textContent = ''; toast(botErr(err), 'error'); } finally { _btnBusy(btn, false); }
 }
 
 function setupBotPage() {
     const eye = document.getElementById('bot2Eye');
-    if (eye) eye.onclick = () => { const t = document.getElementById('bot2Token'); if (!t) return; const h = t.type === 'password'; t.type = h ? 'text' : 'password'; eye.textContent = h ? '🙈' : '👁'; };
+    if (eye) eye.onclick = () => { const t = document.getElementById('bot2Token'); if (!t) return; const h = t.type === 'password'; t.type = h ? 'text' : 'password'; eye.innerHTML = h ? ICONS.eyeOff : ICONS.view; };
     const byId = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
     byId('bot2ConnectBtn', connectBot);
     byId('bot2DisconnectBtn', disconnectBot);
