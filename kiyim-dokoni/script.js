@@ -230,6 +230,21 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     const PROMO_KEY = 'moda_promo';
     const SHIPPING_BASE = 25000;
 
+    // ====== QURILMAGA XOS ID (har bir telefon/brauzer uchun alohida) ======
+    // Buyurtmalar UMUMIY Cloud "store"da saqlanadi (barcha qurilmalar ko'radi).
+    // Ilgari "o.self" bayrog'i shu umumiy ma'lumotda edi — shu sabab HAR BIR telefon
+    // boshqalarning buyurtmasini ham "meniki" deb ko'rsatardi (bitta sessiya kabi).
+    // Endi har bir qurilma o'zining noyob ID'siga ega bo'ladi va faqat O'ZI bergan
+    // buyurtmalarni ko'radi.
+    const DEVICE_KEY = 'moda_device_id';
+    let DEVICE_ID = localStorage.getItem(DEVICE_KEY);
+    if (!DEVICE_ID) {
+        DEVICE_ID = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        try { localStorage.setItem(DEVICE_KEY, DEVICE_ID); } catch (e) {}
+    }
+    // Buyurtma shu qurilmaniki ekanini aniqlash (eski self-only buyurtmalarga tegmaymiz).
+    const isMyOrder = (o) => o && o.deviceId === DEVICE_ID;
+
     let data = Store.load();
     let cart = safeParse(CART_KEY, []);
     let favorites = safeParse(FAV_KEY, []);
@@ -682,6 +697,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             note: '',
             date: new Date().toISOString().slice(0,10),
             self: true,
+            deviceId: DEVICE_ID,   // shu qurilma bergan buyurtma — faqat shu qurilma ko'radi
             promo: activePromo || null,
             discount,
         };
@@ -876,7 +892,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             }
         }
         // 2. Order status updates
-        data.orders.filter(o => o.self).slice(0, 6).forEach(o => {
+        data.orders.filter(isMyOrder).slice(0, 6).forEach(o => {
             notifs.push({
                 icon: o.status === 'yetkazildi' ? '✅' : o.status === 'yangi' ? '🛍️' : o.status === 'bekor' ? '❌' : '🚚',
                 title: `Buyurtma #${o.id}`,
@@ -920,7 +936,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const last = +(localStorage.getItem(NOTIF_KEY) || 0);
         const chat = (data.chats || []).find(c => c.key === chatUserKey);
         const hasUnreadChat = chat && chat.unreadUser > 0;
-        const hasOrder = data.orders.some(o => o.self && new Date(o.date).getTime() > last - 86400000);
+        const hasOrder = data.orders.some(o => isMyOrder(o) && new Date(o.date).getTime() > last - 86400000);
         document.getElementById('bellDot').style.display = (hasUnreadChat || hasOrder) ? 'block' : 'none';
     }
 
@@ -933,7 +949,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     });
 
     function renderOrders() {
-        const myOrders = data.orders.filter(o => o.self);
+        const myOrders = data.orders.filter(isMyOrder);
         let list = myOrders;
         if (orderStatusFilter !== 'all') list = list.filter(o => o.status === orderStatusFilter);
         const ul = document.getElementById('ordersList');
@@ -1022,7 +1038,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     }
 
     function updateProfileStats() {
-        const myOrders = data.orders.filter(o => o.self);
+        const myOrders = data.orders.filter(isMyOrder);
         const spent = myOrders.filter(o => o.status === 'yetkazildi').reduce((s, o) => s + o.total, 0);
         document.getElementById('psOrders').textContent = myOrders.length;
         document.getElementById('psFav').textContent = favorites.length;
