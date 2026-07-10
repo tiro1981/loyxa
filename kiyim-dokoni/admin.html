@@ -465,26 +465,9 @@
                     <span class="bot2-status off" id="bot2Status"><i class="fa-solid fa-circle"></i> Ulanmagan</span>
                 </div>
 
-                <div class="bot2-banner" id="botApiBanner" style="display:none">
-                  <i>⚠️</i>
-                  <span>Bot server manzili sozlanmagan — buyurtmalar Telegram kanalga yuborilmaydi. Avval pastdagi <b>1-bosqich</b>da server manzilini saqlang.</span>
-                  <button type="button" id="botApiBannerBtn">Manzilni sozlash</button>
-                </div>
-
-                <!-- 1) BOT SERVER MANZILI -->
+                <!-- 1) BOTNI ULASH -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">🌐</span><div><h3>1. Bot server manzili</h3><p>Bot xabarlarini qabul qiluvchi server URL manzili (masalan: https://bot.mysite.uz)</p></div></div>
-                    <label class="bot2-label" for="botApiInput">Server manzili</label>
-                    <div class="bot2-channel-row">
-                        <input type="text" id="botApiInput" class="bot2-input" placeholder="https://bot.mysite.uz" autocomplete="off" spellcheck="false">
-                        <button type="button" class="btn btn-primary" id="botApiSave">💾 Saqlash</button>
-                    </div>
-                    <p class="bot2-hint">Localhost/LAN'da ishlayotgan bo'lsangiz bo'sh qoldirsangiz ham bo'ladi.</p>
-                </div>
-
-                <!-- 2) BOTNI ULASH -->
-                <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>2. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic">✈️</span><div><h3>1. Botni ulash</h3><p>@BotFather'dan token oling va shu yerga joylang</p></div></div>
                     <label class="bot2-label" for="bot2Token">Bot tokeni</label>
                     <div class="bot2-token">
                         <input type="password" id="bot2Token" placeholder="123456789:AAE-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
@@ -504,7 +487,7 @@
 
                 <!-- 2) BUYURTMA KANALI -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">📢</span><div><h3>3. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic">📢</span><div><h3>2. Buyurtma kanali</h3><p>Botni kanalga admin qiling — yangi buyurtmalar shu yerga keladi</p></div></div>
                     <div class="bot2-steps-mini">
                         <span><b>1.</b> Botni kanalingizga <b>admin</b> qiling (yozish huquqi bilan)</span>
                         <span><b>2.</b> Kanal username yoki ID sini yozib <b>Ulash</b> bosing</span>
@@ -523,7 +506,7 @@
 
                 <!-- 3) MIJOZLARGA XABAR -->
                 <div class="bot2-card">
-                    <div class="bot2-card-head"><span class="bot2-ic">📨</span><div><h3>4. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div></div>
+                    <div class="bot2-card-head"><span class="bot2-ic">📨</span><div><h3>3. Mijozlarga xabar</h3><p>Botga <code>/start</code> yozgan barcha mijozlarga (<span id="bot2UserCount">0</span> ta) ommaviy xabar yuboring</p></div></div>
                     <textarea id="bot2BroadcastText" class="bot2-textarea" rows="3" placeholder="Assalomu alaykum! Bugun maxsus chegirma..."></textarea>
                     <button type="button" class="btn btn-primary" id="bot2BroadcastBtn" style="margin-top:12px">📨 Hammaga yuborish</button>
                     <p class="bot2-hint" id="bot2BroadcastResult" style="margin-top:8px"></p>

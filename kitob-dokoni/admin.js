@@ -1350,17 +1350,9 @@ function renderBot() {
     const cfg = botRead();
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.value = v; };
     set('bot2Token', cfg.token || '');
-    const apiInput = document.getElementById('botApiInput');
-    if (apiInput) apiInput.value = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || '';
     setBotConnectedUI(!!cfg.connected, cfg.username);
     setChannelUI(cfg);
     refreshBotStatus();
-    updateBotApiBanner();
-}
-function updateBotApiBanner() {
-    const banner = document.getElementById('botApiBanner');
-    if (!banner) return;
-    banner.style.display = getBotApi() ? 'none' : '';
 }
 function setBotConnectedUI(connected, username) {
     const pill = document.getElementById('bot2Status');
@@ -1390,7 +1382,6 @@ async function refreshBotStatus() {
         cfg.channel = data.channel || null; cfg.sentCount = data.sentCount || 0; cfg.userCount = data.userCount || 0;
         botWrite(cfg);
         setBotConnectedUI(cfg.connected, cfg.username); setChannelUI(cfg);
-        updateBotApiBanner();
     } catch (e) {}
 }
 
@@ -1481,19 +1472,6 @@ function setupBotPage() {
     byId('bot2ChannelTest', testChannel);
     byId('bot2ChannelDisc', disconnectChannel);
     byId('bot2BroadcastBtn', sendBroadcast);
-    byId('botApiSave', () => {
-        const v = (document.getElementById('botApiInput').value || '').trim().replace(/\/+$/, '');
-        if (window.Cloud) Cloud.set('bot_api', v);
-        try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
-        toast('Bot server manzili saqlandi', 'success');
-        updateBotApiBanner();
-        refreshBotStatus();
-    });
-    document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
-        const input = document.getElementById('botApiInput');
-        input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        input?.focus();
-    });
 }
 
 /* ============================================

@@ -1000,42 +1000,7 @@ function renderBot() {
   setBotConnectedUI(!!cfg.connected, cfg.username);
   setChannelUI(cfg);
   refreshBotStatus();
-  renderBotApiSettings();
-  updateBotApiBanner();
 }
-
-// 1) Bot server manzili — sozlash UI
-function renderBotApiSettings() {
-  const cur = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
-  const input = document.getElementById('bot2ApiInput');
-  if (input && !input.value) input.value = cur;
-  const curEl = document.getElementById('bot2ApiCurrent');
-  if (curEl) curEl.textContent = cur || getBotApi() || '(sozlanmagan)';
-}
-document.getElementById('bot2ApiSaveBtn')?.addEventListener('click', () => {
-  const input = document.getElementById('bot2ApiInput');
-  let v = (input?.value || '').trim().replace(/\/+$/, '');
-  if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v;
-  DB.set('tb_bot_api', v);
-  try { if (v) localStorage.setItem('bo_bot_api', v); else localStorage.removeItem('bo_bot_api'); } catch (e) {}
-  if (input) input.value = v;
-  renderBotApiSettings();
-  updateBotApiBanner();
-  toast(v ? 'Bot server manzili saqlandi' : 'Standart manzilga qaytarildi', 'success');
-  refreshBotStatus();
-});
-// getBotApi() bo'sh qaytarsa — toast 2-3 soniyada yo'qolib ketadi va ko'rinmay
-// qolishi mumkin, shuning uchun doimiy ko'rinadigan banner ham chiqaramiz.
-function updateBotApiBanner() {
-  const banner = document.getElementById('botApiBanner');
-  if (!banner) return;
-  banner.style.display = getBotApi() ? 'none' : '';
-}
-document.getElementById('botApiBannerBtn')?.addEventListener('click', () => {
-  const input = document.getElementById('bot2ApiInput');
-  input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  input?.focus();
-});
 
 function setBotConnectedUI(connected, username) {
   const pill = document.getElementById('bot2Status');
@@ -1060,14 +1025,12 @@ const BOT_API_UNSET_MSG = "Bot server manzili sozlanmagan — avval Bot sozlamal
 // befoyda fetch'ga urinmasdan aniq xabar ko'rsatamiz.
 function botApiOrWarn(showToast) {
   const api = getBotApi();
-  updateBotApiBanner();
   if (!api) { if (showToast) toast(BOT_API_UNSET_MSG, 'error'); return ''; }
   return api;
 }
 
 async function refreshBotStatus() {
   const api = getBotApi();
-  updateBotApiBanner();
   if (!api) { console.warn('[bot]', BOT_API_UNSET_MSG); return; }
   try {
     const res = await fetch(api + '/store-bot/status?clientId=' + encodeURIComponent(SHOP_KEY));
