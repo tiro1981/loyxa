@@ -68,7 +68,18 @@ function assignAppByParam(clientId) {
 function finishRegistration(username, phone, password) {
     try {
         const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
-        const clientId = 'CL-' + (1000 + subs.length + 1);
+        // MUHIM: bu ID Supabase'da har bir do'konning ma'lumotini ("app_state" jadvali)
+        // ajratib turadi. Ilgari "1000 + subs.length + 1" edi — bu deyarli har bir
+        // qurilmada BIR XIL ID (masalan CL-1002) hosil qilardi, chunki har bir yangi
+        // brauzerda avval demo hisob (CL-001) urug'lanadi va birinchi haqiqiy
+        // ro'yxatdan o'tishda subs.length har doim 1 bo'lardi. Natijada turli
+        // qurilmalardagi mutlaqo bog'liq bo'lmagan foydalanuvchilar bir xil ID olib,
+        // bir-birining do'koni/admin paneliga (Supabase orqali) kirib qolishardi.
+        // Endi vaqt tamg'asi + tasodifiy qism bilan har doim noyob ID hosil qilinadi.
+        let clientId = 'CL-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+        while (subs.some((s) => s.id === clientId)) {
+            clientId = 'CL-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+        }
         const now = new Date().toISOString();
 
         const newClient = {
