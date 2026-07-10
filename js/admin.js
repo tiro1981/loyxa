@@ -2,7 +2,10 @@
 // (Bu fayl SAYT admini uchun. Ilova admin paneliga aloqasi yo'q)
 'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
+// Cloud.init() tugagach bu skript DINAMIK ravishda qo'shiladi — shu payt
+// DOMContentLoaded allaqachon o'tib ketgan bo'lishi mumkin, shuning uchun
+// oddiy addEventListener o'rniga readyState'ni ham tekshiramiz.
+function _boAdminInit() {
 
     /* ---------- DEMO MA'LUMOTLARNI URUG'LASH ---------- */
     seedDemoData();
@@ -18,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ---------- ADMIN PROFIL ---------- */
-    const adminAcc = JSON.parse(localStorage.getItem('bo_admin') || '{}');
+    const adminAcc = boCloudGet('bo_admin', {});
     document.getElementById('adminName').textContent = adminAcc.name || 'Admin';
     document.getElementById('adminAvatar').textContent = (adminAcc.name || 'A')[0].toUpperCase();
 
@@ -198,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const newPass = document.getElementById('editPassword').value.trim();
         if (newPass) subs[idx].password = await hashPassword(newPass);
 
-        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        boCloudSet('bo_subscriptions', subs);
         hideModal('clientModal');
         renderClients();
         renderDashboard();
@@ -210,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!client) return;
         confirmAction(`${client.businessName} o'chirilsinmi?`, "Mijoz va uning ilovasi to'liq o'chiriladi.", () => {
             const subs = getClients().filter(c => c.id !== id);
-            localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+            boCloudSet('bo_subscriptions', subs);
             renderClients();
             renderDashboard();
             window.showToast && window.showToast("Mijoz o'chirildi", 'success');
@@ -221,9 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
        ============ XABARLAR (mijozlar bilan) =============
        ==================================================== */
     function getMessages() {
-        try { return JSON.parse(localStorage.getItem('bo_messages') || '[]'); } catch { return []; }
+        try { return boCloudGet('bo_messages', []); } catch { return []; }
     }
-    function saveMessages(arr) { localStorage.setItem('bo_messages', JSON.stringify(arr)); }
+    function saveMessages(arr) { boCloudSet('bo_messages', arr); }
 
     function getConversations() {
         const byClient = {};
@@ -421,48 +424,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- SETTINGS ---------- */
     function loadSettings() {
-        const a = JSON.parse(localStorage.getItem('bo_admin') || '{}');
+        const a = boCloudGet('bo_admin', {});
         document.getElementById('setAdmName').value = a.name || '';
         document.getElementById('setAdmUser').value = a.username || '';
         document.getElementById('setAdmPass').value = '';
 
-        const site = JSON.parse(localStorage.getItem('bo_site_settings') || '{}');
+        const site = boCloudGet('bo_site_settings', {});
         if (site.name) document.getElementById('setSiteName').value = site.name;
         if (site.phone) document.getElementById('setSitePhone').value = site.phone;
         if (site.email) document.getElementById('setSiteEmail').value = site.email;
         const botApiEl = document.getElementById('setBotApi');
-        if (botApiEl) botApiEl.value = localStorage.getItem('bo_bot_api') || '';
+        if (botApiEl) botApiEl.value = boCloudGet('bo_bot_api', '');
         const botTokenEl = document.getElementById('setBotToken');
-        if (botTokenEl) botTokenEl.value = localStorage.getItem('bo_bot_token') || '';
+        if (botTokenEl) botTokenEl.value = boCloudGet('bo_bot_token', '');
     }
     document.getElementById('saveAdmin').addEventListener('click', async () => {
-        const a = JSON.parse(localStorage.getItem('bo_admin') || '{}');
+        const a = boCloudGet('bo_admin', {});
         a.name = document.getElementById('setAdmName').value.trim();
         a.username = document.getElementById('setAdmUser').value.trim();
         const np = document.getElementById('setAdmPass').value.trim();
         if (np) a.password = await hashPassword(np);
-        localStorage.setItem('bo_admin', JSON.stringify(a));
+        boCloudSet('bo_admin', a);
         document.getElementById('adminName').textContent = a.name;
         document.getElementById('adminAvatar').textContent = (a.name || 'A')[0].toUpperCase();
         window.showToast && window.showToast('Admin profili saqlandi', 'success');
     });
     document.getElementById('saveSite').addEventListener('click', () => {
-        localStorage.setItem('bo_site_settings', JSON.stringify({
+        boCloudSet('bo_site_settings', {
             name: document.getElementById('setSiteName').value.trim(),
             phone: document.getElementById('setSitePhone').value.trim(),
             email: document.getElementById('setSiteEmail').value.trim()
-        }));
+        });
         const botApi = (document.getElementById('setBotApi')?.value || '').trim().replace(/\/+$/, '');
-        if (botApi) localStorage.setItem('bo_bot_api', botApi);
-        else localStorage.removeItem('bo_bot_api');
+        if (botApi) boCloudSet('bo_bot_api', botApi);
+        else if (window.Cloud) Cloud.remove('bo_bot_api'); else localStorage.removeItem('bo_bot_api');
         const botToken = (document.getElementById('setBotToken')?.value || '').trim();
-        if (botToken) localStorage.setItem('bo_bot_token', botToken);
-        else localStorage.removeItem('bo_bot_token');
+        if (botToken) boCloudSet('bo_bot_token', botToken);
+        else if (window.Cloud) Cloud.remove('bo_bot_token'); else localStorage.removeItem('bo_bot_token');
         window.showToast && window.showToast('Sayt sozlamalari saqlandi', 'success');
     });
     document.getElementById('resetData').addEventListener('click', () => {
         confirmAction('Hamma ma\'lumotlar o\'chirilsinmi?', 'So\'rovlar, mijozlar va sozlamalar tiklanadi.', () => {
-            ['bo_subscriptions', 'bo_site_settings', 'bo_session'].forEach(k => localStorage.removeItem(k));
+            ['bo_subscriptions', 'bo_site_settings'].forEach(k => { if (window.Cloud) Cloud.remove(k); else localStorage.removeItem(k); });
+            localStorage.removeItem('bo_session');   // sessiya har doim shu qurilmada — alohida
             seedDemoData();
             location.reload();
         });
@@ -472,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ============ TELEGRAM BOT PANELI ===================
        ==================================================== */
     function getBotApi() {
-        return (localStorage.getItem('bo_bot_api') || 'http://localhost:3344').replace(/\/+$/, '');
+        return (boCloudGet('bo_bot_api', '') || 'http://localhost:3344').replace(/\/+$/, '');
     }
 
     let botPollTimer = null;
@@ -571,7 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yuborilmoqda...';
             try {
                 const headers = { 'Content-Type': 'application/json' };
-                const tok = localStorage.getItem('bo_bot_token');
+                const tok = boCloudGet('bo_bot_token', '');
                 if (tok) headers['X-Admin-Token'] = tok;
                 const res = await fetch(getBotApi() + '/bot/broadcast', {
                     method: 'POST',
@@ -647,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMsgBadges();
 
     // ====== HELPERS ======
-    function getClients() { return JSON.parse(localStorage.getItem('bo_subscriptions') || '[]'); }
+    function getClients() { return boCloudGet('bo_subscriptions', []); }
     function getSession() {
         try { return JSON.parse(localStorage.getItem('bo_session') || 'null'); }
         catch { return null; }
@@ -704,11 +708,11 @@ document.addEventListener('DOMContentLoaded', () => {
        ============ ILOVALAR (APPS) CRUD ==================
        ==================================================== */
     function getApps() {
-        try { return JSON.parse(localStorage.getItem('bo_apps') || '[]'); }
+        try { return boCloudGet('bo_apps', []); }
         catch { return []; }
     }
     function saveApps(arr) {
-        localStorage.setItem('bo_apps', JSON.stringify(arr));
+        boCloudSet('bo_apps', arr);
     }
 
     function renderAppsAdmin() {
@@ -823,9 +827,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logoFile) logoFile.addEventListener('change', (e) => {
         const f = e.target.files && e.target.files[0];
         if (!f) return;
-        readImageAsDataURL(f, 400, (dataUrl) => {
+        readImageAsDataURL(f, 400, async (dataUrl, blob) => {
+            // Darrov ko'rsatamiz (base64) — sekin internetda ham UI kutib qolmasin.
             currentEditingApp.logo = dataUrl;
             refreshLogoPreview();
+            // Fonda Supabase Storage'ga yuklashga urinamiz — muvaffaqiyatli bo'lsa,
+            // katta base64 matni o'rniga qisqa URL saqlanadi (bo_apps yozuvi yengil bo'ladi).
+            if (window.Cloud && blob) {
+                const url = await Cloud.uploadImage(blob, f.name || 'logo.jpg');
+                if (url) {
+                    currentEditingApp.logo = url;
+                    refreshLogoPreview();
+                }
+                // url null bo'lsa (bucket hali yaratilmagan va h.k.) — base64 shu holicha qoladi.
+            }
         });
         logoFile.value = '';
     });
@@ -891,7 +906,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Rasmlarni o'qish va kichraytirish (canvas orqali)
+    // Rasmlarni o'qish va kichraytirish (canvas orqali).
+    // cb(dataUrl, blob) — dataUrl darrov ko'rsatish (preview) uchun, blob esa
+    // Supabase Storage'ga yuklash uchun (agar Cloud/bucket mavjud bo'lsa).
     function readImageAsDataURL(file, maxSize, cb) {
         if (!file || !file.type.startsWith('image/')) {
             window.showToast && window.showToast('Faqat rasm fayllari', 'error');
@@ -910,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 canvas.width = img.width * scale;
                 canvas.height = img.height * scale;
                 canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                cb(canvas.toDataURL('image/jpeg', 0.85));
+                canvas.toBlob((blob) => cb(canvas.toDataURL('image/jpeg', 0.85), blob), 'image/jpeg', 0.85);
             };
             img.onerror = () => window.showToast && window.showToast('Rasm yuklanmadi', 'error');
             img.src = ev.target.result;
@@ -922,17 +939,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function seedDemoData() {
         // Admin — standart hisob: tiro / tiro2004
         (function ensureAdmin() {
-            const a = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+            const a = boCloudGet('bo_admin', null);
             // Hisob yo'q yoki eski standart (admin/admin123) bo'lsa — tiro hisobiga o'tkazamiz
             if (!a || (a.username === 'admin' && a.password === 'admin123')) {
-                localStorage.setItem('bo_admin', JSON.stringify({
+                boCloudSet('bo_admin', {
                     username: 'tiro', password: 'tiro2004', name: 'Bosh administrator'
-                }));
+                });
             }
         })();
         // Demo mijozlar
-        if (!localStorage.getItem('bo_subscriptions')) {
-            localStorage.setItem('bo_subscriptions', JSON.stringify([
+        if (!boCloudGet('bo_subscriptions', null)) {
+            boCloudSet('bo_subscriptions', [
                 {
                     id: 'CL-001', businessName: 'Demo Burger', businessType: 'fastfood', app: 'fastfood',
                     email: 'mijoz@demo.uz', phone: '+998 90 123 45 67',
@@ -949,7 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
                     activatedAt: new Date(Date.now() - 86400000 * 29).toISOString()
                 }
-            ]));
+            ]);
         }
     }
-});
+}
+if (document.readyState !== 'loading') _boAdminInit(); else document.addEventListener('DOMContentLoaded', _boAdminInit);

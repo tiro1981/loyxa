@@ -38,10 +38,10 @@ function assignAppByParam(clientId) {
     try {
         const slug = new URLSearchParams(window.location.search).get('app');
         if (!slug) return false;
-        const apps = JSON.parse(localStorage.getItem('bo_apps') || '[]');
+        const apps = boCloudGet('bo_apps', []);
         const app = apps.find(a => a.slug === slug || a.id === slug);
         if (!app) return false;
-        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const subs = boCloudGet('bo_subscriptions', []);
         const me = subs.find(s => s.id === clientId);
         if (!me) return false;
         me.app = app.slug || app.id;
@@ -58,7 +58,7 @@ function assignAppByParam(clientId) {
             me.subdomain = (me.businessName || 'biznes').toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'biznes';
         }
-        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        boCloudSet('bo_subscriptions', subs);
         return true;
     } catch (e) { console.error('assignAppByParam', e); return false; }
 }
@@ -68,7 +68,7 @@ function assignAppByParam(clientId) {
 async function finishRegistration(username, phone, password) {
     try {
         const passwordHash = await hashPassword(password);
-        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const subs = boCloudGet('bo_subscriptions', []);
         // MUHIM: bu ID Supabase'da har bir do'konning ma'lumotini ("app_state" jadvali)
         // ajratib turadi. Ilgari "1000 + subs.length + 1" edi — bu deyarli har bir
         // qurilmada BIR XIL ID (masalan CL-1002) hosil qilardi, chunki har bir yangi
@@ -101,7 +101,7 @@ async function finishRegistration(username, phone, password) {
         };
 
         subs.push(newClient);
-        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        boCloudSet('bo_subscriptions', subs);
 
         localStorage.setItem('bo_session', JSON.stringify({
             type: 'client',
@@ -354,14 +354,14 @@ function openForgotNewPassStep(phone) {
             return;
         }
         try {
-            const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            const subs = boCloudGet('bo_subscriptions', []);
             const user = subs.find((s) => digits(s.phone) === digits(phone));
             if (!user) {
                 window.showToast && window.showToast("Hisob topilmadi", 'error');
                 return;
             }
             user.password = await hashPassword(pass1);
-            localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+            boCloudSet('bo_subscriptions', subs);
             window.showToast && window.showToast("Parol muvaffaqiyatli yangilandi! Endi kirishingiz mumkin.", 'success');
             backToLoginFromForgot();
         } catch (err) {
@@ -371,7 +371,10 @@ function openForgotNewPassStep(phone) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Cloud.init() tugagach bu skript DINAMIK ravishda qo'shiladi — shu payt
+// DOMContentLoaded allaqachon o'tib ketgan bo'lishi mumkin, shuning uchun
+// oddiy addEventListener o'rniga readyState'ni ham tekshiramiz.
+function _boAuthInit() {
 
     /* ---------- ROLE TABS ---------- */
     const tabs = document.querySelectorAll('.role-tab');
@@ -434,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             try {
-                const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+                const subs = boCloudGet('bo_subscriptions', []);
                 const user = subs.find((s) => digits(s.phone) === digits(phone));
                 if (!user) {
                     window.showToast && window.showToast("Bu raqam bilan ro'yxatdan o'tilmagan", 'error');
@@ -466,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- DEMO ACCOUNTS SEED ---------- */
     // Demo mijoz akkaunti — agar yo'q bo'lsa yaratish
     try {
-        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const subs = boCloudGet('bo_subscriptions', []);
         if (!subs.find(s => s.email === 'mijoz@demo.uz')) {
             subs.push({
                 id: 'CL-001',
@@ -484,16 +487,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 subdomain: 'demo-burger',
                 createdAt: new Date().toISOString()
             });
-            localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+            boCloudSet('bo_subscriptions', subs);
         }
         // Admin standart hisobi: tiro / tiro2004
-        const _adm = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+        const _adm = boCloudGet('bo_admin', null);
         if (!_adm || (_adm.username === 'admin' && _adm.password === 'admin123')) {
-            localStorage.setItem('bo_admin', JSON.stringify({
+            boCloudSet('bo_admin', {
                 username: 'tiro',
                 password: 'tiro2004',
                 name: 'Bosh administrator'
-            }));
+            });
         }
     } catch (e) { /* ignore */ }
 
@@ -510,13 +513,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ---- MAXFIY ADMIN KIRISHI ----
                 // Oddiy kirish formasiga admin login/parol terilsa — boshqaruv paneli ochiladi.
                 // (Alohida ko'rinadigan "Admin" tugmasi yo'q — maxfiy)
-                const admin = JSON.parse(localStorage.getItem('bo_admin') || 'null');
+                const admin = boCloudGet('bo_admin', null);
                 if (admin && admin.username && login.toLowerCase() === String(admin.username).toLowerCase()) {
                     const adminCheck = await verifyPassword(password, admin.password);
                     if (adminCheck.ok) {
                         if (adminCheck.upgradedHash) {
                             admin.password = adminCheck.upgradedHash;
-                            localStorage.setItem('bo_admin', JSON.stringify(admin));
+                            boCloudSet('bo_admin', admin);
                         }
                         localStorage.setItem('bo_session', JSON.stringify({
                             type: 'admin',
@@ -530,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+                const subs = boCloudGet('bo_subscriptions', []);
                 // Telefon (raqamlar bo'yicha) yoki foydalanuvchi nomi (katta-kichik harf farqsiz)
                 const candidates = subs.filter(s => {
                     const byPhone = loginDigits.length >= 7 && digits(s.phone) === loginDigits;
@@ -547,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         break;
                     }
                 }
-                if (subsChanged) localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+                if (subsChanged) boCloudSet('bo_subscriptions', subs);
 
                 if (!user) {
                     window.showToast && window.showToast("Login yoki parol noto'g'ri", 'error');
@@ -627,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+                const subs = boCloudGet('bo_subscriptions', []);
 
                 // Foydalanuvchi nomi band emasligini tekshirish (katta-kichik harf farqsiz)
                 if (subs.find(s => s.username && s.username.toLowerCase() === username.toLowerCase())) {
@@ -659,12 +662,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = adminForm.password.value;
 
             try {
-                const admin = JSON.parse(localStorage.getItem('bo_admin') || '{}');
+                const admin = boCloudGet('bo_admin', {});
                 const check = user === admin.username ? await verifyPassword(password, admin.password) : { ok: false };
                 if (check.ok) {
                     if (check.upgradedHash) {
                         admin.password = check.upgradedHash;
-                        localStorage.setItem('bo_admin', JSON.stringify(admin));
+                        boCloudSet('bo_admin', admin);
                     }
                     localStorage.setItem('bo_session', JSON.stringify({
                         type: 'admin',
@@ -683,4 +686,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+}
+if (document.readyState !== 'loading') _boAuthInit(); else document.addEventListener('DOMContentLoaded', _boAuthInit);

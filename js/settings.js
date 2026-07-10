@@ -447,11 +447,21 @@
     }
 
     /* ============ PROFILE FORMS (email & parol) ============ */
+    // MUHIM: "bo_subscriptions" endi Supabase'da (js/cloud.js) saqlanadi — lekin bu
+    // fayl index.html'da HAM ishlatilgani uchun (u yerda Cloud yuklanmaydi), har doim
+    // "window.Cloud" mavjudligini tekshirib, bo'lmasa localStorage'ga tushamiz.
+    function getSubs() {
+        return window.Cloud ? Cloud.get('bo_subscriptions', []) : JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+    }
+    function setSubs(subs) {
+        if (window.Cloud) Cloud.set('bo_subscriptions', subs);
+        else localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+    }
     function getCurrentClient() {
         try {
             const session = JSON.parse(localStorage.getItem('bo_session') || 'null');
             if (!session || session.type !== 'client') return null;
-            const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            const subs = getSubs();
             return { session, subs, me: subs.find(s => s.id === (session.clientId || session.id)) };
         } catch { return null; }
     }
@@ -474,7 +484,7 @@
 
         // Foydalanuvchi nomi submit
         const usernameForm = document.getElementById('usernameChangeForm');
-        usernameForm?.addEventListener('submit', (e) => {
+        usernameForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const newU = document.getElementById('settingsNewUsername').value.trim();
             const pass = document.getElementById('settingsUsernamePass').value;
@@ -487,17 +497,19 @@
             if (/\s/.test(newU)) {
                 showToast("Foydalanuvchi nomida bo'sh joy bo'lmasin", 'error'); return;
             }
-            if (fresh.me.password !== pass) {
+            const passCheck = await verifyPassword(pass, fresh.me.password);
+            if (!passCheck.ok) {
                 showToast("Parol noto'g'ri", 'error'); return;
             }
+            if (passCheck.upgradedHash) fresh.me.password = passCheck.upgradedHash;
             if (fresh.subs.find(s => s.username && s.username.toLowerCase() === newU.toLowerCase() && s.id !== fresh.me.id)) {
                 showToast("Bu foydalanuvchi nomi band", 'error'); return;
             }
 
             fresh.me.username = newU;
             fresh.me.businessName = newU;   // ko'rsatish nomi ham yangilanadi
-            localStorage.setItem('bo_subscriptions', JSON.stringify(fresh.subs));
-            // Session ham yangilash
+            setSubs(fresh.subs);
+            // Session ham yangilash (bu doim shu qurilmada, localStorage'da qoladi)
             fresh.session.username = newU;
             fresh.session.businessName = newU;
             localStorage.setItem('bo_session', JSON.stringify(fresh.session));
@@ -510,7 +522,7 @@
 
         // Parol submit
         const passForm = document.getElementById('passChangeForm');
-        passForm?.addEventListener('submit', (e) => {
+        passForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const cur = document.getElementById('settingsCurrentPass').value;
             const neu = document.getElementById('settingsNewPass').value;
@@ -518,12 +530,13 @@
             const fresh = getCurrentClient();
             if (!fresh || !fresh.me) return;
 
-            if (fresh.me.password !== cur) { showToast("Joriy parol noto'g'ri", 'error'); return; }
+            const curCheck = await verifyPassword(cur, fresh.me.password);
+            if (!curCheck.ok) { showToast("Joriy parol noto'g'ri", 'error'); return; }
             if (neu.length < 6) { showToast("Yangi parol kamida 6 ta belgi", 'error'); return; }
             if (neu !== conf) { showToast("Parollar mos kelmadi", 'error'); return; }
 
-            fresh.me.password = neu;
-            localStorage.setItem('bo_subscriptions', JSON.stringify(fresh.subs));
+            fresh.me.password = await hashPassword(neu);
+            setSubs(fresh.subs);
 
             passForm.reset();
             showToast('Parol yangilandi ✅', 'success');

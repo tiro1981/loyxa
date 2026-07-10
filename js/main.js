@@ -30,7 +30,28 @@ async function verifyPassword(plain, stored) {
     return { ok, upgradedHash: ok ? await hashPassword(plain) : null };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/* ---------- UMUMIY PLATFORMA MA'LUMOTI (Supabase, js/cloud.js) ----------
+   bo_subscriptions, bo_apps, bo_apps_version va h.k. endi Supabase'da
+   saqlanadi (barcha admin/mijozlarda bir xil ko'rinadi). Bu fayl
+   index.html'da HAM ishlatilgani uchun (u yerda Cloud yuklanmaydi),
+   har doim "window.Cloud" borligini tekshirib, bo'lmasa localStorage'ga
+   tushamiz — shu bilan index.html buzilmaydi.
+   MUHIM: "bo_session" bunga kirmaydi — u atayin har doim shu qurilmada
+   (localStorage'da) qoladi. */
+function boCloudGet(key, fallback) {
+    if (window.Cloud) return Cloud.get(key, fallback);
+    try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
+    catch (e) { return fallback; }
+}
+function boCloudSet(key, value) {
+    if (window.Cloud) { Cloud.set(key, value); return; }
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+
+// Cloud.init() tugagach bu skript DINAMIK ravishda qo'shiladi — shu payt
+// DOMContentLoaded allaqachon o'tib ketgan bo'lishi mumkin, shuning uchun
+// oddiy addEventListener o'rniga readyState'ni ham tekshiramiz.
+function _boMainInit() {
 
     /* ---------- NAVBAR SCROLL EFFECT ---------- */
     const navbar = document.getElementById('navbar');
@@ -174,7 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     seedDefaultApps();
     renderApps();
 
-});
+}
+if (document.readyState !== 'loading') _boMainInit(); else document.addEventListener('DOMContentLoaded', _boMainInit);
 
 /* ===== DEFAULT ILOVALARNI URUG'LASH ===== */
 function seedDefaultApps() {
@@ -277,14 +299,14 @@ function seedDefaultApps() {
 
         const APPS_VERSION = 'v7-kofe-removed';
         const removedIds = new Set(['app-salqin', 'app-kofe']);
-        const savedVersion = localStorage.getItem('bo_apps_version');
-        const existing = JSON.parse(localStorage.getItem('bo_apps') || '[]');
+        const savedVersion = boCloudGet('bo_apps_version', null);
+        const existing = boCloudGet('bo_apps', []);
 
         if (existing.length === 0 || savedVersion !== APPS_VERSION) {
             const defaultIds = new Set(defaults.map(d => d.id));
             const userApps = existing.filter(a => !defaultIds.has(a.id) && !removedIds.has(a.id));
-            localStorage.setItem('bo_apps', JSON.stringify([...defaults, ...userApps]));
-            localStorage.setItem('bo_apps_version', APPS_VERSION);
+            boCloudSet('bo_apps', [...defaults, ...userApps]);
+            boCloudSet('bo_apps_version', APPS_VERSION);
             return;
         }
 
@@ -295,7 +317,7 @@ function seedDefaultApps() {
                 changed = true;
             }
         });
-        if (changed) localStorage.setItem('bo_apps', JSON.stringify(existing));
+        if (changed) boCloudSet('bo_apps', existing);
     } catch (e) { console.error(e); }
 }
 
@@ -305,7 +327,7 @@ function renderApps() {
     if (!grid) return;
 
     let apps = [];
-    try { apps = JSON.parse(localStorage.getItem('bo_apps') || '[]'); }
+    try { apps = boCloudGet('bo_apps', []); }
     catch { apps = []; }
 
     const active = apps.filter(a => a.active !== false);
@@ -429,7 +451,7 @@ function showAppDetailModal(app) {
 /* ===== ILOVANI BEPUL OLISH (ro'yxatdan o'tish shart) ===== */
 function boAssignApp(clientId, app) {
     try {
-        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const subs = boCloudGet('bo_subscriptions', []);
         const me = subs.find(s => s.id === clientId);
         if (!me) return false;
         me.app = app.slug || app.id;
@@ -442,7 +464,7 @@ function boAssignApp(clientId, app) {
         me.price = 0;
         me.status = 'active';
         me.activatedAt = new Date().toISOString();
-        localStorage.setItem('bo_subscriptions', JSON.stringify(subs));
+        boCloudSet('bo_subscriptions', subs);
         return true;
     } catch (e) { console.error('boAssignApp', e); return false; }
 }
@@ -452,7 +474,7 @@ window.boGetApp = function (appId) {
     if (typeof window.BO_subscribe === 'function') { window.BO_subscribe(appId); return; }
 
     let apps = [];
-    try { apps = JSON.parse(localStorage.getItem('bo_apps') || '[]'); } catch {}
+    try { apps = boCloudGet('bo_apps', []); } catch {}
     const app = apps.find(a => a.id === appId);
     if (!app) return;
     const slug = encodeURIComponent(app.slug || app.id);

@@ -1,7 +1,10 @@
 // ===== BiznesOnline — Mijoz Dashbordi =====
 'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
+// Cloud.init() tugagach bu skript DINAMIK ravishda qo'shiladi — shu payt
+// DOMContentLoaded allaqachon o'tib ketgan bo'lishi mumkin, shuning uchun
+// oddiy addEventListener o'rniga readyState'ni ham tekshiramiz.
+function _boDashboardInit() {
 
     /* ---------- SESSIYANI TEKSHIRISH ---------- */
     let session = null;
@@ -16,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let client = null;
     try {
-        const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+        const subs = boCloudGet('bo_subscriptions', []);
         client = subs.find(s => s.id === resolvedClientId);
     } catch {}
 
@@ -28,9 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- OBUNALAR (ko'p-ilova model) ---------- */
     function persistClient() {
         try {
-            const subs = JSON.parse(localStorage.getItem('bo_subscriptions') || '[]');
+            const subs = boCloudGet('bo_subscriptions', []);
             const idx = subs.findIndex(s => s.id === resolvedClientId);
-            if (idx >= 0) { subs[idx] = client; localStorage.setItem('bo_subscriptions', JSON.stringify(subs)); }
+            if (idx >= 0) { subs[idx] = client; boCloudSet('bo_subscriptions', subs); }
         } catch (e) { console.error('persistClient', e); }
     }
 
@@ -202,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- MARKETPLACE RENDER ---------- */
     function getApps() {
-        try { return JSON.parse(localStorage.getItem('bo_apps') || '[]').filter(a => a.active !== false); }
+        try { return boCloudGet('bo_apps', []).filter(a => a.active !== false); }
         catch { return []; }
     }
 
@@ -442,9 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
        ==================================================== */
     const MESSAGES_KEY = 'bo_messages';
     function getMessages() {
-        try { return JSON.parse(localStorage.getItem(MESSAGES_KEY) || '[]'); } catch { return []; }
+        try { return boCloudGet(MESSAGES_KEY, []); } catch { return []; }
     }
-    function saveMessages(arr) { localStorage.setItem(MESSAGES_KEY, JSON.stringify(arr)); }
+    function saveMessages(arr) { boCloudSet(MESSAGES_KEY, arr); }
     function myMessages() {
         return getMessages()
             .filter(m => m.clientId === resolvedClientId)
@@ -589,9 +592,16 @@ document.addEventListener('DOMContentLoaded', () => {
         window.showToast?.('Xabaringiz administratorga yuborildi ✅', 'success');
     });
 
-    // Boshqa tabda (admin) o'zgarsa — jonli yangilash
+    // Boshqa tabda (admin) o'zgarsa — jonli yangilash (eski, bir xil brauzer ichida)
     window.addEventListener('storage', (e) => {
         if (e.key !== MESSAGES_KEY) return;
+        updateNotifBadge();
+        if (notifPanel?.classList.contains('show')) renderNotifList();
+        if (supportWrap && supportWrap.style.display !== 'none') renderSupportThread();
+    });
+    // Xabarlar endi Supabase'da — boshqa QURILMADAN kelgan yangilanish "cloud:updated"
+    // orqali keladi (Cloud fonda kech javob kelganda qayta yuklaganda).
+    window.addEventListener('cloud:updated', () => {
         updateNotifBadge();
         if (notifPanel?.classList.contains('show')) renderNotifList();
         if (supportWrap && supportWrap.style.display !== 'none') renderSupportThread();
@@ -634,4 +644,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!next) return '—';
         return Math.max(Math.ceil((new Date(next) - new Date()) / 86400000), 0);
     }
-});
+}
+if (document.readyState !== 'loading') _boDashboardInit(); else document.addEventListener('DOMContentLoaded', _boDashboardInit);

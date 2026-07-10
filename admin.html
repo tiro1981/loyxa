@@ -628,7 +628,17 @@ Yetkazib berish"></textarea>
 
     <div class="toast" id="toast"></div>
 
-    <script src="js/main.js?v=10"></script>
-    <script src="js/admin.js?v=7"></script>
+    <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/cloud.js?v=1"></script>
+    <!-- Boot-loader: AVVAL Cloud.init (platforma ma'lumotini yuklaydi), keyin ilova skriptlari. -->
+    <script>
+      (async () => {
+        try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
+        for (const src of ["js/main.js?v=10", "js/admin.js?v=8"]) {
+          await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        }
+      })();
+    </script>
 </body>
 </html>
