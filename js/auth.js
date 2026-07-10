@@ -402,15 +402,11 @@ document.addEventListener('DOMContentLoaded', () => {
         switchRole(urlTab);
     }
 
-    /* ---------- LOGIN MAYDONI: +998 avtomatik + telefon mask ----------
-       "login" maydoni telefon YOKI username qabul qiladi — shuning uchun
-       foydalanuvchi harf kiritsa (username) mask o'chadi, faqat raqam
-       kiritilsa +998 XX XXX XX XX formatiga avtomatik moslanadi. */
-    const loginInput = document.querySelector('#clientForm [name="login"]');
-    if (loginInput) {
-        if (!loginInput.value) loginInput.value = '+998 ';
-        attachPhoneMask(loginInput, { skipIfLetters: true });
-    }
+    /* ---------- LOGIN MAYDONI: telefon YOKI username, mask'siz ----------
+       "login" maydoni ikkalasini ham qabul qiladi (pastda login tekshiruvi
+       telefonni faqat raqamlar bo'yicha solishtiradi — format farq qilmaydi),
+       shuning uchun bu yerda avtomatik "+998" va telefon mask qo'llanmaydi —
+       foydalanuvchi username'ni erkin kiritishi uchun. */
 
     /* ---------- PAROLNI UNUTDINGIZMI ---------- */
     const forgotLink = document.querySelector('.forgot-link');
