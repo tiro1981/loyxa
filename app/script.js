@@ -970,6 +970,21 @@ window.addEventListener('storage', (e) => {
   if (e.key === 'tb_messages') syncCheck();
 });
 
+// Cloud FONDA yangilanganda (server ma'lumoti kelgach) — UI ni yangilaymiz.
+// Sahifa darrov ochiladi, so'ng eng yangi ma'lumot sokin yangilanadi.
+window.addEventListener('cloud:updated', () => {
+  try {
+    const s = DB.get('tb_settings', {});
+    if (s.restaurantName) {
+      document.title = s.restaurantName + ' — Onlayn buyurtma';
+      const n = document.getElementById('topbarRestaurantName'); if (n) n.textContent = s.restaurantName;
+    }
+    if (s.address) { const a = document.getElementById('topbarAddress'); if (a) a.textContent = s.address; }
+    if (typeof renderFoods === 'function') renderFoods();
+    if (currentUser && typeof syncCheck === 'function') syncCheck();
+  } catch (e) { console.error('cloud:updated (app):', e); }
+});
+
 // ========== INIT ==========
 checkAuth();
 if (currentUser) initUserUI();

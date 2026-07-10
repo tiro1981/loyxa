@@ -920,6 +920,16 @@ window.addEventListener('storage', (e) => {
   }
 });
 
+// Cloud FONDA yangilanganda (server ma'lumoti kelgach) — panelni qayta chizamiz.
+// Panel darrov ochiladi, so'ng eng yangi ma'lumot sokin yangilanadi ("qotish" yo'q).
+window.addEventListener('cloud:updated', () => {
+  try {
+    if (!DB.get('tb_admin_session')) return; // faqat login qilingan bo'lsa
+    if (typeof loadSettings === 'function') loadSettings();
+    refreshAll();
+  } catch (err) { console.error('cloud:updated (admin):', err); }
+});
+
 // ========== AUTO-REFRESH (yangi buyurtmalar uchun) ==========
 let lastOrderCount = DB.get('tb_orders', []).length;
 setInterval(() => {

@@ -194,6 +194,23 @@ def build_http_app() -> web.Application:
     return app
 
 
+async def cleanup_expired_codes() -> None:
+    """Muddati o'tgan kodlarni xotiradan tozalaydi — uzoq ishlaganda (haftalab)
+    VERIFY_CODES/CHAT_PHONE cheksiz o'sib RAM'ni band qilib qolmasligi uchun.
+    AlwaysData "juda ko'p RAM ishlatgan jarayonni o'chiradi" siyosatiga qarshi ehtiyot chorasi."""
+    while True:
+        await asyncio.sleep(300)  # har 5 daqiqada
+        try:
+            now = time.time()
+            stale = [p for p, rec in VERIFY_CODES.items() if now - rec["ts"] > CODE_TTL]
+            for p in stale:
+                VERIFY_CODES.pop(p, None)
+            if stale:
+                log.info("Tozalandi: %d ta muddati o'tgan kod", len(stale))
+        except Exception as e:
+            log.error("cleanup_expired_codes xato: %s", e)
+
+
 # ============ ISHGA TUSHIRISH (bot polling + HTTP server birga) ============
 async def main() -> None:
     if not BOT_TOKEN:
@@ -212,12 +229,24 @@ async def main() -> None:
     await web.TCPSite(runner, HTTP_HOST, HTTP_PORT).start()
     log.info("SMS Habar HTTP server: http://%s:%s", HTTP_HOST, HTTP_PORT)
 
-    # Botni polling rejimida ishlatamiz
-    try:
-        log.info("SMS Habar bot ishga tushdi (polling).")
-        await dp.start_polling(bot)
-    finally:
-        await runner.cleanup()
+    asyncio.create_task(cleanup_expired_codes())
+
+    # Botni polling rejimida ishlatamiz. MUHIM: avval bu yerda xato (masalan Telegram
+    # tarmog'ida vaqtinchalik uzilish yoki "Conflict: terminated by other getUpdates
+    # request" — boshqa nusxa bir vaqtda ishga tushib qolsa) butun jarayonni yiqitib,
+    # /verify/* HTTP endpointlarini ham birga o'chirib qo'yardi. Endi xato bo'lsa,
+    # log yozib, biroz kutib qayta urinamiz — HTTP server va jarayon tirik qoladi.
+    while True:
+        try:
+            log.info("SMS Habar bot ishga tushdi (polling).")
+            await dp.start_polling(bot, handle_signals=False)
+            break  # start_polling normal to'xtasa (masalan signal bilan) — chiqamiz
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            log.error("Polling xatosi: %s — 5 soniyadan keyin qayta urinamiz", e)
+            await asyncio.sleep(5)
+    await runner.cleanup()
 
 
 if __name__ == "__main__":
