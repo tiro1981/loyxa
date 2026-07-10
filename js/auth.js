@@ -29,7 +29,7 @@ function attachPhoneMask(input, { skipIfLetters = false } = {}) {
 // ===== Telegram OTP tasdiqlash sozlamalari (ro'yxatdan o'tishda telefon tasdiqlash) =====
 // ↓↓↓ BU IKKI QIYMATNI O'ZINGIZNIKI BILAN ALMASHTIRING (aks holda tasdiqlash ishlamaydi) ↓↓↓
 const BOT_USERNAME = "onlinebiznes_smsbot";   // platforma boti @username (@ siz), masalan: onlinebiznes_bot
-const BOT_SERVER   = "https://tiro21.alwaysdata.net";     // SMS bot (sms-habar) ishlab turgan HTTPS manzil (tiro19 akkaunt o'chirilgan, joriy akkaunt: tiro21)
+const BOT_SERVER   = "https://tiro22.alwaysdata.net";     // SMS bot (sms-habar) ishlab turgan HTTPS manzil — alohida akkaunt/subdomen (tiro21 endi asosiy buyurtma-bot tomonidan band)
 // ↑↑↑ ───────────────────────────────────────────────────────────────────────────── ↑↑↑
 const digitsOnly = (s) => String(s || '').replace(/\D/g, '');
 
