@@ -1403,6 +1403,21 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         }
     });
 
+    // Cloud FONDA yangilanganda (server ma'lumoti kelgach) — UI ni yangilaymiz.
+    // Sahifa darrov ochiladi, so'ng eng yangi do'kon ma'lumoti sokin yangilanadi ("qotish" yo'q).
+    window.addEventListener('cloud:updated', () => {
+        try {
+            data = Store.load();
+            renderChips();
+            renderTrending();
+            renderProductGrid();
+            updateCartBadge();
+            renderProfile();
+            checkUnseenNotifs();
+            updateChatUnreadDot();
+        } catch (e) { console.error('cloud:updated (store):', e); }
+    });
+
     /* ============ INIT ============ */
     renderChips();
     renderTrending();

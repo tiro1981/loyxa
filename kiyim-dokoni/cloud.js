@@ -42,22 +42,39 @@ window.Cloud = (function () {
     _lsKey(key) { return "cloud__" + this.app + "__" + this.client + "__" + key; },
 
     // Ilova boshida BIR MARTA chaqiriladi (await bilan).
+    // MUHIM: bu funksiya server javobini KUTIB sahifani BLOKLAMAYDI.
+    // Qaytgan tashrifda oxirgi ma'lumot local "mirror"dan darrov tiklanadi,
+    // server esa FONDA yangilanadi. Shu tufayli sahifa "qotmaydi".
     async init(app, client) {
       this.app = app || "app";
       this.client = client || "demo";
-      this._cache = {};
-      if (this.mode !== "cloud") {
-        if (!_sb) console.warn("[Cloud] Supabase sozlanmagan — localStorage rejimida ishlayapti.");
+
+      // 1) DARROV: oxirgi ma'lum ma'lumotni local mirrordan tiklaymiz (sinxron).
+      //    Sahifa endi server javobini kutmasdan ham to'liq chiziladi.
+      this._cache = this._loadMirror();
+
+      if (!_sb) {
+        this.mode = "local";
+        console.warn("[Cloud] Supabase sozlanmagan — localStorage rejimida ishlayapti.");
         return;
       }
+
+      this.mode = "cloud";
+      const hasMirror = this._cache && Object.keys(this._cache).length > 0;
+
+      if (hasMirror) {
+        // Qaytgan tashrif: keshdan darrov ishlaymiz, serverni FONDA yangilaymiz.
+        // Hech narsa kutilmaydi — 5 soniyalik "qotish" YO'Q.
+        this._refresh();
+        return;
+      }
+
+      // 2) Birinchi tashrif (mirror bo'sh): menyu bo'sh chizilib keyin "sakramasligi" uchun
+      //    bir martagina server javobini kutamiz, ammo timeout bilan cheklab.
       try {
-        // Supabase so'rovi (thenable — Promise.race chaqirilganda ishga tushadi)
         const query = _sb
           .from("app_state").select("key,value")
           .eq("app", this.app).eq("client_id", this.client);
-        // MUHIM: tarmoq sekin yoki uzilgan bo'lsa sahifa QOTIB qolmasin. So'rovni qisqa
-        // timeout bilan poygaga qo'yamiz — javob kelmasa localStorage rejimiga o'tib davom etamiz.
-        // (Oldin 6000ms edi — sahifa har ochilishda sezilarli "qotib qolish" hissi berardi.)
         const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 2500));
         const res = await Promise.race([query, timeout]);
         if (res && res.__timeout) {
@@ -67,11 +84,44 @@ window.Cloud = (function () {
         }
         const { data, error } = res;
         if (error) { console.error("[Cloud] init:", error); this.mode = "local"; return; }
-        (data || []).forEach((r) => { this._cache[r.key] = r.value; });
+        const c = {};
+        (data || []).forEach((r) => { c[r.key] = r.value; });
+        this._cache = c;
+        this._saveMirror(c);
       } catch (e) {
         console.error("[Cloud] init (network):", e);
         this.mode = "local";   // server ulanmasa — localStorage'ga qaytamiz
       }
+    },
+
+    // Serverdan FONDA yangilaydi — UI ni bloklamaydi. Yangi ma'lumot kelsa,
+    // keshni va mirror'ni yangilab, "cloud:updated" hodisasini yuboradi (qayta chizish uchun).
+    async _refresh() {
+      if (this.mode !== "cloud" || !_sb) return;
+      try {
+        const { data, error } = await _sb
+          .from("app_state").select("key,value")
+          .eq("app", this.app).eq("client_id", this.client);
+        if (error) { console.error("[Cloud] refresh:", error); return; }
+        const c = {};
+        (data || []).forEach((r) => { c[r.key] = r.value; });
+        this._cache = c;
+        this._saveMirror(c);
+        try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e) {}
+      } catch (e) {
+        console.error("[Cloud] refresh (network):", e);
+      }
+    },
+
+    // ---- Local "mirror": oxirgi cloud ma'lumotini shu qurilmada saqlaydi ----
+    _mirrorKey() { return "cloud_mirror__" + this.app + "__" + this.client; },
+    _loadMirror() {
+      try { return JSON.parse(localStorage.getItem(this._mirrorKey()) || "{}") || {}; }
+      catch (e) { return {}; }
+    },
+    _saveMirror(c) {
+      try { localStorage.setItem(this._mirrorKey(), JSON.stringify(c)); }
+      catch (e) {}
     },
 
     // SINXRON o'qish (localStorage.getItem o'rnida)
@@ -89,6 +139,7 @@ window.Cloud = (function () {
     set(key, value) {
       if (this.mode === "cloud") {
         this._cache[key] = value;
+        this._saveMirror(this._cache);   // mirror ham yangilanadi (keyingi ochilish darrov chizadi)
         _sb.from("app_state")
           .upsert(
             { app: this.app, client_id: this.client, key, value, updated_at: new Date().toISOString() },
@@ -105,6 +156,7 @@ window.Cloud = (function () {
     remove(key) {
       if (this.mode === "cloud") {
         delete this._cache[key];
+        this._saveMirror(this._cache);
         _sb.from("app_state").delete()
           .eq("app", this.app).eq("client_id", this.client).eq("key", key)
           .then(({ error }) => { if (error) console.error("[Cloud] remove:", error); });
