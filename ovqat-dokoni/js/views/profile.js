@@ -5,7 +5,7 @@ window.Views = window.Views || {};
 window.Views.profile = function (root) {
   // Foydalanuvchi va statistik ma'lumotlar
   const u = Store.user;
-  const ordersCount = Store.getOrders().length;
+  const ordersCount = Store.getMyOrders().length;
   const favCount = Store.getFavorites().length;
   const bonus = UI.fmt(u.bonus);
   const isDark = Store.theme === "dark";

@@ -111,7 +111,12 @@ window.Store = (function () {
 
   /* --- orders ---
      Buyurtmalar umumiy "orders" kalitida saqlanadi (admin ham shu yerdan o'qiydi).
-     Shu tufayli storefront'da berilgan buyurtma admin panelida ko'rinadi. */
+     Shu tufayli storefront'da berilgan buyurtma admin panelida ko'rinadi.
+     MUHIM: shuning uchun getOrders() DO'KONNING BARCHA buyurtmalarini qaytaradi —
+     mijoz tomonida (Buyurtmalarim) buni HECH QACHON to'g'ridan-to'g'ri ko'rsatmang,
+     aks holda mijozlar bir-birining ismi/telefoni/manzilini ko'rib qoladi.
+     Buning o'rniga getMyOrders() dan foydalaning — u shu QURILMAGA xos, doimiy
+     deviceId bo'yicha filtrlaydi. */
   function ordersAll() {
     const cloud = window.Cloud ? Cloud.get("orders", null) : null;
     if (Array.isArray(cloud)) return cloud;
@@ -122,6 +127,24 @@ window.Store = (function () {
     state.orders = list;   // mahalliy nusxa (mijoz "Buyurtmalarim" ko'rinishi uchun)
   }
   const getOrders = () => ordersAll();
+
+  // Shu qurilmaga xos, bir martalik va doimiy mijoz ID'si (localStorage'da, Cloud'ga
+  // yozilmaydi — faqat shu telefon/brauzerda qoladi). "Buyurtmalarim" shu ID bo'yicha
+  // filtrlanadi, shunda har bir mijoz faqat O'Z buyurtmasini ko'radi.
+  function deviceGuestId() {
+    const key = "ovqat_guest_id__" + DATA.clientId;
+    try {
+      let id = localStorage.getItem(key);
+      if (!id) {
+        id = "guest_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem(key, id);
+      }
+      return id;
+    } catch (e) {
+      return "guest_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+    }
+  }
+  const getMyOrders = () => ordersAll().filter((o) => o.deviceId === deviceGuestId());
 
   /* --- customers ---
      Mijozlar umumiy "customers" kalitida saqlanadi (admin ham shu yerdan o'qiydi). */
@@ -162,6 +185,7 @@ window.Store = (function () {
       note: note || "",
       userName: (addr && addr.fullName) || (state.user && state.user.name) || "Mijoz",
       phone: (addr && addr.phone) || (state.user && state.user.phone) || "",
+      deviceId: deviceGuestId(),
     };
     all.unshift(order);
     ordersSave(all);
@@ -220,7 +244,7 @@ window.Store = (function () {
     getCart, addToCart, setQty, removeFromCart, clearCart, qtyOf,
     cartCount, cartSubtotal, deliveryFee, discount, cartTotal, applyPromo,
     getFavorites, isFavorite, toggleFavorite,
-    getOrders, placeOrder,
+    getOrders, getMyOrders, placeOrder,
     customersAll, upsertCustomer,
     getAddresses, defaultAddress, addAddress, removeAddress, setDefaultAddress,
     setTheme, toggleTheme,

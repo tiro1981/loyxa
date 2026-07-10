@@ -6,6 +6,25 @@ const STORE_KEY = 'kitob_store_v1';
 const CART_KEY = 'kitob_cart_v1';
 const INSTALL_DISMISS_KEY = 'kitob_install_dismissed';
 
+/* Shu qurilmaga xos, bir martalik va doimiy mijoz ID'si (localStorage'da, Cloud'ga
+   yozilmaydi). Buyurtmalar umumiy (Cloud) saqlangani uchun, "Buyurtmalarim" ro'yxatini
+   shu ID bo'yicha filtrlash kerak — aks holda barcha mijozlar bir-birining ismi/
+   telefoni/manzilini ko'rib qoladi (avval "self: true" umumiy saqlangan bo'lib, bu
+   xatoga sabab bo'lgan). */
+function deviceGuestId() {
+  const key = 'kitob_guest_id__' + (window.__CLIENT_ID || 'shop');
+  try {
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch (e) {
+    return 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  }
+}
+
 /* ============ PWA: Service Worker ============ */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -650,7 +669,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             status: 'yangi',
             note: '',
             date: new Date().toISOString().slice(0,10),
-            self: true,
+            deviceId: deviceGuestId(),
             promo: activePromo || null,
             discount,
         };
@@ -831,7 +850,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             }
         }
         // 2. Order status updates
-        data.orders.filter(o => o.self).slice(0, 6).forEach(o => {
+        data.orders.filter(o => o.deviceId === deviceGuestId()).slice(0, 6).forEach(o => {
             notifs.push({
                 icon: o.status === 'yetkazildi' ? '✅' : o.status === 'yangi' ? '🛍️' : o.status === 'bekor' ? '❌' : '🚚',
                 title: `Buyurtma #${o.id}`,
@@ -877,7 +896,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const last = +(localStorage.getItem(NOTIF_KEY) || 0);
         const chat = (data.chats || []).find(c => c.key === chatUserKey);
         const hasUnreadChat = chat && chat.unreadUser > 0;
-        const hasOrder = data.orders.some(o => o.self && new Date(o.date).getTime() > last - 86400000);
+        const hasOrder = data.orders.some(o => o.deviceId === deviceGuestId() && new Date(o.date).getTime() > last - 86400000);
         document.getElementById('bellDot').style.display = (hasUnreadChat || hasOrder) ? 'block' : 'none';
     }
 
@@ -890,7 +909,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     });
 
     function renderOrders() {
-        const myOrders = data.orders.filter(o => o.self);
+        const myOrders = data.orders.filter(o => o.deviceId === deviceGuestId());
         let list = myOrders;
         if (orderStatusFilter !== 'all') list = list.filter(o => o.status === orderStatusFilter);
         const ul = document.getElementById('ordersList');
@@ -979,7 +998,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     }
 
     function updateProfileStats() {
-        const myOrders = data.orders.filter(o => o.self);
+        const myOrders = data.orders.filter(o => o.deviceId === deviceGuestId());
         const spent = myOrders.filter(o => o.status === 'yetkazildi').reduce((s, o) => s + o.total, 0);
         document.getElementById('psOrders').textContent = myOrders.length;
         const bonus = Math.floor(spent / 10000);

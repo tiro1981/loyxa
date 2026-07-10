@@ -71,41 +71,70 @@ window.Cloud = (function () {
 
       // 2) Birinchi tashrif (mirror bo'sh): menyu bo'sh chizilib keyin "sakramasligi" uchun
       //    bir martagina server javobini kutamiz, ammo timeout bilan cheklab.
-      const query = _sb
-        .from("app_state").select("key,value")
-        .eq("app", this.app).eq("client_id", this.client);
       try {
-        const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), 2500));
-        const res = await Promise.race([query, timeout]);
-        if (res && res.__timeout) {
+        const res = await this._fetchOnce(2500);
+        if (res.__timeout) {
           console.warn("[Cloud] init: server 2.5s ichida javob bermadi — localStorage rejimida davom etamiz.");
           this.mode = "local";
-          // MUHIM: so'rovni tashlab yubormaymiz. QR skaner qilgan YANGI mijoz qurilmasida
-          // mirror bo'lmaydi — server 2.5s dan sekin javob bersa (masalan restoran wifi/mobil
-          // tarmoq), oldingi versiya bu javobni butunlay tashlab yuborar edi va menyu doim
-          // bo'sh ko'rinardi. Endi kech kelgan javobni ham qo'llab, "cloud:updated" orqali
-          // UI'ni (menyu ro'yxatini) qayta chizamiz.
-          query.then(({ data, error }) => {
-            if (error || !data) return;
-            const c = {};
-            data.forEach((r) => { c[r.key] = r.value; });
-            this._cache = c;
-            this._saveMirror(c);
-            this.mode = "cloud";
-            try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e2) {}
-          }).catch((e2) => console.error("[Cloud] init (late):", e2));
+          // MUHIM: shu yerda batamom taslim bo'lmaymiz. QR skaner qilgan YANGI mijoz
+          // qurilmasida mirror bo'lmaydi — birinchi urinish sekin javob bersa (tarmoq) yoki
+          // xato bilan tugasa (masalan CORS/vaqtinchalik server xatosi — bu ayrim qurilma/
+          // brauzerlarda ko'proq uchraydi), oldingi versiya bu holatni butunlay tashlab
+          // yuborardi va menyu HAR DOIM bo'sh ko'rinardi. Endi fonda bir necha marta qayta
+          // urinamiz; muvaffaqiyatli bo'lsa "cloud:updated" orqali UI'ni qayta chizamiz.
+          this._backgroundRetry();
           return;
         }
-        const { data, error } = res;
-        if (error) { console.error("[Cloud] init:", error); this.mode = "local"; return; }
+        if (res.error) {
+          console.error("[Cloud] init:", res.error);
+          this.mode = "local";
+          this._backgroundRetry();
+          return;
+        }
         const c = {};
-        (data || []).forEach((r) => { c[r.key] = r.value; });
+        (res.data || []).forEach((r) => { c[r.key] = r.value; });
         this._cache = c;
         this._saveMirror(c);
       } catch (e) {
         console.error("[Cloud] init (network):", e);
         this.mode = "local";   // server ulanmasa — localStorage'ga qaytamiz
+        this._backgroundRetry();
       }
+    },
+
+    // Bitta so'rovni berilgan timeout bilan sinaydi. { data, error } yoki { __timeout: true }
+    // yoki { error } (tarmoq xatosi) qaytaradi — hech qachon tashlab (throw) yubormaydi.
+    async _fetchOnce(timeoutMs) {
+      try {
+        const query = _sb
+          .from("app_state").select("key,value")
+          .eq("app", this.app).eq("client_id", this.client);
+        const timeout = new Promise((resolve) => setTimeout(() => resolve({ __timeout: true }), timeoutMs));
+        const res = await Promise.race([query, timeout]);
+        return res && res.__timeout ? { __timeout: true } : res;
+      } catch (e) {
+        return { error: e };
+      }
+    },
+
+    // Birinchi urinish muvaffaqiyatsiz bo'lsa (sekin YOKI xato) — sahifani BLOKLAMASDAN
+    // fonda bir necha marta (ortib boruvchi kutish bilan) qayta urinadi. Muvaffaqiyatli
+    // bo'lsa keshni/mirror'ni yangilab, "cloud:updated" orqali UI'ni qayta chizadi.
+    async _backgroundRetry() {
+      const delays = [2000, 4000, 8000, 15000];
+      for (const delay of delays) {
+        await new Promise((r) => setTimeout(r, delay));
+        const res = await this._fetchOnce(6000);
+        if (res.__timeout || res.error || !res.data) continue;
+        const c = {};
+        res.data.forEach((r2) => { c[r2.key] = r2.value; });
+        this._cache = c;
+        this._saveMirror(c);
+        this.mode = "cloud";
+        try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e2) {}
+        return;
+      }
+      console.warn("[Cloud] fon rejimida qayta urinishlar tugadi — server bilan bog'lanib bo'lmadi.");
     },
 
     // Serverdan FONDA yangilaydi — UI ni bloklamaydi. Yangi ma'lumot kelsa,

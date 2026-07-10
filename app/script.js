@@ -92,10 +92,27 @@ function setNotifs(v) { DB.set(userKey('notif'), v); }
 
 // ========== AUTH ==========
 const authOverlay = $('authOverlay');
+// Mehmon (ro'yxatdan o'tmagan) mijoz uchun shu QURILMAGA xos, bir martalik va doimiy ID.
+// MUHIM: bu ID hech qachon "guest" kabi qattiq kodlangan umumiy qiymat bo'lmasligi kerak —
+// aks holda barcha mehmon mijozlar bitta ID'ni baham ko'radi va "tb_orders" umumiy (Cloud)
+// saqlangani uchun bir-birining buyurtmalarini (ism, telefon, manzil bilan) ko'rib qoladi.
+function guestId() {
+  const key = _P + 'tb_guest_id';
+  try {
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch (e) {
+    return 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  }
+}
 function checkAuth() {
   // Login/ro'yxatdan o'tish talab qilinmaydi — foydalanuvchi to'g'ridan-to'g'ri kiradi (mehmon sifatida)
   if (!currentUser) {
-    currentUser = { id: 'guest', name: 'Mehmon', email: '', phone: '', orders: 0, status: 'active', joinDate: new Date().toISOString() };
+    currentUser = { id: guestId(), name: 'Mehmon', email: '', phone: '', orders: 0, status: 'active', joinDate: new Date().toISOString() };
     DB.set('tb_current_user', currentUser);
   }
   if (authOverlay) authOverlay.classList.remove('show');

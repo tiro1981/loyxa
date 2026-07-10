@@ -110,7 +110,7 @@ window.Views.orders = function (root, params) {
     const wrap = root.querySelector("#ordersList");
     if (!wrap) return;
 
-    const orders = Store.getOrders().filter(tab === "active" ? isActive : isHistory);
+    const orders = Store.getMyOrders().filter(tab === "active" ? isActive : isHistory);
 
     if (!orders.length) {
       wrap.innerHTML = Components.emptyState({
@@ -204,7 +204,7 @@ window.Views.orders = function (root, params) {
   root.querySelector("#ordersList").addEventListener("click", (e) => {
     const card = e.target.closest(".order-card");
     if (!card) return;
-    const o = Store.getOrders().find((x) => x.id === card.dataset.order);
+    const o = Store.getMyOrders().find((x) => x.id === card.dataset.order);
     if (o) openDetails(o);
   });
 
