@@ -41,14 +41,16 @@ window.Components = (function () {
           <span class="p-emoji">${p.emoji}</span>
           ${p.image ? `<img class="p-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.remove()" />` : ""}
         </div>
-        <div class="product-name">${p.name}</div>
-        <div class="product-unit">${p.unit} · <span class="rating">${ICONS.star} ${p.rating}</span></div>
-        <div class="product-foot">
-          <div class="price">
-            ${p.oldPrice ? `<span class="price-old">${UI.fmt(p.oldPrice)}</span>` : ""}
-            ${UI.fmt(p.price)} <small>so'm</small>
+        <div class="product-body">
+          <div class="product-name">${p.name}</div>
+          <div class="product-unit">${p.unit} · <span class="rating">${ICONS.star} ${p.rating}</span></div>
+          <div class="product-foot">
+            <div class="price">
+              ${p.oldPrice ? `<span class="price-old">${UI.fmt(p.oldPrice)}</span>` : ""}
+              ${UI.fmt(p.price)} <small>so'm</small>
+            </div>
+            <button class="add-btn" data-add aria-label="Savatga">${ICONS.plus}</button>
           </div>
-          <button class="add-btn" data-add aria-label="Savatga">${ICONS.plus}</button>
         </div>
       </article>`;
   }

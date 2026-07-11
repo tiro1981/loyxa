@@ -310,15 +310,17 @@ function renderFoods() {
         <i class="${favs.includes(f.id) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
       </button>
       <div class="food-emoji">${foodImageHTML(f)}</div>
-      <div class="food-name">${f.name}</div>
-      <div class="food-meta">
-        <i class="fa-solid fa-star"></i> ${f.rating}
-        <span>•</span>
-        <i class="fa-solid fa-clock"></i> ${f.time} daq
-      </div>
-      <div class="food-foot">
-        <span class="food-price">${formatPrice(f.price)}</span>
-        <button class="add-btn" data-add="${f.id}"><i class="fa-solid fa-plus"></i></button>
+      <div class="food-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-meta">
+          <i class="fa-solid fa-star"></i> ${f.rating}
+          <span>•</span>
+          <i class="fa-solid fa-clock"></i> ${f.time} daq
+        </div>
+        <div class="food-foot">
+          <span class="food-price">${formatPrice(f.price)}</span>
+          <button class="add-btn" data-add="${f.id}"><i class="fa-solid fa-plus"></i></button>
+        </div>
       </div>
     </div>
   `).join('');
@@ -361,15 +363,17 @@ function renderFavorites() {
     <div class="food-card" data-id="${f.id}">
       <button class="fav-btn on" data-fav="${f.id}"><i class="fa-solid fa-heart"></i></button>
       <div class="food-emoji">${foodImageHTML(f)}</div>
-      <div class="food-name">${f.name}</div>
-      <div class="food-meta">
-        <i class="fa-solid fa-star"></i> ${f.rating}
-        <span>•</span>
-        <i class="fa-solid fa-clock"></i> ${f.time} daq
-      </div>
-      <div class="food-foot">
-        <span class="food-price">${formatPrice(f.price)}</span>
-        <button class="add-btn" data-add="${f.id}"><i class="fa-solid fa-plus"></i></button>
+      <div class="food-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-meta">
+          <i class="fa-solid fa-star"></i> ${f.rating}
+          <span>•</span>
+          <i class="fa-solid fa-clock"></i> ${f.time} daq
+        </div>
+        <div class="food-foot">
+          <span class="food-price">${formatPrice(f.price)}</span>
+          <button class="add-btn" data-add="${f.id}"><i class="fa-solid fa-plus"></i></button>
+        </div>
       </div>
     </div>
   `).join('');
