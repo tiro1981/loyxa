@@ -26,7 +26,7 @@ window.Views.product = function (root, params) {
     const st = document.createElement("style");
     st.id = "pdpCss";
     st.textContent = `
-      .pdp-hero{position:relative;height:230px;border-radius:24px;display:grid;place-items:center;margin:0 var(--sp-4) 18px;overflow:hidden}
+      .pdp-hero{position:relative;height:260px;border-radius:24px;display:grid;place-items:center;margin:0 var(--sp-4) 18px;overflow:hidden}
       .pdp-emoji{font-size:110px;line-height:1;filter:drop-shadow(0 12px 22px rgba(0,0,0,.18))}
       .pdp-title{font-size:24px;font-weight:800;line-height:1.2;margin:0 0 8px}
       .pdp-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--text-3);font-size:13px;margin-bottom:16px}
@@ -43,7 +43,7 @@ window.Views.product = function (root, params) {
       .pdp-dock .stepper{flex:0 0 auto;height:52px;border-radius:16px}
       .pdp-dock .stepper button{width:36px;height:36px}
       .pdp-add{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
-      .pdp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+      .pdp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.2)}
       .pdp-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 4px}
       .pi{display:flex;align-items:center;gap:11px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px}
       .pi-ic{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:18px;border-radius:11px;background:var(--surface-2)}
