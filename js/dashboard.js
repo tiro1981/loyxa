@@ -110,8 +110,8 @@ function _boDashboardInit() {
         return base + r + sep + 'client=' + cid;
     };
     // Har bir obuna uchun ilova / boshqaruv URL'lari
-    function subAppUrl(sub)   { return buildUrl(sub.demoUrl,  'app/index.html'); }
-    function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'app/admin.html'); }
+    function subAppUrl(sub)   { return buildUrl(sub.demoUrl,  'fast-food-dokoni/index.html'); }
+    function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'fast-food-dokoni/admin.html'); }
 
     function isInTelegram() {
         // Telegram ichidaligini bir nechta signal bilan aniqlaymiz (platform ba'zan 'unknown' bo'ladi).

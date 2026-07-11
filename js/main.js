@@ -218,8 +218,8 @@ function seedDefaultApps() {
                     'QR kod menyu',
                     'Alohida boshqaruv dashbordi'
                 ],
-                demoUrl: 'app/index.html',
-                adminUrl: 'app/admin.html',
+                demoUrl: 'fast-food-dokoni/index.html',
+                adminUrl: 'fast-food-dokoni/admin.html',
                 popular: true,
                 active: true,
                 createdAt: new Date().toISOString()
@@ -297,7 +297,7 @@ function seedDefaultApps() {
             }
         ];
 
-        const APPS_VERSION = 'v7-kofe-removed';
+        const APPS_VERSION = 'v8-fastfood-folder-renamed';
         const removedIds = new Set(['app-salqin', 'app-kofe']);
         const savedVersion = boCloudGet('bo_apps_version', null);
         const existing = boCloudGet('bo_apps', []);

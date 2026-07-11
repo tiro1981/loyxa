@@ -9,7 +9,7 @@ Quyidagi promptni Claude'ga (Claude Code yoki shu loyihaga ulangan Claude sessiy
 Men BiznesOnline nomli SaaS platformasi ustida ishlayapman. Loyihada ikkita **alohida** admin panel bor — bir-biriga ALOQASI YO'Q, ikkalasini aralashtirmang:
 
 1. **Platforma admin paneli** (biz ishlaydigan panel) — `admin.html`, `js/admin.js`, `css/admin.css`. Bu — sayt egasi uchun panel: mijozlarni (biznes egalarini), ilovalar katalogini, to'lovlarni, daromadni, Telegram botni boshqaradi.
-2. **Ilova admin paneli** — `app/admin.html`, `ovqat-dokoni/admin/`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`. Bu har bir mijozning o'z do'koni ichidagi panel (mahsulot/buyurtma boshqaruvi).
+2. **Ilova admin paneli** — `fast-food-dokoni/admin.html`, `ovqat-dokoni/admin/`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`. Bu har bir mijozning o'z do'koni ichidagi panel (mahsulot/buyurtma boshqaruvi).
 
 **Faqat 1-band — platforma admin paneli (`admin.html`, `js/admin.js`, `css/admin.css`, va bog'liq `kirish.html`, `dashboard.html`) ustida ishlang. Ilova admin panellariga (2-band) tegmang.**
 
@@ -54,7 +54,7 @@ Platforma admin paneli hozircha to'liq `localStorage` asosida ishlaydi (demo rej
 
 ### Texnik cheklovlar
 
-- Ilova admin panellariga (`app/`, `ovqat-dokoni/admin`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`) va ularning JS/CSS fayllariga tegmang.
+- Ilova admin panellariga (`fast-food-dokoni/`, `ovqat-dokoni/admin`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`) va ularning JS/CSS fayllariga tegmang.
 - Mavjud UI dizayni, sinflar nomlari va umumiy sahifa strukturasini iloji boricha saqlang — faqat ma'lumot manbai va xavfsizlik mantig'ini o'zgartiring.
 - Har bir bosqichdan keyin admin panelni brauzerda ochib, asosiy oqimlarni (login, mijoz qo'shish/tahrirlash, ilova qo'shish, to'lovlarni ko'rish) qo'lda tekshiring va natijani menga qisqacha yozing.
 - Katta o'zgarishlarni bittada emas, bosqichma-bosqich (yuqoridagi tartibda) kiriting, har bosqichdan keyin to'xtab tasdiq so'rang.

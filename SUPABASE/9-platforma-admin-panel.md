@@ -2,7 +2,7 @@
 
 Bu fayl `admin.html`, `js/admin.js`, `js/auth.js`, `js/main.js`, `js/dashboard.js`,
 `js/settings.js`, `kirish.html`, `dashboard.html` uchun. Ilova admin panellariga
-(`app/`, `ovqat-dokoni/admin`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`)
+(`fast-food-dokoni/`, `ovqat-dokoni/admin`, `kiyim-dokoni/admin.html`, `kitob-dokoni/admin.html`)
 aloqasi yo'q — ular alohida, o'z `cloud.js`lariga ega.
 
 ## Nima o'zgardi

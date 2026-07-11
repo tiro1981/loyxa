@@ -27,8 +27,8 @@ QUYIDAGI FAYL VA QATORLARDA (har ilovada bot manzili shu yerda aniqlanadi):
 1) ovqat-dokoni/telegram.js        — `apiBase()` ichidagi default (taxminan 22-qator)
 2) kiyim-dokoni/script.js          — taxminan 148-qator
    kiyim-dokoni/admin.js           — `getBotApi()` (taxminan 1371-qator)
-3) app/script.js                   — taxminan 501-qator
-   app/admin.js                    — `getBotApi()` (taxminan 953-qator)
+3) fast-food-dokoni/script.js       — taxminan 501-qator
+   fast-food-dokoni/admin.js        — `getBotApi()` (taxminan 953-qator)
 
 KO'RSATMA AI'GA:
 - Har bir faylda `'http://localhost:3344'` (yoki `http://localhost:3344` ko'rinishidagi)
