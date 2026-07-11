@@ -103,9 +103,14 @@ function _boDashboardInit() {
     // dashboard.html — root da, app fayllari — ./app/ ichida.
     const cid = encodeURIComponent(resolvedClientId);
     const base = location.href.replace(/[^\/]*(\?.*)?$/, '');
+    // Eski "app/" papkasi (fast food ilovasining eski nusxasi) endi
+    // "fast-food-dokoni/" ga ko'chirilgan. Ba'zi eski mijozlarning
+    // demoUrl/adminUrl'lari hali "app/..." ni ko'rsatadi — ularni yangi papkaga
+    // yo'naltiramiz (aks holda eskirgan nusxa ochiladi).
+    const normalizeLegacy = (r) => (r || '').replace(/^\/?app\//, 'fast-food-dokoni/');
     // Mijoz tanlagan ilovaning o'z URL'lari (bo'lmasa — eski fast food ilovasi)
     const buildUrl = (rel, fallback) => {
-        const r = rel || fallback;
+        const r = normalizeLegacy(rel || fallback);
         const sep = r.includes('?') ? '&' : '?';
         return base + r + sep + 'client=' + cid;
     };

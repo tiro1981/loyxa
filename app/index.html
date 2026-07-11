@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yo'naltirilmoqda…</title>
+  <!--
+    Eski "app/" papkasi fast food ilovasining eski nusxasi edi. Ilova endi
+    "fast-food-dokoni/" papkasiga ko'chirildi. Eski QR kodlar, xatcho'plar va
+    saqlangan havolalar hali "/app/" ga ishora qiladi — shuning uchun bu yerda
+    ularni yangi papkaga (client= va boshqa parametrlarni saqlab qolgan holda)
+    yo'naltiramiz.
+  -->
+  <script>
+    (function () {
+      var target = "../fast-food-dokoni/index.html" + location.search + location.hash;
+      location.replace(target);
+    })();
+  </script>
+  <style>
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #0a0e14; color: #e5e7eb;
+           display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+    a { color: #f97316; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <p>Yangi manzilga yo'naltirilmoqda…<br /><a id="lnk" href="../fast-food-dokoni/index.html">Bu yerga bosing</a></p>
+  <script>
+    document.getElementById("lnk").href = "../fast-food-dokoni/index.html" + location.search + location.hash;
+  </script>
+</body>
+</html>
