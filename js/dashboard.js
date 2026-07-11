@@ -335,7 +335,6 @@ function _boDashboardInit() {
                     <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
                     <div class="sub-card-info">
                         <h3>${escapeHtml(sub.name)}</h3>
-                        <span class="sub-domain" title="${escapeHtml(subAppUrl(sub))}"><i class="fa-solid fa-link"></i> ${escapeHtml((subAppUrl(sub) || '').replace(/^https?:\/\//, ''))}</span>
                     </div>
                     <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
                 </div>
