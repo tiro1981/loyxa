@@ -315,7 +315,7 @@ function setImgPreview(dataUrl) {
   const prev = document.getElementById('imgPreview');
   const rm = document.getElementById('removeImg');
   if (data) data.value = dataUrl;
-  if (prev) prev.innerHTML = `<img src="${dataUrl}" alt="Preview">`;
+  if (prev) { prev.innerHTML = `<img src="${dataUrl}" alt="Preview">`; prev.classList.add('has-img'); }
   if (rm) rm.style.display = 'inline-flex';
 }
 function resetImgPreview() {
@@ -324,7 +324,7 @@ function resetImgPreview() {
   const rm = document.getElementById('removeImg');
   const file = document.getElementById('foodImage');
   if (data) data.value = '';
-  if (prev) prev.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Rasm tanlang (PNG, JPG, WEBP) yoki shu yerga tashlang</span>';
+  if (prev) { prev.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Rasm tanlang (PNG, JPG, WEBP) yoki shu yerga tashlang</span>'; prev.classList.remove('has-img'); }
   if (rm) rm.style.display = 'none';
   if (file) file.value = '';
 }

@@ -893,6 +893,7 @@ input, select { font-family: inherit; outline: none; }
   object-fit: cover;
   border-radius: 12px;
 }
+.img-preview.has-img { border-style: solid; border-color: transparent; background: transparent; }
 .img-acts { display: flex; gap: 10px; }
 .img-acts .abtn { flex: 1; }
 
