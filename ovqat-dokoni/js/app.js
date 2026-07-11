@@ -99,7 +99,7 @@ window.UI = (function () {
 
   /* fly-to-cart animation */
   function flyToCart(fromEl, emoji) {
-    const target = document.querySelector('.tab[data-tab="cart"]');
+    const target = document.querySelector('[data-tab="cart"]');
     if (!fromEl || !target) return;
     const a = fromEl.getBoundingClientRect();
     const b = target.getBoundingClientRect();
@@ -144,11 +144,14 @@ function renderTabbar() {
   document.getElementById("tabbar").innerHTML = items
     .map((t) => {
       const active = t.id === cur || (t.id === "home" && !TABS.includes(cur));
-      const badge = t.id === "cart" && count ? `<span class="tab-badge">${count}</span>` : "";
-      return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}${badge}</span><span>${t.label}</span></button>`;
+      if (t.id === "cart") {
+        const badge = count ? `<span class="tab-badge">${count}</span>` : "";
+        return `<button class="tab-fab ${active ? "is-active" : ""}" data-tab="cart" aria-label="${t.label}"><span class="fab-ic">${t.icon}${badge}</span></button>`;
+      }
+      return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}</span><span class="tab-lbl">${t.label}</span><span class="tab-dot"></span></button>`;
     })
     .join("");
-  document.querySelectorAll(".tab").forEach((el) => (el.onclick = () => go(el.dataset.tab)));
+  document.querySelectorAll("[data-tab]").forEach((el) => (el.onclick = () => go(el.dataset.tab)));
 }
 
 function go(view, params = {}) {
