@@ -890,10 +890,23 @@ input, select { font-family: inherit; outline: none; }
 .img-preview span { font-size: 12px; }
 .img-preview img {
   width: 100%; height: 100%;
-  object-fit: cover;
+  object-fit: cover; object-position: center;
   border-radius: 12px;
 }
-.img-preview.has-img { border-style: solid; border-color: transparent; background: transparent; }
+/* Rasm yuklangach: preview aynan ilovadagi mahsulot kartochkasidek ko'rinadi —
+   bir xil nisbat (213:158), ramka va object-fit: cover kesish. Admin rasm
+   kartochkada qanday joylashishini shu yerda ko'radi (WYSIWYG). */
+.img-preview.has-img {
+  height: auto;
+  aspect-ratio: 213 / 158;
+  max-width: 300px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-style: solid;
+  border-radius: 16px;
+  background: var(--gray-light);
+}
+.img-preview.has-img img { border-radius: 16px; }
 .img-acts { display: flex; gap: 10px; }
 .img-acts .abtn { flex: 1; }
 
