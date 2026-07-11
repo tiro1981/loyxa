@@ -472,7 +472,7 @@
           '<label class="img-up">' +
             '<input type="file" id="f_img" accept="image/*" hidden/>' +
             '<span class="img-preview" id="imgPrev">' + prevInner + '</span>' +
-            '<span class="img-up-text"><b>Rasm yuklash</b><small>JPG yoki PNG · bosing</small></span>' +
+            '<span class="img-up-text"><b>Rasm yuklash</b><small>JPG yoki PNG · kvadrat (1:1), mahsulot ramkani to\'ldirib tursin · bosing</small></span>' +
             '<span class="img-up-btn">' + ICON.plus + '</span>' +
           '</label>' +
         '</div>' +
