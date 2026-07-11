@@ -43,7 +43,7 @@ window.Views.product = function (root, params) {
       .pdp-dock .stepper{flex:0 0 auto;height:52px;border-radius:16px}
       .pdp-dock .stepper button{width:36px;height:36px}
       .pdp-add{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
-      .pdp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(1.2)}
+      .pdp-img{position:absolute;inset:18px;width:calc(100% - 36px);height:calc(100% - 36px);object-fit:contain;object-position:center}
       .pdp-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 4px}
       .pi{display:flex;align-items:center;gap:11px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px}
       .pi-ic{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:18px;border-radius:11px;background:var(--surface-2)}
