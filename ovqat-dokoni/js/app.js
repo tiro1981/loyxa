@@ -141,7 +141,8 @@ function renderTabbar() {
     { id: "profile", label: "Profil", icon: ICONS.user },
   ];
   const count = Store.cartCount();
-  document.getElementById("tabbar").innerHTML = items
+  const bar = document.getElementById("tabbar");
+  bar.innerHTML = items
     .map((t) => {
       const active = t.id === cur || (t.id === "home" && !TABS.includes(cur));
       if (t.id === "cart") {
@@ -151,7 +152,11 @@ function renderTabbar() {
       return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}</span><span class="tab-lbl">${t.label}</span><span class="tab-dot"></span></button>`;
     })
     .join("");
-  document.querySelectorAll("[data-tab]").forEach((el) => (el.onclick = () => go(el.dataset.tab)));
+  // Faqat tabbar ichidagi tugmalarga bog'laymiz — sahifadagi boshqa
+  // data-tab elementlariga (masalan buyurtmalar sahifasidagi "Faol/Tarix"
+  // chiplariga) tegmaymiz, aks holda ular buzilib, yashil belgi noto'g'ri
+  // menyuga sakraydi.
+  bar.querySelectorAll("[data-tab]").forEach((el) => (el.onclick = () => go(el.dataset.tab)));
 }
 
 function go(view, params = {}) {
