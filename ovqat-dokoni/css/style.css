@@ -366,18 +366,24 @@ input, textarea, select { font-family: inherit; }
   width: 60px; height: 60px;
   margin: -30px 6px 0;
   border-radius: 20px;
-  background: linear-gradient(135deg, var(--green), var(--green-700));
-  color: #fff;
+  background: var(--surface-3);
+  color: var(--text-2);
   display: grid; place-items: center;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-md);
   border: 4px solid var(--tab-bg);
   position: relative;
-  transition: transform .3s var(--ease-bounce), box-shadow .3s;
+  transition: transform .3s var(--ease-bounce), background .3s var(--ease), color .25s, box-shadow .3s;
 }
 .tab-fab .fab-ic { position: relative; display: grid; place-items: center; }
 .tab-fab svg { width: 26px; height: 26px; }
 .tab-fab:active { transform: scale(.9); }
-.tab-fab.is-active { box-shadow: 0 14px 34px rgba(34, 197, 94, .45); }
+/* Yashil rang faqat savat faol menyuga aylanganda — aks holda neytral,
+   shunda yashil "faol" belgi doim tanlangan menyuda bo'ladi. */
+.tab-fab.is-active {
+  background: linear-gradient(135deg, var(--green), var(--green-700));
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
 .tab-fab .tab-badge { position: absolute; top: -9px; right: -9px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; border-radius: 999px; display: grid; place-items: center; border: 2px solid var(--tab-bg); z-index: 3; }
 
 /* ---------- Sheet / modal ---------- */
