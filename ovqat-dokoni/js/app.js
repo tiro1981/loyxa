@@ -149,7 +149,7 @@ function renderTabbar() {
         const badge = count ? `<span class="tab-badge">${count}</span>` : "";
         return `<button class="tab-fab ${active ? "is-active" : ""}" data-tab="cart" aria-label="${t.label}"><span class="fab-ic">${t.icon}${badge}</span></button>`;
       }
-      return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}</span><span class="tab-lbl">${t.label}</span><span class="tab-dot"></span></button>`;
+      return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}</span><span class="tab-lbl">${t.label}</span></button>`;
     })
     .join("");
   // Faqat tabbar ichidagi tugmalarga bog'laymiz — sahifadagi boshqa
