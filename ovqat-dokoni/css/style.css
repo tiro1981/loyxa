@@ -350,49 +350,31 @@ input, textarea, select { font-family: inherit; }
   border: 1px solid var(--border-2); border-radius: 26px;
   box-shadow: var(--shadow-md); position: relative; z-index: 40;
 }
-.tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 2px; color: var(--text-3); transition: color .25s var(--ease); }
-.tab .tab-ic {
-  position: relative; width: 46px; height: 32px; display: grid; place-items: center;
-  border-radius: 14px;
-  transition: background .3s var(--ease), transform .3s var(--ease-bounce), box-shadow .3s, color .25s;
-}
-.tab svg { width: 22px; height: 22px; transition: transform .3s var(--ease-bounce); }
+/* Nofaol tugma — tekis: ikonka + yozuv */
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; padding: 2px; color: var(--text-3); transition: color .25s var(--ease); }
+.tab .tab-ic { position: relative; display: grid; place-items: center; }
+.tab svg { width: 23px; height: 23px; transition: transform .3s var(--ease-bounce); }
 .tab .tab-lbl { font-size: 11px; font-weight: 700; letter-spacing: -.2px; }
-.tab.is-active { color: var(--primary); }
-/* Menyu tugmasi bosilganda ham savat tugmasidek yashil bo'lib qoladi. */
-.tab.is-active .tab-ic {
-  background: linear-gradient(135deg, var(--green), var(--green-700));
-  color: #fff;
-  box-shadow: var(--shadow-glow);
-  transform: translateY(-3px);
-}
-.tab.is-active svg { transform: scale(1.06); }
-.tab:active .tab-ic { transform: scale(.9); }
+.tab:active svg { transform: scale(.86); }
+.tab .tab-badge { position: absolute; top: -6px; right: -9px; min-width: 17px; height: 17px; padding: 0 4px; background: var(--red); color: #fff; font-size: 10px; font-weight: 800; border-radius: 999px; display: grid; place-items: center; border: 2px solid var(--tab-bg); z-index: 3; }
 
-/* Markaziy ko'tarilgan savat tugmasi (FAB) */
-.tab-fab {
-  flex: 0 0 auto;
-  width: 60px; height: 60px;
-  margin: -30px 6px 0;
-  border-radius: 20px;
-  background: var(--surface-3);
-  color: var(--text-2);
-  display: grid; place-items: center;
-  box-shadow: var(--shadow-md);
-  border: 4px solid var(--tab-bg);
+/* Faol tugma — qaysi menyu tanlansa, o'sha savat tugmasidek yuqoriga
+   ko'tarilib yashil bo'ladi. Har bir slot bir xil kenglikda (flex:1). */
+.tab-fab { flex: 1; display: grid; place-items: center; position: relative; }
+.tab-fab .fab-ic {
   position: relative;
-  transition: transform .3s var(--ease-bounce), background .3s var(--ease), color .25s, box-shadow .3s;
-}
-.tab-fab .fab-ic { position: relative; display: grid; place-items: center; }
-.tab-fab svg { width: 26px; height: 26px; }
-.tab-fab:active { transform: scale(.9); }
-/* Yashil rang faqat savat faol menyuga aylanganda — aks holda neytral,
-   shunda yashil "faol" belgi doim tanlangan menyuda bo'ladi. */
-.tab-fab.is-active {
+  width: 58px; height: 58px;
+  margin-top: -30px;
+  border-radius: 18px;
   background: linear-gradient(135deg, var(--green), var(--green-700));
   color: #fff;
+  display: grid; place-items: center;
   box-shadow: var(--shadow-glow);
+  border: 4px solid var(--tab-bg);
+  transition: transform .3s var(--ease-bounce);
 }
+.tab-fab:active .fab-ic { transform: scale(.9); }
+.tab-fab svg { width: 26px; height: 26px; }
 .tab-fab .tab-badge { position: absolute; top: -9px; right: -9px; min-width: 20px; height: 20px; padding: 0 5px; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; border-radius: 999px; display: grid; place-items: center; border: 2px solid var(--tab-bg); z-index: 3; }
 
 /* ---------- Sheet / modal ---------- */

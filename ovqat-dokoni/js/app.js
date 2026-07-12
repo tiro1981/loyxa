@@ -145,11 +145,12 @@ function renderTabbar() {
   bar.innerHTML = items
     .map((t) => {
       const active = t.id === cur || (t.id === "home" && !TABS.includes(cur));
-      if (t.id === "cart") {
-        const badge = count ? `<span class="tab-badge">${count}</span>` : "";
-        return `<button class="tab-fab ${active ? "is-active" : ""}" data-tab="cart" aria-label="${t.label}"><span class="fab-ic">${t.icon}${badge}</span></button>`;
+      const badge = t.id === "cart" && count ? `<span class="tab-badge">${count}</span>` : "";
+      if (active) {
+        // Faol tugma — savat tugmasidek yuqoriga ko'tarilib yashil bo'ladi
+        return `<button class="tab-fab" data-tab="${t.id}" aria-label="${t.label}"><span class="fab-ic">${t.icon}${badge}</span></button>`;
       }
-      return `<button class="tab ${active ? "is-active" : ""}" data-tab="${t.id}"><span class="tab-ic">${t.icon}</span><span class="tab-lbl">${t.label}</span></button>`;
+      return `<button class="tab" data-tab="${t.id}"><span class="tab-ic">${t.icon}${badge}</span><span class="tab-lbl">${t.label}</span></button>`;
     })
     .join("");
   // Faqat tabbar ichidagi tugmalarga bog'laymiz — sahifadagi boshqa
