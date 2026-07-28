@@ -293,9 +293,10 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         document.body.classList.toggle('dark', dark);
         document.getElementById('themeSwitch').checked = dark;
         document.getElementById('themeLabel').textContent = dark ? 'Qorong\'i rejim yoqilgan' : 'Yoritilgan rejim';
-        localStorage.setItem(THEME_KEY, dark ? '1' : '0');
+        if (!IS_DEMO) localStorage.setItem(THEME_KEY, dark ? '1' : '0');
     }
-    applyTheme(localStorage.getItem(THEME_KEY) === '1');
+    // DEMO rejimda (?demo=1) vitrina uchun har doim LIGHT tema
+    applyTheme(IS_DEMO ? false : localStorage.getItem(THEME_KEY) === '1');
 
     /* ---------- Screen navigation ---------- */
     const NAV_ORDER = ['home', 'cart', 'orders', 'profile'];

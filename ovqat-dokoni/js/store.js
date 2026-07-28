@@ -233,6 +233,8 @@ window.Store = (function () {
   function updateUser(patch) { state.user = { ...state.user, ...patch }; save(); emit("user:change"); }
 
   // apply persisted theme immediately
+  // DEMO rejimda (?demo=1) vitrina uchun har doim LIGHT tema (saqlanmaydi)
+  try { if (new URLSearchParams(location.search).get('demo') === '1') state.theme = 'light'; } catch (e) {}
   document.documentElement.setAttribute("data-theme", state.theme);
 
   return {

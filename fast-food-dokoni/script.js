@@ -596,7 +596,7 @@ function renderOrders(tab) {
 
 // ========== THEME ==========
 const themeToggle = $('themeToggle');
-if (localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); themeToggle.checked = true; }
+if (!IS_DEMO && localStorage.getItem('theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); themeToggle.checked = true; }
 themeToggle.addEventListener('change', () => {
   if (themeToggle.checked) { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); showToast('Tungi rejim 🌙'); }
   else { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); showToast('Kunduzgi rejim ☀️'); }
