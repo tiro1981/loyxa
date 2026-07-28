@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=4">
+    <link rel="stylesheet" href="css/meridian.css?v=5">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -389,6 +389,7 @@
                     <div class="mp-bezel">
                         <div class="mp-island"></div>
                         <div class="mp-screen" style="--acc:${a.acc}">
+                            <div class="mp-statusbar"></div>
                             <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
                             <iframe class="mp-appframe" src="${a.url}?demo=1" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
                         </div>

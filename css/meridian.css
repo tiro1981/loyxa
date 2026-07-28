@@ -912,21 +912,21 @@
 }
 .mrd .mrd-phone.is-center .mp-label { opacity: 1; }
 
-/* realistik iPhone ramkasi — titan metall + Dynamic Island + yon tugmalar */
+/* realistik iPhone ramkasi — qora (space black) + Dynamic Island + yon tugmalar */
 .mrd .mp-frame {
     position: relative;
-    border-radius: 52px;
+    border-radius: 54px;
     padding: 3px;
     background:
-        linear-gradient(135deg, #eceded 0%, #a6a8ae 18%, #f5f6f8 40%, #9a9ca2 58%, #d7d9de 78%, #b4b6bc 100%);
-    box-shadow: 0 40px 80px -30px rgba(11,36,71,.6);
+        linear-gradient(135deg, #55565a 0%, #232326 20%, #5a5b60 44%, #17171a 62%, #3a3b3f 82%, #212124 100%);
+    box-shadow: 0 26px 50px -18px rgba(0,0,0,.34), 0 8px 20px -10px rgba(0,0,0,.20);
 }
 .mrd .mp-bezel {
     position: relative;
-    background: #050507;
-    border-radius: 49px;
+    background: #000;
+    border-radius: 51px;
     padding: 11px;
-    box-shadow: inset 0 0 3px 1px rgba(255,255,255,.1);
+    box-shadow: inset 0 0 2px 1px rgba(255,255,255,.06);
 }
 .mrd .mp-island {
     position: absolute;
@@ -953,14 +953,14 @@
     position: absolute;
     z-index: 1;
     border-radius: 2px;
-    background: linear-gradient(#cfd0d5, #9a9ca2);
+    background: linear-gradient(#4a4b4f, #232326);
 }
 .mrd .mp-btn.silent { left: -3px; top: 110px; width: 3px; height: 22px; }
 .mrd .mp-btn.volup  { left: -3px; top: 148px; width: 3px; height: 40px; }
 .mrd .mp-btn.voldn  { left: -3px; top: 200px; width: 3px; height: 40px; }
 .mrd .mp-btn.power  { right: -3px; top: 168px; width: 3px; height: 58px; }
 .mrd .mrd-phone.is-center .mp-frame {
-    box-shadow: 0 50px 100px -28px rgba(11,36,71,.7);
+    box-shadow: 0 40px 70px -22px rgba(0,0,0,.42), 0 12px 26px -12px rgba(0,0,0,.26);
     animation: mrdPhoneFloat 3.6s ease-in-out infinite;
 }
 @keyframes mrdPhoneFloat {
@@ -981,22 +981,30 @@
     font-size: 12px;
     line-height: 1.3;
 }
-/* jonli ilova (iframe) — haqiqiy web-ilova ko'rinishi */
+/* yuqori holat-paneli (status bar) — Dynamic Island shu yerda turadi, web ilova PASTDAN boshlanadi */
+.mrd .mp-statusbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 46px;
+    background: #fff;
+    z-index: 3;
+}
+/* jonli ilova (iframe) — haqiqiy web-ilova ko'rinishi (kapsula OSTIDAN boshlanadi) */
 .mrd .mp-appframe {
     position: absolute;
-    top: 0;
+    top: 46px;
     left: 0;
     width: 390px;
-    height: 892px;
+    height: 817px;
     border: 0;
     transform: scale(0.6051);
     transform-origin: top left;
-    pointer-events: none;   /* kliklar telefon divga o'tsin (markaz -> ilova ochiladi) */
+    pointer-events: none;   /* kliklar telefon divga o'tsin */
     background: #fff;
 }
 .mrd .mp-screen .mp-loading {
     position: absolute;
-    inset: 0;
+    inset: 46px 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
