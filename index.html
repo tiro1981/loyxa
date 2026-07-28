@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=1">
+    <link rel="stylesheet" href="css/meridian.css?v=2">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -195,7 +195,7 @@
         </div>
     </div>
 
-    <!-- APPS SECTION (dinamik — admin panelidan boshqariladi) -->
+    <!-- APPS SECTION — platforma ilovalari vitrinasi (coverflow) -->
     <section class="apps-section" id="apps">
         <div class="container">
             <div class="section-head reveal">
@@ -204,9 +204,13 @@
                 <p class="section-subtitle" data-i18n="apps.subtitle">Har bir soha uchun maxsus sozlangan, tayyor ishga tushiriladigan yechimlar.</p>
             </div>
 
-            <div class="apps-grid" id="appsGrid">
-                <!-- Ilovalar JS bilan dinamik render qilinadi (admin panelidan boshqariladi) -->
+            <div class="app-showcase reveal" id="appShowcase">
+                <button class="showcase-nav prev" id="showcasePrev" aria-label="Oldingi"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="showcase-stage" id="showcaseStage"></div>
+                <button class="showcase-nav next" id="showcaseNext" aria-label="Keyingi"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
+            <div class="showcase-caption" id="showcaseCaption"></div>
+            <div class="showcase-dots" id="showcaseDots"></div>
 
             <div class="custom-price-note reveal">
                 <i class="fa-solid fa-gift"></i>
@@ -355,6 +359,187 @@
                 }
             });
         });
+    </script>
+
+    <!-- APP SHOWCASE (coverflow) — platforma ilovalari vitrinasi -->
+    <script>
+    (function () {
+        const APPS = [
+            {
+                name: "Ovqat Dokoni", label: "Ovqat", url: "ovqat-dokoni/index.html", acc: "#16A34A",
+                bannerGrad: "linear-gradient(135deg,#16A34A,#065F46)", kick: "Yangi & Toza", title: "Bozor narxida", emoji: "🥬",
+                chips: ["Barchasi", "Mevalar", "Sabzavot", "Sut mahs."],
+                sec: "Mashhur mahsulotlar",
+                prods: [
+                    { emoji: "🍎", bg: "#FEF2F2", name: "Qizil olma, 1 kg", price: "18 000", badge: "-15%" },
+                    { emoji: "🥛", bg: "#EFF6FF", name: "Sut 3.2%, 1 L", price: "12 000" }
+                ]
+            },
+            {
+                name: "Fast Food", label: "Fast Food", url: "fast-food-dokoni/index.html", acc: "#EA580C",
+                bannerGrad: "linear-gradient(135deg,#F97316,#B91C1C)", kick: "Issiq & Tez", title: "Delicious Burgers", emoji: "🍔",
+                chips: ["Burgerlar", "Setlar", "Ichimlik", "Aksiya"],
+                sec: "Tavsiya etamiz",
+                prods: [
+                    { emoji: "🍔", bg: "#FFF7ED", name: "Beef Burger", price: "39 000", badge: "-20%" },
+                    { emoji: "🌯", bg: "#FEFCE8", name: "Lavash Mini", price: "28 000" }
+                ]
+            },
+            {
+                name: "Moda", label: "Moda", url: "kiyim-dokoni/index.html", acc: "#DB2777",
+                bannerGrad: "linear-gradient(135deg,#EC4899,#9D174D)", kick: "New Season", title: "NEW NOW", emoji: "👗",
+                chips: ["Ayollar", "Erkaklar", "Bolalar", "Aksiya"],
+                sec: "Yangi kolleksiya",
+                prods: [
+                    { emoji: "👗", bg: "#FDF2F8", name: "Yozgi ko'ylak", price: "149 000" },
+                    { emoji: "👟", bg: "#F5F3FF", name: "Krossovka", price: "349 000", badge: "-30%" }
+                ]
+            },
+            {
+                name: "Kitob Olami", label: "Kitob", url: "kitob-dokoni/index.html", acc: "#4F46E5",
+                bannerGrad: "linear-gradient(135deg,#6366F1,#312E81)", kick: "Kashf eting", title: "Bestsellerlar", emoji: "📚",
+                chips: ["Badiiy", "Ilmiy", "Bolalar", "Darslik"],
+                sec: "Haftaning tanlovi",
+                prods: [
+                    { emoji: "📕", bg: "#FEF2F2", name: "O'tkan kunlar", price: "45 000" },
+                    { emoji: "📗", bg: "#ECFDF5", name: "Atomic Habits", price: "89 000", badge: "-10%" }
+                ]
+            }
+        ];
+
+        const stage = document.getElementById('showcaseStage');
+        const dotsWrap = document.getElementById('showcaseDots');
+        const caption = document.getElementById('showcaseCaption');
+        const prevBtn = document.getElementById('showcasePrev');
+        const nextBtn = document.getElementById('showcaseNext');
+        if (!stage) return;
+
+        const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+        function screenHTML(a) {
+            const chips = a.chips.map((c, i) => `<span class="${i === 0 ? 'on' : ''}">${esc(c)}</span>`).join('');
+            const prods = a.prods.map(p => `
+                <div class="mp-prod">
+                    ${p.badge ? `<span class="mp-pbadge">${esc(p.badge)}</span>` : ''}
+                    <span class="mp-pheart"><i class="fa-regular fa-heart"></i></span>
+                    <div class="mp-pimg" style="background:${p.bg}">${p.emoji}</div>
+                    <div class="mp-pbody">
+                        <div class="mp-pname">${esc(p.name)}</div>
+                        <div class="mp-pprice">${esc(p.price)} <span style="font-size:9px;color:#94A3B8;font-weight:600">so'm</span></div>
+                    </div>
+                </div>`).join('');
+            return `
+                <div class="mp-frame">
+                    <div class="mp-notch"></div>
+                    <div class="mp-screen" style="--acc:${a.acc}">
+                        <div class="mp-tgbar">
+                            <span>Close</span>
+                            <div class="mp-tgtitle">${esc(a.name)}<small>mini app</small></div>
+                            <span class="mp-dots-btn"><i class="fa-solid fa-ellipsis"></i></span>
+                        </div>
+                        <div class="mp-apphead"><i class="fa-solid fa-bars"></i><span class="mp-h-title">Do'kon</span><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <div class="mp-banner" style="background:${a.bannerGrad}">
+                            <span class="mp-b-kick">${esc(a.kick)}</span>
+                            <span class="mp-b-title">${esc(a.title)}</span>
+                            <span class="mp-b-emoji">${a.emoji}</span>
+                        </div>
+                        <div class="mp-chips">${chips}</div>
+                        <div class="mp-sec">${esc(a.sec)}</div>
+                        <div class="mp-prods">${prods}</div>
+                        <div class="mp-nav">
+                            <span class="on"><i class="fa-solid fa-table-cells-large"></i>Katalog</span>
+                            <span><i class="fa-solid fa-cart-shopping"></i><span class="mp-nbadge">2</span>Savat</span>
+                            <span><i class="fa-solid fa-heart"></i>Sevimli</span>
+                            <span><i class="fa-solid fa-user"></i>Profil</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mp-label">${esc(a.label)}</div>`;
+        }
+
+        let active = 0;
+        const phones = APPS.map((a, i) => {
+            const el = document.createElement('div');
+            el.className = 'mrd-phone';
+            el.innerHTML = screenHTML(a);
+            el.addEventListener('click', () => {
+                if (i === active) { window.location.href = a.url; }
+                else { go(i); }
+            });
+            stage.appendChild(el);
+            return el;
+        });
+
+        // dots
+        APPS.forEach((a, i) => {
+            const b = document.createElement('button');
+            b.setAttribute('aria-label', a.label);
+            b.addEventListener('click', () => go(i));
+            dotsWrap.appendChild(b);
+        });
+        const dots = [...dotsWrap.children];
+
+        function layout() {
+            const stageW = stage.clientWidth || 900;
+            const cs = Math.max(0.6, Math.min(1, (stageW * 0.62) / 264));
+            stage.style.height = Math.round(558 * cs + 78) + 'px';
+            const w = 264 * cs;
+            phones.forEach((el, i) => {
+                let off = i - active;
+                const n = APPS.length;
+                // eng yaqin aylanma masofani tanlash (loop hissi)
+                if (off > n / 2) off -= n;
+                if (off < -n / 2) off += n;
+                const aoff = Math.abs(off);
+                let x = 0, sc = cs, z = 5, op = 1;
+                if (aoff === 0) { x = 0; sc = cs; z = 6; op = 1; }
+                else if (aoff === 1) { x = off * w * 0.62; sc = cs * 0.82; z = 5; op = .95; }
+                else if (aoff === 2) { x = (off > 0 ? 1 : -1) * w * 1.04; sc = cs * 0.64; z = 4; op = .5; }
+                else { x = (off > 0 ? 1 : -1) * w * 1.3; sc = cs * 0.5; z = 3; op = 0; }
+                el.style.transform = `translateX(${x}px) scale(${sc})`;
+                el.style.zIndex = z;
+                el.style.opacity = op;
+                el.style.pointerEvents = op === 0 ? 'none' : 'auto';
+                el.classList.toggle('is-center', aoff === 0);
+            });
+            dots.forEach((d, i) => d.classList.toggle('on', i === active));
+            if (caption) caption.textContent = APPS[active].label;
+        }
+
+        function go(i) {
+            const n = APPS.length;
+            active = ((i % n) + n) % n;
+            layout();
+        }
+
+        prevBtn && prevBtn.addEventListener('click', () => go(active - 1));
+        nextBtn && nextBtn.addEventListener('click', () => go(active + 1));
+
+        // swipe / drag
+        let sx = null;
+        const onDown = (e) => { sx = (e.touches ? e.touches[0].clientX : e.clientX); };
+        const onUp = (e) => {
+            if (sx === null) return;
+            const ex = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX);
+            const d = ex - sx;
+            if (Math.abs(d) > 40) go(active + (d < 0 ? 1 : -1));
+            sx = null;
+        };
+        stage.addEventListener('touchstart', onDown, { passive: true });
+        stage.addEventListener('touchend', onUp);
+        stage.addEventListener('mousedown', onDown);
+        window.addEventListener('mouseup', onUp);
+
+        // klaviatura
+        document.getElementById('appShowcase').addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') go(active - 1);
+            if (e.key === 'ArrowRight') go(active + 1);
+        });
+
+        let rid;
+        window.addEventListener('resize', () => { clearTimeout(rid); rid = setTimeout(layout, 120); });
+        layout();
+    })();
     </script>
 </body>
 </html>
