@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun zamonaviy SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar.">
-    <title>BiznesOnline — Biznesingizni Online ga oling</title>
+    <meta name="description" content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun korporativ darajadagi SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar.">
+    <title>BiznesOnline — Biznesingizni ishonchli tarzda Online ga aylantiring</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
+    <link rel="stylesheet" href="css/meridian.css?v=1">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -18,7 +19,18 @@
         } catch {}
     </script>
 </head>
-<body>
+<body class="mrd">
+
+    <!-- TOP BAR -->
+    <div class="mrd-topbar">
+        <div class="container">
+            <span class="tb-left"><i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz shifrlangan · O'zbekiston serverlarida</span>
+            <span class="tb-right">
+                <a href="tel:+998992823115" class="tb-phone"><i class="fa-solid fa-phone" style="font-size:11px;"></i> +998 99 282 31 15</a>
+                <span class="tb-langs">UZ · RU · EN</span>
+            </span>
+        </div>
+    </div>
 
     <!-- NAVIGATION -->
     <nav class="navbar" id="navbar">
@@ -51,123 +63,146 @@
 
     <!-- HERO -->
     <header class="hero" id="home">
-        <div class="hero-bg"></div>
         <div class="container hero-container">
             <div class="hero-content reveal">
-                <span class="hero-badge"><i class="fa-solid fa-circle-check"></i> <span data-i18n="hero.badge">O'zbekiston #1 biznes platforma</span></span>
+                <span class="hero-badge"><i class="fa-solid fa-award"></i> <span data-i18n="hero.badge">O'zbekiston #1 biznes platforma</span></span>
                 <h1 class="hero-title">
-                    <span data-i18n="hero.title_1">Biznesingizni</span> <span class="text-accent" data-i18n="hero.title_online">Online</span> <span data-i18n="hero.title_2">ga oling —</span><br>
-                    <span class="text-primary" data-i18n="hero.title_sub">Bepul</span> <span data-i18n="hero.title_3">va bir necha daqiqada</span>
+                    <span data-i18n="hero.title_1">Biznesingizni</span> <span data-i18n="hero.title_2">ishonchli tarzda</span> <span class="text-accent" data-i18n="hero.title_online">online</span> <span data-i18n="hero.title_3">ga aylantiring</span>
                 </h1>
-                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food yoki kafe — barchasi uchun tayyor veb-ilova va boshqaruv dashbordi. Ro'yxatdan o'ting va ilovani mutlaqo bepul oling.</p>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food va kafe uchun korporativ darajadagi veb-ilova va boshqaruv paneli. Xavfsiz, tez va 24/7 qo'llab-quvvatlash bilan.</p>
                 <div class="hero-buttons">
                     <a href="kirish.html?tab=register" class="btn btn-primary btn-lg">
-                        <i class="fa-solid fa-rocket"></i> <span data-i18n="hero.btn_subscribe">Bepul boshlash</span>
+                        <span data-i18n="hero.btn_subscribe">Bepul boshlash</span> <i class="fa-solid fa-arrow-right" style="font-size:13px;"></i>
                     </a>
                     <a href="#apps" class="btn btn-outline btn-lg">
                         <i class="fa-solid fa-grid-2"></i> <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
                     </a>
                 </div>
-                <div class="hero-trust">
-                    <div class="trust-avatars">
-                        <div class="avatar" style="background:#16A34A">D</div>
-                        <div class="avatar" style="background:#F59E0B">M</div>
-                        <div class="avatar" style="background:#0F172A">S</div>
-                        <div class="avatar" style="background:#EF4444">A</div>
+                <div class="hero-stats">
+                    <div class="hs-item">
+                        <div class="hs-num"><span class="stat-number" data-target="200">0</span></div>
+                        <div class="hs-label">Faol biznes</div>
                     </div>
-                    <div class="trust-text">
-                        <strong data-i18n="hero.trust_count">200+ biznes</strong> <span data-i18n="hero.trust_text">bizga ishonadi</span>
-                        <div class="trust-stars">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <span>4.9 / 5</span>
-                        </div>
+                    <div class="hs-sep"></div>
+                    <div class="hs-item">
+                        <div class="hs-num">99.9%</div>
+                        <div class="hs-label">Uptime SLA</div>
+                    </div>
+                    <div class="hs-sep"></div>
+                    <div class="hs-item">
+                        <div class="hs-num">4.9<span>/5</span></div>
+                        <div class="hs-label">Reyting</div>
                     </div>
                 </div>
             </div>
+
+            <!-- ANIMATED STOREFRONT -> SMARTPHONE ILLUSTRATION -->
             <div class="hero-visual reveal">
-                <div class="hero-card hero-card-1">
-                    <div class="hc-header">
-                        <span class="hc-dot red"></span>
-                        <span class="hc-dot yellow"></span>
-                        <span class="hc-dot green"></span>
+                <div class="hv-glow"></div>
+
+                <div class="hv-caption">
+                    <i class="fa-solid fa-store"></i> Do'koningiz
+                    <i class="fa-solid fa-arrow-right-long" style="font-size:11px;"></i>
+                    smartfon ilovasiga <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+
+                <div class="hv-morph"></div>
+
+                <!-- SCENE 1: storefront -->
+                <div class="hv-store">
+                    <div class="sign-row">
+                        <div class="sign">★ 4.9 · TOP DO'KON</div>
                     </div>
-                    <div class="hc-body">
-                        <div class="hc-row">
-                            <div class="hc-icon green"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <div>
-                                <div class="hc-title">Yangi buyurtma</div>
-                                <div class="hc-sub">Burger + Cola — 45,000 so'm</div>
+                    <div class="awning">
+                        <div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div>
+                        <div class="sheen"></div>
+                    </div>
+                    <div class="scallop">
+                        <span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span>
+                    </div>
+                    <div class="building">
+                        <div class="plate">
+                            <span class="plate-icon"><i class="fa-solid fa-store"></i></span>
+                            <span class="plate-name">Mening Do'konim</span>
+                        </div>
+                        <div class="shopfront">
+                            <div class="window">
+                                <div class="win-top">
+                                    <span style="background:#F59E0B;"></span><span style="background:#5B9BFF;"></span><span style="background:#34D399;"></span>
+                                </div>
+                                <div class="win-glass"></div>
+                                <div class="win-goods">
+                                    <i class="fa-solid fa-shirt" style="font-size:30px; color:#2563EB;"></i>
+                                    <i class="fa-solid fa-bag-shopping" style="font-size:24px; color:#5B9BFF;"></i>
+                                </div>
+                                <span class="win-floor"></span>
+                            </div>
+                            <div class="door">
+                                <div class="door-glow"></div>
+                                <span class="door-open">OPEN</span>
+                                <span class="door-handle"></span>
                             </div>
                         </div>
-                        <div class="hc-row">
-                            <div class="hc-icon yellow"><i class="fa-solid fa-star"></i></div>
-                            <div>
-                                <div class="hc-title">5 yulduzli sharh</div>
-                                <div class="hc-sub">"Juda mazali, tez yetkazib berildi!"</div>
-                            </div>
-                        </div>
-                        <div class="hc-row">
-                            <div class="hc-icon primary"><i class="fa-solid fa-chart-line"></i></div>
-                            <div>
-                                <div class="hc-title">Bugungi daromad</div>
-                                <div class="hc-sub">+18% — 1,250,000 so'm</div>
-                            </div>
+                        <div class="foot">
+                            <span class="loc"><i class="fa-solid fa-location-dot"></i> Chilonzor</span>
+                            <span class="open-pill"><span></span> Ochiq</span>
                         </div>
                     </div>
                 </div>
-                <div class="hero-card hero-card-2">
-                    <div class="hc-mini">
-                        <i class="fa-solid fa-bell"></i>
-                        <div>
-                            <strong>+5 buyurtma</strong>
-                            <span>oxirgi soatda</span>
+
+                <!-- SCENE 2: smartphone app -->
+                <div class="hv-phone">
+                    <div class="notch"></div>
+                    <div class="screen">
+                        <div class="app-head">
+                            <div class="head-row">
+                                <span class="head-logo"><i class="fa-solid fa-store"></i></span>
+                                <div>
+                                    <div class="head-name">Mening Do'konim</div>
+                                    <div class="head-sub">● Online · Chilonzor</div>
+                                </div>
+                                <span class="head-search"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            </div>
+                        </div>
+                        <div class="feed">
+                            <div class="feed-scroll">
+                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-shirt"></i></span><div class="prod-info"><div class="prod-name">Ko'ylak</div><div class="prod-price">129 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
+                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-shoe-prints"></i></span><div class="prod-info"><div class="prod-name">Krossovka</div><div class="prod-price">349 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
+                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-bag-shopping"></i></span><div class="prod-info"><div class="prod-name">Sumka</div><div class="prod-price">89 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
+                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-hat-cowboy"></i></span><div class="prod-info"><div class="prod-name">Shlyapa</div><div class="prod-price">59 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
+                            </div>
+                        </div>
+                        <div class="order-bar">
+                            <span class="cart"><i class="fa-solid fa-cart-shopping"></i><span class="badge">3</span></span>
+                            <span class="order-btn">Buyurtma berish</span>
                         </div>
                     </div>
                 </div>
-                <div class="hero-blob"></div>
             </div>
         </div>
     </header>
 
-    <!-- STATS BAR -->
-    <section class="stats-section">
+    <!-- TRUST LOGOS -->
+    <div class="trust-band">
         <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item reveal">
-                    <div class="stat-icon"><i class="fa-solid fa-store"></i></div>
-                    <div class="stat-number" data-target="200">0</div>
-                    <div class="stat-label">Faol biznes</div>
-                </div>
-                <div class="stat-item reveal">
-                    <div class="stat-icon"><i class="fa-solid fa-mobile-screen"></i></div>
-                    <div class="stat-number" data-target="3">0</div>
-                    <div class="stat-label">Ilova turi</div>
-                </div>
-                <div class="stat-item reveal">
-                    <div class="stat-icon"><i class="fa-solid fa-server"></i></div>
-                    <div class="stat-number">99.9<span>%</span></div>
-                    <div class="stat-label">Uptime</div>
-                </div>
-                <div class="stat-item reveal">
-                    <div class="stat-icon"><i class="fa-solid fa-headset"></i></div>
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Yordam xizmati</div>
-                </div>
+            <div class="trust-label reveal">Ular bizga ishonadi</div>
+            <div class="trust-logos reveal">
+                <span><i class="fa-solid fa-store"></i> Toshkent Burger</span>
+                <span><i class="fa-solid fa-mug-hot"></i> Coffee Time</span>
+                <span><i class="fa-solid fa-basket-shopping"></i> Mahalla Do'kon</span>
+                <span><i class="fa-solid fa-pizza-slice"></i> Milano Pizza</span>
+                <span><i class="fa-solid fa-ice-cream"></i> Sweet Lab</span>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- APPS SECTION -->
+    <!-- APPS SECTION (dinamik — admin panelidan boshqariladi) -->
     <section class="apps-section" id="apps">
         <div class="container">
             <div class="section-head reveal">
-                <span class="section-tag" data-i18n="apps.tag">ILOVALAR</span>
+                <span class="section-tag" data-i18n="apps.tag">YECHIMLAR</span>
                 <h2 class="section-title" data-i18n="apps.title">Biznesingizga mos ilovani tanlang</h2>
-                <p class="section-subtitle" data-i18n="apps.subtitle">Har bir ilova tayyor — faqat ma'lumotlaringizni kiriting va ishga tushiring</p>
+                <p class="section-subtitle" data-i18n="apps.subtitle">Har bir soha uchun maxsus sozlangan, tayyor ishga tushiriladigan yechimlar.</p>
             </div>
 
             <div class="apps-grid" id="appsGrid">
@@ -186,29 +221,24 @@
         <div class="container">
             <div class="section-head reveal">
                 <span class="section-tag" data-i18n="how.tag">QANDAY ISHLAYDI</span>
-                <h2 class="section-title" data-i18n="how.title">3 ta oddiy qadam</h2>
+                <h2 class="section-title" data-i18n="how.title">3 qadamda ishga tushiring</h2>
                 <p class="section-subtitle" data-i18n="how.subtitle">5 daqiqada biznesingizni online ga olib chiqing</p>
             </div>
             <div class="how-grid">
                 <div class="how-step reveal">
-                    <div class="how-number">01</div>
-                    <div class="how-icon"><i class="fa-solid fa-mouse-pointer"></i></div>
-                    <h3>Ilovangizni tanlang</h3>
-                    <p>Do'kon, fast food yoki kafe — biznesingizga mos ilovani tanlang</p>
+                    <div class="how-head"><span class="how-num">1</span><i class="fa-solid fa-hand-pointer"></i></div>
+                    <h3>Ilovani tanlang</h3>
+                    <p>Biznesingizga mos ilova turini — do'kon, fast food yoki kafe — tanlang.</p>
                 </div>
-                <div class="how-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                 <div class="how-step reveal">
-                    <div class="how-number">02</div>
-                    <div class="how-icon"><i class="fa-solid fa-pen-to-square"></i></div>
-                    <h3>Ma'lumotlaringizni kiriting</h3>
-                    <p>Biznes nomi, manzil, telefon va mahsulotlaringizni qo'shing</p>
+                    <div class="how-head"><span class="how-num">2</span><i class="fa-solid fa-sliders"></i></div>
+                    <h3>Sozlang</h3>
+                    <p>Nom, manzil, mahsulot va to'lov usullarini qo'shing.</p>
                 </div>
-                <div class="how-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                 <div class="how-step reveal">
-                    <div class="how-number">03</div>
-                    <div class="how-icon"><i class="fa-solid fa-globe"></i></div>
-                    <h3>Biznesingiz online!</h3>
-                    <p><code>sizning-biznes.biznesonline.uz</code> da ishga tushadi</p>
+                    <div class="how-head"><span class="how-num">3</span><i class="fa-solid fa-globe"></i></div>
+                    <h3>Ishga tushiring</h3>
+                    <p>Shaxsiy domenda darhol online bo'ling: <code>sizning-biznes.biznesonline.uz</code></p>
                 </div>
             </div>
         </div>
@@ -218,20 +248,16 @@
     <section class="reviews-section" id="reviews">
         <div class="container">
             <div class="section-head reveal">
-                <span class="section-tag" data-i18n="reviews.tag">SHARHLAR</span>
-                <h2 class="section-title" data-i18n="reviews.title">Mijozlarimiz nima deyishadi</h2>
-                <p class="section-subtitle" data-i18n="reviews.subtitle">200+ biznes egasi bizni tanladi</p>
+                <span class="section-tag" data-i18n="reviews.tag">MIJOZLAR</span>
+                <h2 class="section-title" data-i18n="reviews.title">200+ biznes egasi tanladi</h2>
+                <p class="section-subtitle" data-i18n="reviews.subtitle">Mijozlarimiz platformadan qanday foydalanmoqda</p>
             </div>
             <div class="reviews-grid">
                 <div class="review-card reveal">
-                    <div class="review-stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                    <p class="review-text">"2 kunda online bo'ldik, buyurtmalar 40% oshdi. Endi mijozlar QR kod orqali to'g'ridan-to'g'ri buyurtma berishadi."</p>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">"2 kunda online bo'ldik, buyurtmalar 40% oshdi. Mijozlar QR orqali to'g'ridan-to'g'ri buyurtma berishadi."</p>
                     <div class="review-author">
-                        <div class="avatar avatar-lg" style="background:#16A34A">D</div>
+                        <div class="avatar" style="background:#0B2447">D</div>
                         <div>
                             <div class="author-name">Davron Karimov</div>
                             <div class="author-role">"Toshkent Burger" egasi</div>
@@ -239,14 +265,10 @@
                     </div>
                 </div>
                 <div class="review-card reveal">
-                    <div class="review-stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                    </div>
+                    <div class="review-stars">★★★★★</div>
                     <p class="review-text">"Juda qulay, o'zim boshqaraman. Texnik bilim kerak emas — menyuni o'zgartirish 1 daqiqada."</p>
                     <div class="review-author">
-                        <div class="avatar avatar-lg" style="background:#F59E0B">M</div>
+                        <div class="avatar" style="background:#2563EB">M</div>
                         <div>
                             <div class="author-name">Malika Yusupova</div>
                             <div class="author-role">"Coffee Time" egasi</div>
@@ -254,14 +276,10 @@
                     </div>
                 </div>
                 <div class="review-card reveal">
-                    <div class="review-stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                    </div>
+                    <div class="review-stars">★★★★★</div>
                     <p class="review-text">"Narx arzon, sifat a'lo. Mahalla do'konim uchun bundan yaxshi yechim topa olmasdim."</p>
                     <div class="review-author">
-                        <div class="avatar avatar-lg" style="background:#0F172A">S</div>
+                        <div class="avatar" style="background:#5A7292">S</div>
                         <div>
                             <div class="author-name">Sardor Aliyev</div>
                             <div class="author-role">"Mahalla Do'kon" egasi</div>
@@ -277,19 +295,16 @@
         <div class="container">
             <div class="cta-card reveal">
                 <div class="cta-content">
-                    <h2 data-i18n="cta.title">Bugun boshlang — ertaga mijozlaringiz ko'paysin</h2>
-                    <p>Ro'yxatdan o'ting va ilovangizni bepul oling — bir necha daqiqada online bo'ling.</p>
-                    <div class="cta-buttons">
-                        <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
-                            <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Bepul boshlash</span>
-                        </a>
-                        <a href="tel:+998901234567" class="btn btn-ghost btn-lg">
-                            <i class="fa-solid fa-phone"></i> +998 90 123-45-67
-                        </a>
-                    </div>
+                    <h2 data-i18n="cta.title">Bugun boshlang — bepul</h2>
+                    <p>Ro'yxatdan o'ting va korporativ darajadagi veb-ilovangizni bir necha daqiqada oling.</p>
                 </div>
-                <div class="cta-decor">
-                    <i class="fa-solid fa-bolt"></i>
+                <div class="cta-actions">
+                    <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
+                        <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Bepul boshlash</span>
+                    </a>
+                    <a href="tel:+998992823115" class="btn btn-ghost btn-lg">
+                        <i class="fa-solid fa-headset"></i> Savdo bo'limi bilan
+                    </a>
                 </div>
             </div>
         </div>
@@ -304,7 +319,7 @@
                         <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
                         <span class="logo-text">BiznesOnline</span>
                     </a>
-                    <p class="footer-desc">O'zbekistondagi kichik bizneslar uchun zamonaviy va arzon SaaS platforma. Biznesingizni online ga oling.</p>
+                    <p class="footer-desc">O'zbekistondagi kichik bizneslar uchun ishonchli, korporativ darajadagi SaaS platforma. Biznesingizni online ga oling.</p>
                     <div class="social-links">
                         <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
@@ -313,29 +328,36 @@
                     </div>
                 </div>
                 <div class="footer-col">
-                    <h4>Sahifalar</h4>
+                    <h4>Mahsulot</h4>
                     <ul class="footer-links">
-                        <li><a href="#home">Bosh sahifa</a></li>
-                        <li><a href="#apps">Ilovalar</a></li>
+                        <li><a href="#apps">Do'kon</a></li>
+                        <li><a href="#apps">Fast Food</a></li>
+                        <li><a href="#apps">Kafe / Restoran</a></li>
                         <li><a href="#how">Qanday ishlaydi</a></li>
-                        <li><a href="#reviews">Sharhlar</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Kompaniya</h4>
+                    <ul class="footer-links">
+                        <li><a href="#reviews">Mijozlar</a></li>
                         <li><a href="kirish.html?tab=register">Ro'yxatdan o'tish</a></li>
                         <li><a href="kirish.html">Kirish</a></li>
+                        <li><a href="#contact">Bog'lanish</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>Bog'lanish</h4>
                     <ul class="footer-contacts">
-                        <li><a href="tel:+998901234567"><i class="fa-solid fa-phone"></i> +998 90 123-45-67</a></li>
+                        <li><a href="tel:+998992823115"><i class="fa-solid fa-phone"></i> +998 99 282 31 15</a></li>
                         <li><a href="mailto:info@biznesonline.uz"><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</a></li>
-                        <li><i class="fa-solid fa-location-dot"></i> Toshkent, Mirzo Ulug'bek tumani</li>
+                        <li><i class="fa-solid fa-location-dot"></i> Toshkent, O'zbekiston</li>
                         <li><i class="fa-solid fa-clock"></i> Dush-Shanba, 9:00 - 18:00</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>© 2026 BiznesOnline. Barcha huquqlar himoyalangan.</p>
-                <p>O'zbekistonda ❤️ bilan yaratildi</p>
+                <p>Maxfiylik · Shartlar</p>
             </div>
         </div>
     </footer>
