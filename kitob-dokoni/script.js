@@ -118,11 +118,33 @@ const DEFAULT_DATA = {
 const UZ_REGIONS = window.UZ_REGIONS || {};
 
 /* ---------- Storage ---------- */
+// DEMO rejim (?demo=1) — do'kon bo'sh bo'lsa vitrina uchun namuna kitoblar.
+// FAQAT xotirada, Cloud'ga saqlanmaydi (haqiqiy do'kon buzilmaydi).
+const IS_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+function demoImg(bg, emoji) {
+    return "data:image/svg+xml," + encodeURIComponent(
+        `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='560'><rect width='400' height='560' fill='${bg}'/><text x='200' y='360' font-size='210' text-anchor='middle'>${emoji}</text></svg>`
+    );
+}
+const DEMO_PRODUCTS = [
+    { id: 'd1', name: "O'tkan kunlar", author: "Abdulla Qodiriy", price: 45000, oldPrice: 55000, image: demoImg('#fee2e2', '📕'), category: 'badiiy', stock: 30, sold: 210, desc: "O'zbek adabiyotining durdona romani." },
+    { id: 'd2', name: "Atomic Habits", author: "James Clear", price: 89000, oldPrice: null, image: demoImg('#dcfce7', '📗'), category: 'biznes', stock: 25, sold: 340, desc: "Yaxshi odatlar haqida bestseller." },
+    { id: 'd3', name: "Sapiens", author: "Yuval N. Harari", price: 99000, oldPrice: 129000, image: demoImg('#dbeafe', '📘'), category: 'ilmiy', stock: 18, sold: 156, desc: "Insoniyat tarixi qisqacha." },
+    { id: 'd4', name: "Alkimyogar", author: "Paulo Coelho", price: 52000, oldPrice: null, image: demoImg('#fef9c3', '📙'), category: 'badiiy', stock: 22, sold: 189, desc: "Orzular haqidagi mashhur asar." },
+    { id: 'd5', name: "Kichkina shahzoda", author: "A. de Saint-Exupéry", price: 38000, oldPrice: 45000, image: demoImg('#f3e8ff', '📓'), category: 'bolalar', stock: 35, sold: 275, desc: "Bolalar va kattalar uchun ertak." },
+    { id: 'd6', name: "Boy ota, kambag'al ota", author: "Robert Kiyosaki", price: 75000, oldPrice: null, image: demoImg('#e0f2fe', '📔'), category: 'biznes', stock: 20, sold: 231, desc: "Moliyaviy savodxonlik asosi." }
+];
+
 const Store = {
     load() {
         const parsed = window.Cloud ? Cloud.get("store", null) : null;
-        if (!parsed) { this.save(DEFAULT_DATA); return JSON.parse(JSON.stringify(DEFAULT_DATA)); }
-        return { ...DEFAULT_DATA, ...parsed };
+        let d;
+        if (!parsed) { this.save(DEFAULT_DATA); d = JSON.parse(JSON.stringify(DEFAULT_DATA)); }
+        else d = { ...DEFAULT_DATA, ...parsed };
+        if (IS_DEMO && (!d.products || d.products.length === 0)) {
+            d.products = DEMO_PRODUCTS.map(p => ({ ...p, active: true }));
+        }
+        return d;
     },
     save(data) { if (window.Cloud) Cloud.set("store", data); },
     reset() { this.save(DEFAULT_DATA); },

@@ -45,6 +45,23 @@ function onReady(fn){ if (document.readyState !== 'loading') fn(); else document
 // Har bir mijoz alohida boshlanadi — default ovqatlar yo'q.
 // Mijoz admin panelida o'z menyusini qo'shadi.
 if (!DB.get('tb_foods')) DB.set('tb_foods', []);
+
+// DEMO rejim (?demo=1) — do'kon bo'sh bo'lsa vitrina uchun namuna taomlar.
+// FAQAT xotirada (catalogFoods orqali), DB/Cloud'ga saqlanmaydi.
+const IS_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+const DEMO_FOODS = [
+  { id: 1, name: "Beef Burger", price: 39000, cat: "burger", rating: 4.8, time: 20, emoji: "🍔", active: true },
+  { id: 2, name: "Double Cheese", price: 52000, cat: "burger", rating: 4.9, time: 22, emoji: "🍔", active: true },
+  { id: 3, name: "Pepperoni Pizza", price: 65000, cat: "pizza", rating: 4.7, time: 30, emoji: "🍕", active: true },
+  { id: 4, name: "Lavash Mini", price: 28000, cat: "lavash", rating: 4.6, time: 15, emoji: "🌯", active: true },
+  { id: 5, name: "Hot-Dog", price: 22000, cat: "hotdog", rating: 4.5, time: 12, emoji: "🌭", active: true },
+  { id: 6, name: "French Fries", price: 18000, cat: "fries", rating: 4.7, time: 10, emoji: "🍟", active: true }
+];
+// Katalog uchun taomlar — demo rejimda va do'kon bo'sh bo'lsa namuna qaytaradi.
+function catalogFoods() {
+  const f = DB.get('tb_foods', []);
+  return (IS_DEMO && f.length === 0) ? DEMO_FOODS : f;
+}
 if (!DB.get('tb_orders')) DB.set('tb_orders', []);
 if (!DB.get('tb_users')) DB.set('tb_users', []);
 if (!DB.get('tb_messages')) DB.set('tb_messages', []);
@@ -278,7 +295,7 @@ function foodImageHTML(f) {
 }
 
 function renderFoods() {
-  const foods = DB.get('tb_foods', []);
+  const foods = catalogFoods();
   const q = $('searchInput').value.toLowerCase();
   const grid = $('foodGrid');
   let list = foods.filter(f =>
@@ -347,7 +364,7 @@ function toggleFav(id) {
 $('favoritesBtn').addEventListener('click', () => navigateTo('favorites'));
 function renderFavorites() {
   const favs = getFav();
-  const foods = DB.get('tb_foods', []).filter(f => favs.includes(f.id) && f.active !== false);
+  const foods = catalogFoods().filter(f => favs.includes(f.id) && f.active !== false);
   const grid = $('favGrid');
   if (foods.length === 0) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-sub)"><i class="fa-regular fa-heart" style="font-size:60px;opacity:.2"></i><h3 style="margin-top:14px">Sevimlilar yo\'q</h3><p style="margin-top:6px">Yoqtirgan taomlaringizni yurakcha bilan belgilang</p></div>';
@@ -382,7 +399,7 @@ function renderFavorites() {
 // ========== DETAIL MODAL ==========
 const detailModal = $('detailModal');
 function openDetail(id) {
-  const foods = DB.get('tb_foods', []);
+  const foods = catalogFoods();
   const f = foods.find(x => x.id === id);
   if (!f) return;
   currentFood = f;
@@ -426,7 +443,7 @@ function renderCart() {
     summary.classList.remove('show'); return;
   }
   summary.classList.add('show');
-  const foods = DB.get('tb_foods', []);
+  const foods = catalogFoods();
   list.innerHTML = cart.map(c => {
     const f = foods.find(x => x.id === c.id);
     if (!f) return '';
@@ -470,7 +487,7 @@ $('checkoutBtn').addEventListener('click', () => {
     renderAddresses();
     return;
   }
-  const foods = DB.get('tb_foods', []);
+  const foods = catalogFoods();
   const settings = DB.get('tb_settings', {});
   const deliveryFee = settings.deliveryFee || 15000;
   const items = cart.map(c => {

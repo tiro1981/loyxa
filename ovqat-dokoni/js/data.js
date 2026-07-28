@@ -128,5 +128,23 @@ window.DATA = (function () {
     } catch (e) {}
   }
 
+  // DEMO rejim (?demo=1) — do'kon bo'sh bo'lsa, vitrina uchun namuna mahsulotlar
+  // ko'rsatiladi. FAQAT xotirada — Cloud'ga saqlanmaydi (haqiqiy do'kon buzilmaydi).
+  try {
+    const _isDemo = new URLSearchParams(location.search).get('demo') === '1';
+    if (_isDemo && products.length === 0) {
+      products.push(
+        P("Qizil olma", 18000, 22000, "1 kg", "🍎", "meva", 4.8, { popular: true }),
+        P("Banan", 24000, null, "1 kg", "🍌", "meva", 4.7, { popular: true }),
+        P("Pomidor", 12000, 15000, "1 kg", "🍅", "sabzavot", 4.6),
+        P("Bodring", 9000, null, "1 kg", "🥒", "sabzavot", 4.5),
+        P("Sut 3.2%", 12000, null, "1 L", "🥛", "sut", 4.9, { popular: true }),
+        P("Tandir non", 4000, null, "1 dona", "🍞", "non", 4.8, { popular: true }),
+        P("Suv 1.5L", 5000, 6000, "1 dona", "💧", "ichimlik", 4.6),
+        P("Mol go'shti", 89000, null, "1 kg", "🥩", "gosht", 4.7)
+      );
+    }
+  } catch (e) {}
+
   return { clientId: CLIENT_ID, categories, products, ads, paymentMethods, user, addresses, orders, faqs, gradOf, daysLeft, shelfOf, saveCatalog, reloadCatalog };
 })();

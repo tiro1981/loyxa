@@ -390,7 +390,7 @@
                         <div class="mp-island"></div>
                         <div class="mp-screen" style="--acc:${a.acc}">
                             <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
-                            <iframe class="mp-appframe" src="${a.url}" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
+                            <iframe class="mp-appframe" src="${a.url}?demo=1" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
                         </div>
                     </div>
                 </div>
@@ -405,9 +405,9 @@
             const scr = el.querySelector('.mp-screen');
             const fr = el.querySelector('iframe');
             fr.addEventListener('load', () => scr.classList.add('loaded'));
+            // Telefonni bosish faqat karuselni aylantiradi — ilova ichiga KIRMAYDI
             el.addEventListener('click', () => {
-                if (i === active) { window.location.href = a.url; }
-                else { go(i); bump(); }
+                if (i !== active) { go(i); bump(); }
             });
             stage.appendChild(el);
             return el;

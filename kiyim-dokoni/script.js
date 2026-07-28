@@ -103,15 +103,38 @@ const UZ_REGIONS = window.UZ_REGIONS || {};
 // "store" kaliti ostida. Cloud client_id bo'yicha avtomatik ajratadi — shu sabab
 // har bir do'kon o'z katalogi/buyurtmalariga ega bo'ladi (multi-tenant to'g'rilandi).
 // Cloud sozlanmagan bo'lsa, cloud.js o'zi localStorage'ga (client bo'yicha) yozadi.
+// DEMO rejim (?demo=1) — do'kon bo'sh bo'lsa vitrina uchun namuna mahsulotlar.
+// FAQAT xotirada ishlatiladi, Cloud'ga saqlanmaydi (haqiqiy do'kon buzilmaydi).
+const IS_DEMO = new URLSearchParams(location.search).get('demo') === '1';
+function demoImg(bg, emoji) {
+    return "data:image/svg+xml," + encodeURIComponent(
+        `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='500'><rect width='400' height='500' fill='${bg}'/><text x='200' y='320' font-size='210' text-anchor='middle'>${emoji}</text></svg>`
+    );
+}
+const DEMO_PRODUCTS = [
+    { id: 'd1', name: "Klassik ko'ylak", price: 149000, oldPrice: 199000, image: demoImg('#fce7f3', '👗'), category: 'ayollar', stock: 24, sold: 58, sizes: ['S', 'M', 'L'], desc: "Yengil yozgi ko'ylak." },
+    { id: 'd2', name: "Erkaklar futbolkasi", price: 89000, oldPrice: null, image: demoImg('#e0f2fe', '👕'), category: 'erkaklar', stock: 40, sold: 120, sizes: ['M', 'L', 'XL'], desc: "Paxta futbolka." },
+    { id: 'd3', name: "Sport krossovka", price: 349000, oldPrice: 449000, image: demoImg('#ede9fe', '👟'), category: 'poyabzal', stock: 15, sold: 33, sizes: ['40', '41', '42', '43'], desc: "Qulay sport poyabzal." },
+    { id: 'd4', name: "Charm sumka", price: 259000, oldPrice: null, image: demoImg('#fef3c7', '👜'), category: 'aksessuar', stock: 12, sold: 21, sizes: [], desc: "Zamonaviy charm sumka." },
+    { id: 'd5', name: "Bolalar kurtkasi", price: 179000, oldPrice: 219000, image: demoImg('#dcfce7', '🧥'), category: 'bolalar', stock: 18, sold: 44, sizes: ['XS', 'S', 'M'], desc: "Issiq bolalar kurtkasi." },
+    { id: 'd6', name: "Jinsi shim", price: 199000, oldPrice: null, image: demoImg('#dbeafe', '👖'), category: 'erkaklar', stock: 27, sold: 76, sizes: ['30', '32', '34'], desc: "Klassik jinsi shim." }
+];
+
 const Store = {
     load() {
         const parsed = window.Cloud ? Cloud.get("store", null) : null;
+        let d;
         if (!parsed) {
             this.save(DEFAULT_DATA);
-            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+            d = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        } else {
+            // Cloud qaytargan qiymat allaqachon obyekt — JSON.parse SHART EMAS.
+            d = { ...DEFAULT_DATA, ...parsed };
         }
-        // Cloud qaytargan qiymat allaqachon obyekt — JSON.parse SHART EMAS.
-        return { ...DEFAULT_DATA, ...parsed };
+        if (IS_DEMO && (!d.products || d.products.length === 0)) {
+            d.products = DEMO_PRODUCTS.map(p => ({ ...p, active: true }));
+        }
+        return d;
     },
     save(data) { if (window.Cloud) Cloud.set("store", data); },
     reset() { if (window.Cloud) Cloud.set("store", JSON.parse(JSON.stringify(DEFAULT_DATA))); },
