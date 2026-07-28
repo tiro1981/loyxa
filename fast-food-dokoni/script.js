@@ -165,12 +165,6 @@ $('registerForm').addEventListener('submit', (e) => {
   showToast('Hisob yaratildi! 🎉');
 });
 
-$('logoutBtn').addEventListener('click', () => {
-  currentUser = null;
-  DB.remove('tb_current_user');
-  checkAuth();
-});
-
 function initUserUI() {
   updateProfile();
   renderFoods();
@@ -826,27 +820,8 @@ $('profileEditForm').addEventListener('submit', (e) => {
   showToast('Profil yangilandi ✅');
 });
 
-// ========== PASSWORD ==========
-$('privacyBtn').addEventListener('click', () => openModal('privacyModal'));
-$('passForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const cur = $('curPass').value, nw = $('newPass').value, cf = $('confPass').value;
-  if (cur !== currentUser.password) { showToast('Joriy parol noto\'g\'ri'); return; }
-  if (nw.length < 4) { showToast('Parol kamida 4 belgi'); return; }
-  if (nw !== cf) { showToast('Parollar mos kelmadi'); return; }
-  currentUser.password = nw;
-  DB.set('tb_current_user', currentUser);
-  const users = DB.get('tb_users', []);
-  const i = users.findIndex(u => u.id === currentUser.id);
-  if (i >= 0) { users[i].password = nw; DB.set('tb_users', users); }
-  $('passForm').reset();
-  closeModal('privacyModal');
-  showToast('Parol o\'zgartirildi 🔒');
-});
-
 // ========== CHAT WITH ADMIN ==========
 $('chatBtn').addEventListener('click', openChat);
-$('openChatFromHelp').addEventListener('click', (e) => { e.preventDefault(); closeModal('helpModal'); openChat(); });
 
 function openChat() {
   renderChat();
@@ -896,8 +871,7 @@ $('uchatForm').addEventListener('submit', (e) => {
   renderChat();
 });
 
-// ========== HELP / PROMO / FILTER ==========
-$('helpBtn').addEventListener('click', () => openModal('helpModal'));
+// ========== PROMO / FILTER ==========
 // (Reklama promo-banneri olib tashlangani uchun uning tugma ishlovchisi ham olib tashlandi)
 document.querySelectorAll('.see-all').forEach(a => a.addEventListener('click', (e) => {
   e.preventDefault();

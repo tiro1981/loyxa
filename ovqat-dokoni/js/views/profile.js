@@ -79,33 +79,6 @@ window.Views.profile = function (root) {
           </div>
           <span class="chevron">${ICONS.chevron}</span>
         </div>
-
-        <div class="list-row" data-go="help">
-          <div class="row-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">${ICONS.help}</div>
-          <div class="row-text">
-            <div class="row-title">Yordam</div>
-            <div class="row-sub">Tez-tez so'raladigan savollar</div>
-          </div>
-          <span class="chevron">${ICONS.chevron}</span>
-        </div>
-
-        <div class="list-row" data-go="privacy">
-          <div class="row-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">${ICONS.shield}</div>
-          <div class="row-text">
-            <div class="row-title">Maxfiylik</div>
-            <div class="row-sub">Hisob xavfsizligi</div>
-          </div>
-          <span class="chevron">${ICONS.chevron}</span>
-        </div>
-
-        <div class="list-row" id="pf-logout">
-          <div class="row-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">${ICONS.logout}</div>
-          <div class="row-text">
-            <div class="row-title" style="color:#ef4444">Chiqish</div>
-            <div class="row-sub">Hisobdan chiqish</div>
-          </div>
-          <span class="chevron">${ICONS.chevron}</span>
-        </div>
       </div>
 
       <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text-3)">
@@ -163,18 +136,4 @@ window.Views.profile = function (root) {
     };
   }
 
-  // Chiqish — tasdiqlash oynasi
-  const logout = root.querySelector("#pf-logout");
-  if (logout) {
-    logout.onclick = () => {
-      UI.confirm({
-        danger: true,
-        title: "Chiqish",
-        text: "Hisobdan chiqmoqchimisiz?",
-        okText: "Chiqish",
-        cancelText: "Bekor qilish",
-        onOk: () => UI.toast("Hisobdan chiqdingiz", "info"),
-      });
-    };
-  }
 };

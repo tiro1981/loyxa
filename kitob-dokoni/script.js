@@ -1181,21 +1181,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.getElementById('openPayment').onclick = () => toast('Tez kunda qo\'shiladi', 'info');
     document.getElementById('openChat').onclick = () => openChat();
 
-    document.getElementById('logoutBtn').onclick = async () => {
-        const ok = await showDialog({
-            title: 'Hisobdan chiqish',
-            message: 'Profilingiz ushbu qurilmadan o\'chiriladi. Savatcha saqlanadi.',
-            icon: '👋',
-            okText: 'Chiqish',
-            danger: true,
-        });
-        if (!ok) return;
-        profile = {};
-        localStorage.removeItem(PROFILE_KEY);
-        renderProfile();
-        toast('Hisobdan chiqildi', 'info');
-    };
-
     /* ============ CHAT (user ↔ admin) ============ */
     const CHAT_USER_KEY = 'kitob_chat_user';
     let chatUserKey = localStorage.getItem(CHAT_USER_KEY);
