@@ -894,7 +894,7 @@
     left: 50%;
     width: 264px;
     margin-left: -132px;
-    margin-top: -284px;
+    margin-top: -279px;
     transition: transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease;
     will-change: transform, opacity;
     cursor: pointer;
@@ -925,7 +925,7 @@
     position: relative;
     background: #000;
     border-radius: 51px;
-    padding: 11px;
+    padding: 6px;
     box-shadow: inset 0 0 2px 1px rgba(255,255,255,.06);
 }
 .mrd .mp-island {
@@ -961,19 +961,11 @@
 .mrd .mp-btn.power  { right: -3px; top: 168px; width: 3px; height: 58px; }
 .mrd .mrd-phone.is-center .mp-frame {
     box-shadow: 0 40px 70px -22px rgba(0,0,0,.42), 0 12px 26px -12px rgba(0,0,0,.26);
-    animation: mrdPhoneFloat 3.6s ease-in-out infinite;
-}
-@keyframes mrdPhoneFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-9px); }
-}
-@media (prefers-reduced-motion: reduce) {
-    .mrd .mrd-phone.is-center .mp-frame { animation: none; }
 }
 .mrd .mp-screen {
     position: relative;
     background: #fff;
-    border-radius: 38px;
+    border-radius: 44px;
     overflow: hidden;
     height: 540px;
     display: flex;
@@ -995,9 +987,9 @@
     top: 46px;
     left: 0;
     width: 390px;
-    height: 817px;
+    height: 784px;
     border: 0;
-    transform: scale(0.6051);
+    transform: scale(0.6308);
     transform-origin: top left;
     pointer-events: none;   /* kliklar telefon divga o'tsin */
     background: #fff;

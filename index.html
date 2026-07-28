@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=5">
+    <link rel="stylesheet" href="css/meridian.css?v=6">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -425,8 +425,8 @@
 
         function layout() {
             const stageW = stage.clientWidth || 900;
-            const cs = Math.max(0.58, Math.min(1, (stageW * 0.58) / 264));
-            stage.style.height = Math.round(568 * cs + 82) + 'px';
+            const cs = Math.max(0.56, Math.min(1, (stageW * 0.55) / 264));
+            stage.style.height = Math.round(558 * cs + 82) + 'px';
             const w = 264 * cs;
             const n = APPS.length;
             phones.forEach((el, i) => {
@@ -437,9 +437,9 @@
                 const dir = off > 0 ? 1 : -1;
                 let x = 0, sc = cs, z = 6, op = 1, ry = 0;
                 if (aoff === 0) { x = 0;               sc = cs;        z = 6; op = 1;   ry = 0; }
-                else if (aoff === 1) { x = dir * w * 0.92; sc = cs * 0.80; z = 5; op = .97; ry = dir * -18; }
-                else if (aoff === 2) { x = dir * w * 1.62; sc = cs * 0.62; z = 4; op = .45; ry = dir * -26; }
-                else { x = dir * w * 2.0; sc = cs * 0.5; z = 3; op = 0; ry = dir * -30; }
+                else if (aoff === 1) { x = dir * w * 1.06; sc = cs * 0.80; z = 5; op = .97; ry = dir * -16; }
+                else if (aoff === 2) { x = dir * w * 1.86; sc = cs * 0.62; z = 4; op = .45; ry = dir * -24; }
+                else { x = dir * w * 2.2; sc = cs * 0.5; z = 3; op = 0; ry = dir * -28; }
                 el.style.transform = `translateX(${x}px) scale(${sc}) rotateY(${ry}deg)`;
                 el.style.zIndex = z;
                 el.style.opacity = op;
