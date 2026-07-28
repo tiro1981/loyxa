@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=2">
+    <link rel="stylesheet" href="css/meridian.css?v=3">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -205,9 +205,7 @@
             </div>
 
             <div class="app-showcase reveal" id="appShowcase">
-                <button class="showcase-nav prev" id="showcasePrev" aria-label="Oldingi"><i class="fa-solid fa-chevron-left"></i></button>
                 <div class="showcase-stage" id="showcaseStage"></div>
-                <button class="showcase-nav next" id="showcaseNext" aria-label="Keyingi"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
             <div class="showcase-caption" id="showcaseCaption"></div>
             <div class="showcase-dots" id="showcaseDots"></div>
@@ -364,94 +362,30 @@
     <!-- APP SHOWCASE (coverflow) — platforma ilovalari vitrinasi -->
     <script>
     (function () {
+        // Telefon ichida — HAQIQIY web-ilova (jonli iframe). url = ilovaning o'zi.
         const APPS = [
-            {
-                name: "Ovqat Dokoni", label: "Ovqat", url: "ovqat-dokoni/index.html", acc: "#16A34A",
-                bannerGrad: "linear-gradient(135deg,#16A34A,#065F46)", kick: "Yangi & Toza", title: "Bozor narxida", emoji: "🥬",
-                chips: ["Barchasi", "Mevalar", "Sabzavot", "Sut mahs."],
-                sec: "Mashhur mahsulotlar",
-                prods: [
-                    { emoji: "🍎", bg: "#FEF2F2", name: "Qizil olma, 1 kg", price: "18 000", badge: "-15%" },
-                    { emoji: "🥛", bg: "#EFF6FF", name: "Sut 3.2%, 1 L", price: "12 000" }
-                ]
-            },
-            {
-                name: "Fast Food", label: "Fast Food", url: "fast-food-dokoni/index.html", acc: "#EA580C",
-                bannerGrad: "linear-gradient(135deg,#F97316,#B91C1C)", kick: "Issiq & Tez", title: "Delicious Burgers", emoji: "🍔",
-                chips: ["Burgerlar", "Setlar", "Ichimlik", "Aksiya"],
-                sec: "Tavsiya etamiz",
-                prods: [
-                    { emoji: "🍔", bg: "#FFF7ED", name: "Beef Burger", price: "39 000", badge: "-20%" },
-                    { emoji: "🌯", bg: "#FEFCE8", name: "Lavash Mini", price: "28 000" }
-                ]
-            },
-            {
-                name: "Moda", label: "Moda", url: "kiyim-dokoni/index.html", acc: "#DB2777",
-                bannerGrad: "linear-gradient(135deg,#EC4899,#9D174D)", kick: "New Season", title: "NEW NOW", emoji: "👗",
-                chips: ["Ayollar", "Erkaklar", "Bolalar", "Aksiya"],
-                sec: "Yangi kolleksiya",
-                prods: [
-                    { emoji: "👗", bg: "#FDF2F8", name: "Yozgi ko'ylak", price: "149 000" },
-                    { emoji: "👟", bg: "#F5F3FF", name: "Krossovka", price: "349 000", badge: "-30%" }
-                ]
-            },
-            {
-                name: "Kitob Olami", label: "Kitob", url: "kitob-dokoni/index.html", acc: "#4F46E5",
-                bannerGrad: "linear-gradient(135deg,#6366F1,#312E81)", kick: "Kashf eting", title: "Bestsellerlar", emoji: "📚",
-                chips: ["Badiiy", "Ilmiy", "Bolalar", "Darslik"],
-                sec: "Haftaning tanlovi",
-                prods: [
-                    { emoji: "📕", bg: "#FEF2F2", name: "O'tkan kunlar", price: "45 000" },
-                    { emoji: "📗", bg: "#ECFDF5", name: "Atomic Habits", price: "89 000", badge: "-10%" }
-                ]
-            }
+            { name: "Ovqat Dokoni", label: "Ovqat",     url: "ovqat-dokoni/index.html",     acc: "#16A34A" },
+            { name: "Fast Food",    label: "Fast Food",  url: "fast-food-dokoni/index.html", acc: "#EA580C" },
+            { name: "Moda",         label: "Moda",       url: "kiyim-dokoni/index.html",     acc: "#DB2777" },
+            { name: "Kitob Olami",  label: "Kitob",      url: "kitob-dokoni/index.html",     acc: "#4F46E5" }
         ];
 
         const stage = document.getElementById('showcaseStage');
         const dotsWrap = document.getElementById('showcaseDots');
         const caption = document.getElementById('showcaseCaption');
-        const prevBtn = document.getElementById('showcasePrev');
-        const nextBtn = document.getElementById('showcaseNext');
+        const showcaseEl = document.getElementById('appShowcase');
         if (!stage) return;
 
         const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         function screenHTML(a) {
-            const chips = a.chips.map((c, i) => `<span class="${i === 0 ? 'on' : ''}">${esc(c)}</span>`).join('');
-            const prods = a.prods.map(p => `
-                <div class="mp-prod">
-                    ${p.badge ? `<span class="mp-pbadge">${esc(p.badge)}</span>` : ''}
-                    <span class="mp-pheart"><i class="fa-regular fa-heart"></i></span>
-                    <div class="mp-pimg" style="background:${p.bg}">${p.emoji}</div>
-                    <div class="mp-pbody">
-                        <div class="mp-pname">${esc(p.name)}</div>
-                        <div class="mp-pprice">${esc(p.price)} <span style="font-size:9px;color:#94A3B8;font-weight:600">so'm</span></div>
-                    </div>
-                </div>`).join('');
             return `
                 <div class="mp-frame">
                     <div class="mp-notch"></div>
                     <div class="mp-screen" style="--acc:${a.acc}">
-                        <div class="mp-tgbar">
-                            <span>Close</span>
-                            <div class="mp-tgtitle">${esc(a.name)}<small>mini app</small></div>
-                            <span class="mp-dots-btn"><i class="fa-solid fa-ellipsis"></i></span>
-                        </div>
-                        <div class="mp-apphead"><i class="fa-solid fa-bars"></i><span class="mp-h-title">Do'kon</span><i class="fa-solid fa-magnifying-glass"></i></div>
-                        <div class="mp-banner" style="background:${a.bannerGrad}">
-                            <span class="mp-b-kick">${esc(a.kick)}</span>
-                            <span class="mp-b-title">${esc(a.title)}</span>
-                            <span class="mp-b-emoji">${a.emoji}</span>
-                        </div>
-                        <div class="mp-chips">${chips}</div>
-                        <div class="mp-sec">${esc(a.sec)}</div>
-                        <div class="mp-prods">${prods}</div>
-                        <div class="mp-nav">
-                            <span class="on"><i class="fa-solid fa-table-cells-large"></i>Katalog</span>
-                            <span><i class="fa-solid fa-cart-shopping"></i><span class="mp-nbadge">2</span>Savat</span>
-                            <span><i class="fa-solid fa-heart"></i>Sevimli</span>
-                            <span><i class="fa-solid fa-user"></i>Profil</span>
-                        </div>
+                        <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
+                        <iframe class="mp-appframe" src="${a.url}" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
                     </div>
                 </div>
                 <div class="mp-label">${esc(a.label)}</div>`;
@@ -462,9 +396,12 @@
             const el = document.createElement('div');
             el.className = 'mrd-phone';
             el.innerHTML = screenHTML(a);
+            const scr = el.querySelector('.mp-screen');
+            const fr = el.querySelector('iframe');
+            fr.addEventListener('load', () => scr.classList.add('loaded'));
             el.addEventListener('click', () => {
                 if (i === active) { window.location.href = a.url; }
-                else { go(i); }
+                else { go(i); bump(); }
             });
             stage.appendChild(el);
             return el;
@@ -474,7 +411,7 @@
         APPS.forEach((a, i) => {
             const b = document.createElement('button');
             b.setAttribute('aria-label', a.label);
-            b.addEventListener('click', () => go(i));
+            b.addEventListener('click', () => { go(i); bump(); });
             dotsWrap.appendChild(b);
         });
         const dots = [...dotsWrap.children];
@@ -484,19 +421,19 @@
             const cs = Math.max(0.6, Math.min(1, (stageW * 0.62) / 264));
             stage.style.height = Math.round(558 * cs + 78) + 'px';
             const w = 264 * cs;
+            const n = APPS.length;
             phones.forEach((el, i) => {
                 let off = i - active;
-                const n = APPS.length;
-                // eng yaqin aylanma masofani tanlash (loop hissi)
                 if (off > n / 2) off -= n;
                 if (off < -n / 2) off += n;
                 const aoff = Math.abs(off);
-                let x = 0, sc = cs, z = 5, op = 1;
-                if (aoff === 0) { x = 0; sc = cs; z = 6; op = 1; }
-                else if (aoff === 1) { x = off * w * 0.62; sc = cs * 0.82; z = 5; op = .95; }
-                else if (aoff === 2) { x = (off > 0 ? 1 : -1) * w * 1.04; sc = cs * 0.64; z = 4; op = .5; }
-                else { x = (off > 0 ? 1 : -1) * w * 1.3; sc = cs * 0.5; z = 3; op = 0; }
-                el.style.transform = `translateX(${x}px) scale(${sc})`;
+                const dir = off > 0 ? 1 : -1;
+                let x = 0, sc = cs, z = 6, op = 1, ry = 0;
+                if (aoff === 0) { x = 0;               sc = cs;        z = 6; op = 1;   ry = 0; }
+                else if (aoff === 1) { x = dir * w * 0.60; sc = cs * 0.82; z = 5; op = .96; ry = dir * -22; }
+                else if (aoff === 2) { x = dir * w * 1.02; sc = cs * 0.64; z = 4; op = .5;  ry = dir * -30; }
+                else { x = dir * w * 1.3; sc = cs * 0.5; z = 3; op = 0; ry = dir * -34; }
+                el.style.transform = `translateX(${x}px) scale(${sc}) rotateY(${ry}deg)`;
                 el.style.zIndex = z;
                 el.style.opacity = op;
                 el.style.pointerEvents = op === 0 ? 'none' : 'auto';
@@ -512,17 +449,35 @@
             layout();
         }
 
-        prevBtn && prevBtn.addEventListener('click', () => go(active - 1));
-        nextBtn && nextBtn.addEventListener('click', () => go(active + 1));
+        /* ---- avto-aylanish (autoplay) ---- */
+        let timer = null, inView = false, hovering = false;
+        function tick() { go(active + 1); }
+        function startAuto() {
+            stopAuto();
+            if (prefersReduced || !inView || hovering) return;
+            timer = setInterval(tick, 4200);
+        }
+        function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
+        function bump() { startAuto(); }   // foydalanuvchi amalidan keyin sanoqni qayta boshlash
 
-        // swipe / drag
+        showcaseEl.addEventListener('mouseenter', () => { hovering = true; stopAuto(); });
+        showcaseEl.addEventListener('mouseleave', () => { hovering = false; startAuto(); });
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver((ents) => {
+                inView = ents[0].isIntersecting;
+                inView ? startAuto() : stopAuto();
+            }, { threshold: 0.35 }).observe(showcaseEl);
+        } else { inView = true; startAuto(); }
+
+        /* ---- swipe / drag ---- */
         let sx = null;
         const onDown = (e) => { sx = (e.touches ? e.touches[0].clientX : e.clientX); };
         const onUp = (e) => {
             if (sx === null) return;
             const ex = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX);
             const d = ex - sx;
-            if (Math.abs(d) > 40) go(active + (d < 0 ? 1 : -1));
+            if (Math.abs(d) > 40) { go(active + (d < 0 ? 1 : -1)); bump(); }
             sx = null;
         };
         stage.addEventListener('touchstart', onDown, { passive: true });
@@ -530,10 +485,10 @@
         stage.addEventListener('mousedown', onDown);
         window.addEventListener('mouseup', onUp);
 
-        // klaviatura
-        document.getElementById('appShowcase').addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') go(active - 1);
-            if (e.key === 'ArrowRight') go(active + 1);
+        /* ---- klaviatura ---- */
+        showcaseEl.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') { go(active - 1); bump(); }
+            if (e.key === 'ArrowRight') { go(active + 1); bump(); }
         });
 
         let rid;

@@ -921,6 +921,14 @@
 }
 .mrd .mrd-phone.is-center .mp-frame {
     box-shadow: 0 50px 100px -28px rgba(11,36,71,.7);
+    animation: mrdPhoneFloat 3.6s ease-in-out infinite;
+}
+@keyframes mrdPhoneFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mrd .mrd-phone.is-center .mp-frame { animation: none; }
 }
 .mrd .mp-notch {
     position: absolute;
@@ -943,6 +951,32 @@
     font-size: 12px;
     line-height: 1.3;
 }
+/* jonli ilova (iframe) — haqiqiy web-ilova ko'rinishi */
+.mrd .mp-appframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 390px;
+    height: 857px;
+    border: 0;
+    transform: scale(0.6308);
+    transform-origin: top left;
+    pointer-events: none;   /* kliklar telefon divga o'tsin (markaz -> ilova ochiladi) */
+    background: #fff;
+}
+.mrd .mp-screen .mp-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    color: #fff;
+    background: var(--acc, #2563EB);
+    transition: opacity .4s ease;
+    z-index: 2;
+}
+.mrd .mp-screen.loaded .mp-loading { opacity: 0; pointer-events: none; }
 /* telegram mini-app top bar */
 .mrd .mp-tgbar {
     display: flex;
