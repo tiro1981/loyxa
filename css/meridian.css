@@ -894,7 +894,7 @@
     left: 50%;
     width: 264px;
     margin-left: -132px;
-    margin-top: -278px;
+    margin-top: -284px;
     transition: transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease;
     will-change: transform, opacity;
     cursor: pointer;
@@ -912,13 +912,53 @@
 }
 .mrd .mrd-phone.is-center .mp-label { opacity: 1; }
 
+/* realistik iPhone ramkasi — titan metall + Dynamic Island + yon tugmalar */
 .mrd .mp-frame {
     position: relative;
-    background: #0B1220;
-    border-radius: 40px;
-    padding: 9px;
-    box-shadow: 0 40px 80px -30px rgba(11,36,71,.6), 0 0 0 1px rgba(11,36,71,.06);
+    border-radius: 52px;
+    padding: 3px;
+    background:
+        linear-gradient(135deg, #eceded 0%, #a6a8ae 18%, #f5f6f8 40%, #9a9ca2 58%, #d7d9de 78%, #b4b6bc 100%);
+    box-shadow: 0 40px 80px -30px rgba(11,36,71,.6);
 }
+.mrd .mp-bezel {
+    position: relative;
+    background: #050507;
+    border-radius: 49px;
+    padding: 11px;
+    box-shadow: inset 0 0 3px 1px rgba(255,255,255,.1);
+}
+.mrd .mp-island {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 84px; height: 25px;
+    background: #000;
+    border-radius: 14px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+}
+.mrd .mp-island::after {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #24406b, #0a1830 72%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.mrd .mp-btn {
+    position: absolute;
+    z-index: 1;
+    border-radius: 2px;
+    background: linear-gradient(#cfd0d5, #9a9ca2);
+}
+.mrd .mp-btn.silent { left: -3px; top: 110px; width: 3px; height: 22px; }
+.mrd .mp-btn.volup  { left: -3px; top: 148px; width: 3px; height: 40px; }
+.mrd .mp-btn.voldn  { left: -3px; top: 200px; width: 3px; height: 40px; }
+.mrd .mp-btn.power  { right: -3px; top: 168px; width: 3px; height: 58px; }
 .mrd .mrd-phone.is-center .mp-frame {
     box-shadow: 0 50px 100px -28px rgba(11,36,71,.7);
     animation: mrdPhoneFloat 3.6s ease-in-out infinite;
@@ -930,20 +970,10 @@
 @media (prefers-reduced-motion: reduce) {
     .mrd .mrd-phone.is-center .mp-frame { animation: none; }
 }
-.mrd .mp-notch {
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 96px; height: 24px;
-    background: #0B1220;
-    border-radius: 0 0 16px 16px;
-    z-index: 5;
-}
 .mrd .mp-screen {
     position: relative;
     background: #fff;
-    border-radius: 32px;
+    border-radius: 38px;
     overflow: hidden;
     height: 540px;
     display: flex;
@@ -957,9 +987,9 @@
     top: 0;
     left: 0;
     width: 390px;
-    height: 857px;
+    height: 892px;
     border: 0;
-    transform: scale(0.6308);
+    transform: scale(0.6051);
     transform-origin: top left;
     pointer-events: none;   /* kliklar telefon divga o'tsin (markaz -> ilova ochiladi) */
     background: #fff;

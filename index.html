@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=3">
+    <link rel="stylesheet" href="css/meridian.css?v=4">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -382,10 +382,16 @@
         function screenHTML(a) {
             return `
                 <div class="mp-frame">
-                    <div class="mp-notch"></div>
-                    <div class="mp-screen" style="--acc:${a.acc}">
-                        <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
-                        <iframe class="mp-appframe" src="${a.url}" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
+                    <span class="mp-btn silent"></span>
+                    <span class="mp-btn volup"></span>
+                    <span class="mp-btn voldn"></span>
+                    <span class="mp-btn power"></span>
+                    <div class="mp-bezel">
+                        <div class="mp-island"></div>
+                        <div class="mp-screen" style="--acc:${a.acc}">
+                            <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
+                            <iframe class="mp-appframe" src="${a.url}" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
+                        </div>
                     </div>
                 </div>
                 <div class="mp-label">${esc(a.label)}</div>`;
@@ -418,8 +424,8 @@
 
         function layout() {
             const stageW = stage.clientWidth || 900;
-            const cs = Math.max(0.6, Math.min(1, (stageW * 0.62) / 264));
-            stage.style.height = Math.round(558 * cs + 78) + 'px';
+            const cs = Math.max(0.58, Math.min(1, (stageW * 0.58) / 264));
+            stage.style.height = Math.round(568 * cs + 82) + 'px';
             const w = 264 * cs;
             const n = APPS.length;
             phones.forEach((el, i) => {
@@ -430,9 +436,9 @@
                 const dir = off > 0 ? 1 : -1;
                 let x = 0, sc = cs, z = 6, op = 1, ry = 0;
                 if (aoff === 0) { x = 0;               sc = cs;        z = 6; op = 1;   ry = 0; }
-                else if (aoff === 1) { x = dir * w * 0.60; sc = cs * 0.82; z = 5; op = .96; ry = dir * -22; }
-                else if (aoff === 2) { x = dir * w * 1.02; sc = cs * 0.64; z = 4; op = .5;  ry = dir * -30; }
-                else { x = dir * w * 1.3; sc = cs * 0.5; z = 3; op = 0; ry = dir * -34; }
+                else if (aoff === 1) { x = dir * w * 0.92; sc = cs * 0.80; z = 5; op = .97; ry = dir * -18; }
+                else if (aoff === 2) { x = dir * w * 1.62; sc = cs * 0.62; z = 4; op = .45; ry = dir * -26; }
+                else { x = dir * w * 2.0; sc = cs * 0.5; z = 3; op = 0; ry = dir * -30; }
                 el.style.transform = `translateX(${x}px) scale(${sc}) rotateY(${ry}deg)`;
                 el.style.zIndex = z;
                 el.style.opacity = op;
