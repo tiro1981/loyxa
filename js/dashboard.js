@@ -24,6 +24,11 @@ function _boDashboardInit() {
     } catch {}
 
     if (!client) {
+        // Sessiya "client" turida, lekin unga mos obuna topilmadi (yaroqsiz/eskirgan
+        // sessiya). Buzuq sessiyani TOZALAMASDAN kirish.html'ga qaytarsak — kirish.html
+        // uni yana dashboard.html'ga yo'naltiradi va sahifa cheksiz "o'chib-yonadi".
+        // Shuning uchun avval sessiyani o'chiramiz — sikl uziladi.
+        try { localStorage.removeItem('bo_session'); } catch {}
         window.location.replace('kirish.html');
         return;
     }
