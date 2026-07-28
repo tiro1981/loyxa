@@ -106,19 +106,20 @@ const UZ_REGIONS = window.UZ_REGIONS || {};
 // DEMO rejim (?demo=1) — do'kon bo'sh bo'lsa vitrina uchun namuna mahsulotlar.
 // FAQAT xotirada ishlatiladi, Cloud'ga saqlanmaydi (haqiqiy do'kon buzilmaydi).
 const IS_DEMO = new URLSearchParams(location.search).get('demo') === '1';
-function demoImg(bg, emoji) {
-    return "data:image/svg+xml," + encodeURIComponent(
-        `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='500'><rect width='400' height='500' fill='${bg}'/><text x='200' y='320' font-size='210' text-anchor='middle'>${emoji}</text></svg>`
-    );
-}
+// Vitrina demo mahsulotlari — rasm demo-img/ papkadan yuklanadi, bo'lmasa emoji tushadi.
 const DEMO_PRODUCTS = [
-    { id: 'd1', name: "Klassik ko'ylak", price: 149000, oldPrice: 199000, image: demoImg('#fce7f3', '👗'), category: 'ayollar', stock: 24, sold: 58, sizes: ['S', 'M', 'L'], desc: "Yengil yozgi ko'ylak." },
-    { id: 'd2', name: "Erkaklar futbolkasi", price: 89000, oldPrice: null, image: demoImg('#e0f2fe', '👕'), category: 'erkaklar', stock: 40, sold: 120, sizes: ['M', 'L', 'XL'], desc: "Paxta futbolka." },
-    { id: 'd3', name: "Sport krossovka", price: 349000, oldPrice: 449000, image: demoImg('#ede9fe', '👟'), category: 'poyabzal', stock: 15, sold: 33, sizes: ['40', '41', '42', '43'], desc: "Qulay sport poyabzal." },
-    { id: 'd4', name: "Charm sumka", price: 259000, oldPrice: null, image: demoImg('#fef3c7', '👜'), category: 'aksessuar', stock: 12, sold: 21, sizes: [], desc: "Zamonaviy charm sumka." },
-    { id: 'd5', name: "Bolalar kurtkasi", price: 179000, oldPrice: 219000, image: demoImg('#dcfce7', '🧥'), category: 'bolalar', stock: 18, sold: 44, sizes: ['XS', 'S', 'M'], desc: "Issiq bolalar kurtkasi." },
-    { id: 'd6', name: "Jinsi shim", price: 199000, oldPrice: null, image: demoImg('#dbeafe', '👖'), category: 'erkaklar', stock: 27, sold: 76, sizes: ['30', '32', '34'], desc: "Klassik jinsi shim." }
+    { id: 'd1', name: "Bej futbolka", price: 89000, oldPrice: 119000, image: 'demo-img/tshirt-beige.jpg', emoji: '👕', category: 'erkaklar', stock: 40, sold: 120, sizes: ['S', 'M', 'L', 'XL'], desc: "Yumshoq paxta klassik futbolka." },
+    { id: 'd2', name: "Oversize futbolka", price: 129000, oldPrice: 159000, image: 'demo-img/tshirt-dark.jpg', emoji: '👕', category: 'erkaklar', stock: 30, sold: 84, sizes: ['M', 'L', 'XL'], desc: "Acid-wash oversize futbolka." },
+    { id: 'd3', name: "Nike Air Max", price: 890000, oldPrice: 1090000, image: 'demo-img/nike.jpg', emoji: '👟', category: 'poyabzal', stock: 15, sold: 61, sizes: ['40', '41', '42', '43'], desc: "Nike Air Max sport krossovka." },
+    { id: 'd4', name: "Retro krossovka", price: 549000, oldPrice: null, image: 'demo-img/sneaker-cream.jpg', emoji: '👟', category: 'poyabzal', stock: 20, sold: 39, sizes: ['39', '40', '41', '42'], desc: "Krem-qora retro krossovka." }
 ];
+// Vitrina (?demo=1): sarlavha ustidagi matn + bildirishnoma tugmasi olib tashlanadi (qidiruv+filter qoladi)
+if (IS_DEMO) {
+    const _s = document.createElement('style');
+    _s.textContent = ".app-header:not(.simple){display:none!important}"
+        + ".p-img-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;background:#f1f5f9}";
+    (document.head || document.documentElement).appendChild(_s);
+}
 
 const Store = {
     load() {
@@ -396,7 +397,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
                 <div class="p-img">
                     ${discount ? `<span class="p-discount">-${discount}%</span>` : ''}
                     <button class="p-fav ${isFav ? 'on' : ''}" data-fav="${p.id}" aria-label="Sevimli">${isFav ? '❤️' : '🤍'}</button>
-                    <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy">
+                    <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy"${IS_DEMO && p.emoji ? ` onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<div class=\\'p-img-emoji\\'>${p.emoji}</div>')"` : ''}>
                     ${outOfStock ? '<div class="p-stockout">Tugagan</div>' : ''}
                 </div>
                 <div class="p-body">

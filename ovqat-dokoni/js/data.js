@@ -133,16 +133,19 @@ window.DATA = (function () {
   try {
     const _isDemo = new URLSearchParams(location.search).get('demo') === '1';
     if (_isDemo && products.length === 0) {
+      // rasm demo-img/ papkadan yuklanadi, bo'lmasa emoji ko'rsatiladi
       products.push(
-        P("Qizil olma", 18000, 22000, "1 kg", "🍎", "meva", 4.8, { popular: true }),
-        P("Banan", 24000, null, "1 kg", "🍌", "meva", 4.7, { popular: true }),
-        P("Pomidor", 12000, 15000, "1 kg", "🍅", "sabzavot", 4.6),
-        P("Bodring", 9000, null, "1 kg", "🥒", "sabzavot", 4.5),
-        P("Sut 3.2%", 12000, null, "1 L", "🥛", "sut", 4.9, { popular: true }),
-        P("Tandir non", 4000, null, "1 dona", "🍞", "non", 4.8, { popular: true }),
-        P("Suv 1.5L", 5000, 6000, "1 dona", "💧", "ichimlik", 4.6),
-        P("Mol go'shti", 89000, null, "1 kg", "🥩", "gosht", 4.7)
+        P("Karam", 8000, null, "1 kg", "🥬", "sabzavot", 4.7, { popular: true, image: "demo-img/cabbage.jpg" }),
+        P("Coca-Cola 0.33L", 8000, 10000, "1 dona", "🥤", "ichimlik", 4.9, { popular: true, image: "demo-img/cola.jpg" }),
+        P("Banan", 24000, null, "1 kg", "🍌", "meva", 4.8, { popular: true, image: "demo-img/banana.jpg" }),
+        P("Pepsi 0.33L", 7000, null, "1 dona", "🥤", "ichimlik", 4.6, { image: "demo-img/pepsi.jpg" })
       );
+    }
+    // Vitrina (?demo=1): tepa manzil matni + bildirishnoma tugmasi olib tashlanadi (qidiruv+kategoriyalar qoladi)
+    if (_isDemo) {
+      const _s = document.createElement('style');
+      _s.textContent = ".appbar{display:none!important}";
+      (document.head || document.documentElement).appendChild(_s);
     }
   } catch (e) {}
 

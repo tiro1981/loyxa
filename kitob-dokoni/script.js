@@ -134,6 +134,12 @@ const DEMO_PRODUCTS = [
     { id: 'd5', name: "Kichkina shahzoda", author: "A. de Saint-Exupéry", price: 38000, oldPrice: 45000, image: demoImg('#f3e8ff', '📓'), category: 'bolalar', stock: 35, sold: 275, desc: "Bolalar va kattalar uchun ertak." },
     { id: 'd6', name: "Boy ota, kambag'al ota", author: "Robert Kiyosaki", price: 75000, oldPrice: null, image: demoImg('#e0f2fe', '📔'), category: 'biznes', stock: 20, sold: 231, desc: "Moliyaviy savodxonlik asosi." }
 ];
+// Vitrina (?demo=1): sarlavha ustidagi matn + bildirishnoma tugmasi olib tashlanadi (qidiruv+filter qoladi)
+if (IS_DEMO) {
+    const _s = document.createElement('style');
+    _s.textContent = ".app-header:not(.simple){display:none!important}";
+    (document.head || document.documentElement).appendChild(_s);
+}
 
 const Store = {
     load() {

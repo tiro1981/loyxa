@@ -50,17 +50,23 @@ if (!DB.get('tb_foods')) DB.set('tb_foods', []);
 // FAQAT xotirada (catalogFoods orqali), DB/Cloud'ga saqlanmaydi.
 const IS_DEMO = new URLSearchParams(location.search).get('demo') === '1';
 const DEMO_FOODS = [
-  { id: 1, name: "Beef Burger", price: 39000, cat: "burger", rating: 4.8, time: 20, emoji: "🍔", active: true },
-  { id: 2, name: "Double Cheese", price: 52000, cat: "burger", rating: 4.9, time: 22, emoji: "🍔", active: true },
-  { id: 3, name: "Pepperoni Pizza", price: 65000, cat: "pizza", rating: 4.7, time: 30, emoji: "🍕", active: true },
-  { id: 4, name: "Lavash Mini", price: 28000, cat: "lavash", rating: 4.6, time: 15, emoji: "🌯", active: true },
-  { id: 5, name: "Hot-Dog", price: 22000, cat: "hotdog", rating: 4.5, time: 12, emoji: "🌭", active: true },
-  { id: 6, name: "French Fries", price: 18000, cat: "fries", rating: 4.7, time: 10, emoji: "🍟", active: true }
+  { id: 1, name: "Pepperoni Pizza", price: 65000, cat: "pizza", rating: 4.8, time: 30, emoji: "🍕", image: "demo-img/pizza.jpg", active: true },
+  { id: 2, name: "Cheeseburger", price: 39000, cat: "burger", rating: 4.9, time: 20, emoji: "🍔", image: "demo-img/burger.jpg", active: true },
+  { id: 3, name: "Hot-Dog", price: 25000, cat: "hotdog", rating: 4.6, time: 12, emoji: "🌭", image: "demo-img/hotdog.jpg", active: true },
+  { id: 4, name: "Taco", price: 32000, cat: "lavash", rating: 4.7, time: 15, emoji: "🌮", image: "demo-img/taco.jpg", active: true }
 ];
 // Katalog uchun taomlar — demo rejimda va do'kon bo'sh bo'lsa namuna qaytaradi.
 function catalogFoods() {
   const f = DB.get('tb_foods', []);
   return (IS_DEMO && f.length === 0) ? DEMO_FOODS : f;
+}
+// Vitrina (?demo=1): salomlashuv matni, tepa manzil va bildirishnoma tugmasi olib tashlanadi (qidiruv+filter qoladi)
+if (IS_DEMO) {
+  const _s = document.createElement('style');
+  _s.textContent = ".home-head h1,.home-head .sub{display:none!important}"
+    + "#notifBtn{display:none!important}.topbar-left .location{display:none!important}"
+    + ".food-emoji img{width:100%;height:100%;object-fit:cover}";
+  (document.head || document.documentElement).appendChild(_s);
 }
 if (!DB.get('tb_orders')) DB.set('tb_orders', []);
 if (!DB.get('tb_users')) DB.set('tb_users', []);
@@ -291,7 +297,10 @@ $('searchInput').addEventListener('input', renderFoods);
 
 // ========== RENDER FOODS ==========
 function foodImageHTML(f) {
-  return f.image ? `<img src="${f.image}" alt="${f.name}">` : f.emoji;
+  if (!f.image) return f.emoji || '';
+  // rasm topilmasa (demo faylsiz) emoji ko'rsatiladi
+  const fb = (IS_DEMO && f.emoji) ? ` onerror="this.onerror=null;this.style.display='none';this.parentElement.insertAdjacentText('beforeend','${f.emoji}')"` : '';
+  return `<img src="${f.image}" alt="${f.name}"${fb}>`;
 }
 
 function renderFoods() {
