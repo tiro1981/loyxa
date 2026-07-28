@@ -132,7 +132,7 @@ const Store = {
             // Cloud qaytargan qiymat allaqachon obyekt — JSON.parse SHART EMAS.
             d = { ...DEFAULT_DATA, ...parsed };
         }
-        if (IS_DEMO && (!d.products || d.products.length === 0)) {
+        if (IS_DEMO) {   // vitrinada HAR DOIM demo mahsulotlar (haqiqiy do'kon ma'lumoti bo'lsa ham)
             d.products = DEMO_PRODUCTS.map(p => ({ ...p, active: true }));
         }
         return d;

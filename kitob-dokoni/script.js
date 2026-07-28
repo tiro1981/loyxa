@@ -147,7 +147,7 @@ const Store = {
         let d;
         if (!parsed) { this.save(DEFAULT_DATA); d = JSON.parse(JSON.stringify(DEFAULT_DATA)); }
         else d = { ...DEFAULT_DATA, ...parsed };
-        if (IS_DEMO && (!d.products || d.products.length === 0)) {
+        if (IS_DEMO) {   // vitrinada HAR DOIM demo kitoblar
             d.products = DEMO_PRODUCTS.map(p => ({ ...p, active: true }));
         }
         return d;

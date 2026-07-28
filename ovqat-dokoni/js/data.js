@@ -132,8 +132,9 @@ window.DATA = (function () {
   // ko'rsatiladi. FAQAT xotirada — Cloud'ga saqlanmaydi (haqiqiy do'kon buzilmaydi).
   try {
     const _isDemo = new URLSearchParams(location.search).get('demo') === '1';
-    if (_isDemo && products.length === 0) {
-      // rasm demo-img/ papkadan yuklanadi, bo'lmasa emoji ko'rsatiladi
+    if (_isDemo) {
+      // vitrinada HAR DOIM demo mahsulotlar (rasm demo-img/ papkadan, bo'lmasa emoji)
+      products.length = 0;
       products.push(
         P("Karam", 8000, null, "1 kg", "🥬", "sabzavot", 4.7, { popular: true, image: "demo-img/cabbage.jpg" }),
         P("Coca-Cola 0.33L", 8000, 10000, "1 dona", "🥤", "ichimlik", 4.9, { popular: true, image: "demo-img/cola.jpg" }),

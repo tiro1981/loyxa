@@ -57,8 +57,9 @@ const DEMO_FOODS = [
 ];
 // Katalog uchun taomlar — demo rejimda va do'kon bo'sh bo'lsa namuna qaytaradi.
 function catalogFoods() {
-  const f = DB.get('tb_foods', []);
-  return (IS_DEMO && f.length === 0) ? DEMO_FOODS : f;
+  // Vitrina (?demo=1): do'konda ma'lumot bor-yo'qligidan qat'i nazar HAR DOIM demo taomlar
+  if (IS_DEMO) return DEMO_FOODS;
+  return DB.get('tb_foods', []);
 }
 // Vitrina (?demo=1): salomlashuv matni, tepa manzil va bildirishnoma tugmasi olib tashlanadi (qidiruv+filter qoladi)
 if (IS_DEMO) {
