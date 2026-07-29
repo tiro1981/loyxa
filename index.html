@@ -503,5 +503,40 @@
         layout();
     })();
     </script>
+
+    <!-- Footer ijtimoiy tarmoq havolalari — admin panelidan (Cloud) o'qiladi -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/cloud.js?v=1"></script>
+    <script>
+    (function () {
+        function normUrl(u) {
+            u = (u || '').trim();
+            if (!u) return '';
+            if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+            return 'https://' + u;
+        }
+        function applySocial() {
+            const s = (window.Cloud ? Cloud.get('bo_social', {}) : {}) || {};
+            document.querySelectorAll('.social-links a[aria-label]').forEach(function (a) {
+                const key = a.getAttribute('aria-label').toLowerCase();
+                const url = normUrl(s[key]);
+                if (url) {
+                    a.href = url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.style.display = '';
+                } else {
+                    a.removeAttribute('href');
+                    a.style.display = 'none';   // havola belgilanmagan ijtimoiy tarmoq yashiriladi
+                }
+            });
+        }
+        (async function () {
+            try { await Cloud.init(); } catch (e) {}
+            applySocial();
+            window.addEventListener('cloud:updated', applySocial);
+        })();
+    })();
+    </script>
 </body>
 </html>

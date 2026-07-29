@@ -460,6 +460,18 @@
                         </div>
                     </div>
 
+                    <div class="adm-panel">
+                        <h3 class="panel-title"><i class="fa-solid fa-share-nodes"></i> Ijtimoiy tarmoqlar</h3>
+                        <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px;">Qo'nish sahifasi (footer) ikonkalari shu havolalarni ochadi. Bo'sh qoldirsangiz — o'sha ikonka ko'rinmaydi.</p>
+                        <div class="adm-form">
+                            <label>Telegram<input type="url" id="setSocTelegram" placeholder="https://t.me/biznesonline"></label>
+                            <label>Instagram<input type="url" id="setSocInstagram" placeholder="https://instagram.com/biznesonline"></label>
+                            <label>Facebook<input type="url" id="setSocFacebook" placeholder="https://facebook.com/biznesonline"></label>
+                            <label>YouTube<input type="url" id="setSocYoutube" placeholder="https://youtube.com/@biznesonline"></label>
+                            <button class="btn btn-primary" id="saveSocial">Saqlash</button>
+                        </div>
+                    </div>
+
                     <div class="adm-panel danger">
                         <h3 class="panel-title">Xavfli amallar</h3>
                         <p style="color:var(--gray-600);font-size:13px;margin-bottom:14px;">Barcha so'rov va mijoz ma'lumotlarini tiklash (demo uchun).</p>
@@ -635,7 +647,7 @@ Yetkazib berish"></textarea>
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/main.js?v=10", "js/admin.js?v=8"]) {
+        for (const src of ["js/main.js?v=10", "js/admin.js?v=9"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

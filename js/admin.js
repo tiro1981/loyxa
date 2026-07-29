@@ -437,6 +437,11 @@ function _boAdminInit() {
         if (botApiEl) botApiEl.value = boCloudGet('bo_bot_api', '');
         const botTokenEl = document.getElementById('setBotToken');
         if (botTokenEl) botTokenEl.value = boCloudGet('bo_bot_token', '');
+
+        // Ijtimoiy tarmoq havolalari
+        const social = boCloudGet('bo_social', {}) || {};
+        const soc = { setSocTelegram: 'telegram', setSocInstagram: 'instagram', setSocFacebook: 'facebook', setSocYoutube: 'youtube' };
+        Object.keys(soc).forEach(id => { const el = document.getElementById(id); if (el) el.value = social[soc[id]] || ''; });
     }
     document.getElementById('saveAdmin').addEventListener('click', async () => {
         const a = boCloudGet('bo_admin', {});
@@ -462,6 +467,16 @@ function _boAdminInit() {
         if (botToken) boCloudSet('bo_bot_token', botToken);
         else if (window.Cloud) Cloud.remove('bo_bot_token'); else localStorage.removeItem('bo_bot_token');
         window.showToast && window.showToast('Sayt sozlamalari saqlandi', 'success');
+    });
+    document.getElementById('saveSocial')?.addEventListener('click', () => {
+        const clean = (v) => (v || '').trim();
+        boCloudSet('bo_social', {
+            telegram: clean(document.getElementById('setSocTelegram')?.value),
+            instagram: clean(document.getElementById('setSocInstagram')?.value),
+            facebook: clean(document.getElementById('setSocFacebook')?.value),
+            youtube: clean(document.getElementById('setSocYoutube')?.value)
+        });
+        window.showToast && window.showToast('Ijtimoiy tarmoq havolalari saqlandi', 'success');
     });
     document.getElementById('resetData').addEventListener('click', () => {
         confirmAction('Hamma ma\'lumotlar o\'chirilsinmi?', 'So\'rovlar, mijozlar va sozlamalar tiklanadi.', () => {
