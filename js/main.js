@@ -294,10 +294,33 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
+            },
+            {
+                id: 'app-nura',
+                slug: 'nura-kosmetika',
+                name: 'NURA — Kosmetika',
+                desc: 'Kosmetika va parfyumeriya do\'koni uchun zamonaviy neumorf ilova — katalog, savat, buyurtma, sevimlilar va to\'liq admin paneli',
+                logo: null,
+                logoEmoji: '💄',
+                price: 139000,
+                priceLabel: 'oyiga',
+                features: [
+                    'Kosmetika katalogi va kategoriyalar',
+                    'Savat va buyurtma berish tizimi',
+                    'Sevimlilar, manzillar va kartalar',
+                    'Kunduzgi / tungi rejim',
+                    '3 tilli interfeys (UZ / RU / EN)',
+                    'Admin panel (mahsulot, buyurtma, sozlamalar)'
+                ],
+                demoUrl: 'nura-kosmetika/index.html',
+                adminUrl: 'nura-kosmetika/admin.html',
+                popular: false,
+                active: true,
+                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v8-fastfood-folder-renamed';
+        const APPS_VERSION = 'v9-nura-kosmetika';
         const removedIds = new Set(['app-salqin', 'app-kofe']);
         const savedVersion = boCloudGet('bo_apps_version', null);
         const existing = boCloudGet('bo_apps', []);
