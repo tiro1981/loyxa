@@ -127,6 +127,16 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   padding:14px 16px;font-family:inherit;font-size:14px;color:var(--ink);outline:0;box-shadow:var(--sh-in)}
 .fld textarea{resize:none;min-height:70px}
 
+/* QR / havola */
+.qr-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.qr-box{width:230px;height:230px;flex:none;border-radius:24px;background:#fff;box-shadow:var(--sh-in);
+  display:grid;place-items:center;padding:16px}
+.qr-box img{width:100%;height:100%;object-fit:contain;border-radius:6px}
+.qr-side{flex:1;min-width:240px}
+.qr-btns{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.qr-btns .btn{justify-content:center;padding:14px}
+@media(max-width:620px){.qr-wrap{justify-content:center}.qr-side{min-width:100%}}
+
 /* modal */
 .veil{position:fixed;inset:0;background:rgba(20,26,40,.5);z-index:50;opacity:0;pointer-events:none;
   transition:opacity .22s;backdrop-filter:blur(3px);display:grid;place-items:center;padding:20px}
@@ -204,6 +214,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
     <button class="nav-b" data-s="orders" onclick="nav('orders')">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="4.5" y="3.5" width="15" height="17" rx="3"/><path stroke-linecap="round" d="M8.8 8.6h6.4M8.8 12h6.4M8.8 15.4h3.6"/></svg>
       Buyurtmalar</button>
+    <button class="nav-b" data-s="qr" onclick="nav('qr')">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path stroke-linecap="round" d="M14 14h3M20 14v3M17 17v3.5M20.5 20.5H20M14 20.5h.5"/></svg>
+      QR / Havola</button>
     <button class="nav-b" data-s="settings" onclick="nav('settings')">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2 2 2 0 11-4 0 1.7 1.7 0 00-2.9-1.2l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1A1.7 1.7 0 004.6 9a1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1A1.7 1.7 0 0010 3.6 1.7 1.7 0 0011 2.1V2a2 2 0 114 0v.1A1.7 1.7 0 0016 3.6a1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9 1.7 1.7 0 001.5 1H22a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
       Sozlamalar</button>
@@ -259,6 +272,30 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         <div style="overflow-x:auto"><table class="tbl"><thead><tr>
           <th>Buyurtma</th><th>Mahsulotlar</th><th>Manzil</th><th>Summa</th><th>Holat</th><th></th>
         </tr></thead><tbody id="ord-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- QR / HAVOLA -->
+    <section class="sec" id="sec-qr">
+      <div class="card">
+        <div class="card-h"><h3>Do'kon havolasi va QR kod</h3></div>
+        <p style="font-size:13px;color:var(--dim);font-weight:300;line-height:1.7;margin-bottom:20px">
+          Ushbu QR kodni do'kon peshtaxtasi, chek yoki reklamada joylashtiring. Mijoz skanerlaganda
+          to'g'ridan-to'g'ri sizning do'koningiz ochiladi.</p>
+        <div class="qr-wrap">
+          <div class="qr-box"><img id="qrCodeImg" alt="QR kod"></div>
+          <div class="qr-side">
+            <div class="fld"><label>Do'kon havolasi</label><input id="qrUrlInput" readonly></div>
+            <div class="qr-btns">
+              <button class="btn" id="qrCopyBtn">
+                <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path stroke-linecap="round" d="M6 15H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v1"/></svg>Havolani nusxalash</button>
+              <button class="btn soft" id="qrOpenBtn">
+                <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 3h7v7M21 3l-9 9M10 5H5a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>Do'konni ochish</button>
+              <button class="btn soft" id="qrDownloadBtn">
+                <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>QR kodni yuklab olish</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -347,7 +384,7 @@ function cset(k,v){ try{ if(window.Cloud&&Cloud.set)Cloud.set(k,v); }catch(e){} 
 let tt; function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),1800);}
 
 /* ===== nav ===== */
-const TITLES={dash:['Boshqaruv','Do\'kon holati bir qarashda'],prods:['Mahsulotlar','Katalogni boshqaring'],orders:['Buyurtmalar','Kelgan buyurtmalar'],settings:['Sozlamalar','Do\'kon ma\'lumotlari']};
+const TITLES={dash:['Boshqaruv','Do\'kon holati bir qarashda'],prods:['Mahsulotlar','Katalogni boshqaring'],orders:['Buyurtmalar','Kelgan buyurtmalar'],qr:['QR / Havola','Do\'konni mijozlar bilan ulashing'],settings:['Sozlamalar','Do\'kon ma\'lumotlari']};
 function nav(s){
   document.querySelectorAll('.nav-b').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
   document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
@@ -358,7 +395,48 @@ function nav(s){
   if(s==='dash')drawDash();
   if(s==='prods')drawProds();
   if(s==='orders')drawOrders();
+  if(s==='qr')drawQr();
   if(s==='settings')drawSettings();
+}
+
+/* ===== QR / HAVOLA ===== */
+function shopUrl(){
+  const u=new URL('index.html',location.href); u.search='';
+  const cid=window.__NURA_CLIENT||'shop';
+  if(cid&&cid!=='shop')u.searchParams.set('client',cid);
+  return u.href;
+}
+function qrApiSrc(url,size){
+  return 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&margin=10&qzone=1&data='+encodeURIComponent(url);
+}
+function drawQr(){
+  const url=shopUrl();
+  const inp=document.getElementById('qrUrlInput'); if(inp)inp.value=url;
+  const img=document.getElementById('qrCodeImg'); if(img)img.src=qrApiSrc(url,440);
+}
+function setupQr(){
+  const by=(id,fn)=>{const el=document.getElementById(id);if(el)el.onclick=fn;};
+  by('qrCopyBtn',()=>{
+    const url=shopUrl();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(()=>toast('Havola nusxalandi')).catch(()=>fallbackCopy(url));
+    }else fallbackCopy(url);
+  });
+  by('qrOpenBtn',()=>window.open(shopUrl(),'_blank'));
+  by('qrDownloadBtn',async()=>{
+    const url=shopUrl();
+    try{
+      const res=await fetch(qrApiSrc(url,600));const blob=await res.blob();
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nura-qr.png';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),3000);toast('QR kod yuklab olindi');
+    }catch(e){window.open(qrApiSrc(url,600),'_blank');}
+  });
+}
+function fallbackCopy(text){
+  try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Havola nusxalandi');}
+  catch(e){toast('Nusxalab bo\'lmadi');}
 }
 
 /* ===== theme ===== */
@@ -611,6 +689,7 @@ function loadData(){
   else{pill.textContent='○ Faqat shu qurilma';
     document.getElementById('sync-note').textContent='Bulut sozlanmagan — ma\'lumotlar faqat shu brauzerda saqlanadi.';}
   loadData();
+  setupQr();
   nav('dash');
   window.addEventListener('cloud:updated',()=>{loadData();const cur=document.querySelector('.nav-b.on');nav(cur?cur.dataset.s:'dash');});
 })();
