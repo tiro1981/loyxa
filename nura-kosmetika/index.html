@@ -728,6 +728,7 @@ uz:{search:"Qidirish",all:"Barchasi",sec_new:"Yangi kelganlar",sec_all:"Mahsulot
  total:"Jami",checkout:"To'lovga o'tish",cart_empty:"Savat bo'sh",
  cart_empty_s:"Sizga yoqqan mahsulotni tanlang — u shu yerda to'planadi.",
  fav_empty:"Sevimlilar bo'sh",fav_empty_s:"Yurakchani bosing — mahsulot shu yerda saqlanadi.",
+ order_empty:"Buyurtmalar yo'q",order_empty_s:"Hali buyurtma bermadingiz. Savatdan buyurtma bering — u shu yerda ko'rinadi.",
  to_catalog:"Katalogga o'tish",n_items:"ta mahsulot",n_addr:"ta manzil",n_cards:"ta karta",
  c_active:"Faol",c_done:"Yakunlangan",c_cancel:"Bekor qilingan",
  st_way:"Yo'lda",st_wait:"Tasdiq kutilmoqda",st_done:"Yetkazildi",
@@ -771,6 +772,7 @@ ru:{search:"Поиск",all:"Все",sec_new:"Новинки",sec_all:"Това�
  total:"Итого",checkout:"Перейти к оплате",cart_empty:"Корзина пуста",
  cart_empty_s:"Выберите понравившийся товар — он появится здесь.",
  fav_empty:"Избранное пусто",fav_empty_s:"Нажмите на сердечко — товар сохранится здесь.",
+ order_empty:"Заказов нет",order_empty_s:"Вы ещё не оформляли заказ. Оформите из корзины — он появится здесь.",
  to_catalog:"В каталог",n_items:"товара",n_addr:"адреса",n_cards:"карты",
  c_active:"Активные",c_done:"Завершённые",c_cancel:"Отменённые",
  st_way:"В пути",st_wait:"Ожидает подтверждения",st_done:"Доставлен",
@@ -814,6 +816,7 @@ en:{search:"Search",all:"See all",sec_new:"New arrivals",sec_all:"Products",mont
  total:"Total",checkout:"Go to payment",cart_empty:"Your cart is empty",
  cart_empty_s:"Pick a product you like — it will appear here.",
  fav_empty:"No favourites yet",fav_empty_s:"Tap the heart — the product will be saved here.",
+ order_empty:"No orders yet",order_empty_s:"You haven't ordered yet. Check out from the cart — it will appear here.",
  to_catalog:"Go to catalog",n_items:"items",n_addr:"addresses",n_cards:"cards",
  c_active:"Active",c_done:"Completed",c_cancel:"Cancelled",
  st_way:"On the way",st_wait:"Awaiting confirmation",st_done:"Delivered",
@@ -1177,25 +1180,9 @@ function drawOrders(){
       ${o.status==='done'?'':`<div class="track">${trk(s.step)}</div>`}
       <div class="o-foot"${o.status==='done'?' style="border-top:0;padding-top:2px"':''}><span>${s.foot}</span><b>${num(o.total)}</b></div>
     </div>`;}).join('');
-  const demoHTML=`
-    <div class="order">
-      <div class="o-top"><div><div class="o-id">#1042</div><div class="o-date">${t('o1')} · 3 ${t('n_items')}</div></div>
-        <span class="tag t-way">${t('st_way')}</span></div>
-      <div class="track">${trk(3)}</div>
-      <div class="o-foot"><span>${t('o_eta')}</span><b>487 000</b></div>
-    </div>
-    <div class="order">
-      <div class="o-top"><div><div class="o-id">#1038</div><div class="o-date">${t('o2')} · 2 ${t('n_items')}</div></div>
-        <span class="tag t-wait">${t('st_wait')}</span></div>
-      <div class="track">${trk(1)}</div>
-      <div class="o-foot"><span>${t('o_wait')}</span><b>330 000</b></div>
-    </div>
-    <div class="order">
-      <div class="o-top"><div><div class="o-id">#1021</div><div class="o-date">${t('o3')} · 4 ${t('n_items')}</div></div>
-        <span class="tag t-done">${t('st_done')}</span></div>
-      <div class="o-foot" style="border-top:0;padding-top:2px"><span>${t('o_addr')}</span><b>612 000</b></div>
-    </div>`;
-  document.getElementById('orders').innerHTML=liveHTML+demoHTML;
+  document.getElementById('orders').innerHTML = cloudOrders.length
+    ? liveHTML
+    : `<div class="empty"><div class="e-ic">${art('fixer')}</div><h3>${t('order_empty')}</h3><p>${t('order_empty_s')}</p></div>`;
 }
 
 /* ================= HEADER ================= */
