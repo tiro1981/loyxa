@@ -145,8 +145,9 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .fmt-note .muted{color:var(--dim)}
 .ban-item{display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:16px;padding:10px;
   box-shadow:var(--sh-s);margin-bottom:12px}
-.ban-thumb{flex:1;min-width:0;height:82px;border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--sh-in)}
+.ban-thumb{flex:none;width:132px;aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--sh-in)}
 .ban-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ban-sp{flex:1;min-width:0;font-size:12px;color:var(--dim);font-weight:300;padding:0 6px}
 .ban-ord{display:flex;flex-direction:column;gap:6px;flex:none}
 .ban-item .mini:disabled{opacity:.35;cursor:default}
 
@@ -335,9 +336,11 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
         <div class="fmt-note">
           <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 16v-4M12 8h.01"/></svg>
           <div>
-            <b>Tavsiya etilgan format:</b> yotiq (gorizontal) rasm — o'lcham <b>1200 × 500 px</b> (nisbat 12:5).
+            <b>Tavsiya etilgan format:</b> tik (vertikal) rasm — o'lcham <b>1080 × 1350 px</b> (nisbat 4:5).
             JPG yoki PNG. Katta rasm avtomatik siqiladi.<br>
-            <span class="muted">Bir nechta rasm yuklansangiz — do'konda avtomatik slayd bo'ladi (har 3 soniyada almashadi).</span>
+            <span class="muted">Muhim: rasmning <b>yuqori qismi</b> ilovada logotip va manzil bilan qoplanadi — asosiy
+            mahsulot va matnni <b>markazga yoki pastroqqa</b> joylang. Bir nechta rasm yuklasangiz —
+            avtomatik slayd bo'ladi (har 3 soniyada almashadi).</span>
           </div>
         </div>
         <div id="banner-list"></div>
@@ -501,6 +504,7 @@ function drawBanners(){
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
       </div>
       <div class="ban-thumb"><img src="${b.img}" alt=""></div>
+      <div class="ban-sp">Ilovadagi ko'rinish — tik (4:5)</div>
       <button class="mini del" onclick="delBanner(${i})" aria-label="O'chirish">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" d="M5 7h14M10 11v6M14 11v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 7l.8 12a2 2 0 002 1.9h5.4a2 2 0 002-1.9l.8-12M9.5 7V5.2A1.2 1.2 0 0110.7 4h2.6a1.2 1.2 0 011.2 1.2V7"/></svg></button>
     </div>`).join('')
@@ -511,7 +515,7 @@ function compressBanner(file,cb){
   if(!/^image\//.test(file.type)){toast('Faqat rasm faylini tanlang');return;}
   const r=new FileReader();
   r.onload=()=>{const im=new Image();im.onload=()=>{
-    const MW=1400,MH=800;let w=im.width,h=im.height;
+    const MW=1200,MH=1600;let w=im.width,h=im.height;
     const s=Math.min(1,MW/w,MH/h);w=Math.round(w*s);h=Math.round(h*s);
     const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d');
     cx.fillStyle='#ffffff';cx.fillRect(0,0,w,h);cx.drawImage(im,0,0,w,h);
