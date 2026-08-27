@@ -38,6 +38,7 @@ window.Cloud = (function () {
     client: "demo",
     mode: _sb ? "cloud" : "local",   // 'cloud' = Supabase; 'local' = localStorage fallback
     _cache: {},
+    _dirty: {},   // shu sessiyada foydalanuvchi yozgan qiymatlar — kech kelgan server javobi ularni bosib ketmasin
 
     _lsKey(key) { return "cloud__" + this.app + "__" + this.client + "__" + key; },
 
@@ -46,6 +47,7 @@ window.Cloud = (function () {
       this.app = app || "app";
       this.client = client || "demo";
       this._cache = {};
+      this._dirty = {};
       if (this.mode !== "cloud") {
         if (!_sb) console.warn("[Cloud] Supabase sozlanmagan — localStorage rejimida ishlayapti.");
         return;
@@ -69,8 +71,11 @@ window.Cloud = (function () {
           // kelgan javobni ham qo'llab, "cloud:updated" orqali sahifani yangilaymiz.
           query.then(({ data, error }) => {
             if (error || !data) return;
-            this._cache = {};
-            data.forEach((r) => { this._cache[r.key] = r.value; });
+            const merged = {};
+            data.forEach((r) => { merged[r.key] = r.value; });
+            // Foydalanuvchi shu sessiyada yozgan qiymatlar ustun turadi (o'chirilgan/qo'shilgan tiklanmasin)
+            Object.keys(this._dirty).forEach((k) => { merged[k] = this._dirty[k]; });
+            this._cache = merged;
             this.mode = "cloud";
             try { window.dispatchEvent(new CustomEvent("cloud:updated")); } catch (e2) {}
           }).catch((e2) => console.error("[Cloud] init (late):", e2));
@@ -96,31 +101,33 @@ window.Cloud = (function () {
       } catch (e) { return fallback; }
     },
 
-    // Yozish (localStorage.setItem o'rnida) — keshni yangilab, fonda serverga yuboradi
+    // Yozish (localStorage.setItem o'rnida) — keshni yangilab, HAR DOIM serverga ham yuboradi.
+    // MUHIM: Supabase sozlangan bo'lsa (_sb bor), init sekin bo'lib "local" rejimga o'tgan
+    // bo'lsa ham yozuvni serverga yuboramiz — aks holda qo'shilgan rasm / o'chirish yo'qolib qolardi.
     set(key, value) {
-      if (this.mode === "cloud") {
-        this._cache[key] = value;
+      this._cache[key] = value;
+      this._dirty[key] = value;
+      try { localStorage.setItem(this._lsKey(key), JSON.stringify(value)); }
+      catch (e) { console.warn("[Cloud] set (local):", e); }
+      if (_sb) {
         _sb.from("app_state")
           .upsert(
             { app: this.app, client_id: this.client, key, value, updated_at: new Date().toISOString() },
             { onConflict: "app,client_id,key" }
           )
           .then(({ error }) => { if (error) console.error("[Cloud] set:", error); });
-      } else {
-        try { localStorage.setItem(this._lsKey(key), JSON.stringify(value)); }
-        catch (e) { console.warn("[Cloud] set (local):", e); }
       }
     },
 
-    // O'chirish (localStorage.removeItem o'rnida)
+    // O'chirish (localStorage.removeItem o'rnida) — HAR DOIM serverdan ham o'chiradi
     remove(key) {
-      if (this.mode === "cloud") {
-        delete this._cache[key];
+      delete this._cache[key];
+      delete this._dirty[key];
+      try { localStorage.removeItem(this._lsKey(key)); } catch (e) {}
+      if (_sb) {
         _sb.from("app_state").delete()
           .eq("app", this.app).eq("client_id", this.client).eq("key", key)
           .then(({ error }) => { if (error) console.error("[Cloud] remove:", error); });
-      } else {
-        try { localStorage.removeItem(this._lsKey(key)); } catch (e) {}
       }
     },
   };

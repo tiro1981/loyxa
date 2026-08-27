@@ -101,7 +101,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .pthumb{width:48px;height:48px;flex:none;border-radius:13px;background:var(--bg);box-shadow:var(--sh-in);
   display:grid;place-items:center;overflow:hidden}
 .pthumb svg{width:80%;height:80%}
-.pthumb img{max-width:82%;max-height:82%;object-fit:contain}
+.pthumb img{width:100%;height:100%;object-fit:contain}
 .pcell b{font-size:13.5px;font-weight:500;display:block;line-height:1.3}
 .pcell small{font-size:11px;color:var(--dim);font-weight:300}
 .chip{font-size:11px;font-weight:500;padding:6px 12px;border-radius:10px;box-shadow:var(--sh-in);color:var(--dim);white-space:nowrap}
@@ -136,11 +136,25 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .veil.on .modal{transform:none}
 .modal h3{font-size:18px;font-weight:600;margin-bottom:4px}
 .modal>p{font-size:12.5px;color:var(--dim);font-weight:300;margin-bottom:20px}
-.img-pick{display:flex;align-items:center;gap:16px;margin-bottom:16px}
-.img-prev{width:78px;height:78px;flex:none;border-radius:18px;background:var(--surface);box-shadow:var(--sh-in);
-  display:grid;place-items:center;overflow:hidden}
-.img-prev svg{width:80%;height:80%}
-.img-prev img{max-width:84%;max-height:84%;object-fit:contain}
+.img-pick{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px}
+.img-prev{width:104px;height:124px;flex:none;border-radius:18px;background:var(--surface);box-shadow:var(--sh-in);
+  display:grid;place-items:center;overflow:hidden;position:relative}
+.img-prev svg{width:82%;height:82%}
+.img-prev img{width:100%;height:100%;object-fit:contain}
+.img-prev .pv-tag{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:8.5px;
+  color:var(--dim);background:var(--bg);padding:2px 8px;border-radius:8px;box-shadow:var(--sh-s);white-space:nowrap}
+.fit-ctl{margin:2px 0 16px}
+.fit-ctl.dim{opacity:.45;pointer-events:none}
+.fitpills{display:flex;gap:10px;margin-bottom:14px}
+.fitpills button{flex:1;border:0;border-radius:12px;padding:11px;cursor:pointer;font-family:inherit;font-size:12.5px;
+  font-weight:500;background:var(--bg);color:var(--ink);box-shadow:var(--sh-s)}
+.fitpills button.on{background:var(--red);color:#fff;box-shadow:4px 5px 12px rgba(244,87,59,.4)}
+.sld{margin-bottom:12px}
+.sld label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-bottom:7px;font-weight:400}
+.sld input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;
+  background:var(--bg);box-shadow:var(--sh-in);outline:0}
+.sld input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--surface);box-shadow:var(--sh-s),0 0 0 2px var(--red);cursor:pointer}
 .up-btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit;font-size:12.5px;
   font-weight:500;color:var(--ink);background:var(--bg);box-shadow:var(--sh-s);border-radius:13px;padding:11px 15px;transition:transform .13s}
 .up-btn:active{transform:scale(.96);box-shadow:var(--sh-in)}
@@ -294,7 +308,13 @@ function art(k){
     <linearGradient id="gyel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8EE86"/><stop offset="55%" stop-color="#D2DC5C"/><stop offset="100%" stop-color="#AFBB33"/></linearGradient>
   </defs>${B}</svg>`;
 }
-function pic(p){ return (p&&p.img)?`<img src="${p.img}" alt="">`:art(p&&p.k); }
+function imgStyle(p){
+  const fit=(p&&p.fit==='cover')?'cover':'contain';
+  const zoom=(p&&p.zoom)||1;
+  const pos=(p&&p.pos)||'50% 50%';
+  return `width:100%;height:100%;object-fit:${fit};object-position:${pos};transform:scale(${zoom})`;
+}
+function pic(p){ return (p&&p.img)?`<img src="${p.img}" alt="" style="${imgStyle(p)}">`:art(p&&p.k); }
 
 const CATS={1:'Pardoz',2:'Kremlar',3:'Parfyum',4:'Fiksator',5:'SPF'};
 const ART_KEYS=[['found','Tonal / found'],['doubtless','Parfyum'],['fixer','Fiksator'],['arencia','Tuba / krem']];
@@ -315,6 +335,9 @@ const DEFAULT_PRODUCTS=[
 
 let products=[], orders=[], settings={brand:'NURA',phone:'+998 71 200 00 00',tg:'@nura_support',ship:25000};
 let editImg=null, editKey='found';
+/* rasm kartada qanday ko'rinishi — qo'lda sozlanadi */
+let editFit='contain', editZoom=1, editPosX=50, editPosY=50;
+function editObj(){return{img:editImg,k:editKey,fit:editFit,zoom:editZoom,pos:editPosX+'% '+editPosY+'%'};}
 
 /* ===== Cloud helpers ===== */
 function cget(k,f){ try{ return (window.Cloud&&Cloud.get)?Cloud.get(k,f):f; }catch(e){return f;} }
@@ -389,11 +412,15 @@ function openProd(id){
   const p=id?products.find(x=>x.id===id):null;
   editImg=p?p.img||null:null;
   editKey=p?(p.k||'found'):'found';
+  editFit=p&&p.fit==='cover'?'cover':'contain';
+  editZoom=p&&p.zoom?+p.zoom:1;
+  editPosX=50;editPosY=50;
+  if(p&&p.pos){const m=String(p.pos).match(/(-?\d+)%\s+(-?\d+)%/);if(m){editPosX=+m[1];editPosY=+m[2];}}
   document.getElementById('modal').innerHTML=`
     <h3>${p?'Mahsulotni tahrirlash':'Yangi mahsulot'}</h3>
     <p>Do'kon katalogida ko'rinadi.</p>
     <div class="img-pick">
-      <div class="img-prev" id="img-prev">${pic({img:editImg,k:editKey})}</div>
+      <div class="img-prev" id="img-prev">${pic(editObj())}<span class="pv-tag">Karta ko'rinishi</span></div>
       <div style="flex:1">
         <div class="fld"><label>Mahsulot rasmi</label>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
@@ -412,6 +439,18 @@ function openProd(id){
           </select></div>
       </div>
     </div>
+    <div class="fit-ctl ${editImg?'':'dim'}" id="fit-ctl">
+      <div class="fitpills">
+        <button type="button" id="fit-contain" class="${editFit==='contain'?'on':''}" onclick="setFit('contain')">Butun rasm</button>
+        <button type="button" id="fit-cover" class="${editFit==='cover'?'on':''}" onclick="setFit('cover')">Kartani to'ldir</button>
+      </div>
+      <div class="sld"><label><span>Kattalashtirish</span><span id="zoom-v">${Math.round(editZoom*100)}%</span></label>
+        <input type="range" min="100" max="250" step="5" value="${Math.round(editZoom*100)}" oninput="editZoom=this.value/100;document.getElementById('zoom-v').textContent=this.value+'%';refreshPrev()"></div>
+      <div class="sld"><label><span>Chapga / o'ngga</span><span id="px-v">${editPosX}%</span></label>
+        <input type="range" min="0" max="100" step="5" value="${editPosX}" oninput="editPosX=+this.value;document.getElementById('px-v').textContent=this.value+'%';refreshPrev()"></div>
+      <div class="sld"><label><span>Yuqoriga / pastga</span><span id="py-v">${editPosY}%</span></label>
+        <input type="range" min="0" max="100" step="5" value="${editPosY}" oninput="editPosY=+this.value;document.getElementById('py-v').textContent=this.value+'%';refreshPrev()"></div>
+    </div>
     <div class="frm">
       <div class="fld full"><label>Nomi *</label><input id="p-n" value="${esc(p?p.n:'')}" placeholder="Mahsulot nomi"></div>
       <div class="fld"><label>Brend</label><input id="p-br" value="${esc(p?p.br:'')}" placeholder="TIRTIR"></div>
@@ -428,8 +467,14 @@ function openProd(id){
   document.getElementById('veil').classList.add('on');
 }
 function refreshPrev(){
-  document.getElementById('img-prev').innerHTML=pic({img:editImg,k:editKey});
+  document.getElementById('img-prev').innerHTML=pic(editObj())+'<span class="pv-tag">Karta ko\'rinishi</span>';
   const rm=document.getElementById('up-rm'); if(rm)rm.style.display=editImg?'':'none';
+  const fc=document.getElementById('fit-ctl'); if(fc)fc.classList.toggle('dim',!editImg);
+}
+function setFit(v){editFit=v;
+  document.getElementById('fit-contain').classList.toggle('on',v==='contain');
+  document.getElementById('fit-cover').classList.toggle('on',v==='cover');
+  refreshPrev();
 }
 /* rasmni canvas orqali kichraytirib siqamiz — istalgan foto ishlaydi va yengil saqlanadi */
 function onImg(e){
@@ -469,6 +514,7 @@ function saveProd(id){
     p, old:+document.getElementById('p-old').value.replace(/\D/g,'')||0,
     sz:document.getElementById('p-sz').value.split(',').map(s=>s.trim()).filter(Boolean),
     k:editKey, img:editImg||null,
+    fit:editFit, zoom:editZoom, pos:editPosX+'% '+editPosY+'%',
     d:{uz:document.getElementById('p-d').value.trim()}
   };
   if(id){ const i=products.findIndex(x=>x.id===id); if(i>=0)products[i]=Object.assign({},products[i],obj); }
@@ -532,8 +578,18 @@ function saveSettings(){
 /* ===== BOOT ===== */
 function loadData(){
   const cp=cget('nura_products',null);
-  products=Array.isArray(cp)&&cp.length?cp.map((p,i)=>Object.assign({id:p.id||i+1},p)):DEFAULT_PRODUCTS.slice();
-  if(!Array.isArray(cp)||!cp.length)cset('nura_products',products);
+  const seeded=cget('nura_seeded',false);
+  if(Array.isArray(cp)){
+    // Serverda ro'yxat bor (bo'sh bo'lsa ham) — uni hurmat qilamiz, DEFAULT qayta urug'lanmaydi
+    products=cp.map((p,i)=>Object.assign({id:p.id||i+1},p));
+  }else if(!seeded){
+    // Faqat BIRINCHI marta — hech qachon urug'lanmagan bo'lsa DEFAULT bilan to'ldiramiz
+    products=DEFAULT_PRODUCTS.slice();
+    cset('nura_products',products);
+    cset('nura_seeded',true);
+  }else{
+    products=[];
+  }
   orders=cget('nura_orders',[])||[];
   const cs=cget('nura_settings',null);
   if(cs&&typeof cs==='object')settings=Object.assign(settings,cs);
