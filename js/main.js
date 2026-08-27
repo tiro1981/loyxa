@@ -317,10 +317,34 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
+            },
+            {
+                id: 'app-lume',
+                slug: 'lume-kosmetika',
+                name: 'LUMÉ — Kosmetika',
+                desc: 'Kosmetika va parfyumeriya do\'koni uchun zamonaviy ilova — baner, kategoriyalar, mahsulot kartasi, savat, buyurtma, sevimlilar va to\'liq admin paneli',
+                logo: null,
+                logoEmoji: '✨',
+                price: 139000,
+                priceLabel: 'oyiga',
+                features: [
+                    'Bosh sahifa baneri (avtoslayd)',
+                    'Kosmetika katalogi va kategoriyalar',
+                    'Savat va buyurtma berish tizimi',
+                    'Sevimlilar, manzillar va kartalar',
+                    'Kunduzgi / tungi rejim',
+                    '3 tilli interfeys (UZ / RU / EN)',
+                    'Admin panel (mahsulot, baner, buyurtma, QR / havola)'
+                ],
+                demoUrl: 'lume-kosmetika/index.html',
+                adminUrl: 'lume-kosmetika/admin.html',
+                popular: false,
+                active: true,
+                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v9-nura-kosmetika';
+        const APPS_VERSION = 'v10-lume-kosmetika';
         const removedIds = new Set(['app-salqin', 'app-kofe']);
         const savedVersion = boCloudGet('bo_apps_version', null);
         const existing = boCloudGet('bo_apps', []);

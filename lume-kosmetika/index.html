@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#EFF3F9">
+<title>LUMÉ — kosmetika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFF3F9;
+  --surface:#FFFFFF;
+  --ink:#1B2033;
+  --dim:#98A0B5;
+  --line:#E2E8F2;
+  --red:#F4573B;
+  --red-d:#DA3D21;
+  --red-soft:#FDE9E5;
+  --blue:#4EA8F0;
+  --blue-d:#2C8FE0;
+  --sun:#FFB020;
+  --sh:6px 6px 14px rgba(163,177,198,.4), -6px -6px 14px rgba(255,255,255,.95);
+  --sh-s:3px 3px 8px rgba(163,177,198,.35), -3px -3px 8px rgba(255,255,255,.9);
+  --sh-in:inset 3px 3px 7px rgba(163,177,198,.4), inset -3px -3px 7px rgba(255,255,255,.9);
+}
+[data-theme="dark"]{
+  --bg:#1A1D27;
+  --surface:#232733;
+  --ink:#EDEFF5;
+  --dim:#7E869C;
+  --line:#2E3342;
+  --red:#FF6B50;
+  --red-d:#F4573B;
+  --red-soft:#3A231F;
+  --blue:#63B4F5;
+  --blue-d:#4EA8F0;
+  --sh:6px 6px 14px rgba(0,0,0,.45), -6px -6px 14px rgba(255,255,255,.035);
+  --sh-s:3px 3px 8px rgba(0,0,0,.4), -3px -3px 8px rgba(255,255,255,.03);
+  --sh-in:inset 3px 3px 7px rgba(0,0,0,.45), inset -3px -3px 7px rgba(255,255,255,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);color-scheme:light}
+body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  display:flex;justify-content:center;min-height:100vh;transition:background .35s,color .35s}
+.phone{width:100%;max-width:430px;min-height:100vh;display:flex;flex-direction:column;
+  position:relative;background:var(--bg)}
+
+/* ===== header ===== */
+.top{position:sticky;top:0;z-index:30;background:var(--bg);padding:16px 22px 6px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.sq{width:44px;height:44px;flex:none;border:0;border-radius:15px;background:var(--bg);
+  color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-s);
+  transition:box-shadow .16s,transform .13s}
+.sq:active{box-shadow:var(--sh-in);transform:scale(.96)}
+.sq svg{width:19px;height:19px}
+.sq.red{background:var(--red);color:#fff;box-shadow:5px 6px 14px rgba(244,87,59,.4)}
+.brand{flex:1;text-align:center;font-size:19px;font-weight:600;letter-spacing:.12em}
+.htitle{flex:1;text-align:center;font-size:18px;font-weight:600}
+
+/* kun/tun tugmasi */
+.tsw{width:62px;height:32px;flex:none;border:0;border-radius:999px;background:var(--bg);
+  box-shadow:var(--sh-in);display:flex;align-items:center;padding:3px;cursor:pointer;position:relative}
+.tsw span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;z-index:2;
+  transition:.28s;color:var(--dim)}
+.tsw svg{width:15px;height:15px}
+.tsw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;
+  background:var(--sun);transition:transform .3s cubic-bezier(.3,1.4,.5,1);
+  box-shadow:0 2px 6px rgba(255,176,32,.5)}
+.tsw.night::after{transform:translateX(30px);background:#5B6AD0;box-shadow:0 2px 6px rgba(91,106,208,.5)}
+.tsw span:first-child{color:#fff}
+.tsw.night span:first-child{color:var(--dim)}
+.tsw.night span:last-child{color:#fff}
+
+/* ===== search ===== */
+.search{display:flex;align-items:center;gap:12px;margin:18px 0 4px;
+  border-bottom:1.5px solid var(--line);padding-bottom:11px}
+.search input{flex:1;min-width:0;border:0;outline:0;background:none;
+  font-family:inherit;font-size:16px;font-weight:400;color:var(--ink)}
+.search input::placeholder{color:var(--dim);font-weight:300}
+.search svg{width:21px;height:21px;color:var(--ink);flex:none}
+
+/* ===== scroll ===== */
+.scroll{flex:1;overflow-y:auto;padding:6px 22px 130px;scrollbar-width:none;background:var(--bg)}
+.scroll::-webkit-scrollbar{display:none}
+.view{display:none;animation:fade .3s ease both}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+/* ===== baner slayder ===== */
+.banner{margin:18px 0 4px;border-radius:22px;overflow:hidden;position:relative;box-shadow:var(--sh)}
+.bn-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.bn-slide{flex:none;width:100%;aspect-ratio:12/5;background:var(--surface)}
+.bn-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.bn-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+.bn-dots span{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.55);transition:.3s}
+.bn-dots span.on{background:#fff;width:18px}
+
+/* ===== kategoriya doiralari ===== */
+.cats{display:flex;gap:16px;overflow-x:auto;margin:20px -22px 0;padding:6px 22px 10px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;
+  border:0;background:none;cursor:pointer;font-family:inherit}
+.cat .cc{width:58px;height:58px;border-radius:50%;background:var(--bg);box-shadow:var(--sh-s);
+  display:grid;place-items:center;overflow:hidden;transition:box-shadow .18s}
+.cat.on .cc{box-shadow:var(--sh-in)}
+.cat .cc svg{width:76%;height:76%}
+.cat em{font-style:normal;font-size:11.5px;color:var(--dim);font-weight:400;white-space:nowrap}
+.cat.on em{color:var(--ink);font-weight:500}
+.cat.filt .cc{background:var(--red);box-shadow:5px 6px 14px rgba(244,87,59,.4)}
+.cat.filt .cc svg{width:22px;height:22px;color:#fff}
+
+.hb{position:absolute;width:42px;height:42px;border:0;border-radius:50%;
+  background:var(--surface);box-shadow:var(--sh-s);display:grid;place-items:center;cursor:pointer;
+  color:var(--dim);z-index:3;transition:transform .14s}
+.hb:active{transform:scale(.86)}
+.hb svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9}
+.hb.on{color:var(--red)}
+.hb.on svg{fill:var(--red);stroke:var(--red)}
+
+/* ===== sec ===== */
+.sec{display:flex;align-items:center;justify-content:space-between;margin:26px 0 14px}
+.sec h2{font-size:16px;font-weight:600}
+.sec a{font-size:12.5px;color:var(--red);cursor:pointer;font-weight:400;text-decoration:none}
+
+/* ===== mahsulot kartalari (2 qator) ===== */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.item{background:var(--surface);border-radius:24px;padding:12px 12px 14px;
+  box-shadow:var(--sh);cursor:pointer;transition:transform .16s;display:flex;flex-direction:column}
+.item:active{transform:scale(.975)}
+.item .ph{position:relative;height:172px;border-radius:18px;background:var(--bg);
+  box-shadow:var(--sh-in);display:grid;place-items:center;overflow:hidden}
+.item .ph svg{width:auto;height:82%}
+.item .ph img{width:100%;height:100%;object-fit:contain}
+.item .hb{top:7px;right:7px;width:30px;height:30px;box-shadow:var(--sh-s)}
+.item .hb svg{width:14px;height:14px}
+.item .sale{position:absolute;top:9px;left:9px;background:var(--red);color:#fff;
+  font-size:9px;font-weight:600;letter-spacing:.04em;padding:4px 8px;border-radius:8px;z-index:2}
+.item .ib{padding:12px 4px 0;flex:1;display:flex;flex-direction:column}
+.item small{font-size:10px;color:var(--dim);font-weight:300}
+.item h4{font-size:13.5px;font-weight:600;line-height:1.3;margin:3px 0 3px;letter-spacing:-.01em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:18px}
+.item .pr{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.item .pr b{font-size:15px;font-weight:600;letter-spacing:-.02em}
+.item .pr i{font-style:normal;font-size:9.5px;color:var(--dim);font-weight:300}
+.item .pr s{font-size:11px;color:var(--dim);font-weight:300}
+.add-b{margin-top:auto;width:100%;border:0;border-radius:14px;background:var(--blue);color:#fff;
+  cursor:pointer;height:38px;font-family:inherit;font-size:12.5px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  box-shadow:4px 5px 12px rgba(78,168,240,.4);transition:transform .13s,background .2s}
+.add-b:active{transform:scale(.93)}
+.add-b svg{width:15px;height:15px}
+.add-b.in{background:var(--red);box-shadow:4px 5px 12px rgba(244,87,59,.4)}
+
+/* ===== detail ===== */
+.stage{background:var(--surface);border-radius:30px;padding:24px;margin-top:6px;
+  box-shadow:var(--sh);position:relative;height:300px;display:grid;place-items:center;overflow:hidden}
+.stage svg.art{width:auto;height:100%}
+.stage img{width:100%;height:100%;object-fit:contain}
+.thumbs{display:flex;gap:12px;justify-content:center;margin:18px 0 22px}
+.th{width:56px;height:56px;border-radius:17px;background:var(--bg);box-shadow:var(--sh-s);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;transition:box-shadow .18s}
+.th.on{box-shadow:var(--sh-in)}
+.th svg{width:76%;height:76%}
+.th img{width:100%;height:100%;object-fit:contain}
+.d-cat{font-size:12px;color:var(--dim);font-weight:400}
+.d-name{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.22;margin-top:3px}
+.d-prow{display:flex;align-items:baseline;gap:10px;margin-top:8px}
+.d-price{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.d-price i{font-style:normal;font-size:12px;color:var(--dim);font-weight:400}
+.d-old{font-size:14px;color:var(--dim);text-decoration:line-through}
+.d-lbl{font-size:14px;font-weight:600;margin:26px 0 12px}
+.pills{display:flex;gap:11px;flex-wrap:wrap}
+.pill{border:0;border-radius:14px;padding:12px 20px;cursor:pointer;background:var(--bg);
+  box-shadow:var(--sh-s);font-family:inherit;font-size:13.5px;font-weight:400;color:var(--ink);transition:.18s}
+.pill.on{background:var(--red);color:#fff;box-shadow:4px 5px 12px rgba(244,87,59,.4)}
+.d-text{font-size:13.5px;line-height:1.8;color:var(--dim);font-weight:300}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.spec{background:var(--surface);border-radius:18px;padding:14px 16px;box-shadow:var(--sh-s)}
+.spec small{font-size:10.5px;color:var(--dim);font-weight:300}
+.spec b{display:block;font-size:13.5px;font-weight:500;margin-top:3px}
+
+.buybar{position:fixed;bottom:0;width:100%;max-width:430px;z-index:45;display:none;
+  background:var(--bg);padding:14px 22px calc(20px + env(safe-area-inset-bottom));gap:12px}
+.buybar.on{display:flex;align-items:center}
+.fav-sq{width:54px;height:54px;flex:none;border:0;border-radius:18px;background:var(--bg);
+  box-shadow:var(--sh-s);display:grid;place-items:center;cursor:pointer;color:var(--dim)}
+.fav-sq svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9}
+.fav-sq.on{color:var(--red)}
+.fav-sq.on svg{fill:var(--red);stroke:var(--red)}
+.stepper{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:18px;
+  padding:6px;box-shadow:var(--sh-in);flex:none}
+.stepper button{width:34px;height:34px;border:0;border-radius:12px;background:var(--bg);
+  box-shadow:var(--sh-s);color:var(--ink);font-size:16px;cursor:pointer;line-height:1}
+.stepper b{min-width:24px;text-align:center;font-size:14px;font-weight:600}
+.cta{flex:1;min-width:0;border:0;border-radius:18px;background:var(--red);color:#fff;cursor:pointer;
+  height:54px;font-family:inherit;font-size:14.5px;font-weight:500;display:flex;
+  align-items:center;justify-content:center;gap:9px;box-shadow:5px 6px 16px rgba(244,87,59,.4);
+  transition:transform .13s}
+.cta:active{transform:scale(.97)}
+.cta svg{width:18px;height:18px}
+
+/* ===== cart ===== */
+.count{font-size:13px;color:var(--dim);font-weight:300;margin:2px 0 16px}
+.li{display:flex;gap:14px;align-items:center;background:var(--surface);border-radius:22px;
+  padding:12px 14px;margin-bottom:13px;box-shadow:var(--sh)}
+.li .ph{width:76px;height:76px;flex:none;border-radius:18px;background:var(--bg);
+  box-shadow:var(--sh-in);display:grid;place-items:center;overflow:hidden}
+.li .ph svg{width:78%;height:78%}
+.li .ph img{width:100%;height:100%;object-fit:contain}
+.li-b{flex:1;min-width:0}
+.li-b small{font-size:10.5px;color:var(--dim);font-weight:300}
+.li-b h4{font-size:14.5px;font-weight:600;margin:2px 0 5px;line-height:1.28}
+.li-b span{font-size:15px;font-weight:600}
+.qty-v{display:flex;flex-direction:column;align-items:center;gap:5px;flex:none}
+.qty-v button{width:28px;height:28px;border:0;border-radius:10px;background:var(--bg);
+  box-shadow:var(--sh-s);color:var(--ink);font-size:15px;cursor:pointer;line-height:1}
+.qty-v b{font-size:13.5px;font-weight:600}
+
+.pay{background:var(--surface);border-radius:22px;padding:16px 18px;margin-top:18px;box-shadow:var(--sh)}
+.pay-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pay-h h5{font-size:13px;font-weight:600}
+.pay-h span{font-size:12px;color:var(--red);cursor:pointer}
+.prow{display:flex;align-items:center;gap:13px}
+.prow .ic{width:44px;height:44px;flex:none;border-radius:15px;background:var(--bg);
+  box-shadow:var(--sh-in);display:grid;place-items:center;color:var(--ink)}
+.prow .ic svg{width:18px;height:18px}
+.prow .b{flex:1;min-width:0}
+.prow .b b{display:block;font-size:13.5px;font-weight:500}
+.prow .b small{font-size:11px;color:var(--dim);font-weight:300}
+
+.sum{margin-top:22px;padding:0 4px}
+.srow{display:flex;justify-content:space-between;font-size:13.5px;color:var(--dim);
+  margin-bottom:12px;font-weight:300}
+.srow b{color:var(--ink);font-weight:500}
+.srow.tot{font-size:15px;color:var(--ink);font-weight:500;padding-top:14px;margin:14px 0 0;
+  border-top:1.5px solid var(--line)}
+.srow.tot b{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.btn{width:100%;border:0;border-radius:18px;padding:17px;cursor:pointer;margin-top:20px;
+  background:var(--red);color:#fff;font-family:inherit;font-size:14.5px;font-weight:500;
+  box-shadow:5px 6px 16px rgba(244,87,59,.4);transition:transform .13s}
+.btn:active{transform:scale(.985)}
+.btn.blue{background:var(--blue);box-shadow:5px 6px 16px rgba(78,168,240,.4)}
+.btn.soft{background:var(--bg);color:var(--ink);box-shadow:var(--sh-s)}
+
+/* ===== orders ===== */
+.order{background:var(--surface);border-radius:24px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.o-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.o-id{font-size:15px;font-weight:600}
+.o-date{font-size:11px;color:var(--dim);margin-top:2px;font-weight:300}
+.tag{padding:6px 13px;border-radius:10px;font-size:10.5px;font-weight:500;white-space:nowrap}
+.t-wait{background:var(--bg);color:var(--dim);box-shadow:var(--sh-in)}
+.t-way{background:var(--red);color:#fff;box-shadow:3px 4px 10px rgba(244,87,59,.35)}
+.t-done{background:var(--blue);color:#fff;box-shadow:3px 4px 10px rgba(78,168,240,.35)}
+.track{display:flex;margin-bottom:16px}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--line);z-index:2}
+.step.done .dot{background:var(--red)}
+.bar{position:absolute;top:5px;left:-50%;width:100%;height:2px;background:var(--line);z-index:1}
+.step:first-child .bar{display:none}
+.step.done .bar{background:var(--red)}
+.step em{font-style:normal;font-size:10px;color:var(--dim);text-align:center;line-height:1.35;font-weight:300}
+.step.done em{color:var(--ink);font-weight:400}
+.o-foot{display:flex;justify-content:space-between;align-items:center;padding-top:14px;
+  border-top:1.5px solid var(--line);font-size:11.5px;color:var(--dim);font-weight:300}
+.o-foot b{font-size:16px;color:var(--ink);font-weight:600}
+.ochips{display:flex;gap:11px;margin-bottom:20px;overflow-x:auto;scrollbar-width:none}
+.ochips::-webkit-scrollbar{display:none}
+
+/* ===== profile ===== */
+.phead{display:flex;flex-direction:column;align-items:center;padding:10px 0 4px}
+.phead .av{width:92px;height:92px;border-radius:50%;background:var(--bg);box-shadow:var(--sh);
+  display:grid;place-items:center;font-size:30px;font-weight:600;color:var(--red)}
+.phead h3{font-size:19px;font-weight:600;margin-top:14px}
+.phead p{font-size:12.5px;color:var(--dim);margin-top:2px;font-weight:300}
+.list{background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:var(--sh);margin-top:24px}
+.row{display:flex;align-items:center;gap:15px;padding:15px 17px;cursor:pointer}
+.row+.row{border-top:1.5px solid var(--line)}
+.row .ic{width:42px;height:42px;flex:none;border-radius:15px;background:var(--bg);
+  box-shadow:var(--sh-in);display:grid;place-items:center;color:var(--ink)}
+.row .ic svg{width:18px;height:18px}
+.rm{flex:1;min-width:0}
+.rm h4{font-size:14px;font-weight:500}
+.rm small{font-size:11px;color:var(--dim);display:block;margin-top:1px;font-weight:300}
+.chev{color:var(--dim);flex:none}
+.chev svg{width:16px;height:16px}
+.switch{width:48px;height:28px;flex:none;border:0;border-radius:999px;background:var(--bg);
+  box-shadow:var(--sh-in);position:relative;cursor:pointer}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:var(--dim);transition:transform .28s cubic-bezier(.3,1.5,.5,1)}
+.switch.on::after{transform:translateX(20px);background:var(--red)}
+
+/* ===== empty ===== */
+.empty{text-align:center;padding:56px 26px}
+.empty .e-ic{width:120px;height:120px;margin:0 auto 22px;border-radius:38px;background:var(--bg);
+  box-shadow:var(--sh);display:grid;place-items:center}
+.empty .e-ic svg{width:70%;height:70%}
+.empty h3{font-size:17px;font-weight:600}
+.empty p{font-size:13px;color:var(--dim);margin-top:8px;line-height:1.65;font-weight:300}
+.empty .btn{max-width:230px;margin:22px auto 0}
+
+/* ===== nav ===== */
+.nav{position:fixed;bottom:0;width:100%;max-width:430px;z-index:40;background:var(--surface);
+  border-radius:28px 28px 0 0;box-shadow:0 -6px 22px rgba(163,177,198,.28);
+  padding:16px 10px calc(14px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:center}
+[data-theme="dark"] .nav{box-shadow:0 -6px 22px rgba(0,0,0,.5)}
+.nav.hide{display:none}
+.tab{border:0;background:none;cursor:pointer;display:grid;place-items:center;height:46px;
+  color:var(--dim);transition:color .2s,opacity .25s;position:relative}
+.tab svg{width:23px;height:23px}
+.tab.on{opacity:0;pointer-events:none}
+.tab .badge{position:absolute;top:2px;right:24%;min-width:18px;height:18px;padding:0 5px;
+  background:var(--red);color:#fff;border-radius:9px;font-size:9.5px;font-weight:600;
+  display:grid;place-items:center}
+.fab{position:absolute;top:-30px;left:10%;transform:translateX(-50%);
+  width:62px;height:62px;border-radius:22px;background:var(--blue);color:#fff;
+  display:grid;place-items:center;cursor:pointer;pointer-events:none;
+  box-shadow:0 10px 24px rgba(78,168,240,.5);
+  transition:left .38s cubic-bezier(.34,1.25,.45,1)}
+.fab svg{width:25px;height:25px}
+.fab>span:first-child{display:grid;place-items:center}
+.fab .badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;
+  background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:600;
+  display:grid;place-items:center;border:2.5px solid var(--surface)}
+
+/* ===== sheet ===== */
+.veil{position:fixed;inset:0;background:rgba(20,26,40,.42);z-index:50;opacity:0;pointer-events:none;
+  transition:opacity .25s;backdrop-filter:blur(3px)}
+.veil.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;bottom:0;width:100%;max-width:430px;z-index:60;background:var(--bg);
+  border-radius:30px 30px 0 0;padding:10px 22px calc(28px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .34s cubic-bezier(.25,1,.4,1);
+  max-height:90vh;overflow-y:auto}
+.sheet.on{transform:translateY(0)}
+.grip{width:42px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 20px}
+.sheet h3{font-size:19px;font-weight:600;margin-bottom:4px;text-align:center}
+.sheet>p{font-size:12.5px;color:var(--dim);margin-bottom:22px;text-align:center;font-weight:300}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12px;color:var(--dim);margin-bottom:8px;font-weight:400}
+.field input,.field textarea,.field select{width:100%;border:0;background:var(--bg);
+  border-radius:16px;padding:15px 17px;font-family:inherit;font-size:14px;color:var(--ink);
+  outline:0;box-shadow:var(--sh-in)}
+.field textarea{resize:none;min-height:76px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.otp{display:flex;gap:12px;justify-content:center;margin-bottom:8px}
+.otp input{width:58px;height:64px;text-align:center;font-size:22px;font-weight:600;
+  border:0;border-radius:20px;background:var(--bg);color:var(--ink);outline:0;box-shadow:var(--sh-in)}
+
+.addr,.lang{display:flex;gap:13px;align-items:center;background:var(--surface);
+  border-radius:20px;padding:15px;margin-bottom:12px;box-shadow:var(--sh-s);cursor:pointer}
+.addr.main,.lang.on{box-shadow:var(--sh-s),0 0 0 2px var(--red)}
+.addr .ic,.lang .fl{width:42px;height:42px;flex:none;border-radius:15px;background:var(--bg);
+  box-shadow:var(--sh-in);display:grid;place-items:center;color:var(--red);
+  font-size:12px;font-weight:600}
+.addr .ic svg{width:17px;height:17px}
+.ab{flex:1;min-width:0}
+.ab h4{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.ab h4 u{text-decoration:none;font-size:9px;font-weight:600;letter-spacing:.06em;
+  background:var(--red);color:#fff;padding:3px 8px;border-radius:7px}
+.ab p{font-size:11.5px;color:var(--dim);margin-top:4px;line-height:1.5;font-weight:300}
+.del{border:0;background:none;color:var(--dim);font-size:19px;cursor:pointer;line-height:1;padding:2px 5px}
+.lang .lb h4{font-size:14px;font-weight:500}
+.lang .lb small{font-size:11.5px;color:var(--dim);font-weight:300}
+.lang .ck{width:20px;height:20px;color:var(--red);opacity:0;flex:none}
+.lang.on .ck{opacity:1}
+
+/* bank kartalari */
+.bank{position:relative;border-radius:24px;padding:20px 22px 22px;margin-bottom:14px;
+  color:#fff;overflow:hidden;cursor:pointer;transition:transform .16s}
+.bank:active{transform:scale(.985)}
+.bank.humo{background:linear-gradient(140deg,#FF7A5C 0%,#F4573B 45%,#C42B18 100%);
+  box-shadow:0 10px 26px rgba(244,87,59,.35)}
+.bank.uzcard{background:linear-gradient(140deg,#74C2F8 0%,#4EA8F0 45%,#1D6FC0 100%);
+  box-shadow:0 10px 26px rgba(78,168,240,.35)}
+.bank::before{content:"";position:absolute;top:-70px;right:-50px;width:190px;height:190px;
+  border-radius:50%;background:rgba(255,255,255,.11)}
+.bank::after{content:"";position:absolute;bottom:-90px;left:-40px;width:170px;height:170px;
+  border-radius:50%;background:rgba(255,255,255,.07)}
+.bank>*{position:relative;z-index:2}
+.bank.main{box-shadow:0 10px 26px rgba(0,0,0,.22),0 0 0 2.5px var(--bg),0 0 0 5px currentColor}
+.bank.humo.main{color:#F4573B}
+.bank.uzcard.main{color:#4EA8F0}
+.bank.main .btop,.bank.main .no,.bank.main .bot,.bank.main .brow2{color:#fff}
+
+.btop{display:flex;align-items:center;gap:10px;min-height:30px}
+.bn{font-size:13px;font-weight:600;letter-spacing:.14em}
+.btag{font-size:8.5px;font-weight:600;letter-spacing:.1em;background:rgba(255,255,255,.26);
+  padding:5px 10px;border-radius:999px;backdrop-filter:blur(4px)}
+.bdel{margin-left:auto;width:30px;height:30px;flex:none;border:0;border-radius:50%;
+  background:rgba(255,255,255,.18);color:#fff;display:grid;place-items:center;cursor:pointer;
+  transition:background .18s}
+.bdel:active{background:rgba(255,255,255,.34)}
+.bdel svg{width:14px;height:14px}
+
+.brow2{display:flex;align-items:center;gap:12px;margin:22px 0 18px}
+.chipx{width:42px;height:31px;border-radius:7px;flex:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(255,255,255,.45));position:relative}
+.chipx::before,.chipx::after{content:"";position:absolute;left:6px;right:6px;height:1px;
+  background:rgba(0,0,0,.15)}
+.chipx::before{top:11px}.chipx::after{top:20px}
+.wave{width:20px;height:20px;opacity:.75}
+
+.no{font-size:19px;font-weight:500;letter-spacing:.14em;margin-bottom:22px;
+  font-variant-numeric:tabular-nums}
+.bot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}
+.bot small{font-size:8.5px;opacity:.68;display:block;letter-spacing:.1em;margin-bottom:4px}
+.bot b{font-size:12.5px;font-weight:500;letter-spacing:.03em}
+
+/* filtr oynasi */
+.f-lbl{font-size:14px;font-weight:600;margin:20px 0 12px}
+.f-lbl:first-of-type{margin-top:4px}
+.rangebox{padding:6px 4px 0}
+.range{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;
+  background:var(--bg);box-shadow:var(--sh-in);outline:0}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--surface);box-shadow:var(--sh-s),0 0 0 2px var(--blue);cursor:pointer}
+.rvals{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:12px;font-weight:300}
+.f-act{display:flex;gap:12px;margin-top:28px}
+.f-act .btn{margin-top:0}
+
+.faq{border-bottom:1.5px solid var(--line);padding:15px 0}
+.faq:last-of-type{border-bottom:0}
+.faq summary{font-size:13.5px;font-weight:500;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--red);font-size:20px;flex:none;transition:transform .2s}
+.faq[open] summary::after{transform:rotate(45deg)}
+.faq p{font-size:12.5px;color:var(--dim);line-height:1.75;padding-top:9px;font-weight:300}
+.contact{display:flex;align-items:center;gap:13px;padding:14px;margin-top:11px;
+  background:var(--surface);border-radius:20px;cursor:pointer;box-shadow:var(--sh-s)}
+.contact .ic{width:44px;height:44px;border-radius:16px;background:var(--red);
+  display:grid;place-items:center;color:#fff;flex:none;box-shadow:4px 5px 12px rgba(244,87,59,.35)}
+.contact .ic svg{width:19px;height:19px}
+.contact h4{font-size:13.5px;font-weight:500}
+.contact small{font-size:11.5px;color:var(--dim);font-weight:300}
+
+.toast{position:fixed;bottom:116px;left:50%;transform:translate(-50%,16px);
+  background:var(--ink);color:var(--bg);padding:13px 22px;border-radius:16px;font-size:13px;
+  font-weight:400;z-index:80;opacity:0;pointer-events:none;transition:.28s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+*:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <header class="top">
+    <div class="trow" id="hrow"></div>
+    <div class="search" id="sbar">
+      <input id="sinp" placeholder="Qidirish" aria-label="Qidiruv">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M20.5 20.5l-4-4"/></svg>
+    </div>
+  </header>
+
+  <main class="scroll" id="scroll">
+
+    <!-- ASOSIY -->
+    <section class="view on" id="v-home">
+      <div class="banner" id="banner" style="display:none"></div>
+      <div class="cats" id="cats"></div>
+      <div class="sec"><h2 data-i18n="sec_all">Mahsulotlar</h2><a data-i18n="all">Barchasi</a></div>
+      <div id="items"></div>
+    </section>
+
+    <!-- MAHSULOT -->
+    <section class="view" id="v-detail"></section>
+
+    <!-- SAVAT -->
+    <section class="view" id="v-cart">
+      <div id="cart-full">
+        <div class="count" id="c-count">3</div>
+        <div id="cart-items"></div>
+
+        <div class="pay">
+          <div class="pay-h"><h5 data-i18n="ship_addr">Yetkazib berish manzili</h5><span data-i18n="change" onclick="sheet('sh-addr')">O'zgartirish</span></div>
+          <div class="prow">
+            <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <div class="b"><b id="c-addr">—</b><small data-i18n="courier2h">Kuryer 2 soat ichida</small></div>
+          </div>
+        </div>
+
+        <div class="pay">
+          <div class="pay-h"><h5 data-i18n="pay_m">To'lov usuli</h5><span data-i18n="change" onclick="sheet('sh-cards')">O'zgartirish</span></div>
+          <div class="prow">
+            <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="3"/><path stroke-linecap="round" d="M2.5 10h19M6 15h3"/></svg></span>
+            <div class="b"><b id="pay-card">—</b><small data-i18n="main_card">Asosiy karta</small></div>
+          </div>
+        </div>
+
+        <div class="sum">
+          <div class="srow"><span data-i18n="items">Mahsulotlar</span><b id="s-sub">—</b></div>
+          <div class="srow"><span data-i18n="disc">Chegirma</span><b id="s-disc">—</b></div>
+          <div class="srow"><span data-i18n="ship">Yetkazib berish</span><b id="s-ship">—</b></div>
+          <div class="srow tot"><span data-i18n="total">Jami</span><b id="s-tot">—</b></div>
+        </div>
+        <button class="btn" data-i18n="checkout" onclick="sheet('sh-otp')">To'lovga o'tish</button>
+      </div>
+
+      <div class="empty" id="cart-empty" style="display:none">
+        <div class="e-ic" id="empty-art"></div>
+        <h3 data-i18n="cart_empty">Savat bo'sh</h3>
+        <p id="empty-sub">—</p>
+        <button class="btn" data-i18n="to_catalog" onclick="go('home')">Katalogga o'tish</button>
+      </div>
+    </section>
+
+    <!-- SEVIMLI -->
+    <section class="view" id="v-fav">
+      <div id="fav-list"></div>
+      <div class="empty" id="fav-empty">
+        <div class="e-ic" id="fav-art"></div>
+        <h3 data-i18n="fav_empty">Sevimlilar bo'sh</h3>
+        <p id="fav-sub">—</p>
+        <button class="btn" data-i18n="to_catalog" onclick="go('home')">Katalogga o'tish</button>
+      </div>
+    </section>
+
+    <!-- BUYURTMA -->
+    <section class="view" id="v-order">
+      <div class="ochips" id="ochips"></div>
+      <div id="orders"></div>
+    </section>
+
+    <!-- PROFIL -->
+    <section class="view" id="v-profile">
+      <div class="phead">
+        <div class="av">DR</div>
+        <h3>Dilnoza Rasulova</h3>
+        <p>dilnoza.r@gmail.com</p>
+      </div>
+      <div class="list">
+        <div class="row" onclick="sheet('sh-info')">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path stroke-linecap="round" d="M4.5 20a7.5 7.5 0 0115 0"/></svg></span>
+          <div class="rm"><h4 data-i18n="p_info">Shaxsiy ma'lumotlar</h4><small data-i18n="p_info_s">—</small></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+        <div class="row" onclick="sheet('sh-addr')">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          <div class="rm"><h4 data-i18n="p_addr">Manzillarim</h4><small id="acount">—</small></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+        <div class="row" onclick="sheet('sh-cards')">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="3"/><path stroke-linecap="round" d="M2.5 10h19M6 15h3"/></svg></span>
+          <div class="rm"><h4 data-i18n="p_cards">Mening kartalarim</h4><small id="card-c">—</small></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+        <div class="row" onclick="sheet('sh-lang')">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3.5 9h17M3.5 15h17"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></span>
+          <div class="rm"><h4 data-i18n="lang">Til</h4><small id="lang-c">—</small></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+        <div class="row" onclick="flip(event)">
+          <span class="ic" id="th-ic"></span>
+          <div class="rm"><h4 data-i18n="p_dark">Tungi rejim</h4><small id="th-tx">—</small></div>
+          <button class="switch" id="sw" aria-label="Tungi rejim"></button>
+        </div>
+        <div class="row" onclick="sheet('sh-help')">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M9.6 9.4a2.5 2.5 0 114.2 2c-.9.7-1.8 1.2-1.8 2.3M12 17.2h.01"/></svg></span>
+          <div class="rm"><h4 data-i18n="p_help">Yordam va aloqa</h4><small data-i18n="p_help_s">—</small></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+        <div class="row" onclick="toast(t('p_out'))">
+          <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17l5-5-5-5M20 12H9M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h5"/></svg></span>
+          <div class="rm"><h4 data-i18n="p_out">Hisobdan chiqish</h4></div>
+          <span class="chev"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></span>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--dim);margin:22px 0 4px;font-weight:300" id="ver-line">LUMÉ · 1.0.0</p>
+    </section>
+  </main>
+
+  <nav class="nav" id="nav">
+    <button class="tab on" data-t="home" onclick="go('home')" aria-label="Asosiy"></button>
+    <button class="tab" data-t="order" onclick="go('order')" aria-label="Buyurtma"></button>
+    <button class="tab" data-t="cart" onclick="go('cart')" aria-label="Savat"><span class="badge" id="nbadge">3</span></button>
+    <button class="tab" data-t="fav" onclick="go('fav')" aria-label="Sevimli"></button>
+    <button class="tab" data-t="profile" onclick="go('profile')" aria-label="Profil"></button>
+    <div class="fab" id="fab"><span id="fab-ic"></span><span class="badge" id="fbadge">3</span></div>
+  </nav>
+
+  <div class="buybar" id="buybar">
+    <button class="fav-sq" id="dfav" onclick="toggleFav(cur,this)" aria-label="Sevimli">
+      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.5-7-9.4A4.1 4.1 0 0112 8.6a4.1 4.1 0 017 2c0 4.9-7 9.4-7 9.4z"/></svg>
+    </button>
+    <div class="stepper">
+      <button onclick="stepQ(-1)" aria-label="−">−</button><b id="dq">1</b><button onclick="stepQ(1)" aria-label="+">+</button>
+    </div>
+    <button class="cta" onclick="addFromDetail()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 8h12l-1 11.2a1.8 1.8 0 01-1.8 1.6H8.8A1.8 1.8 0 017 19.2z"/><path stroke-linecap="round" d="M9.2 8V6.4a2.8 2.8 0 015.6 0V8"/></svg>
+      <span id="cta-t">—</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SHEETS ===== -->
+<div class="veil" id="veil" onclick="closeSheet()"></div>
+
+<div class="sheet" id="sh-filter">
+  <div class="grip"></div>
+  <h3 data-i18n="filters">Filtrlar</h3>
+  <p data-i18n="filters_sub">—</p>
+  <div class="f-lbl" data-i18n="f_skin">Teri turi</div>
+  <div class="pills" id="f-skin"></div>
+  <div class="f-lbl" data-i18n="f_price">Narx</div>
+  <div class="rangebox">
+    <input type="range" class="range" id="f-range" min="50000" max="300000" step="5000" value="300000" oninput="rangeUp()">
+    <div class="rvals"><span>50 000</span><span id="rmax">300 000</span></div>
+  </div>
+  <div class="f-lbl" data-i18n="f_size">Hajm</div>
+  <div class="pills" id="f-size"></div>
+  <div class="f-act">
+    <button class="btn soft" data-i18n="clear" onclick="clearF()">Tozalash</button>
+    <button class="btn blue" data-i18n="apply" onclick="closeSheet();toast(t('toast_filter'))">Qo'llash</button>
+  </div>
+</div>
+
+<div class="sheet" id="sh-info">
+  <div class="grip"></div>
+  <h3 data-i18n="p_info">Shaxsiy ma'lumotlar</h3>
+  <p data-i18n="info_sub">—</p>
+  <div class="two">
+    <div class="field"><label data-i18n="f_name">Ism</label><input value="Dilnoza"></div>
+    <div class="field"><label data-i18n="f_surname">Familiya</label><input value="Rasulova"></div>
+  </div>
+  <div class="field"><label data-i18n="f_email">Email</label><input value="dilnoza.r@gmail.com"></div>
+  <div class="field"><label data-i18n="f_phone">Telefon</label><input value="+998 90 123 45 67"></div>
+  <button class="btn" data-i18n="save" onclick="closeSheet();toast(t('toast_saved'))">Saqlash</button>
+</div>
+
+<div class="sheet" id="sh-addr">
+  <div class="grip"></div>
+  <h3 data-i18n="p_addr">Manzillarim</h3>
+  <p data-i18n="addr_sub">—</p>
+  <div id="alist"></div>
+  <button class="btn soft" data-i18n="add_addr" onclick="sheet('sh-new')">+</button>
+</div>
+
+<div class="sheet" id="sh-new">
+  <div class="grip"></div>
+  <h3 data-i18n="new_addr">Yangi manzil</h3>
+  <p data-i18n="new_addr_sub">—</p>
+  <div class="field"><label data-i18n="f_title">Nomi</label><input id="a-name" placeholder="Uy, Ish…"></div>
+  <div class="field"><label data-i18n="f_city">Shahar / tuman</label>
+    <select id="a-city">
+      <option>Toshkent — Chilonzor</option><option>Toshkent — Yunusobod</option>
+      <option>Toshkent — Mirzo Ulug'bek</option><option>Toshkent — Yakkasaroy</option>
+      <option>Samarqand</option><option>Buxoro</option>
+    </select>
+  </div>
+  <div class="field"><label data-i18n="f_street">Ko'cha va uy raqami</label><textarea id="a-street"></textarea></div>
+  <div class="two">
+    <div class="field"><label data-i18n="f_floor">Qavat</label><input id="a-floor"></div>
+    <div class="field"><label data-i18n="f_code">Domofon</label><input id="a-code"></div>
+  </div>
+  <button class="btn" data-i18n="save_addr" onclick="addAddr()">Qo'shish</button>
+</div>
+
+<div class="sheet" id="sh-cards">
+  <div class="grip"></div>
+  <h3 data-i18n="p_cards">Mening kartalarim</h3>
+  <p data-i18n="cards_sub">—</p>
+  <div id="clist"></div>
+  <button class="btn soft" data-i18n="add_card" onclick="sheet('sh-newcard')">+</button>
+</div>
+
+<div class="sheet" id="sh-newcard">
+  <div class="grip"></div>
+  <h3 data-i18n="new_card">Yangi karta</h3>
+  <p data-i18n="new_card_sub">—</p>
+  <div class="field"><label data-i18n="f_cardno">Karta raqami</label><input id="k-no" inputmode="numeric" maxlength="19" placeholder="8600 0000 0000 0000"></div>
+  <div class="two">
+    <div class="field"><label data-i18n="f_exp">Muddat</label><input id="k-exp" maxlength="5" placeholder="12/28"></div>
+    <div class="field"><label data-i18n="f_owner">Karta egasi</label><input id="k-own" placeholder="DILNOZA RASULOVA"></div>
+  </div>
+  <button class="btn" data-i18n="save_card" onclick="addCard()">Qo'shish</button>
+</div>
+
+<div class="sheet" id="sh-lang">
+  <div class="grip"></div>
+  <h3 data-i18n="lang_title">Til</h3>
+  <p data-i18n="lang_sub">—</p>
+  <div id="langlist"></div>
+</div>
+
+<div class="sheet" id="sh-otp">
+  <div class="grip"></div>
+  <h3 data-i18n="otp_t">SMS tasdiqlash</h3>
+  <p data-i18n="otp_sub">—</p>
+  <div class="otp">
+    <input maxlength="1" inputmode="numeric" value="0"><input maxlength="1" inputmode="numeric" value="9">
+    <input maxlength="1" inputmode="numeric" value="7"><input maxlength="1" inputmode="numeric" value="4">
+  </div>
+  <button class="btn" data-i18n="otp_btn" onclick="checkout()">Tasdiqlash</button>
+</div>
+
+<div class="sheet" id="sh-help">
+  <div class="grip"></div>
+  <h3 data-i18n="help_t">Yordam</h3>
+  <p data-i18n="help_sub">—</p>
+  <div id="faqs"></div>
+  <div class="contact" onclick="toast(SETTINGS.phone)">
+    <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5c0 8.3 6.7 15 15 15 .8 0 1.5-.7 1.5-1.5v-2.3c0-.7-.5-1.3-1.2-1.5l-2.7-.6c-.6-.1-1.2.1-1.5.6l-.8 1.1a11.4 11.4 0 01-5.3-5.3l1.1-.8c.5-.3.7-.9.6-1.5l-.6-2.7C10 4.5 9.4 4 8.7 4H6.5C5.7 4 5 4.7 5 5.5"/></svg></span>
+    <div><h4 id="help-phone">+998 71 200 00 00</h4><small>09:00 — 21:00</small></div>
+  </div>
+  <div class="contact" onclick="toast(SETTINGS.tg)">
+    <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 4L3 11l5 2 2 6 3-4 5 3z"/></svg></span>
+    <div><h4>Telegram</h4><small id="help-tg">@lume_support</small></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Supabase + Cloud (boshqa skriptlardan OLDIN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud.js?v=1"></script>
+<script>
+/* ================= TIL ================= */
+const I18N={
+uz:{search:"Qidirish",all:"Barchasi",sec_new:"Yangi kelganlar",sec_all:"Mahsulotlar",month_top:"Oyning tanlovi",best:"Eng ko'p sotilgan",
+ view:"Ko'rish",buy:"Savatga qo'shish",add:"Savatga",in_cart:"savatda",h_cart:"Savatim",h_order:"Buyurtmalarim",h_prof:"Profil",h_detail:"Mahsulot",h_fav:"Sevimlilar",
+ ship_addr:"Yetkazib berish manzili",change:"O'zgartirish",courier2h:"Kuryer 2 soat ichida",
+ pay_m:"To'lov usuli",main_card:"Asosiy karta",items:"Mahsulotlar",disc:"Chegirma",ship:"Yetkazib berish",
+ total:"Jami",checkout:"To'lovga o'tish",cart_empty:"Savat bo'sh",
+ cart_empty_s:"Sizga yoqqan mahsulotni tanlang — u shu yerda to'planadi.",
+ fav_empty:"Sevimlilar bo'sh",fav_empty_s:"Yurakchani bosing — mahsulot shu yerda saqlanadi.",
+ order_empty:"Buyurtmalar yo'q",order_empty_s:"Hali buyurtma bermadingiz. Savatdan buyurtma bering — u shu yerda ko'rinadi.",
+ to_catalog:"Katalogga o'tish",n_items:"ta mahsulot",n_addr:"ta manzil",n_cards:"ta karta",
+ c_active:"Faol",c_done:"Yakunlangan",c_cancel:"Bekor qilingan",
+ st_way:"Yo'lda",st_wait:"Tasdiq kutilmoqda",st_done:"Yetkazildi",
+ tr1:"Qabul qilindi",tr2:"Yig'ilmoqda",tr3:"Yo'lda",tr4:"Yetkazildi",
+ o_eta:"Kuryer 25 daqiqada yetib boradi",o_wait:"Do'kon tasdiqlashini kutmoqda",o_addr:"Chilonzor, Bunyodkor 14",
+ o1:"Bugun, 14:20",o2:"24-avgust, 09:05",o3:"19-avgust, 18:40",
+ p_info:"Shaxsiy ma'lumotlar",p_info_s:"Ism, telefon, email",p_addr:"Manzillarim",p_cards:"Mening kartalarim",
+ p_dark:"Tungi rejim",p_help:"Yordam va aloqa",p_help_s:"Savollar, qo'llab-quvvatlash",p_out:"Hisobdan chiqish",
+ lang:"Til",lang_title:"Til",lang_sub:"Ilova tilini tanlang.",lang_cur:"O'zbekcha",
+ dark_on:"Hozir: tungi",dark_off:"Hozir: kunduzgi",
+ info_sub:"Ma'lumotlaringizni yangilang.",save:"Saqlash",
+ f_name:"Ism",f_surname:"Familiya",f_email:"Email",f_phone:"Telefon raqam",
+ addr_sub:"Yetkazib berish manzilini tanlang.",add_addr:"+ Yangi manzil qo'shish",
+ new_addr:"Yangi manzil",new_addr_sub:"Kuryer topishi uchun to'liq yozing.",save_addr:"Manzilni qo'shish",
+ f_title:"Nomi",f_city:"Shahar / tuman",f_street:"Ko'cha va uy raqami",f_floor:"Qavat",f_code:"Domofon",
+ cards_sub:"To'lov uchun asosiy kartani tanlang.",add_card:"+ Yangi karta qo'shish",
+ new_card:"Yangi karta",new_card_sub:"Humo yoki Uzcard raqamini kiriting.",save_card:"Kartani qo'shish",
+ f_cardno:"Karta raqami",f_exp:"Muddat",f_owner:"Karta egasi",main_tag:"ASOSIY",
+ otp_t:"SMS tasdiqlash",otp_sub:"+998 90 ••• 45 67 raqamiga yuborilgan kodni kiriting.",otp_btn:"Tasdiqlash va to'lash",
+ help_t:"Yordam",help_sub:"Ko'p so'raladigan savollar.",
+ filters:"Filtrlar",filters_sub:"Mahsulotlarni saralang.",f_skin:"Teri turi",f_price:"Narx",f_size:"Hajm",
+ clear:"Tozalash",apply:"Qo'llash",
+ sk0:"Barchasi",sk1:"Quruq",sk2:"Yog'li",sk3:"Sezgir",sk4:"Aralash",
+ cat0:"Barchasi",cat1:"Pardoz",cat2:"Kremlar",cat3:"Parfyum",cat4:"Fiksator",cat5:"SPF",
+ toast_added:"savatga qo'shildi",toast_addr:"Manzil tanlandi",toast_card:"Asosiy karta tanlandi",
+ toast_lang:"Til o'zgartirildi",toast_saved:"Saqlandi",toast_paid:"Buyurtma qabul qilindi",
+ toast_filter:"Filtr qo'llandi",toast_del:"O'chirildi",
+ q1:"Mahsulot original ekaniga qanday ishonch hosil qilaman?",
+ a1:"Barcha mahsulotlar rasmiy distribyutorlardan keladi. Har bir qutida seriya raqami bor.",
+ q2:"Terimga mos kelmasa qaytarsam bo'ladimi?",
+ a2:"Ochilmagan mahsulotni 7 kun ichida qaytarish mumkin.",
+ q3:"Buyurtma qancha vaqtda yetkaziladi?",
+ a3:"Toshkent bo'ylab 2–4 soat, viloyatlarga 1–2 kun.",
+ q4:"Qanday to'lash mumkin?",
+ a4:"Humo va Uzcard kartalari orqali yoki kuryerga naqd pul bilan."},
+
+ru:{search:"Поиск",all:"Все",sec_new:"Новинки",sec_all:"Товары",month_top:"Выбор месяца",best:"Хит продаж",
+ view:"Смотреть",buy:"В корзину",add:"В корзину",in_cart:"в корзине",h_cart:"Моя корзина",h_order:"Мои заказы",h_prof:"Профиль",h_detail:"Товар",h_fav:"Избранное",
+ ship_addr:"Адрес доставки",change:"Изменить",courier2h:"Курьер в течение 2 часов",
+ pay_m:"Способ оплаты",main_card:"Основная карта",items:"Товары",disc:"Скидка",ship:"Доставка",
+ total:"Итого",checkout:"Перейти к оплате",cart_empty:"Корзина пуста",
+ cart_empty_s:"Выберите понравившийся товар — он появится здесь.",
+ fav_empty:"Избранное пусто",fav_empty_s:"Нажмите на сердечко — товар сохранится здесь.",
+ order_empty:"Заказов нет",order_empty_s:"Вы ещё не оформляли заказ. Оформите из корзины — он появится здесь.",
+ to_catalog:"В каталог",n_items:"товара",n_addr:"адреса",n_cards:"карты",
+ c_active:"Активные",c_done:"Завершённые",c_cancel:"Отменённые",
+ st_way:"В пути",st_wait:"Ожидает подтверждения",st_done:"Доставлен",
+ tr1:"Принят",tr2:"Собирается",tr3:"В пути",tr4:"Доставлен",
+ o_eta:"Курьер приедет через 25 минут",o_wait:"Ожидает подтверждения магазина",o_addr:"Чиланзар, Бунёдкор 14",
+ o1:"Сегодня, 14:20",o2:"24 августа, 09:05",o3:"19 августа, 18:40",
+ p_info:"Личные данные",p_info_s:"Имя, телефон, email",p_addr:"Мои адреса",p_cards:"Мои карты",
+ p_dark:"Тёмная тема",p_help:"Помощь и связь",p_help_s:"Вопросы, поддержка",p_out:"Выйти из аккаунта",
+ lang:"Язык",lang_title:"Язык",lang_sub:"Выберите язык приложения.",lang_cur:"Русский",
+ dark_on:"Сейчас: тёмная",dark_off:"Сейчас: светлая",
+ info_sub:"Обновите свои данные.",save:"Сохранить",
+ f_name:"Имя",f_surname:"Фамилия",f_email:"Email",f_phone:"Номер телефона",
+ addr_sub:"Выберите адрес доставки.",add_addr:"+ Добавить адрес",
+ new_addr:"Новый адрес",new_addr_sub:"Укажите полностью, чтобы курьер нашёл.",save_addr:"Добавить адрес",
+ f_title:"Название",f_city:"Город / район",f_street:"Улица и дом",f_floor:"Этаж",f_code:"Домофон",
+ cards_sub:"Выберите основную карту для оплаты.",add_card:"+ Добавить карту",
+ new_card:"Новая карта",new_card_sub:"Введите номер Humo или Uzcard.",save_card:"Добавить карту",
+ f_cardno:"Номер карты",f_exp:"Срок",f_owner:"Владелец карты",main_tag:"ОСНОВНАЯ",
+ otp_t:"SMS подтверждение",otp_sub:"Введите код, отправленный на +998 90 ••• 45 67.",otp_btn:"Подтвердить и оплатить",
+ help_t:"Помощь",help_sub:"Часто задаваемые вопросы.",
+ filters:"Фильтры",filters_sub:"Отсортируйте товары.",f_skin:"Тип кожи",f_price:"Цена",f_size:"Объём",
+ clear:"Сбросить",apply:"Применить",
+ sk0:"Все",sk1:"Сухая",sk2:"Жирная",sk3:"Чувствительная",sk4:"Комбинированная",
+ cat0:"Все",cat1:"Макияж",cat2:"Кремы",cat3:"Парфюм",cat4:"Фиксатор",cat5:"SPF",
+ toast_added:"добавлен в корзину",toast_addr:"Адрес выбран",toast_card:"Основная карта выбрана",
+ toast_lang:"Язык изменён",toast_saved:"Сохранено",toast_paid:"Заказ принят",
+ toast_filter:"Фильтр применён",toast_del:"Удалено",
+ q1:"Как убедиться, что товар оригинальный?",
+ a1:"Все товары от официальных дистрибьюторов. На каждой упаковке есть серийный номер.",
+ q2:"Можно ли вернуть, если не подошло?",
+ a2:"Неоткрытый товар можно вернуть в течение 7 дней.",
+ q3:"Сколько идёт доставка?",
+ a3:"По Ташкенту 2–4 часа, в регионы 1–2 дня.",
+ q4:"Как можно оплатить?",
+ a4:"Картами Humo и Uzcard или наличными курьеру."},
+
+en:{search:"Search",all:"See all",sec_new:"New arrivals",sec_all:"Products",month_top:"Top of the month",best:"Best seller",
+ view:"View",buy:"Add to cart",add:"Add",in_cart:"in cart",h_cart:"My cart",h_order:"My orders",h_prof:"Profile",h_detail:"Product",h_fav:"Favourites",
+ ship_addr:"Delivery address",change:"Change",courier2h:"Courier within 2 hours",
+ pay_m:"Payment method",main_card:"Primary card",items:"Items",disc:"Discount",ship:"Delivery",
+ total:"Total",checkout:"Go to payment",cart_empty:"Your cart is empty",
+ cart_empty_s:"Pick a product you like — it will appear here.",
+ fav_empty:"No favourites yet",fav_empty_s:"Tap the heart — the product will be saved here.",
+ order_empty:"No orders yet",order_empty_s:"You haven't ordered yet. Check out from the cart — it will appear here.",
+ to_catalog:"Go to catalog",n_items:"items",n_addr:"addresses",n_cards:"cards",
+ c_active:"Active",c_done:"Completed",c_cancel:"Cancelled",
+ st_way:"On the way",st_wait:"Awaiting confirmation",st_done:"Delivered",
+ tr1:"Accepted",tr2:"Packing",tr3:"On the way",tr4:"Delivered",
+ o_eta:"Courier arrives in 25 minutes",o_wait:"Waiting for store confirmation",o_addr:"Chilanzar, Bunyodkor 14",
+ o1:"Today, 14:20",o2:"August 24, 09:05",o3:"August 19, 18:40",
+ p_info:"Personal details",p_info_s:"Name, phone, email",p_addr:"My addresses",p_cards:"My cards",
+ p_dark:"Dark mode",p_help:"Help & contact",p_help_s:"Questions, support",p_out:"Sign out",
+ lang:"Language",lang_title:"Language",lang_sub:"Choose the app language.",lang_cur:"English",
+ dark_on:"Now: dark",dark_off:"Now: light",
+ info_sub:"Update your details.",save:"Save",
+ f_name:"First name",f_surname:"Last name",f_email:"Email",f_phone:"Phone number",
+ addr_sub:"Choose a delivery address.",add_addr:"+ Add new address",
+ new_addr:"New address",new_addr_sub:"Write it fully so the courier can find you.",save_addr:"Add address",
+ f_title:"Label",f_city:"City / district",f_street:"Street and house",f_floor:"Floor",f_code:"Intercom",
+ cards_sub:"Choose your primary payment card.",add_card:"+ Add new card",
+ new_card:"New card",new_card_sub:"Enter your Humo or Uzcard number.",save_card:"Add card",
+ f_cardno:"Card number",f_exp:"Expiry",f_owner:"Card holder",main_tag:"PRIMARY",
+ otp_t:"SMS verification",otp_sub:"Enter the code sent to +998 90 ••• 45 67.",otp_btn:"Confirm and pay",
+ help_t:"Help",help_sub:"Frequently asked questions.",
+ filters:"Filters",filters_sub:"Refine the products.",f_skin:"Skin type",f_price:"Price",f_size:"Size",
+ clear:"Clear all",apply:"Apply",
+ sk0:"All",sk1:"Dry",sk2:"Oily",sk3:"Sensitive",sk4:"Combination",
+ cat0:"All",cat1:"Make-up",cat2:"Creams",cat3:"Fragrance",cat4:"Fixer",cat5:"SPF",
+ toast_added:"added to cart",toast_addr:"Address selected",toast_card:"Primary card selected",
+ toast_lang:"Language changed",toast_paid:"Order placed",toast_saved:"Saved",
+ toast_filter:"Filter applied",toast_del:"Removed",
+ q1:"How do I know the product is genuine?",
+ a1:"All products come from official distributors. Every box carries a serial number.",
+ q2:"Can I return it if it doesn't suit me?",
+ a2:"Unopened products can be returned within 7 days.",
+ q3:"How long does delivery take?",
+ a3:"2–4 hours across Tashkent, 1–2 days to the regions.",
+ q4:"What payment methods are available?",
+ a4:"Humo and Uzcard, or cash to the courier."}
+};
+let lang='uz';
+const t=k=>(I18N[lang]&&I18N[lang][k]!==undefined)?I18N[lang][k]:(I18N.uz[k]||k);
+const LANGS=[{c:'uz',ab:'UZ',n:"O'zbekcha",s:'Uzbek'},{c:'ru',ab:'RU',n:'Русский',s:'Russian'},{c:'en',ab:'EN',n:'English',s:'English'}];
+
+/* ================= RASMLAR ================= */
+function art(k){
+  const B={
+   doubtless:`
+     <rect x="47" y="4" width="26" height="32" rx="4" fill="#141414"/>
+     <rect x="49" y="36" width="22" height="12" rx="2" fill="#242424"/>
+     <path d="M52 38h16M52 41h16M52 44h16" stroke="#3A3A3A" stroke-width="1.2"/>
+     <rect x="55" y="48" width="10" height="6" fill="#1A1A1A"/>
+     <rect x="33" y="54" width="54" height="68" rx="11" fill="#121212"/>
+     <rect x="33" y="54" width="13" height="68" rx="11" fill="#fff" opacity=".07"/>
+     <rect x="37" y="64" width="46" height="46" rx="3" fill="url(#gdo)"/>
+     <path d="M52 64c4 10 3 26-2 46h-4c5-20 6-36 2-46z" fill="#8A4A16" opacity=".55"/>
+     <path d="M60 66c-3 4-4 9-3 13" stroke="#7A3E12" stroke-width="1.6" opacity=".5" fill="none"/>
+     <rect x="37" y="98" width="46" height="12" fill="#7B3FA0" opacity=".85"/>
+     <rect x="70" y="70" width="3" height="30" rx="1.5" fill="#111" opacity=".8"/>`,
+   found:`
+     <rect x="47" y="6" width="26" height="36" rx="3" fill="url(#gred)"/>
+     <rect x="47" y="6" width="7" height="36" rx="3" fill="#fff" opacity=".28"/>
+     <rect x="53" y="42" width="14" height="7" fill="#DCD3C8"/>
+     <rect x="33" y="49" width="54" height="73" rx="9" fill="#F4EDE4"/>
+     <rect x="33" y="49" width="13" height="73" rx="9" fill="#fff" opacity=".6"/>
+     <rect x="42" y="70" width="36" height="4" rx="2" fill="#C8102E"/>
+     <rect x="46" y="82" width="28" height="2.6" rx="1.3" fill="#C8102E" opacity=".7"/>
+     <rect x="50" y="89" width="20" height="2.6" rx="1.3" fill="#C8102E" opacity=".5"/>
+     <rect x="52" y="102" width="16" height="2.4" rx="1.2" fill="#B9A99A"/>`,
+   fixer:`
+     <rect x="43" y="4" width="34" height="40" rx="3" fill="#7E0F1C" opacity=".8"/>
+     <rect x="43" y="4" width="9" height="40" rx="3" fill="#fff" opacity=".22"/>
+     <rect x="53" y="14" width="7" height="24" rx="2" fill="#A81829"/>
+     <rect x="62" y="14" width="5" height="24" rx="2" fill="#A81829" opacity=".7"/>
+     <rect x="35" y="44" width="50" height="78" rx="11" fill="url(#gred)"/>
+     <rect x="35" y="44" width="12" height="78" rx="11" fill="#fff" opacity=".26"/>
+     <rect x="44" y="74" width="32" height="4" rx="2" fill="#fff" opacity=".95"/>
+     <rect x="48" y="86" width="24" height="2.4" rx="1.2" fill="#fff" opacity=".7"/>
+     <rect x="51" y="93" width="18" height="2.4" rx="1.2" fill="#fff" opacity=".5"/>
+     <rect x="53" y="105" width="14" height="2.2" rx="1.1" fill="#fff" opacity=".45"/>`,
+   arencia:`
+     <rect x="49" y="6" width="22" height="15" rx="3" fill="#C2CE44"/>
+     <rect x="49" y="6" width="6" height="15" rx="3" fill="#fff" opacity=".35"/>
+     <path d="M42 21h36v84a4 4 0 01-4 4H46a4 4 0 01-4-4z" fill="url(#gyel)"/>
+     <path d="M42 21h11v88h-7a4 4 0 01-4-4z" fill="#fff" opacity=".3"/>
+     <rect x="42" y="109" width="36" height="9" rx="1.5" fill="#AEBB35"/>
+     <path d="M45 109v9M50 109v9M55 109v9M60 109v9M65 109v9M70 109v9M75 109v9" stroke="#93A02A" stroke-width="1.2"/>
+     <rect x="56" y="34" width="4" height="58" rx="2" fill="#3A3F14" opacity=".55"/>
+     <rect x="64" y="40" width="2.6" height="44" rx="1.3" fill="#3A3F14" opacity=".38"/>
+     <rect x="70" y="46" width="2.2" height="32" rx="1.1" fill="#3A3F14" opacity=".28"/>`
+  }[k]||`
+     <rect x="40" y="20" width="40" height="98" rx="12" fill="url(#gred)"/>
+     <rect x="40" y="20" width="11" height="98" rx="12" fill="#fff" opacity=".22"/>
+     <rect x="52" y="6" width="16" height="16" rx="3" fill="#C8102E"/>
+     <rect x="49" y="60" width="22" height="4" rx="2" fill="#fff" opacity=".9"/>
+     <rect x="52" y="72" width="16" height="2.4" rx="1.2" fill="#fff" opacity=".6"/>`;
+  return `<svg class="art" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg"><defs>
+    <linearGradient id="gdo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F7B733"/><stop offset="52%" stop-color="#E2622A"/><stop offset="100%" stop-color="#7B3FA0"/></linearGradient>
+    <linearGradient id="gred" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8323F"/><stop offset="55%" stop-color="#C8102E"/><stop offset="100%" stop-color="#8A0A1E"/></linearGradient>
+    <linearGradient id="gyel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8EE86"/><stop offset="55%" stop-color="#D2DC5C"/><stop offset="100%" stop-color="#AFBB33"/></linearGradient>
+  </defs>${B}</svg>`;
+}
+/* mahsulot rasmi: yuklangan rasm (img) bo'lsa uni, aks holda vektor art().
+   Rasm kartada qanday ko'rinishi admin panelda sozlangan: fit / zoom / pos */
+function imgStyle(p){
+  const fit=(p&&p.fit==='cover')?'cover':'contain';
+  const zoom=(p&&p.zoom)||1;
+  const pos=(p&&p.pos)||'50% 50%';
+  return `width:100%;height:100%;object-fit:${fit};object-position:${pos};transform:scale(${zoom})`;
+}
+function pic(p){
+  if(p&&p.img) return `<img src="${p.img}" alt="" loading="lazy" style="${imgStyle(p)}">`;
+  return art(p&&p.k);
+}
+
+/* ================= SOZLAMALAR (admin bilan bo'lishiladi) ================= */
+const DEFAULT_SETTINGS={brand:'LUMÉ',phone:'+998 71 200 00 00',tg:'@lume_support',ship:25000};
+let SETTINGS=Object.assign({},DEFAULT_SETTINGS);
+
+/* ================= MA'LUMOT ================= */
+const DEFAULT_PRODUCTS=[];
+let products=DEFAULT_PRODUCTS.slice();
+/* mahsulotni indeks emas, id orqali topamiz — savat/sevimli id saqlaydi */
+const pById=id=>products.find(p=>p.id===id);
+const pIndex=id=>products.findIndex(p=>p.id===id);
+
+let cart=[];
+let favs=new Set();
+let addrs=[{t:"Uy",main:true,d:"Chilonzor, Bunyodkor 14-uy, 32-xonadon · 4-qavat"},
+           {t:"Ish",main:false,d:"Mirzo Ulug'bek, Amir Temur 108, 6-ofis"}];
+let cards=[{t:'humo',no:'8600 4825',exp:'12/28',own:'DILNOZA RASULOVA',main:true},
+           {t:'uzcard',no:'5614 7712',exp:'04/27',own:'DILNOZA RASULOVA',main:false}];
+let catI=0, curView='home', cur=0, curQ=1;
+let SHIP=25000;
+let BANNERS=[], bnIdx=0, bnTimer=null;
+const num=n=>Number(n||0).toLocaleString('ru-RU').replace(/,/g,' ');
+const som=n=>num(n)+" so'm";
+
+/* ================= BANER SLAYDER ================= */
+function drawBanner(){
+  const el=document.getElementById('banner'); if(!el)return;
+  clearInterval(bnTimer);
+  if(!BANNERS.length){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='block';
+  el.innerHTML=`<div class="bn-track" id="bn-track">${
+      BANNERS.map(b=>`<div class="bn-slide"><img src="${b.img}" alt=""></div>`).join('')
+    }</div>`+(BANNERS.length>1
+      ?`<div class="bn-dots" id="bn-dots">${BANNERS.map((_,i)=>`<span class="${i===0?'on':''}"></span>`).join('')}</div>`:'');
+  bnIdx=0;updateBanner();
+  if(BANNERS.length>1){
+    bnTimer=setInterval(()=>{bnIdx=(bnIdx+1)%BANNERS.length;updateBanner();},3000); // har 3 soniyada
+  }
+}
+function updateBanner(){
+  const tr=document.getElementById('bn-track'); if(!tr)return;
+  tr.style.transform='translateX(-'+(bnIdx*100)+'%)';
+  document.querySelectorAll('#bn-dots span').forEach((d,i)=>d.classList.toggle('on',i===bnIdx));
+}
+
+/* ================= KATEGORIYA ================= */
+function drawCats(){
+  const ks=['found','found','arencia','doubtless','fixer'];
+  let h=[0,1,2,3,4].map(i=>`
+    <button class="cat ${i===catI?'on':''}" onclick="catI=${i};drawCats();drawItems()">
+      <span class="cc">${art(ks[i])}</span><em>${t('cat'+i)}</em>
+    </button>`).join('');
+  h+=`<button class="cat filt" onclick="sheet('sh-filter')">
+        <span class="cc"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h9M17 7h3M4 17h4M12 17h8"/><circle cx="15" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><em>&nbsp;</em>
+      </button>`;
+  document.getElementById('cats').innerHTML=h;
+}
+
+/* ================= RO'YXAT ================= */
+function itemHTML(p){
+  const inCart=cart.find(c=>c.i===p.id);
+  return `<div class="item" onclick="detail(${p.id})">
+    <div class="ph">
+      ${p.old?`<span class="sale">-${Math.round((1-p.p/p.old)*100)}%</span>`:''}
+      <button class="hb ${favs.has(p.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${p.id},this)" aria-label="♥">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.5-7-9.4A4.1 4.1 0 0112 8.6a4.1 4.1 0 017 2c0 4.9-7 9.4-7 9.4z"/></svg>
+      </button>
+      ${pic(p)}
+    </div>
+    <div class="ib">
+      <small>${t('cat'+p.c)}</small>
+      <h4>${p.n}</h4>
+      <div class="pr"><b>${num(p.p)}</b><i>so'm</i>${p.old?`<s>${num(p.old)}</s>`:''}</div>
+      <button class="add-b ${inCart?'in':''}" onclick="event.stopPropagation();addTo(${p.id})">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 8h12l-1 11.2a1.8 1.8 0 01-1.8 1.6H8.8A1.8 1.8 0 017 19.2z"/><path stroke-linecap="round" d="M9.2 8V6.4a2.8 2.8 0 015.6 0V8"/></svg>
+        ${inCart?inCart.q+' '+t('in_cart'):t('add')}
+      </button>
+    </div>
+  </div>`;
+}
+function drawItems(){
+  const list=products.filter(p=>catI===0||p.c===catI);
+  document.getElementById('items').innerHTML= list.length
+    ? '<div class="grid">'+list.map(itemHTML).join('')+'</div>'
+    : `<div class="empty"><div class="e-ic">${art('found')}</div><h3>${t('cart_empty')}</h3></div>`;
+}
+
+/* ================= SEVIMLI ================= */
+function toggleFav(id,el){
+  favs.has(id)?favs.delete(id):favs.add(id);
+  if(el)el.classList.toggle('on',favs.has(id));
+  drawItems();drawFav();
+  const df=document.getElementById('dfav');
+  if(df)df.classList.toggle('on',favs.has(cur));
+}
+function drawFav(){
+  const arr=[...favs].map(pById).filter(Boolean);
+  const has=arr.length>0;
+  document.getElementById('fav-list').innerHTML='<div class="grid">'+arr.map(itemHTML).join('')+'</div>';
+  document.getElementById('fav-list').style.display=has?'block':'none';
+  document.getElementById('fav-empty').style.display=has?'none':'block';
+}
+
+/* ================= MAHSULOT ================= */
+function detail(id){
+  cur=id;curQ=1;
+  const p=pById(id); if(!p)return;
+  const thumbKeys=[null,'found','fixer','arencia'];
+  document.getElementById('v-detail').innerHTML=`
+    <div class="stage">${pic(p)}</div>
+    <div class="thumbs">
+      ${thumbKeys.map((k,z)=>
+        `<div class="th ${z===0?'on':''}" onclick="[...this.parentElement.children].forEach(x=>x.classList.remove('on'));this.classList.add('on')">${z===0?pic(p):art(k)}</div>`).join('')}
+    </div>
+    <div class="d-cat">${t('cat'+p.c)} · ${p.br||''}</div>
+    <div class="d-name">${p.n}</div>
+    <div class="d-prow">
+      <span class="d-price"><i>so'm </i>${num(p.p)}</span>
+      ${p.old?`<span class="d-old">${num(p.old)}</span>`:''}
+    </div>
+    <div class="d-lbl">${t('f_size')}</div>
+    <div class="pills">
+      ${(p.sz||['—']).map((z,k)=>`<button class="pill ${k===0?'on':''}" onclick="[...this.parentElement.children].forEach(x=>x.classList.remove('on'));this.classList.add('on')">${z}</button>`).join('')}
+    </div>
+    <div class="d-lbl">${lang==='ru'?'Описание':lang==='en'?'Description':'Tavsif'}</div>
+    <p class="d-text">${(p.d&&(p.d[lang]||p.d.uz))||''}</p>
+    <div class="specs">
+      <div class="spec"><small>${t('f_skin')}</small><b>${t('sk0')}</b></div>
+      <div class="spec"><small>${lang==='ru'?'Срок годности':lang==='en'?'Shelf life':'Yaroqlilik'}</small><b>24 ${lang==='ru'?'мес.':lang==='en'?'mo.':'oy'}</b></div>
+    </div>`;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('v-detail').classList.add('on');
+  document.getElementById('nav').classList.add('hide');
+  document.getElementById('buybar').classList.add('on');
+  document.getElementById('sbar').style.display='none';
+  document.getElementById('dfav').classList.toggle('on',favs.has(id));
+  document.getElementById('dq').textContent='1';
+  head('detail');
+  document.getElementById('scroll').scrollTop=0;
+}
+function stepQ(d){curQ=Math.max(1,curQ+d);document.getElementById('dq').textContent=curQ}
+function addFromDetail(){
+  const f=cart.find(c=>c.i===cur);
+  f?f.q+=curQ:cart.push({i:cur,q:curQ});
+  drawCart();drawItems();drawFav();
+  const p=pById(cur); toast((p?p.n:'')+' '+t('toast_added'));
+}
+
+/* ================= SAVAT ================= */
+function drawCart(){
+  cart=cart.filter(c=>pById(c.i));
+  const has=cart.length>0;
+  document.getElementById('cart-full').style.display=has?'block':'none';
+  document.getElementById('cart-empty').style.display=has?'none':'block';
+  document.getElementById('cart-items').innerHTML=cart.map((c,k)=>{
+    const p=pById(c.i);
+    return `<div class="li">
+      <div class="ph">${pic(p)}</div>
+      <div class="li-b"><small>${t('cat'+p.c)}</small><h4>${p.n}</h4><span>${som(p.p*c.q)}</span></div>
+      <div class="qty-v">
+        <button onclick="chg(${k},1)">+</button><b>${c.q}</b><button onclick="chg(${k},-1)">−</button>
+      </div>
+    </div>`}).join('');
+  const sub=cart.reduce((s,c)=>s+pById(c.i).p*c.q,0);
+  const disc=cart.reduce((s,c)=>{const p=pById(c.i);return s+(p.old?(p.old-p.p)*c.q:0)},0);
+  const n=cart.reduce((s,c)=>s+c.q,0);
+  document.getElementById('c-count').textContent=n+' '+t('n_items');
+  document.getElementById('s-sub').textContent=som(sub+disc);
+  document.getElementById('s-disc').textContent='− '+som(disc);
+  document.getElementById('s-ship').textContent=som(SHIP);
+  document.getElementById('s-tot').textContent=som(sub+(sub?SHIP:0));
+  ['nbadge','fbadge'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){b.textContent=n;if(id==='nbadge')b.style.display=(n&&curView!=='cart')?'grid':'none';
+          else b.style.display=(n&&curView==='cart')?'grid':'none'}
+  });
+}
+function chg(k,d){cart[k].q+=d;if(cart[k].q<1)cart.splice(k,1);drawCart();drawItems();drawFav()}
+function addTo(id){
+  const f=cart.find(c=>c.i===id);
+  f?f.q++:cart.push({i:id,q:1});
+  drawCart();drawItems();drawFav();
+  const p=pById(id); toast((p?p.n:'')+' '+t('toast_added'));
+}
+
+/* ================= CHECKOUT — buyurtmani Cloudga yozadi ================= */
+function checkout(){
+  if(!cart.length){closeSheet();return}
+  const sub=cart.reduce((s,c)=>s+pById(c.i).p*c.q,0);
+  const total=sub+SHIP;
+  const n=cart.reduce((s,c)=>s+c.q,0);
+  const m=addrs.find(a=>a.main)||addrs[0];
+  const order={
+    id:'#'+Math.floor(1050+Math.random()*900),
+    ts:Date.now(),
+    status:'wait',
+    count:n,
+    total:total,
+    addr:m?m.d:'',
+    client:window.__LUME_CLIENT||'shop',
+    items:cart.map(c=>{const p=pById(c.i);return{n:p.n,q:c.q,p:p.p}})
+  };
+  try{
+    const list=(window.Cloud&&Cloud.get)?(Cloud.get('lume_orders',[])||[]):[];
+    list.unshift(order);
+    if(window.Cloud&&Cloud.set)Cloud.set('lume_orders',list);
+  }catch(e){}
+  cart=[];
+  drawCart();drawItems();drawFav();drawOrders();
+  closeSheet();toast(t('toast_paid'));
+  go('order');
+}
+
+/* ================= BUYURTMA ================= */
+function drawOrders(){
+  document.getElementById('ochips').innerHTML=['c_active','c_done','c_cancel'].map((k,i)=>
+    `<button class="pill ${i===0?'on':''}">${t(k)}</button>`).join('');
+  const trk=n=>[1,2,3,4].map(s=>
+    `<div class="step ${s<=n?'done':''}"><span class="bar"></span><span class="dot"></span><em>${t('tr'+s)}</em></div>`).join('');
+  const statusMap={wait:{cls:'t-wait',lbl:st=>t('st_wait'),step:1,foot:t('o_wait')},
+    way:{cls:'t-way',lbl:st=>t('st_way'),step:3,foot:t('o_eta')},
+    done:{cls:'t-done',lbl:st=>t('st_done'),step:4,foot:t('o_addr')}};
+  let cloudOrders=[];
+  try{ cloudOrders=(window.Cloud&&Cloud.get)?(Cloud.get('lume_orders',[])||[]):[]; }catch(e){}
+  const dateFmt=ts=>{try{const d=new Date(ts);return d.toLocaleDateString('ru-RU')+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}};
+  const liveHTML=cloudOrders.map(o=>{
+    const s=statusMap[o.status]||statusMap.wait;
+    return `<div class="order">
+      <div class="o-top"><div><div class="o-id">${o.id}</div><div class="o-date">${dateFmt(o.ts)} · ${o.count} ${t('n_items')}</div></div>
+        <span class="tag ${s.cls}">${s.lbl()}</span></div>
+      ${o.status==='done'?'':`<div class="track">${trk(s.step)}</div>`}
+      <div class="o-foot"${o.status==='done'?' style="border-top:0;padding-top:2px"':''}><span>${s.foot}</span><b>${num(o.total)}</b></div>
+    </div>`;}).join('');
+  document.getElementById('orders').innerHTML = cloudOrders.length
+    ? liveHTML
+    : `<div class="empty"><div class="e-ic">${art('fixer')}</div><h3>${t('order_empty')}</h3><p>${t('order_empty_s')}</p></div>`;
+}
+
+/* ================= HEADER ================= */
+function head(v){
+  curView=v;
+  const dark=document.documentElement.dataset.theme==='dark';
+  const tsw=`<button class="tsw ${dark?'night':''}" onclick="flip(event)" aria-label="Rejim">
+      <span><svg fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg></span>
+      <span><svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg></span>
+    </button>`;
+  const T={cart:t('h_cart'),order:t('h_order'),profile:t('h_prof'),detail:t('h_detail'),fav:t('h_fav')};
+  document.getElementById('hrow').innerHTML = v==='home'
+    ? `<button class="sq" onclick="sheet('sh-filter')" aria-label="Menyu">
+         <svg fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="9" r="1.7"/><circle cx="15" cy="9" r="1.7"/><circle cx="9" cy="15" r="1.7"/><circle cx="15" cy="15" r="1.7"/></svg>
+       </button><div class="brand">${SETTINGS.brand||'LUMÉ'}</div>${tsw}`
+    : `<button class="sq" onclick="go('${v==='detail'?'home':v}')" aria-label="Orqaga">
+         <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></svg>
+       </button><div class="htitle">${T[v]}</div>${tsw}`;
+}
+
+
+/* ================= NAV IKONKALARI ================= */
+const NAVI={
+ home:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.6L12 3.4l9 7.2V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/></svg>',
+ order:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="4.5" y="3.5" width="15" height="17" rx="3"/><path stroke-linecap="round" d="M8.8 8.6h6.4M8.8 12h6.4M8.8 15.4h3.6"/></svg>',
+ cart:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 8h12l-1 11.2a1.8 1.8 0 01-1.8 1.6H8.8A1.8 1.8 0 017 19.2z"/><path stroke-linecap="round" d="M9.2 8V6.4a2.8 2.8 0 015.6 0V8"/></svg>',
+ fav:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20s-7-4.5-7-9.4A4.1 4.1 0 0112 8.6a4.1 4.1 0 017 2c0 4.9-7 9.4-7 9.4z"/></svg>',
+ profile:'<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path stroke-linecap="round" d="M4.5 20a7.5 7.5 0 0115 0"/></svg>'
+};
+const NAVO=['home','order','cart','fav','profile'];
+function paintNav(v){
+  document.querySelectorAll('.tab').forEach(b=>{
+    const k=b.dataset.t;
+    const bd=b.querySelector('.badge');
+    b.innerHTML=NAVI[k]+(bd?bd.outerHTML:'');
+    b.classList.toggle('on',k===v);
+  });
+  const i=NAVO.indexOf(v);
+  const fab=document.getElementById('fab');
+  if(i>=0){
+    fab.style.left=(i*20+10)+'%';
+    fab.style.opacity='1';
+    document.getElementById('fab-ic').innerHTML=NAVI[v];
+  }else{fab.style.opacity='0'}
+  document.getElementById('fbadge').style.display=v==='cart'?'grid':'none';
+  const nb=document.getElementById('nbadge');
+  if(nb)nb.style.display=v==='cart'?'none':(cart.length?'grid':'none');
+}
+
+/* ================= NAVIGATSIYA ================= */
+function go(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  paintNav(v);
+  document.getElementById('sbar').style.display=v==='home'?'flex':'none';
+  document.getElementById('nav').classList.remove('hide');
+  document.getElementById('buybar').classList.remove('on');
+  head(v);
+  document.getElementById('scroll').scrollTop=0;
+}
+
+/* ================= TUNGI REJIM ================= */
+const sunI='<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg>';
+const moonI='<svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>';
+function flip(e){
+  if(e)e.stopPropagation();
+  const dark=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=dark?'light':'dark';
+  document.querySelector('meta[name=theme-color]').setAttribute('content',dark?'#EFF3F9':'#1A1D27');
+  syncTheme();head(curView);
+}
+function syncTheme(){
+  const dark=document.documentElement.dataset.theme==='dark';
+  document.getElementById('sw').classList.toggle('on',dark);
+  document.getElementById('th-tx').textContent=dark?t('dark_on'):t('dark_off');
+  document.getElementById('th-ic').innerHTML=dark?moonI:sunI;
+}
+
+/* ================= MANZIL ================= */
+function drawAddrs(){
+  document.getElementById('alist').innerHTML=addrs.map((a,i)=>`
+    <div class="addr ${a.main?'main':''}" onclick="pickAddr(${i})">
+      <span class="ic"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+      <div class="ab"><h4>${a.t}${a.main?'<u>'+t('main_tag')+'</u>':''}</h4><p>${a.d}</p></div>
+      <button class="del" onclick="event.stopPropagation();rmAddr(${i})">×</button>
+    </div>`).join('');
+  document.getElementById('acount').textContent=addrs.length+' '+t('n_addr');
+  const m=addrs.find(a=>a.main)||addrs[0];
+  document.getElementById('c-addr').textContent=m?m.d.split('·')[0].trim():'—';
+}
+function pickAddr(i){addrs.forEach((a,k)=>a.main=k===i);drawAddrs();closeSheet();toast(t('toast_addr'))}
+function rmAddr(i){addrs.splice(i,1);if(addrs.length&&!addrs.some(a=>a.main))addrs[0].main=true;drawAddrs();toast(t('toast_del'))}
+function addAddr(){
+  const s=document.getElementById('a-street').value.trim();
+  if(!s){toast(t('f_street'));return}
+  const n=document.getElementById('a-name').value.trim()||t('new_addr');
+  const c=document.getElementById('a-city').value;
+  const f=document.getElementById('a-floor').value.trim();
+  addrs.push({t:n,main:false,d:c+', '+s+(f?' · '+f:'')});
+  ['a-name','a-street','a-floor','a-code'].forEach(id=>document.getElementById(id).value='');
+  drawAddrs();sheet('sh-addr');toast(t('toast_saved'));
+}
+
+/* ================= KARTA ================= */
+function drawCards(){
+  const trash='<svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" d="M5 7h14M10 11v6M14 11v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 7l.8 12a2 2 0 002 1.9h5.4a2 2 0 002-1.9l.8-12M9.5 7V5.2A1.2 1.2 0 0110.7 4h2.6a1.2 1.2 0 011.2 1.2V7"/></svg>';
+  const wave='<svg class="wave" fill="none" stroke="#fff" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" d="M8.5 8.5a5 5 0 010 7M12 6a9 9 0 010 12M5 11a2 2 0 010 2"/></svg>';
+  document.getElementById('clist').innerHTML=cards.map((c,i)=>`
+    <div class="bank ${c.t} ${c.main?'main':''}" onclick="pickCard(${i})">
+      <div class="btop">
+        <span class="bn">${c.t==='humo'?'HUMO':'UZCARD'}</span>
+        ${c.main?`<span class="btag">${t('main_tag')}</span>`:''}
+        <button class="bdel" onclick="event.stopPropagation();rmCard(${i})" aria-label="×">${trash}</button>
+      </div>
+      <div class="brow2"><span class="chipx"></span>${wave}</div>
+      <div class="no">•••• •••• •••• ${c.no.split(' ')[1]||c.no}</div>
+      <div class="bot">
+        <div><small>${t('f_owner').toUpperCase()}</small><b>${c.own}</b></div>
+        <div style="text-align:right"><small>${t('f_exp').toUpperCase()}</small><b>${c.exp}</b></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('card-c').textContent=cards.length+' '+t('n_cards');
+  const m=cards.find(c=>c.main);
+  document.getElementById('pay-card').textContent=m?(m.t==='humo'?'Humo':'Uzcard')+' · '+m.no.split(' ')[0]+' •••• '+(m.no.split(' ')[1]||''):'—';
+}
+function pickCard(i){cards.forEach((c,k)=>c.main=k===i);drawCards();closeSheet();toast(t('toast_card'))}
+function rmCard(i){cards.splice(i,1);if(cards.length&&!cards.some(c=>c.main))cards[0].main=true;drawCards();toast(t('toast_del'))}
+function addCard(){
+  const no=document.getElementById('k-no').value.replace(/\D/g,'');
+  if(no.length<16){toast(t('f_cardno'));return}
+  cards.push({t:no.startsWith('86')?'humo':'uzcard',no:no.slice(0,4)+' '+no.slice(-4),
+    exp:document.getElementById('k-exp').value||'12/29',
+    own:(document.getElementById('k-own').value||'LUMÉ').toUpperCase(),main:false});
+  ['k-no','k-exp','k-own'].forEach(id=>document.getElementById(id).value='');
+  drawCards();sheet('sh-cards');toast(t('toast_saved'));
+}
+
+/* ================= TIL ================= */
+function drawLangs(){
+  document.getElementById('langlist').innerHTML=LANGS.map(l=>`
+    <div class="lang ${l.c===lang?'on':''}" onclick="setLang('${l.c}')">
+      <span class="fl">${l.ab}</span>
+      <div class="lb"><h4>${l.n}</h4><small>${l.s}</small></div>
+      <span class="ck"><svg fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    </div>`).join('');
+}
+function setLang(c){lang=c;document.documentElement.lang=c;applyLang();closeSheet();toast(t('toast_lang'))}
+
+/* ================= FILTR ================= */
+function drawFilters(){
+  document.getElementById('f-skin').innerHTML=[0,1,2,3,4].map(i=>
+    `<button class="pill ${i===0?'on':''}">${t('sk'+i)}</button>`).join('');
+  document.getElementById('f-size').innerHTML=['30ml','80ml','100ml'].map((z,i)=>
+    `<button class="pill ${i===0?'on':''}">${z}</button>`).join('');
+}
+function rangeUp(){document.getElementById('rmax').textContent=num(+document.getElementById('f-range').value)}
+function clearF(){
+  document.getElementById('f-range').value=300000;rangeUp();drawFilters();toast(t('clear'));
+}
+document.addEventListener('click',e=>{
+  const pl=e.target.closest('.pills .pill,.ochips .pill');
+  if(pl){[...pl.parentElement.children].forEach(x=>x.classList.remove('on'));pl.classList.add('on')}
+});
+
+/* ================= FAQ ================= */
+function drawFaq(){
+  document.getElementById('faqs').innerHTML=[1,2,3,4].map(i=>
+    `<details class="faq"><summary>${t('q'+i)}</summary><p>${t('a'+i)}</p></details>`).join('');
+}
+
+/* ================= SHEET / TOAST ================= */
+let openS=null;
+function sheet(id){
+  if(openS)document.getElementById(openS).classList.remove('on');
+  openS=id;document.getElementById(id).classList.add('on');
+  document.getElementById('veil').classList.add('on');
+}
+function closeSheet(){
+  if(openS)document.getElementById(openS).classList.remove('on');
+  document.getElementById('veil').classList.remove('on');openS=null;
+}
+let tt;
+function toast(m){
+  const el=document.getElementById('toast');
+  el.textContent=m;el.classList.add('on');
+  clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),1900);
+}
+
+/* ================= CLOUDDAN HYDRATE ================= */
+function hydrateFromCloud(){
+  try{
+    if(!(window.Cloud&&Cloud.get))return;
+    const cp=Cloud.get('lume_products',null);
+    if(Array.isArray(cp)){
+      // Serverdagi ro'yxatni hurmat qilamiz (bo'sh bo'lsa ham — admin o'chirgan bo'lsa qaytib kelmasin)
+      products=cp.map((p,idx)=>Object.assign({id:p.id||idx+1,k:p.k||'',c:+p.c||0,sz:p.sz||[],d:p.d||{}},p));
+    }
+    const cs=Cloud.get('lume_settings',null);
+    if(cs&&typeof cs==='object'){
+      SETTINGS=Object.assign({},DEFAULT_SETTINGS,cs);
+      SHIP=+SETTINGS.ship||25000;
+    }
+    const cb=Cloud.get('lume_banners',null);
+    if(Array.isArray(cb))BANNERS=cb.filter(b=>b&&b.img);
+  }catch(e){console.error('[lume] hydrate:',e)}
+  // savat/sevimlida mavjud bo'lmagan idlarni tozalaymiz
+  cart=cart.filter(c=>pById(c.i));
+  favs=new Set([...favs].filter(id=>pById(id)));
+}
+
+/* ================= TIL QO'LLASH ================= */
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n)});
+  document.getElementById('sinp').placeholder=t('search');
+  document.getElementById('lang-c').textContent=t('lang_cur');
+  document.getElementById('empty-sub').textContent=t('cart_empty_s');
+  document.getElementById('fav-sub').textContent=t('fav_empty_s');
+  document.getElementById('cta-t').textContent=t('buy');
+  const hp=document.getElementById('help-phone'); if(hp)hp.textContent=SETTINGS.phone||'';
+  const hg=document.getElementById('help-tg'); if(hg)hg.textContent=SETTINGS.tg||'';
+  const vl=document.getElementById('ver-line'); if(vl)vl.textContent=(SETTINGS.brand||'LUMÉ')+' · 1.0.0';
+  drawBanner();drawCats();drawItems();drawFav();drawCart();drawOrders();
+  drawAddrs();drawCards();drawLangs();drawFilters();drawFaq();syncTheme();head(curView);
+}
+
+/* ================= START ================= */
+function startApp(){
+  hydrateFromCloud();
+  document.getElementById('empty-art').innerHTML=art('found');
+  document.getElementById('fav-art').innerHTML=art('doubtless');
+  rangeUp();applyLang();paintNav('home');go('home');
+}
+
+/* Cloud init, keyin ilovani ishga tushiramiz */
+(async () => {
+  const _urlClient = new URLSearchParams(location.search).get("client");
+  if (_urlClient) { try { localStorage.setItem("lume_last_client", _urlClient); } catch(e){} }
+  const CLIENT_ID = _urlClient
+    || (function(){ try { return JSON.parse(localStorage.getItem("bo_session")||"{}").clientId; } catch(e){ return null; } })()
+    || (function(){ try { return localStorage.getItem("lume_last_client"); } catch(e){ return null; } })()
+    || "shop";
+  window.__LUME_CLIENT = CLIENT_ID;
+  try { await Cloud.init("lume", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
+  startApp();
+  // Server kech javob bersa — ma'lumotni qayta yuklab, joriy ko'rinishni yangilaymiz
+  // (navigatsiyani "home" ga qaytarmaymiz)
+  window.addEventListener("cloud:updated", () => {
+    try {
+      hydrateFromCloud();
+      drawBanner(); drawItems(); drawFav(); drawCart(); drawOrders();
+      if (curView === 'detail' && pById(cur)) detail(cur);
+    } catch(e){ console.error('[lume] cloud:updated:', e); }
+  });
+})();
+</script>
+</body>
+</html>
