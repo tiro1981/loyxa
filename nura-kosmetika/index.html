@@ -89,6 +89,15 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .view.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 
+/* ===== baner slayder ===== */
+.banner{margin:18px 0 4px;border-radius:22px;overflow:hidden;position:relative;box-shadow:var(--sh)}
+.bn-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.bn-slide{flex:none;width:100%;aspect-ratio:12/5;background:var(--surface)}
+.bn-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.bn-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+.bn-dots span{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.55);transition:.3s}
+.bn-dots span.on{background:#fff;width:18px}
+
 /* ===== kategoriya doiralari ===== */
 .cats{display:flex;gap:16px;overflow-x:auto;margin:20px -22px 0;padding:6px 22px 10px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
@@ -452,6 +461,7 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 
     <!-- ASOSIY -->
     <section class="view on" id="v-home">
+      <div class="banner" id="banner" style="display:none"></div>
       <div class="cats" id="cats"></div>
       <div class="sec"><h2 data-i18n="sec_all">Mahsulotlar</h2><a data-i18n="all">Barchasi</a></div>
       <div id="items"></div>
@@ -954,8 +964,30 @@ let cards=[{t:'humo',no:'8600 4825',exp:'12/28',own:'DILNOZA RASULOVA',main:true
            {t:'uzcard',no:'5614 7712',exp:'04/27',own:'DILNOZA RASULOVA',main:false}];
 let catI=0, curView='home', cur=0, curQ=1;
 let SHIP=25000;
+let BANNERS=[], bnIdx=0, bnTimer=null;
 const num=n=>Number(n||0).toLocaleString('ru-RU').replace(/,/g,' ');
 const som=n=>num(n)+" so'm";
+
+/* ================= BANER SLAYDER ================= */
+function drawBanner(){
+  const el=document.getElementById('banner'); if(!el)return;
+  clearInterval(bnTimer);
+  if(!BANNERS.length){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='block';
+  el.innerHTML=`<div class="bn-track" id="bn-track">${
+      BANNERS.map(b=>`<div class="bn-slide"><img src="${b.img}" alt=""></div>`).join('')
+    }</div>`+(BANNERS.length>1
+      ?`<div class="bn-dots" id="bn-dots">${BANNERS.map((_,i)=>`<span class="${i===0?'on':''}"></span>`).join('')}</div>`:'');
+  bnIdx=0;updateBanner();
+  if(BANNERS.length>1){
+    bnTimer=setInterval(()=>{bnIdx=(bnIdx+1)%BANNERS.length;updateBanner();},3000); // har 3 soniyada
+  }
+}
+function updateBanner(){
+  const tr=document.getElementById('bn-track'); if(!tr)return;
+  tr.style.transform='translateX(-'+(bnIdx*100)+'%)';
+  document.querySelectorAll('#bn-dots span').forEach((d,i)=>d.classList.toggle('on',i===bnIdx));
+}
 
 /* ================= KATEGORIYA ================= */
 function drawCats(){
@@ -1366,6 +1398,8 @@ function hydrateFromCloud(){
       SETTINGS=Object.assign({},DEFAULT_SETTINGS,cs);
       SHIP=+SETTINGS.ship||25000;
     }
+    const cb=Cloud.get('nura_banners',null);
+    if(Array.isArray(cb))BANNERS=cb.filter(b=>b&&b.img);
   }catch(e){console.error('[nura] hydrate:',e)}
   // savat/sevimlida mavjud bo'lmagan idlarni tozalaymiz
   cart=cart.filter(c=>pById(c.i));
@@ -1383,7 +1417,7 @@ function applyLang(){
   const hp=document.getElementById('help-phone'); if(hp)hp.textContent=SETTINGS.phone||'';
   const hg=document.getElementById('help-tg'); if(hg)hg.textContent=SETTINGS.tg||'';
   const vl=document.getElementById('ver-line'); if(vl)vl.textContent=(SETTINGS.brand||'NURA')+' · 1.0.0';
-  drawCats();drawItems();drawFav();drawCart();drawOrders();
+  drawBanner();drawCats();drawItems();drawFav();drawCart();drawOrders();
   drawAddrs();drawCards();drawLangs();drawFilters();drawFaq();syncTheme();head(curView);
 }
 
@@ -1411,7 +1445,7 @@ function startApp(){
   window.addEventListener("cloud:updated", () => {
     try {
       hydrateFromCloud();
-      drawItems(); drawFav(); drawCart(); drawOrders();
+      drawBanner(); drawItems(); drawFav(); drawCart(); drawOrders();
       if (curView === 'detail' && pById(cur)) detail(cur);
     } catch(e){ console.error('[nura] cloud:updated:', e); }
   });
