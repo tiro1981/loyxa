@@ -141,6 +141,14 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
   display:grid;place-items:center;overflow:hidden}
 .img-prev svg{width:80%;height:80%}
 .img-prev img{max-width:84%;max-height:84%;object-fit:contain}
+.up-btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit;font-size:12.5px;
+  font-weight:500;color:var(--ink);background:var(--bg);box-shadow:var(--sh-s);border-radius:13px;padding:11px 15px;transition:transform .13s}
+.up-btn:active{transform:scale(.96);box-shadow:var(--sh-in)}
+.up-btn svg{width:16px;height:16px}
+.up-btn input{display:none}
+.up-rm{border:0;background:none;cursor:pointer;font-family:inherit;font-size:11.5px;color:var(--red);
+  padding:6px 2px;margin-left:2px}
+.up-hint{font-size:10.5px;color:var(--dim);font-weight:300;margin-top:7px}
 .modal-act{display:flex;gap:12px;margin-top:22px}
 .modal-act .btn{flex:1;justify-content:center;padding:15px}
 
@@ -387,10 +395,19 @@ function openProd(id){
     <div class="img-pick">
       <div class="img-prev" id="img-prev">${pic({img:editImg,k:editKey})}</div>
       <div style="flex:1">
-        <div class="fld"><label>Rasm yuklash (ixtiyoriy)</label>
-          <input type="file" accept="image/*" id="p-img" onchange="onImg(event)"></div>
+        <div class="fld"><label>Mahsulot rasmi</label>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+            <label class="up-btn">
+              <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+              <span>Rasm yuklash</span>
+              <input type="file" accept="image/*" id="p-img" onchange="onImg(event)">
+            </label>
+            <button type="button" class="up-rm" id="up-rm" onclick="removeImg()" style="${editImg?'':'display:none'}">Olib tashlash</button>
+          </div>
+          <div class="up-hint">JPG / PNG — istalgan o'lcham (avtomatik siqiladi)</div>
+        </div>
         <div class="fld" style="margin-top:8px"><label>Yoki tayyor ikonka</label>
-          <select id="p-key" onchange="editKey=this.value;editImg=null;document.getElementById('p-img').value='';refreshPrev()">
+          <select id="p-key" onchange="editKey=this.value;editImg=null;document.getElementById('up-rm').style.display='none';document.getElementById('p-img').value='';refreshPrev()">
             ${ART_KEYS.map(([k,n])=>`<option value="${k}" ${k===editKey?'selected':''}>${n}</option>`).join('')}
           </select></div>
       </div>
@@ -410,14 +427,37 @@ function openProd(id){
     </div>`;
   document.getElementById('veil').classList.add('on');
 }
-function refreshPrev(){document.getElementById('img-prev').innerHTML=pic({img:editImg,k:editKey});}
+function refreshPrev(){
+  document.getElementById('img-prev').innerHTML=pic({img:editImg,k:editKey});
+  const rm=document.getElementById('up-rm'); if(rm)rm.style.display=editImg?'':'none';
+}
+/* rasmni canvas orqali kichraytirib siqamiz — istalgan foto ishlaydi va yengil saqlanadi */
 function onImg(e){
   const f=e.target.files&&e.target.files[0]; if(!f)return;
-  if(f.size>1500000){toast('Rasm juda katta (max ~1.5MB)');e.target.value='';return}
+  if(!/^image\//.test(f.type)){toast('Faqat rasm faylini tanlang');e.target.value='';return}
   const r=new FileReader();
-  r.onload=()=>{editImg=r.result;refreshPrev()};
+  r.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{
+      const MAX=900;
+      let{width:w,height:h}=im;
+      if(w>MAX||h>MAX){const s=Math.min(MAX/w,MAX/h);w=Math.round(w*s);h=Math.round(h*s);}
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      const cx=cv.getContext('2d');
+      cx.fillStyle='#ffffff';cx.fillRect(0,0,w,h);
+      cx.drawImage(im,0,0,w,h);
+      try{editImg=cv.toDataURL('image/jpeg',0.82);}catch(err){editImg=r.result;}
+      refreshPrev();
+      e.target.value='';
+      toast('Rasm yuklandi');
+    };
+    im.onerror=()=>{toast('Rasmni o\'qib bo\'lmadi');};
+    im.src=r.result;
+  };
+  r.onerror=()=>{toast('Faylni o\'qib bo\'lmadi');};
   r.readAsDataURL(f);
 }
+function removeImg(){editImg=null;const fi=document.getElementById('p-img');if(fi)fi.value='';refreshPrev();}
 function saveProd(id){
   const n=document.getElementById('p-n').value.trim();
   const p=+document.getElementById('p-p').value.replace(/\D/g,'');
