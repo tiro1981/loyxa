@@ -837,7 +837,8 @@ function openCat(id){
   editPosX=50;editPosY=50;
   if(c&&c.pos){const m=String(c.pos).match(/(-?\d+)%\s+(-?\d+)%/);if(m){editPosX=+m[1];editPosY=+m[2];}}
   editImgR=c?c.imgR||null:null;
-  editFitR=c&&c.fitR==='cover'?'cover':'contain';
+  // Yangi toifa uchun shar rasmi standart holatda doirani TO'LDIRADI (cover).
+  editFitR=c?(c.fitR==='cover'?'cover':'contain'):'cover';
   editZoomR=c&&c.zoomR?+c.zoomR:1;
   editPosXR=50;editPosYR=50;
   if(c&&c.posR){const m=String(c.posR).match(/(-?\d+)%\s+(-?\d+)%/);if(m){editPosXR=+m[1];editPosYR=+m[2];}}
