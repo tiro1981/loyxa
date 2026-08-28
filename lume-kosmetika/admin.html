@@ -964,7 +964,7 @@ function delCat(id){
 }
 
 /* ===== ORDERS ===== */
-const OSTAT={wait:['Kutilmoqda','chip'],way:['Yo\'lda','chip r'],done:['Yetkazildi','chip g'],cancel:['Bekor','chip']};
+const OSTAT={collecting:['Yig\'ilmoqda','chip'],plane:['Samalyotda','chip'],arrived:['Toshkentga yetib keldi','chip r'],way:['Yo\'lda','chip r'],done:['Yetkazib berildi','chip g'],cancel:['Bekor','chip']};
 function orderRow(o){
   const items=(o.items||[]).map(it=>`${esc(it.n)} ×${it.q}`).join(', ');
   return `<tr>
