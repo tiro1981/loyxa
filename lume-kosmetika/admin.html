@@ -155,15 +155,19 @@ body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(-
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
 .cat-card{background:var(--bg);border-radius:20px;padding:18px 14px 14px;box-shadow:var(--sh-s);
   display:flex;flex-direction:column;align-items:center;gap:12px}
-.cat-frame{width:92px;height:92px;border-radius:24px;overflow:hidden;background:var(--surface);
+.cat-frame{width:92px;height:92px;border-radius:50%;overflow:hidden;background:var(--surface);
   box-shadow:var(--sh-in);display:grid;place-items:center}
 .cat-frame img{display:block}
 .cat-frame .emo{font-size:42px;line-height:1}
 .cat-card b{font-size:14px;font-weight:500;text-align:center;line-height:1.3}
 .cc-act{display:flex;gap:8px}
-/* toifa modalidagi kvadrat ramka */
+/* toifa modalidagi ramka — kvadrat yoki dumaloq (shar) */
 .cat-prev{width:120px;height:120px;flex:none;border-radius:26px;background:var(--surface);box-shadow:var(--sh-in);
-  display:grid;place-items:center;overflow:hidden;position:relative}
+  display:grid;place-items:center;overflow:hidden;position:relative;transition:border-radius .25s}
+.cat-prev.round{border-radius:50%}
+.cat-sec-t{font-size:12.5px;font-weight:600;color:var(--ink);margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.cat-sec-t::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--red)}
+.cat-sec-t.b::before{background:var(--blue)}
 .cat-prev img{display:block}
 .cat-prev .emo{font-size:54px;line-height:1}
 .cat-prev .pv-tag{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:8.5px;
@@ -464,6 +468,8 @@ let products=[], orders=[], banners=[], settings={brand:'LUMÉ',phone:'+998 71 2
 let editImg=null, editKey='found';
 /* rasm kartada qanday ko'rinishi — qo'lda sozlanadi */
 let editFit='contain', editZoom=1, editPosX=50, editPosY=50;
+/* Shar (qidiruv sahifasi) uchun alohida rasm va uning sozlamalari. */
+let editImgR=null, editFitR='contain', editZoomR=1, editPosXR=50, editPosYR=50;
 function editObj(){return{img:editImg,k:editKey,fit:editFit,zoom:editZoom,pos:editPosX+'% '+editPosY+'%'};}
 
 /* ===== Cloud helpers ===== */
@@ -770,19 +776,36 @@ function catEditObj(){
   const emoEl=document.getElementById('c-emo');
   return {img:editImg,emo:emoEl?emoEl.value:'',fit:editFit,zoom:editZoom,pos:editPosX+'% '+editPosY+'%'};
 }
+function catEditObjR(){
+  const emoEl=document.getElementById('c-emo');
+  return {img:editImgR,emo:emoEl?emoEl.value:'',fit:editFitR,zoom:editZoomR,pos:editPosXR+'% '+editPosYR+'%'};
+}
+/* Bosh sahifa (ramka) previewi */
 function refreshCatPrev(){
   const prev=document.getElementById('cat-prev'); if(!prev)return;
   prev.innerHTML=catPic(catEditObj())+'<span class="pv-tag">Ramka ko\'rinishi</span>';
   const rm=document.getElementById('c-rm'); if(rm)rm.style.display=editImg?'':'none';
   const fc=document.getElementById('cat-fit-ctl'); if(fc)fc.classList.toggle('dim',!editImg);
 }
+/* Qidiruv (dumaloq shar) previewi */
+function refreshCatPrevR(){
+  const prev=document.getElementById('cat-prev-r'); if(!prev)return;
+  prev.innerHTML=catPic(catEditObjR())+'<span class="pv-tag">Shar ko\'rinishi</span>';
+  const rm=document.getElementById('c-rm-r'); if(rm)rm.style.display=editImgR?'':'none';
+  const fc=document.getElementById('cat-fit-ctl-r'); if(fc)fc.classList.toggle('dim',!editImgR);
+}
 function setCatFit(v){editFit=v;
   document.getElementById('cfit-contain').classList.toggle('on',v==='contain');
   document.getElementById('cfit-cover').classList.toggle('on',v==='cover');
   refreshCatPrev();
 }
-/* toifa rasmini siqamiz — shaffoflik saqlanadi (PNG) */
-function onCatImg(e){
+function setCatFitR(v){editFitR=v;
+  document.getElementById('cfitr-contain').classList.toggle('on',v==='contain');
+  document.getElementById('cfitr-cover').classList.toggle('on',v==='cover');
+  refreshCatPrevR();
+}
+/* rasmni siqib data-URL qilamiz; onOk(dataUrl) chaqiriladi (PNG — shaffoflik saqlanadi) */
+function readCatImg(e,onOk){
   const f=e.target.files&&e.target.files[0]; if(!f)return;
   if(!/^image\//.test(f.type)){toast('Faqat rasm faylini tanlang');e.target.value='';return}
   const r=new FileReader();
@@ -793,8 +816,8 @@ function onCatImg(e){
       if(w>MAX||h>MAX){const s=Math.min(MAX/w,MAX/h);w=Math.round(w*s);h=Math.round(h*s);}
       const cv=document.createElement('canvas');cv.width=w;cv.height=h;
       const cx=cv.getContext('2d');cx.drawImage(im,0,0,w,h);
-      try{editImg=cv.toDataURL('image/png');}catch(err){editImg=r.result;}
-      refreshCatPrev(); e.target.value=''; toast('Rasm yuklandi');
+      let out; try{out=cv.toDataURL('image/png');}catch(err){out=r.result;}
+      onOk(out); e.target.value=''; toast('Rasm yuklandi');
     };
     im.onerror=()=>toast('Rasmni o\'qib bo\'lmadi');
     im.src=r.result;
@@ -802,7 +825,10 @@ function onCatImg(e){
   r.onerror=()=>toast('Faylni o\'qib bo\'lmadi');
   r.readAsDataURL(f);
 }
+function onCatImg(e){readCatImg(e,v=>{editImg=v;refreshCatPrev();});}
+function onCatImgR(e){readCatImg(e,v=>{editImgR=v;refreshCatPrevR();});}
 function removeCatImg(){editImg=null;const fi=document.getElementById('c-img');if(fi)fi.value='';refreshCatPrev();}
+function removeCatImgR(){editImgR=null;const fi=document.getElementById('c-img-r');if(fi)fi.value='';refreshCatPrevR();}
 function openCat(id){
   const c=id?categories.find(x=>x.id===id):null;
   editImg=c?c.img||null:null;
@@ -810,20 +836,25 @@ function openCat(id){
   editZoom=c&&c.zoom?+c.zoom:1;
   editPosX=50;editPosY=50;
   if(c&&c.pos){const m=String(c.pos).match(/(-?\d+)%\s+(-?\d+)%/);if(m){editPosX=+m[1];editPosY=+m[2];}}
+  editImgR=c?c.imgR||null:null;
+  editFitR=c&&c.fitR==='cover'?'cover':'contain';
+  editZoomR=c&&c.zoomR?+c.zoomR:1;
+  editPosXR=50;editPosYR=50;
+  if(c&&c.posR){const m=String(c.posR).match(/(-?\d+)%\s+(-?\d+)%/);if(m){editPosXR=+m[1];editPosYR=+m[2];}}
   const emo=c&&c.emo?c.emo:'';
+  const upSvg='<svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>';
   document.getElementById('modal').innerHTML=`
     <h3>${c?'Toifani tahrirlash':'Yangi toifa'}</h3>
-    <p>Do'kon bosh sahifasidagi toifalar qatorida ko'rinadi.</p>
+    <p>Har bir ko'rinish uchun alohida rasm: bosh sahifada ramka, qidiruvda dumaloq shar.</p>
+
+    <div class="cat-sec-t">Bosh sahifa — ramka rasmi</div>
     <div class="img-pick">
-      <div class="cat-prev" id="cat-prev"></div>
+      <div style="width:120px;flex:none"><div class="cat-prev" id="cat-prev"></div></div>
       <div style="flex:1">
-        <div class="fld"><label>Toifa rasmi</label>
+        <div class="fld"><label>Ramka rasmi</label>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
-            <label class="up-btn">
-              <svg fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
-              <span>Rasm yuklash</span>
-              <input type="file" accept="image/*" id="c-img" onchange="onCatImg(event)">
-            </label>
+            <label class="up-btn">${upSvg}<span>Rasm yuklash</span>
+              <input type="file" accept="image/*" id="c-img" onchange="onCatImg(event)"></label>
             <button type="button" class="up-rm" id="c-rm" onclick="removeCatImg()" style="${editImg?'':'display:none'}">Olib tashlash</button>
           </div>
           <div class="up-hint">JPG / PNG — istalgan o'lcham (avtomatik siqiladi)</div>
@@ -842,22 +873,53 @@ function openCat(id){
       <div class="sld"><label><span>Yuqoriga / pastga</span><span id="cpy-v">${editPosY}%</span></label>
         <input type="range" min="0" max="100" step="5" value="${editPosY}" oninput="editPosY=+this.value;document.getElementById('cpy-v').textContent=this.value+'%';refreshCatPrev()"></div>
     </div>
+
+    <div class="cat-sec-t b">Qidiruv — dumaloq shar rasmi</div>
+    <div class="img-pick">
+      <div style="width:120px;flex:none"><div class="cat-prev round" id="cat-prev-r"></div></div>
+      <div style="flex:1">
+        <div class="fld"><label>Shar rasmi</label>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+            <label class="up-btn">${upSvg}<span>Rasm yuklash</span>
+              <input type="file" accept="image/*" id="c-img-r" onchange="onCatImgR(event)"></label>
+            <button type="button" class="up-rm" id="c-rm-r" onclick="removeCatImgR()" style="${editImgR?'':'display:none'}">Olib tashlash</button>
+          </div>
+          <div class="up-hint">Format: 1:1 (kvadrat) rasm tavsiya etiladi — shar ichida to'liq va tekis ko'rinadi. Bo'sh qoldirilsa, ramka rasmi ishlatiladi.</div>
+        </div>
+      </div>
+    </div>
+    <div class="fit-ctl ${editImgR?'':'dim'}" id="cat-fit-ctl-r">
+      <div class="fitpills">
+        <button type="button" id="cfitr-contain" class="${editFitR==='contain'?'on':''}" onclick="setCatFitR('contain')">Butun rasm</button>
+        <button type="button" id="cfitr-cover" class="${editFitR==='cover'?'on':''}" onclick="setCatFitR('cover')">Sharni to'ldir</button>
+      </div>
+      <div class="sld"><label><span>Kattalashtirish / kichiklashtirish</span><span id="czoomr-v">${Math.round(editZoomR*100)}%</span></label>
+        <input type="range" min="50" max="300" step="5" value="${Math.round(editZoomR*100)}" oninput="editZoomR=this.value/100;document.getElementById('czoomr-v').textContent=this.value+'%';refreshCatPrevR()"></div>
+      <div class="sld"><label><span>Chapga / o'ngga</span><span id="cpxr-v">${editPosXR}%</span></label>
+        <input type="range" min="0" max="100" step="5" value="${editPosXR}" oninput="editPosXR=+this.value;document.getElementById('cpxr-v').textContent=this.value+'%';refreshCatPrevR()"></div>
+      <div class="sld"><label><span>Yuqoriga / pastga</span><span id="cpyr-v">${editPosYR}%</span></label>
+        <input type="range" min="0" max="100" step="5" value="${editPosYR}" oninput="editPosYR=+this.value;document.getElementById('cpyr-v').textContent=this.value+'%';refreshCatPrevR()"></div>
+    </div>
+
     <div class="frm">
       <div class="fld full"><label>Toifa nomi *</label><input id="c-n" value="${esc(c?c.name:'')}" placeholder="Masalan: Soch parvarishi"></div>
-      <div class="fld full"><label>Emoji (rasm bo'lmaganda ko'rsatiladi)</label><input id="c-emo" value="${esc(emo)}" placeholder="🧴" maxlength="6" oninput="refreshCatPrev()"></div>
+      <div class="fld full"><label>Emoji (rasm bo'lmaganda ko'rsatiladi)</label><input id="c-emo" value="${esc(emo)}" placeholder="🧴" maxlength="6" oninput="refreshCatPrev();refreshCatPrevR()"></div>
     </div>
     <div class="modal-act">
       <button class="btn soft" onclick="closeModal()">Bekor</button>
       <button class="btn" onclick="saveCat(${c?c.id:'null'})">Saqlash</button>
     </div>`;
   refreshCatPrev();
+  refreshCatPrevR();
   document.getElementById('veil').classList.add('on');
 }
 function saveCat(id){
   const n=document.getElementById('c-n').value.trim();
   if(!n){toast('Toifa nomini kiriting');return}
   const emo=document.getElementById('c-emo').value.trim();
-  const obj={name:n,emo:emo,img:editImg||null,fit:editFit,zoom:editZoom,pos:editPosX+'% '+editPosY+'%'};
+  const obj={name:n,emo:emo,
+    img:editImg||null,fit:editFit,zoom:editZoom,pos:editPosX+'% '+editPosY+'%',
+    imgR:editImgR||null,fitR:editFitR,zoomR:editZoomR,posR:editPosXR+'% '+editPosYR+'%'};
   if(id){const i=categories.findIndex(x=>x.id===id);if(i>=0)categories[i]=Object.assign({},categories[i],obj);}
   else{obj.id=(categories.reduce((m,x)=>Math.max(m,x.id||0),0)||0)+1;categories.push(obj);}
   cset('lume_categories',categories);
@@ -922,25 +984,23 @@ function saveSettings(){
 /* ===== BOOT ===== */
 function loadData(){
   const cp=cget('lume_products',null);
-  const seeded=cget('lume_seeded',false);
   if(Array.isArray(cp)){
-    // Serverda ro'yxat bor (bo'sh bo'lsa ham) — uni hurmat qilamiz, DEFAULT qayta urug'lanmaydi
+    // Serverda ro'yxat bor (bo'sh bo'lsa ham) — uni hurmat qilamiz.
     products=cp.map((p,i)=>Object.assign({id:p.id||i+1},p));
-  }else if(!seeded){
-    // Faqat BIRINCHI marta — hech qachon urug'lanmagan bo'lsa DEFAULT bilan to'ldiramiz
-    products=DEFAULT_PRODUCTS.slice();
-    cset('lume_products',products);
-    cset('lume_seeded',true);
   }else{
+    // Serverda yo'q / hali yuklanmagan — faqat ko'rsatish uchun bo'sh.
+    // MUHIM: serverga HECH NARSA yozmaymiz. (Ilgari bu yerda bo'sh ro'yxat
+    // serverga yozilardi — init sekin bo'lib kesh bo'sh qolsa, mavjud
+    // katalogni o'chirib yuborardi.)
     products=[];
   }
-  // Toifalar: serverda bo'lsa — hurmat qilamiz; bo'lmasa — standart 5 tasi bilan urug'lanadi
+  // Toifalar: serverda bo'lsa — hurmat qilamiz; bo'lmasa — standart ro'yxatni
+  // faqat MAHALLIY ko'rsatamiz (serverga yozmaymiz — ma'lumot o'chib ketmasin).
   const cc=cget('lume_categories',null);
   if(Array.isArray(cc)){
     categories=cc.map((c,i)=>Object.assign({id:c.id||i+1},c));
   }else{
     categories=DEFAULT_CATS.map(c=>Object.assign({},c));
-    cset('lume_categories',categories);
   }
   orders=cget('lume_orders',[])||[];
   const cb=cget('lume_banners',null);
