@@ -64,6 +64,17 @@ function _boDashboardInit() {
         persistClient();
     }
 
+    // Platformadan olib tashlangan ilovalarni mijoz obunalaridan ham tozalash
+    const REMOVED_APP_IDS   = new Set(['app-salqin', 'app-kofe', 'app-lume']);
+    const REMOVED_APP_SLUGS = new Set(['lume-kosmetika']);
+    if (Array.isArray(client.subscriptions)) {
+        const before = client.subscriptions.length;
+        client.subscriptions = client.subscriptions.filter(
+            s => !REMOVED_APP_IDS.has(s.appId) && !REMOVED_APP_SLUGS.has(s.slug)
+        );
+        if (client.subscriptions.length !== before) persistClient();
+    }
+
     function activeSubs() { return (client.subscriptions || []).filter(s => s.status !== 'cancelled'); }
     let hasActiveSubscription = activeSubs().length > 0;
 

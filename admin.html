@@ -647,7 +647,7 @@ Yetkazib berish"></textarea>
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/main.js?v=10", "js/admin.js?v=9"]) {
+        for (const src of ["js/main.js?v=11", "js/admin.js?v=9"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();
