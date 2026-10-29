@@ -398,3 +398,9 @@ html:has(body.dash-body.space) {
 .dash-body.space input:focus,
 .dash-body.space textarea:focus,
 .dash-body.space select:focus { border-color: #6D5BFF; box-shadow: 0 0 0 3px rgba(109,91,255,.18); }
+
+/* Ilova haqida oynasi (karta ustiga bosilganda) */
+.dash-body.space .app-detail-overlay { background: rgba(2,3,8,.7); }
+.dash-body.space .app-detail-box { background: #0E0F1C; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 40px 90px -30px rgba(109,91,255,.5); }
+.dash-body.space .app-free-tag { background: rgba(45,212,191,.12); border-color: rgba(45,212,191,.25); color: #5EEAD4; }
+.dash-body.space .detail-app-icon { background: rgba(255,255,255,.06); }

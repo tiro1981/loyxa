@@ -265,20 +265,14 @@ function _boDashboardInit() {
                 ? `<img src="${app.logo}" alt="${escapeHtml(app.name)}" class="mp-app-logo">`
                 : `<span class="mp-app-emoji">${app.logoEmoji || '📱'}</span>`;
 
-            const priceBlock = `<div class="mp-app-price mp-app-price-free"><i class="fa-solid fa-gift"></i> Bepul foydalanish</div>`;
-
-            const features = (app.features || []).slice(0, 3).map(f =>
-                `<li><i class="fa-solid fa-check"></i> ${escapeHtml(f)}</li>`
-            ).join('');
-
+            // Kartada faqat belgi, nom va tugmalar — tavsif, imkoniyatlar va narx
+            // karta ustiga bosilganda ochiladigan oynada (showAppDetailModal)
             return `
-                <div class="mp-app-card ${app.popular ? 'popular' : ''}" data-app-id="${escapeHtml(app.id)}">
+                <div class="mp-app-card ${app.popular ? 'popular' : ''}" data-app-id="${escapeHtml(app.id)}" title="Batafsil ma'lumot">
                     ${app.popular ? `<span class="mp-popular"><i class="fa-solid fa-fire"></i> Mashhur</span>` : ''}
                     <div class="mp-app-icon">${logoBlock}</div>
                     <h3 class="mp-app-name">${escapeHtml(app.name)}</h3>
-                    <p class="mp-app-desc">${escapeHtml(app.desc || '')}</p>
-                    ${features ? `<ul class="mp-app-features">${features}</ul>` : ''}
-                    ${priceBlock}
+                    <span class="mp-app-more"><i class="fa-solid fa-circle-info"></i> Batafsil</span>
                     <div class="mp-app-actions" onclick="event.stopPropagation()">
                         ${app.demoUrl ? `<a href="${app.demoUrl}" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-eye"></i> Demo</a>` : ''}
                         ${isSubscribedTo(app.id)

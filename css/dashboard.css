@@ -1138,8 +1138,8 @@ a.qa-btn { text-decoration: none; color: inherit; }
 /* Apps grid (marketplace) */
 .ns-apps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
 }
 
 .mp-app-card {
@@ -1586,3 +1586,31 @@ html[data-theme="dark"] .sub-card { background: #1E293B; border-color: rgba(255,
 html[data-theme="dark"] .subdomain-box { background: #1E293B; }
 html[data-theme="dark"] .subdomain-input input { background: #1E293B; }
 html[data-theme="dark"] .subdomain-suffix { background: rgba(255,255,255,.06); }
+
+/* ===== Ilova kartalari — ixcham (obuna kartalari o'lchamida) ===== */
+.mp-app-card { padding: 18px; cursor: pointer; }
+.mp-app-icon { width: 52px; height: 52px; border-radius: 14px; margin-bottom: 12px; }
+.mp-app-emoji { font-size: 30px; }
+.mp-app-name { font-size: 16px; margin-bottom: 4px; }
+.mp-app-more {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--gray-500);
+    margin-bottom: 14px; transition: color .2s;
+}
+.mp-app-card:hover .mp-app-more { color: var(--primary); }
+.mp-app-actions .btn { flex-basis: 100%; }
+@media (max-width: 768px) {
+    .ns-apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .mp-app-card { padding: 12px; border-radius: 14px; }
+    .mp-app-icon { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 8px; }
+    .mp-app-emoji { font-size: 22px; }
+    .mp-app-logo { max-width: 100%; max-height: 100%; }
+    .mp-app-name { font-size: 14px; line-height: 1.25; }
+    .mp-app-more { font-size: 11.5px; margin-bottom: 10px; }
+    .mp-popular { top: 10px; right: 10px; font-size: 10px; padding: 3px 7px; }
+    .mp-app-actions { gap: 6px; }
+    .mp-app-actions .btn {
+        font-size: 11.5px; padding: 8px 6px; min-width: 0;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+}
