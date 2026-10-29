@@ -1252,18 +1252,18 @@ a.qa-btn { text-decoration: none; color: inherit; }
 .mp-app-price-free i { color: var(--primary); margin-right: 6px; }
 .mp-app-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-top: auto;
     width: 100%;
 }
+/* Tugma matnidan tor bo'lmaydi — joy yetmasa ikkinchi tugma keyingi qatorga
+   tushadi (oldin matn qirqilib, ramkadan chiqib ketardi) */
 .mp-app-actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 10px 8px;
+    flex: 1 1 auto;
+    padding: 10px 12px;
     font-size: 13px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     justify-content: center;
 }
 .mp-app-actions .btn i { flex-shrink: 0; }
@@ -1475,8 +1475,8 @@ a.qa-btn { text-decoration: none; color: inherit; }
 
 .subs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
 }
 .sub-card {
     background: var(--white);
@@ -1515,7 +1515,7 @@ a.qa-btn { text-decoration: none; color: inherit; }
 }
 .sub-meta-row i { color: var(--gray-400); margin-right: 4px; }
 .sub-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.sub-actions .btn { flex: 1 1 calc(50% - 4px); justify-content: center; }
+.sub-actions .btn { flex: 1 1 100%; justify-content: center; }
 .sub-actions .btn-ghost-danger { flex-basis: 100%; }
 .btn-ghost-danger {
     background: transparent; border: 1.5px solid var(--gray-200); color: var(--danger);
@@ -1566,8 +1566,21 @@ a.qa-btn { text-decoration: none; color: inherit; }
 .subdomain-hint.ok { color: var(--primary-dark); }
 .subdomain-hint.err { color: var(--danger); }
 
+/* Telefonda obuna kartalari yonma-yon 2 ustun, ixcham */
 @media (max-width: 768px) {
-    .subs-grid { grid-template-columns: 1fr; }
+    .subs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .sub-card { padding: 12px; border-radius: 14px; }
+    .sub-card-top { flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .sub-icon { width: 38px; height: 38px; font-size: 20px; border-radius: 10px; }
+    .sub-status-pill { margin-left: auto; font-size: 10.5px; padding: 3px 8px; }
+    .sub-card-info { flex-basis: 100%; order: 3; }
+    .sub-card-info h3 { font-size: 14px; line-height: 1.25; white-space: normal; }
+    .sub-meta-row { gap: 4px 10px; font-size: 11px; padding: 8px 0; margin-bottom: 8px; }
+    .sub-actions { gap: 6px; }
+    .sub-actions .btn {
+        font-size: 11.5px; padding: 8px 6px; min-width: 0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
 }
 html[data-theme="dark"] .sub-card { background: #1E293B; border-color: rgba(255,255,255,.06); }
 html[data-theme="dark"] .subdomain-box { background: #1E293B; }
