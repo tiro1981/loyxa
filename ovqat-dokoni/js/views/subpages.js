@@ -3,7 +3,6 @@
    Bitta faylda 6 ta view:
      Views.favorites  — sevimli mahsulotlar
      Views.addresses  — yetkazib berish manzillari
-     Views.payments   — to'lov usullari (ma'lumot)
      Views.chat       — admin bilan chat (mock)
      Views.help       — FAQ akkordeon
      Views.privacy    — maxfiylik sozlamalari
@@ -174,53 +173,6 @@ window.Views.addresses = function (root) {
   }
 
   render();
-};
-
-/* ------------------------------------------------------------
-   3) TO'LOV USULLARI (ma'lumot ko'rinishi, tanlovsiz)
------------------------------------------------------------- */
-window.Views.payments = function (root) {
-
-  // Har bir usul uchun qator
-  const optionsHTML = DATA.paymentMethods.map((m) => {
-    const isActive = m.id === "cash";
-    const logoInner = m.logo
-      ? m.logo
-      : '<span style="color:#fff;font-weight:700;font-size:13px">' + m.abbr + "</span>";
-    const right = isActive
-      ? '<span style="color:var(--green);display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600">' + ICONS.check + " Faol</span>"
-      : '<span class="row-sub">Ulanmagan</span>';
-    return `
-      <div class="pay-option">
-        <div class="pay-logo" style="background:${m.bg}">${logoInner}</div>
-        <div class="pay-name"><b>${m.name}</b><small>${m.sub}</small></div>
-        ${right}
-      </div>`;
-  }).join("");
-
-  root.innerHTML =
-    Components.appbar({ title: "To'lov usullari", back: true }) +
-    `<div class="view-pad">
-      <div class="list-row" style="align-items:flex-start;gap:12px">
-        <div class="row-icon" style="background:linear-gradient(135deg,#475569,#1e293b);color:#fff">💳</div>
-        <div class="row-text">
-          <div class="row-title">Saqlangan karta yo'q</div>
-          <div class="row-sub">Karta qo'shish tez orada qo'shiladi.</div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-head"><div class="section-title">Mavjud usullar</div></div>
-        <div>${optionsHTML}</div>
-      </div>
-
-      <button class="btn btn--ghost btn--block" id="pay-add" style="margin-top:8px">＋ Karta qo'shish</button>
-    </div>`;
-
-  Components.bindBack(root);
-
-  root.querySelector("#pay-add").onclick = () =>
-    UI.toast("Tez orada qo'shiladi", "info");
 };
 
 /* ------------------------------------------------------------

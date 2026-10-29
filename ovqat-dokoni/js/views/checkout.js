@@ -99,7 +99,8 @@ window.Views.checkout = function (root, params) {
 
       // 2) To'lov usuli
       '<div class="section">' +
-        '<div class="section-head"><div class="section-title">💳 To\'lov usuli</div></div>' +
+        '<div class="section-head"><div class="section-title">💳 To\'lov turi</div></div>' +
+        '<p class="co-pay-hint">Oldindan to\'lov yo\'q — mahsulot yetib kelganda tanlangan usulda to\'laysiz.</p>' +
         '<div id="co-pay">' + paymentsHTML() + '</div>' +
       '</div>' +
 
@@ -231,6 +232,7 @@ window.Views.checkout = function (root, params) {
         userName: order.userName || '',
         phone: order.phone || '',
         address: order.address,
+        payment: order.payment,
         items: tgItems,
         total: order.total
       });

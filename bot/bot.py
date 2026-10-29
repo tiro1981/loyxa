@@ -331,6 +331,13 @@ def _money(n) -> str:
         return "0"
 
 
+def _payment_label(order: dict) -> str:
+    """To'lov oldindan olinmaydi — mijoz yetkazilganda naqd yoki karta orqali to'laydi."""
+    p = str(order.get("payment") or "naqd").lower()
+    label = {"naqd": "Naqd pul", "cash": "Naqd pul", "karta": "Karta", "card": "Karta"}.get(p, p.capitalize())
+    return f"{label} (yetkazilganda)"
+
+
 def format_store_order(cfg: dict, order: dict) -> str:
     """Buyurtmani kanalga yuborish uchun oddiy matn (parse_mode=None)."""
     lines = []
@@ -346,7 +353,8 @@ def format_store_order(cfg: dict, order: dict) -> str:
         f"📦 Buyurtma: {order.get('id', '—')}\n"
         f"👤 Mijoz: {order.get('userName', 'Anonim')}\n"
         f"📞 Tel: {order.get('phone', '—')}\n"
-        f"📍 Manzil: {order.get('address', '—')}\n\n"
+        f"📍 Manzil: {order.get('address', '—')}\n"
+        f"💳 To'lov: {_payment_label(order)}\n\n"
         f"🛒 Mahsulotlar:\n{items_text}\n\n"
         f"💰 Jami: {_money(order.get('total'))} so'm"
     )
@@ -744,7 +752,8 @@ async def handle_order(request: web.Request) -> web.Response:
         f"📦 Buyurtma: `{md_strip(order.get('id', '—'))}`\n"
         f"👤 Mijoz: {md_strip(order.get('userName', 'Anonim'))}\n"
         f"📞 Tel: {md_strip(order.get('phone', '—'))}\n"
-        f"📍 Manzil: {md_strip(order.get('address', '—'))}\n\n"
+        f"📍 Manzil: {md_strip(order.get('address', '—'))}\n"
+        f"💳 To'lov: {md_strip(_payment_label(order))}\n\n"
         f"🛒 Mahsulotlar:\n{items_text}\n\n"
         f"💰 *Jami: {total:,} so'm*".replace(",", " ")
     )

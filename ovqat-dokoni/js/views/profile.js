@@ -51,12 +51,6 @@ window.Views.profile = function (root) {
           <small>Yetkazish manzillari</small>
         </div>
 
-        <div class="qcard" data-go="payments">
-          <div class="qic" style="background:linear-gradient(135deg,#f97316,#ea580c)">${ICONS.card}</div>
-          <b>To'lov usullari</b>
-          <small>Naqd, karta, Click, Payme</small>
-        </div>
-
         <div class="qcard" id="pf-theme">
           <div class="qic" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">${ICONS.moon}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">

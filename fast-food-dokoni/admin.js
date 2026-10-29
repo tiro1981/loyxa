@@ -512,6 +512,7 @@ function openOrderDetail(id) {
     <div class="od-info">
       <div class="item"><span>Manzil</span><b>${o.address || '—'}</b></div>
       <div class="item"><span>Vaqt</span><b>${o.time}</b></div>
+      <div class="item"><span>To'lov (yetkazilganda)</span><b>${({ naqd: '💵 Naqd pul', karta: '💳 Karta' })[o.payment] || '💵 Naqd pul'}</b></div>
     </div>
     <div class="od-items">
       <h5>Mahsulotlar</h5>

@@ -109,8 +109,6 @@ function getFav() { return DB.get(userKey('fav'), []); }
 function setFav(v) { DB.set(userKey('fav'), v); }
 function getAddrs() { return DB.get(userKey('addr'), []); }
 function setAddrs(v) { DB.set(userKey('addr'), v); }
-function getPays() { return DB.get(userKey('pay'), []); }
-function setPays(v) { DB.set(userKey('pay'), v); }
 function getNotifs() { return DB.get(userKey('notif'), []); }
 function setNotifs(v) { DB.set(userKey('notif'), v); }
 
@@ -514,6 +512,7 @@ $('checkoutBtn').addEventListener('click', () => {
     items, itemsText: items.map(i => `${i.name} × ${i.qty}`).join(', '),
     subtotal, deliveryFee, total: subtotal + deliveryFee,
     address: defaultAddr.address,
+    payment: selectedPayMethod(),   // 'naqd' | 'karta' — yetkazilganda to'lanadi
     status: 'new',
     createdAt: new Date().toISOString(),
     time: new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
@@ -596,6 +595,7 @@ function renderOrders(tab) {
         <span class="oc-status ${cls[o.status]}">${txt[o.status]}</span>
       </div>
       <div class="oc-items">${o.itemsText}</div>
+      ${o.payment ? `<div class="oc-pay">To'lov: ${PAY_LABELS[o.payment] || o.payment} · yetkazilganda</div>` : ''}
       <div class="oc-foot">
         <b>${formatPrice(o.total)}</b>
         <button>${new Date(o.createdAt).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</button>
@@ -757,73 +757,17 @@ function upsertCustomerFromAddress(fullName, phone) {
   DB.set('tb_users', users);
 }
 
-// ========== PAYMENT METHODS ==========
-// Faqat naqd pul faol — karta/Click/Payme "tez orada". Modal statik (renderPayments shart emas).
-$('paymentBtn').addEventListener('click', () => openModal('paymentModal'));
-$('newPaymentBtn')?.addEventListener('click', () => openPaymentForm());
-
-function renderPayments() {
-  const list = $('paymentList');
-  if (!list) return;
-  const pays = getPays();
-  if (pays.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:30px 10px;color:var(--text-sub)"><i class="fa-solid fa-credit-card" style="font-size:40px;opacity:.25"></i><p style="margin-top:10px;font-size:13px">Kartalar yo\'q</p></div>';
-    return;
-  }
-  const icons = { uzcard: 'fa-credit-card', humo: 'fa-credit-card', visa: 'fa-cc-visa', mastercard: 'fa-cc-mastercard' };
-  list.innerHTML = pays.map(p => `
-    <div class="pay-item ${p.isDefault ? 'default' : ''}">
-      ${p.isDefault ? '<span class="default-badge">ASOSIY</span>' : ''}
-      <div class="pay-ic"><i class="fa-solid ${icons[p.type] || 'fa-credit-card'}"></i></div>
-      <div class="pay-info"><h4>${p.type.toUpperCase()} •••• ${p.number.slice(-4)}</h4><p>${p.holder} • ${p.expiry}</p></div>
-      <div class="item-acts">
-        ${!p.isDefault ? `<button data-pdef="${p.id}"><i class="fa-solid fa-star"></i></button>` : ''}
-        <button class="del" data-dpay="${p.id}"><i class="fa-solid fa-trash"></i></button>
-      </div>
-    </div>
-  `).join('');
-  list.querySelectorAll('[data-pdef]').forEach(b => b.addEventListener('click', () => {
-    const all = getPays(); all.forEach(x => x.isDefault = x.id === parseInt(b.dataset.pdef));
-    setPays(all); renderPayments();
-  }));
-  list.querySelectorAll('[data-dpay]').forEach(b => b.addEventListener('click', () => {
-    setPays(getPays().filter(x => x.id !== parseInt(b.dataset.dpay)));
-    renderPayments();
-  }));
+// ========== TO'LOV TURI ==========
+// Oldindan to'lov yo'q — mijoz faqat mahsulot yetib kelganda qanday to'lashini
+// tanlaydi: naqd yoki karta (kuryer terminali orqali).
+const PAY_LABELS = { naqd: '💵 Naqd pul', karta: '💳 Karta' };
+function selectedPayMethod() {
+  const r = document.querySelector('input[name="payMethod"]:checked');
+  return r ? r.value : 'naqd';
 }
-
-function openPaymentForm() {
-  $('paymentForm').reset();
-  openModal('paymentFormModal');
-}
-
-$('paymentForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  let pays = getPays();
-  const data = {
-    id: Date.now(),
-    type: $('payType').value,
-    number: $('payNumber').value.replace(/\s/g, ''),
-    holder: $('payHolder').value.trim().toUpperCase(),
-    expiry: $('payExpiry').value,
-    isDefault: pays.length === 0
-  };
-  pays.push(data);
-  setPays(pays);
-  closeModal('paymentFormModal');
-  renderPayments();
-  showToast('Karta qo\'shildi');
-});
-
-// Card number formatter
-$('payNumber').addEventListener('input', (e) => {
-  e.target.value = e.target.value.replace(/\D/g, '').match(/.{1,4}/g)?.join(' ') || '';
-});
-$('payExpiry').addEventListener('input', (e) => {
-  let v = e.target.value.replace(/\D/g, '');
-  if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
-  e.target.value = v;
-});
+document.querySelectorAll('#payChoose input[name="payMethod"]').forEach(r => r.addEventListener('change', () => {
+  document.querySelectorAll('#payChoose .pay-method').forEach(l => l.classList.toggle('active', l.querySelector('input').checked));
+}));
 
 // ========== PROFILE EDIT ==========
 $('editProfileBtn').addEventListener('click', () => {

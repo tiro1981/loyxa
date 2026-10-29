@@ -164,7 +164,7 @@ window.Views.orders = function (root, params) {
         <div class="sm-row">
           <span class="sm-ic">${ICONS.card}</span>
           <div>
-            <div class="sm-label">To'lov usuli</div>
+            <div class="sm-label">To'lov (yetkazilganda)</div>
             <div class="sm-val">${payName}</div>
           </div>
         </div>

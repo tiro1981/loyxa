@@ -71,6 +71,7 @@ const Telegram = (() => {
         userName: order.userName || order.name,
         phone: order.phone,
         address: order.address,
+        payment: order.payment,
         items: (order.items || []).map(i => ({
           name: i.name,
           qty: i.qty,

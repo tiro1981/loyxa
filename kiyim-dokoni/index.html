@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -168,11 +168,6 @@
             <button class="menu-item" id="openAddresses">
                 <span class="mi-icon mi-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
                 <span class="mi-text"><strong>Manzillarim</strong><small id="addrCount">Yetkazib berish manzillari</small></span>
-                <span class="chev">›</span>
-            </button>
-            <button class="menu-item" id="openPayment">
-                <span class="mi-icon mi-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 11h20"/></svg></span>
-                <span class="mi-text"><strong>To'lov usullari</strong><small>Karta va naqd to'lovlar</small></span>
                 <span class="chev">›</span>
             </button>
             <button class="menu-item" id="themeToggle">
@@ -378,18 +373,17 @@
             <!-- Geografiya qismi (viloyat/tuman/qishloq/uy/izoh) — umumiy UzAddress kaskadi, script.js'da quyiladi -->
             <div id="coAddrGeo"></div>
         </div>
-        <label>To'lov turi</label>
+        <label>To'lov turi <small class="pay-note">— mahsulot yetib kelganda to'lanadi</small></label>
         <div class="pay-options" id="payOptions">
-            <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd</span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="uzcard" disabled><span><b>💳</b> Uzcard / Humo <em class="soon-tag">Tez orada</em></span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="click" disabled><span><b>⚡</b> Click <em class="soon-tag">Tez orada</em></span></label>
-            <label class="pay-opt pay-soon" title="Tez orada qo'shiladi"><input type="radio" name="payment" value="payme" disabled><span><b>📱</b> Payme <em class="soon-tag">Tez orada</em></span></label>
+            <label class="pay-opt"><input type="radio" name="payment" value="naqd" checked><span><b>💵</b> Naqd pul</span></label>
+            <label class="pay-opt"><input type="radio" name="payment" value="karta"><span><b>💳</b> Karta</span></label>
         </div>
+        <p class="pay-hint">Oldindan to'lov yo'q. Buyurtma yetkazilganda kuryerga naqd yoki karta (terminal) orqali to'laysiz.</p>
         <div class="order-sum" id="orderSum"></div>
     </form>
     <div class="sheet-foot">
         <button class="btn-primary full" id="placeOrderBtn">
-            <span>Tasdiqlash va to'lash</span>
+            <span>Buyurtmani tasdiqlash</span>
         </button>
     </div>
 </div>
@@ -441,7 +435,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=11"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=12"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

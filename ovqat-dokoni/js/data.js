@@ -75,11 +75,11 @@ window.DATA = (function () {
   // Reklama bannerlari — bo'sh.
   const ads = [];
 
+  // Oldindan (onlayn) to'lov yo'q — mijoz mahsulot yetib kelganda to'laydi.
+  // Buyurtmada faqat qaysi usulda to'lashi belgilanadi.
   const paymentMethods = [
-    { id: "cash",  name: "Naqd pul",  sub: "Yetkazib berishda to'lash", logo: "💵", bg: "linear-gradient(135deg,#22c55e,#15803d)", abbr: "" },
-    { id: "card",  name: "Bank kartasi", sub: "Uzcard / Humo / Visa",    logo: "💳", bg: "linear-gradient(135deg,#475569,#1e293b)", abbr: "" },
-    { id: "click", name: "Click",     sub: "Click ilovasi orqali",       logo: "",   bg: "linear-gradient(135deg,#0ea5e9,#2563eb)", abbr: "Click" },
-    { id: "payme", name: "Payme",     sub: "Payme hamyoni orqali",       logo: "",   bg: "linear-gradient(135deg,#22d3ee,#0e7490)", abbr: "Payme" },
+    { id: "cash", name: "Naqd pul", sub: "Yetkazilganda kuryerga naqd", logo: "💵", bg: "linear-gradient(135deg,#22c55e,#15803d)", abbr: "" },
+    { id: "card", name: "Karta",    sub: "Yetkazilganda kuryer terminali orqali", logo: "💳", bg: "linear-gradient(135deg,#475569,#1e293b)", abbr: "" },
   ];
 
   // Foydalanuvchi — bo'sh profil (mijoz o'z ma'lumotini kiritadi)
@@ -99,7 +99,7 @@ window.DATA = (function () {
   const faqs = [
     { q: "Yetkazib berish qancha vaqt oladi?", a: "Buyurtmangiz odatda 40–90 daqiqa ichida yetkazib beriladi. Tezkor yetkazish (30 daqiqa) ham mavjud." },
     { q: "Yetkazib berish narxi qancha?", a: "Shahar ichida 10 000 so'm. 100 000 so'mdan ortiq xaridlar uchun yetkazish bepul." },
-    { q: "Qanday to'lov turlari mavjud?", a: "Naqd pul, bank kartasi, Click va Payme orqali to'lashingiz mumkin." },
+    { q: "Qanday to'lov turlari mavjud?", a: "Oldindan to'lov yo'q. Buyurtma berishda naqd yoki kartani tanlaysiz va mahsulot yetib kelganda kuryerga to'laysiz." },
     { q: "Mahsulotni qaytarib bera olamanmi?", a: "Ha, sifatsiz mahsulotni yetkazib berilgan vaqtda qaytarib, pulingizni to'liq qaytarib olishingiz mumkin." },
     { q: "Buyurtmani bekor qilsam bo'ladimi?", a: "Buyurtma yo'lga chiqmaguncha uni bepul bekor qilishingiz mumkin." },
   ];

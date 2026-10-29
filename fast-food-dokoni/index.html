@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tasty Bite - Fast Food</title>
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -147,6 +147,23 @@
         <div class="row"><span>Mahsulotlar</span><b id="sumItems">0 so'm</b></div>
         <div class="row"><span>Yetkazib berish</span><b>15 000 so'm</b></div>
         <div class="row total"><span>Jami</span><b id="sumTotal">0 so'm</b></div>
+        <div class="pay-choose">
+          <p class="pay-choose-title">To'lov turi <small>— mahsulot yetib kelganda to'lanadi</small></p>
+          <div class="pay-method-list" id="payChoose">
+            <label class="pay-method active">
+              <input type="radio" name="payMethod" value="naqd" checked hidden>
+              <span class="pm-emoji">💵</span>
+              <div class="pm-text"><b>Naqd pul</b><small>Kuryerga naqd to'laysiz</small></div>
+              <i class="fa-solid fa-circle-check pm-ok"></i>
+            </label>
+            <label class="pay-method">
+              <input type="radio" name="payMethod" value="karta" hidden>
+              <span class="pm-emoji">💳</span>
+              <div class="pm-text"><b>Karta</b><small>Kuryerning terminali orqali to'laysiz</small></div>
+              <i class="fa-solid fa-circle-check pm-ok"></i>
+            </label>
+          </div>
+        </div>
         <button class="btn-primary block" id="checkoutBtn">Buyurtma berish</button>
       </div>
     </section>
@@ -195,15 +212,6 @@
           <div class="mi-text">
             <h4>Manzillarim</h4>
             <p>Yetkazib berish manzillari</p>
-          </div>
-          <i class="fa-solid fa-chevron-right"></i>
-        </div>
-
-        <div class="menu-item" id="paymentBtn">
-          <div class="mi-icon orange"><i class="fa-solid fa-credit-card"></i></div>
-          <div class="mi-text">
-            <h4>To'lov usullari</h4>
-            <p>Naqd pul (karta tez orada)</p>
           </div>
           <i class="fa-solid fa-chevron-right"></i>
         </div>
@@ -307,69 +315,6 @@
       </div>
     </div>
 
-    <!-- ============ PAYMENT MODAL ============ -->
-    <div class="mini-modal" id="paymentModal">
-      <div class="mini-content">
-        <div class="mini-head">
-          <h3>To'lov usullari</h3>
-          <button class="icon-btn" data-close="paymentModal"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="pay-method-list">
-          <div class="pay-method active">
-            <span class="pm-emoji">💵</span>
-            <div class="pm-text"><b>Naqd pul</b><small>Kuryerga yoki olib ketishda to'lov</small></div>
-            <i class="fa-solid fa-circle-check pm-ok"></i>
-          </div>
-          <div class="pay-method pay-soon">
-            <span class="pm-emoji">💳</span>
-            <div class="pm-text"><b>Karta (Uzcard / Humo)</b><small>Tez orada qo'shiladi</small></div>
-            <span class="soon-tag">Tez orada</span>
-          </div>
-          <div class="pay-method pay-soon">
-            <span class="pm-emoji">⚡</span>
-            <div class="pm-text"><b>Click</b><small>Tez orada qo'shiladi</small></div>
-            <span class="soon-tag">Tez orada</span>
-          </div>
-          <div class="pay-method pay-soon">
-            <span class="pm-emoji">📱</span>
-            <div class="pm-text"><b>Payme</b><small>Tez orada qo'shiladi</small></div>
-            <span class="soon-tag">Tez orada</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============ PAYMENT FORM ============ -->
-    <div class="mini-modal" id="paymentFormModal">
-      <div class="mini-content">
-        <div class="mini-head">
-          <h3>Yangi karta</h3>
-          <button class="icon-btn" data-close="paymentFormModal"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <form id="paymentForm" class="ufm">
-          <input type="hidden" id="payId">
-          <label>Tur
-            <select id="payType">
-              <option value="uzcard">Uzcard</option>
-              <option value="humo">Humo</option>
-              <option value="visa">Visa</option>
-              <option value="mastercard">Mastercard</option>
-            </select>
-          </label>
-          <label>Karta raqami
-            <input type="text" id="payNumber" placeholder="8600 1234 5678 9012" maxlength="19" required>
-          </label>
-          <label>Egasining ismi
-            <input type="text" id="payHolder" placeholder="ISM FAMILIYA" required>
-          </label>
-          <label>Amal qilish muddati
-            <input type="text" id="payExpiry" placeholder="MM/YY" maxlength="5" required>
-          </label>
-          <button type="submit" class="btn-primary block">Saqlash</button>
-        </form>
-      </div>
-    </div>
-
     <!-- ============ PROFILE EDIT MODAL ============ -->
     <div class="mini-modal" id="profileEditModal">
       <div class="mini-content">
@@ -466,7 +411,7 @@
         || "demo";
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("fastfood", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-      for (const src of ["uzbekistan-regions.js", "script.js?v=6"]) {
+      for (const src of ["uzbekistan-regions.js", "script.js?v=7"]) {
         await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=6"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();

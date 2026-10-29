@@ -80,7 +80,7 @@ const DEFAULT_DATA = {
         phone: "+998 90 123 45 67",
         email: "info@modastyle.uz",
         workHours: "Dush-Yak: 09:00 - 21:00",
-        payments: { naqd: true, uzcard: true, payme: true, click: true },
+        payments: { naqd: true, karta: true },
         shipping: [
             { zone: "Toshkent shahri", price: 25000 },
             { zone: "Toshkent viloyati", price: 40000 },
@@ -188,6 +188,7 @@ function notifyTelegramBot(order) {
                     userName: order.name,
                     phone: order.phone,
                     address: order.address,
+                    payment: order.payment,
                     items: (order.items || []).map(i => ({
                         name: i.name + (i.size ? ' (' + i.size + ')' : ''),
                         qty: i.qty,
@@ -1014,7 +1015,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         const o = data.orders.find(x => x.id === +btn.dataset.orderDetail);
         if (!o) return;
         const statusLabel = { yangi: 'Yangi', jarayonda: 'Jarayonda', yetkazilmoqda: "Yo'lda", yetkazildi: 'Yetkazildi', bekor: 'Bekor' }[o.status] || o.status;
-        const payLabel = { naqd: '💵 Naqd', uzcard: '💳 Uzcard / Humo', karta: '💳 Karta', click: '⚡ Click', payme: '📱 Payme' }[o.payment] || o.payment;
+        const payLabel = ({ naqd: '💵 Naqd pul', karta: '💳 Karta' }[o.payment] || o.payment) + ' · yetkazilganda';
         document.getElementById('productDetail').innerHTML = `
             <div class="sheet-body">
                 <div style="text-align:center;margin-bottom:18px">
@@ -1272,7 +1273,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     /* ============ MISC PROFILE ACTIONS ============ */
     document.getElementById('aboutLink').onclick = () => openSheet('aboutSheet');
-    document.getElementById('openPayment').onclick = () => toast('Tez kunda qo\'shiladi', 'info');
     document.getElementById('openChat').onclick = () => openChat();
 
     /* ============ CHAT (user ↔ admin) ============ */

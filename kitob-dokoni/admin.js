@@ -535,7 +535,7 @@ function renderOrders() {
             </td>
             <td>${o.items.length} dona</td>
             <td><strong>${money(o.total)}</strong></td>
-            <td>${capitalize(o.payment)}</td>
+            <td>${payLabel(o.payment)}</td>
             <td><span class="status ${o.status}">${STATUS_LABELS[o.status]}</span></td>
             <td>
                 <div class="row-acts">
@@ -556,7 +556,7 @@ window.viewOrder = function(id) {
             <div><small>Mijoz</small><strong>${o.name}</strong></div>
             <div><small>Telefon</small><strong>${o.phone}</strong></div>
             <div><small>Manzil</small><strong>${o.address}</strong></div>
-            <div><small>To'lov</small><strong>${capitalize(o.payment)}</strong></div>
+            <div><small>To'lov (yetkazilganda)</small><strong>${payLabel(o.payment)}</strong></div>
         </div>
 
         <h4 style="font-size:13px;text-transform:uppercase;color:var(--text-muted);margin:14px 0 8px;letter-spacing:0.05em">Kitoblar</h4>
@@ -1017,7 +1017,7 @@ function exportCsv() {
         return d >= from && d <= to;
     });
     const rows = [['ID', 'Sana', 'Mijoz', 'Telefon', 'Manzil', 'Mahsulotlar', 'Summa', 'To\'lov', 'Holat']];
-    orders.forEach(o => rows.push([o.id, o.date, o.name, o.phone, o.address, o.items.map(i => `${i.name} x${i.qty}`).join('; '), o.total, o.payment, STATUS_LABELS[o.status]]));
+    orders.forEach(o => rows.push([o.id, o.date, o.name, o.phone, o.address, o.items.map(i => `${i.name} x${i.qty}`).join('; '), o.total, payLabel(o.payment), STATUS_LABELS[o.status]]));
     const csv = rows.map(r => r.map(c => `"${(c+'').replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -1049,14 +1049,6 @@ function setupSettingsPage() {
         });
         Store.save(data);
         toast('Sozlamalar saqlandi', 'success');
-    };
-
-    document.getElementById('savePayBtn').onclick = () => {
-        document.querySelectorAll('#payList input[type=checkbox]').forEach(c => {
-            data.settings.payments[c.dataset.pay] = c.checked;
-        });
-        Store.save(data);
-        toast('To\'lov sozlamalari saqlandi', 'success');
     };
 
     document.getElementById('saveShipBtn').onclick = () => {
@@ -1114,6 +1106,11 @@ function addShipRow(z) {
     document.getElementById('shipList').appendChild(wrap);
 }
 
+// To'lov oldindan olinmaydi — mijoz yetkazilganda naqd yoki karta orqali to'laydi
+function payLabel(p) {
+    return ({ naqd: 'Naqd pul', karta: 'Karta' })[p] || (p ? capitalize(p) : 'Naqd pul');
+}
+
 function renderSettings() {
     const s = data.settings;
     document.getElementById('stName').value = s.storeName || '';
@@ -1122,21 +1119,6 @@ function renderSettings() {
     document.getElementById('stHours').value = s.workHours || '';
     document.getElementById('stAddress').value = s.address || '';
     document.getElementById('stLogo').value = s.logo || '';
-
-    const pays = [
-        { key: 'naqd', name: 'Naqd pul', icon: '💵' },
-        { key: 'uzcard', name: 'Uzcard / Humo', icon: '💳' },
-        { key: 'payme', name: 'Payme', icon: '📱' },
-        { key: 'click', name: 'Click', icon: '⚡' },
-    ];
-    document.getElementById('payList').innerHTML = pays.map(p => `
-        <div class="pay-item">
-            <div class="pay-item-info">
-                <div class="pay-item-icon">${p.icon}</div>
-                <div><strong>${p.name}</strong></div>
-            </div>
-            <label class="switch"><input type="checkbox" data-pay="${p.key}" ${s.payments[p.key] ? 'checked' : ''}><span class="slider"></span></label>
-        </div>`).join('');
 
     document.getElementById('shipList').innerHTML = '';
     (s.shipping || []).forEach(addShipRow);

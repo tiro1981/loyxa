@@ -76,9 +76,7 @@
   // To'lov usullari taqsimoti (buyurtmalar soni) — boshlang'ich 0
   const PAY_DIST = [
     { id: "cash",  name: "Naqd pul",     val: 0, color: "#22c55e" },
-    { id: "card",  name: "Bank kartasi", val: 0, color: "#3b82f6" },
-    { id: "click", name: "Click",        val: 0, color: "#0ea5e9" },
-    { id: "payme", name: "Payme",        val: 0, color: "#22d3ee" },
+    { id: "card",  name: "Karta",        val: 0, color: "#3b82f6" },
   ];
 
   // Habarlar umumiy Cloud "messages" kalitida saqlanadi: [{from:'user'|'admin', text, time}].
@@ -109,7 +107,6 @@
     delivery: 10000,
     freeFrom: 100000,
     minOrder: 30000,
-    pay: { cash: true, card: true, click: true, payme: false },
   };
 
   /* ----------------------------------------------------------
@@ -692,15 +689,6 @@
   // --- SOZLAMALAR ---
   function viewSettings() {
     const isDark = (document.documentElement.getAttribute("data-theme") || "dark") === "dark";
-    const payRows = window.DATA.paymentMethods.map((m) => {
-      const on = SETTINGS.pay[m.id];
-      return '<div class="set-row">' +
-        '<span class="sr-ic">' + (m.logo || "💳") + '</span>' +
-        '<div class="sr-text"><div class="sr-title">' + m.name + '</div><div class="sr-sub">' + m.sub + '</div></div>' +
-        '<button class="toggle' + (on ? " on" : "") + '" data-pay="' + m.id + '"></button>' +
-      '</div>';
-    }).join("");
-
     return '<div class="dash-row dash-2b">' +
       '<div class="card"><div class="card-head"><h3>Do\'kon ma\'lumotlari</h3></div><div class="card-pad">' +
         '<div class="form-grid">' +
@@ -716,7 +704,6 @@
       '</div></div>' +
 
       '<div>' +
-        '<div class="card" style="margin-bottom:16px"><div class="card-head"><h3>To\'lov usullari</h3></div><div class="card-pad" style="padding-top:4px;padding-bottom:6px">' + payRows + '</div></div>' +
         '<div class="card"><div class="card-head"><h3>Ko\'rinish</h3></div><div class="card-pad">' +
           '<div class="set-row" style="border:none;padding-top:4px">' +
             '<span class="sr-ic">' + (isDark ? "🌙" : "☀️") + '</span>' +
@@ -982,12 +969,6 @@
       SETTINGS.minOrder = parseInt(el("s_min").value, 10) || 0;
       toast("Sozlamalar saqlandi", "ok");
     });
-    root.querySelectorAll("[data-pay]").forEach((t) => t.addEventListener("click", () => {
-      const id = t.dataset.pay;
-      SETTINGS.pay[id] = !SETTINGS.pay[id];
-      t.classList.toggle("on", SETTINGS.pay[id]);
-      toast((window.DATA.paymentMethods.find((m) => m.id === id) || {}).name + (SETTINGS.pay[id] ? " yoqildi" : " o'chirildi"), "info");
-    }));
     const themeToggle = el("themeToggle");
     if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
 
