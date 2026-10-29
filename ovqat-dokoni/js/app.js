@@ -54,6 +54,8 @@ window.UI = (function () {
   /* toast */
   function toast(msg, type = "ok") {
     const layer = document.getElementById("toastLayer");
+    // Bir vaqtda faqat BITTA xabar — yangisi oldingisining o'rnini egallaydi (ustma-ust yig'ilmaydi)
+    layer.querySelectorAll(".toast").forEach((t) => t.remove());
     const el = document.createElement("div");
     el.className = "toast " + type;
     const ic = type === "ok" ? ICONS.check : type === "err" ? ICONS.close : ICONS.info;
