@@ -3,12 +3,12 @@
 Bot — uzluksiz ishlovchi Telegram polling boti (aiogram v3) + aiohttp HTTP server.
 Shuning uchun uni AlwaysData'da **doimiy ishlovchi "User program"** sayti sifatida ishga tushiramiz.
 
-> Quyida `ACCOUNT` o'rniga o'zingizning AlwaysData login'ingizni yozing — **joriy akkaunt: `tiro21`**
+> Quyida `ACCOUNT` o'rniga o'zingizning AlwaysData login'ingizni yozing — **joriy akkaunt: `onlinebiznes`**
 > (eski `tiro19` akkaunt o'chirilgan, shu sabab bot serveriga ulanib bo'lmayotgan edi).
-> SSH host: `ssh-tiro21.alwaysdata.net`, foydalanuvchi: `tiro21`.
+> SSH host: `ssh-onlinebiznes.alwaysdata.net`, foydalanuvchi: `onlinebiznes`.
 >
-> ⚠️ **Muhim:** `tiro21` akkauntida allaqachon `sms-habar` boti sayt sifatida ishlab turibdi va
-> asosiy domenni (`https://tiro21.alwaysdata.net/`) egallab turibdi. Shu bot uchun **3-qadamda**
+> ⚠️ **Muhim:** `onlinebiznes` akkauntida allaqachon `sms-habar` boti sayt sifatida ishlab turibdi va
+> asosiy domenni (`https://onlinebiznes.alwaysdata.net/`) egallab turibdi. Shu bot uchun **3-qadamda**
 > yangi sayt yaratayotganda unga **alohida path yoki subdomen** bering (masalan sayt sozlamasida
 > "Path" maydoniga `/store-bot` yozing, yoki AlwaysData "Domains" bo'limidan qo'shimcha subdomen
 > so'rang) — aks holda ikkala bot bir-birining ustiga yozilib qoladi.
@@ -103,7 +103,7 @@ to'g'ridan-to'g'ri so'rov yuboradi.
 2. AlwaysData saytida ko'rsatilgan portga moslang (`PORT` env yoki sayt port sozlamasi).
 3. Admin panelda so'rovlarga `X-Admin-Token: <ADMIN_TOKEN>` header qo'shing (broadcast endpointi uchun).
 4. AlwaysData reverse-proxy odatda 443/HTTPS'ni o'zi ta'minlaydi — sayt sozlamasidan chiqqan
-   HTTPS manzilni (masalan `https://tiro21.alwaysdata.net/store-bot` yoki alohida subdomen)
+   HTTPS manzilni (masalan `https://onlinebiznes.alwaysdata.net/store-bot` yoki alohida subdomen)
    **aniqlab oling**.
 5. Shu manzilni har bir ilovaning admin paneli → **Telegram Bot → "1. Bot server manzili"**
    bo'limiga bir marta kiritib saqlang (Cloud orqali barcha qurilmalarga sinxronlashadi) —

@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # ---- 1) Shu yerni TO'LDIRING ----
-ACCOUNT="tiro21"        # AlwaysData login (ssh-<ACCOUNT>.alwaysdata.net) — tiro19 o'chirilgan, joriy akkaunt tiro21
+ACCOUNT="onlinebiznes"  # AlwaysData login (ssh-<ACCOUNT>.alwaysdata.net) — tiro19/tiro21 o'chirilgan, joriy akkaunt onlinebiznes
 REMOTE_DIR="bot"        # serverdagi papka:  ~/bot
 # ---------------------------------
 
