@@ -389,396 +389,41 @@
     background: rgba(255,255,255,.15);
 }
 
-/* ---------- HERO ILLUSTRATION (storefront -> phone) ---------- */
+/* ---------- HERO VIDEO (do'kon -> smartfon ilovasi) ---------- */
 .mrd .hero-visual {
     position: relative;
-    height: 460px;
+    min-height: 0;          /* style.css dagi eski illyustratsiya balandligini bekor qiladi */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .mrd .hv-glow {
     position: absolute;
-    width: 360px;
-    height: 340px;
+    width: 70%;
+    height: 70%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(91,155,255,.22), transparent 68%);
-}
-.mrd .hv-caption {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.18);
-    backdrop-filter: blur(6px);
-    padding: 8px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #DCE7FF;
-    white-space: nowrap;
-    z-index: 8;
-}
-.mrd .hv-caption i { color: var(--mrd-blue-lt); }
-.mrd .hv-morph {
-    position: absolute;
-    top: 44%;
-    left: 50%;
-    z-index: 6;
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(91,155,255,.55), transparent 70%);
-    animation: mrdMorphPulse 7s ease-in-out infinite;
     pointer-events: none;
 }
-
-/* SCENE 1: storefront */
-.mrd .hv-store {
-    position: absolute;
-    width: 308px;
-    animation: mrdStoreShow 7s ease-in-out infinite;
-}
-.mrd .hv-store .sign-row { display: flex; justify-content: center; margin-bottom: 8px; }
-.mrd .hv-store .sign {
+.mrd .hv-video {
     position: relative;
-    background: var(--mrd-amber);
-    color: var(--mrd-navy);
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: .08em;
-    padding: 6px 16px;
-    border-radius: 100px;
-    box-shadow: 0 6px 16px -6px rgba(245,158,11,.6);
-}
-.mrd .hv-store .sign::before,
-.mrd .hv-store .sign::after {
-    content: '';
-    position: absolute;
-    top: -9px;
-    width: 1.5px;
-    height: 9px;
-    background: rgba(255,255,255,.4);
-}
-.mrd .hv-store .sign::before { left: 24px; }
-.mrd .hv-store .sign::after { right: 24px; }
-.mrd .hv-store .awning {
-    position: relative;
-    height: 40px;
-    border-radius: 16px 16px 4px 4px;
-    overflow: hidden;
-    display: flex;
-    box-shadow: 0 10px 24px -10px rgba(0,0,0,.5);
-    animation: mrdAwningWave 4s ease-in-out infinite;
-    transform-origin: top center;
-}
-.mrd .hv-store .awning .stripe-a { flex: 1; background: linear-gradient(#2E6BF0, #2563EB); }
-.mrd .hv-store .awning .stripe-b { flex: 1; background: linear-gradient(#0E2E5C, #0B2447); }
-.mrd .hv-store .awning .sheen {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(rgba(255,255,255,.14), transparent 55%);
-}
-.mrd .hv-store .scallop {
-    display: flex;
-    gap: 2px;
-    margin-top: -2px;
-    padding: 0 2px;
-}
-.mrd .hv-store .scallop span {
-    flex: 1;
-    height: 14px;
-    border-radius: 0 0 40px 40px;
-}
-.mrd .hv-store .scallop .sc-a { background: var(--mrd-blue); }
-.mrd .hv-store .scallop .sc-b { background: var(--mrd-navy); }
-.mrd .hv-store .building {
-    position: relative;
-    background: linear-gradient(#FFFFFF, #F7FAFF);
-    border-radius: 4px 4px 20px 20px;
-    padding: 20px;
-    box-shadow: 0 34px 70px -22px rgba(0,0,0,.55);
-    overflow: hidden;
-}
-.mrd .hv-store .plate {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-.mrd .hv-store .plate .plate-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    background: var(--mrd-blue);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-.mrd .hv-store .plate .plate-name {
-    font-weight: 800;
-    font-size: 17px;
-    color: var(--mrd-navy);
-    letter-spacing: .01em;
-}
-.mrd .hv-store .shopfront { display: flex; gap: 12px; align-items: stretch; }
-.mrd .hv-store .window {
-    flex: 1;
-    position: relative;
-    background: linear-gradient(150deg, #DCE8FF, #EAF1FE);
-    border: 2px solid #C7D6EC;
-    border-radius: 12px;
-    height: 118px;
-    overflow: hidden;
-}
-.mrd .hv-store .window .win-top {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 22px;
-    background: var(--mrd-navy);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-}
-.mrd .hv-store .window .win-top span {
-    width: 4px; height: 4px; border-radius: 50%;
-}
-.mrd .hv-store .window .win-glass {
-    position: absolute;
-    top: 22px; left: -30%;
-    width: 40%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,.6), transparent);
-    transform: skewX(-18deg);
-}
-.mrd .hv-store .window .win-goods {
-    position: absolute;
-    bottom: 12px; left: 0; right: 0;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 12px;
-}
-.mrd .hv-store .window .win-floor {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 10px;
-    background: #C7D6EC;
-}
-.mrd .hv-store .door {
-    width: 78px;
-    position: relative;
-    background: linear-gradient(#12376E, #0B2447);
-    border-radius: 12px 12px 6px 6px;
-    height: 118px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 14px;
-    overflow: hidden;
-}
-.mrd .hv-store .door .door-glow {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 60%;
-    background: radial-gradient(ellipse at bottom, rgba(91,155,255,.45), transparent 70%);
-}
-.mrd .hv-store .door .door-open {
-    position: relative;
-    font-size: 10px;
-    font-weight: 800;
-    color: #34D399;
-    border: 1.5px solid #34D399;
-    padding: 3px 9px;
-    border-radius: 6px;
-    animation: mrdOpenBlink 3s ease-in-out infinite;
-}
-.mrd .hv-store .door .door-handle {
-    position: absolute;
-    right: 12px; top: 58px;
-    width: 6px; height: 14px;
-    border-radius: 4px;
-    background: var(--mrd-amber);
-}
-.mrd .hv-store .foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 16px;
-}
-.mrd .hv-store .foot .loc {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--mrd-slate-3);
-    font-weight: 600;
-}
-.mrd .hv-store .foot .loc i { color: var(--mrd-blue); }
-.mrd .hv-store .foot .open-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--mrd-green);
-    background: #DCFCE7;
-    padding: 4px 10px;
-    border-radius: 100px;
-}
-.mrd .hv-store .foot .open-pill span {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--mrd-green);
-}
-
-/* SCENE 2: phone */
-.mrd .hv-phone {
-    position: absolute;
-    width: 236px;
-    height: 456px;
-    background: var(--mrd-navy);
-    border-radius: 38px;
-    padding: 11px;
-    box-shadow: 0 40px 80px -20px rgba(0,0,0,.55);
-    animation: mrdPhoneShow 7s ease-in-out infinite;
-}
-.mrd .hv-phone .notch {
-    position: absolute;
-    top: 16px; left: 50%;
-    transform: translateX(-50%);
-    width: 96px; height: 22px;
-    background: var(--mrd-navy);
-    border-radius: 0 0 14px 14px;
-    z-index: 3;
-}
-.mrd .hv-phone .screen {
-    position: relative;
-    width: 100%; height: 100%;
-    background: var(--mrd-surface);
-    border-radius: 28px;
-    overflow: hidden;
-}
-.mrd .hv-phone .app-head {
-    background: var(--mrd-blue);
-    color: #fff;
-    padding: 26px 16px 16px;
-    position: relative;
-    z-index: 2;
-}
-.mrd .hv-phone .app-head .head-row {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-.mrd .hv-phone .app-head .head-logo {
-    width: 32px; height: 32px;
-    border-radius: 9px;
-    background: #fff;
-    color: var(--mrd-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-.mrd .hv-phone .app-head .head-name { font-weight: 800; font-size: 13px; line-height: 1.1; }
-.mrd .hv-phone .app-head .head-sub { font-size: 10px; color: #BFD4FF; }
-.mrd .hv-phone .app-head .head-search {
-    margin-left: auto;
-    width: 26px; height: 26px;
-    border-radius: 8px;
-    background: rgba(255,255,255,.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-}
-.mrd .hv-phone .feed {
-    padding: 12px;
-    overflow: hidden;
-    height: 326px;
-}
-.mrd .hv-phone .feed-scroll { animation: mrdScreenScroll 7s ease-in-out infinite; }
-.mrd .hv-phone .prod {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px;
-    margin-bottom: 9px;
-    box-shadow: 0 4px 12px -6px rgba(11,36,71,.2);
-}
-.mrd .hv-phone .prod .prod-ic {
-    width: 40px; height: 40px;
-    border-radius: 9px;
-    background: var(--mrd-blue-soft);
-    color: var(--mrd-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.mrd .hv-phone .prod .prod-info { flex: 1; }
-.mrd .hv-phone .prod .prod-name { font-weight: 700; font-size: 12px; color: var(--mrd-navy); }
-.mrd .hv-phone .prod .prod-price { font-size: 11px; color: var(--mrd-blue); font-weight: 800; }
-.mrd .hv-phone .prod .prod-add {
-    width: 26px; height: 26px;
-    border-radius: 8px;
-    background: var(--mrd-blue);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-}
-.mrd .hv-phone .order-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-top: 1px solid var(--mrd-line);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.mrd .hv-phone .order-bar .cart {
-    position: relative;
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    background: var(--mrd-blue-soft);
-    color: var(--mrd-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.mrd .hv-phone .order-bar .cart .badge {
-    position: absolute;
-    top: -5px; right: -5px;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--mrd-amber);
-    color: #fff;
-    font-size: 9px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.mrd .hv-phone .order-bar .order-btn {
-    flex: 1;
-    background: var(--mrd-blue);
-    color: #fff;
-    text-align: center;
-    font-weight: 800;
-    font-size: 13px;
-    padding: 10px;
-    border-radius: 10px;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: 80% center;   /* asosiy sahna kadrning o'ng qismida */
+    /* Video foni hero fonidan to'qroq — "lighten" bilan u fonga singib ketadi,
+       faqat yorqin sahna (do'kon, telefon, belgilar) ko'rinadi */
+    mix-blend-mode: lighten;
+    /* chetlari hero foniga silliq qo'shilib ketsin */
+    -webkit-mask-image:
+        linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%),
+        linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+    mask-composite: intersect;
 }
 
 /* ---------- TRUST LOGOS ---------- */
@@ -1500,58 +1145,13 @@
 /* ============================================================
    KEYFRAMES (hero illustration)
    ============================================================ */
-@keyframes mrdStoreShow {
-    0% { opacity: 0; transform: scale(.82) translateY(18px); }
-    8% { opacity: 1; transform: scale(1) translateY(0); }
-    38% { opacity: 1; transform: scale(1) translateY(0); }
-    48% { opacity: 0; transform: scale(.5) translateY(30px); }
-    96% { opacity: 0; transform: scale(.5) translateY(30px); }
-    100% { opacity: 0; transform: scale(.82) translateY(18px); }
-}
-@keyframes mrdPhoneShow {
-    0%, 44% { opacity: 0; transform: scale(.62) translateY(36px); }
-    56% { opacity: 1; transform: scale(1) translateY(0); }
-    90% { opacity: 1; transform: scale(1) translateY(0); }
-    98%, 100% { opacity: 0; transform: scale(.62) translateY(36px); }
-}
-@keyframes mrdMorphPulse {
-    0%, 38% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
-    48% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
-    56% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
-    100% { opacity: 0; }
-}
-@keyframes mrdScreenScroll {
-    0%, 20% { transform: translateY(0); }
-    44%, 62% { transform: translateY(-88px); }
-    82%, 100% { transform: translateY(0); }
-}
-@keyframes mrdAwningWave {
-    0%, 100% { transform: skewX(0deg); }
-    50% { transform: skewX(-1.5deg); }
-}
-@keyframes mrdOpenBlink {
-    0%, 44%, 56%, 100% { opacity: 1; }
-    50% { opacity: .35; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .mrd .hv-store,
-    .mrd .hv-phone,
-    .mrd .hv-morph,
-    .mrd .hv-store .awning,
-    .mrd .hv-store .door-open,
-    .mrd .hv-phone .feed-scroll { animation: none !important; }
-    .mrd .hv-phone { opacity: 1; }
-    .mrd .hv-store { display: none; }
-}
-
 /* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 992px) {
     .mrd .hero-container { grid-template-columns: 1fr; gap: 40px; }
     .mrd .hero-title { font-size: 46px; }
-    .mrd .hero-visual { height: 420px; order: 2; }
+    .mrd .hero-visual { order: 2; max-width: 620px; margin: 0 auto; width: 100%; }
     .mrd .apps-grid,
     .mrd .how-grid,
     .mrd .reviews-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1613,7 +1213,7 @@
     .mrd .container { padding: 0 16px; }
     .mrd-topbar .tb-left { font-size: 12px; }
     .mrd-topbar .tb-right .tb-langs { display: none; }
-    .mrd .hero-visual { transform: scale(.85); height: 380px; }
+
     .mrd .hero-stats { gap: 18px; }
     .mrd .hero-stats .hs-sep { display: none; }
     .mrd .showcase-nav { display: none; }

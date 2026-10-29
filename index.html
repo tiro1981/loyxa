@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=11">
+    <link rel="stylesheet" href="css/meridian.css?v=14">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -102,88 +102,14 @@
                 </div>
             </div>
 
-            <!-- ANIMATED STOREFRONT -> SMARTPHONE ILLUSTRATION -->
+            <!-- HERO VIDEO: do'kon -> smartfon ilovasi -->
             <div class="hero-visual reveal">
                 <div class="hv-glow"></div>
-
-                <div class="hv-caption">
-                    <i class="fa-solid fa-store"></i> Do'koningiz
-                    <i class="fa-solid fa-arrow-right-long" style="font-size:11px;"></i>
-                    smartfon ilovasiga <i class="fa-solid fa-mobile-screen-button"></i>
-                </div>
-
-                <div class="hv-morph"></div>
-
-                <!-- SCENE 1: storefront -->
-                <div class="hv-store">
-                    <div class="sign-row">
-                        <div class="sign">★ 4.9 · TOP DO'KON</div>
-                    </div>
-                    <div class="awning">
-                        <div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div><div class="stripe-b"></div><div class="stripe-a"></div>
-                        <div class="sheen"></div>
-                    </div>
-                    <div class="scallop">
-                        <span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span><span class="sc-b"></span><span class="sc-a"></span>
-                    </div>
-                    <div class="building">
-                        <div class="plate">
-                            <span class="plate-icon"><i class="fa-solid fa-store"></i></span>
-                            <span class="plate-name">Mening Do'konim</span>
-                        </div>
-                        <div class="shopfront">
-                            <div class="window">
-                                <div class="win-top">
-                                    <span style="background:#F59E0B;"></span><span style="background:#5B9BFF;"></span><span style="background:#34D399;"></span>
-                                </div>
-                                <div class="win-glass"></div>
-                                <div class="win-goods">
-                                    <i class="fa-solid fa-shirt" style="font-size:30px; color:#2563EB;"></i>
-                                    <i class="fa-solid fa-bag-shopping" style="font-size:24px; color:#5B9BFF;"></i>
-                                </div>
-                                <span class="win-floor"></span>
-                            </div>
-                            <div class="door">
-                                <div class="door-glow"></div>
-                                <span class="door-open">OPEN</span>
-                                <span class="door-handle"></span>
-                            </div>
-                        </div>
-                        <div class="foot">
-                            <span class="loc"><i class="fa-solid fa-location-dot"></i> Chilonzor</span>
-                            <span class="open-pill"><span></span> Ochiq</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SCENE 2: smartphone app -->
-                <div class="hv-phone">
-                    <div class="notch"></div>
-                    <div class="screen">
-                        <div class="app-head">
-                            <div class="head-row">
-                                <span class="head-logo"><i class="fa-solid fa-store"></i></span>
-                                <div>
-                                    <div class="head-name">Mening Do'konim</div>
-                                    <div class="head-sub">● Online · Chilonzor</div>
-                                </div>
-                                <span class="head-search"><i class="fa-solid fa-magnifying-glass"></i></span>
-                            </div>
-                        </div>
-                        <div class="feed">
-                            <div class="feed-scroll">
-                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-shirt"></i></span><div class="prod-info"><div class="prod-name">Ko'ylak</div><div class="prod-price">129 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
-                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-shoe-prints"></i></span><div class="prod-info"><div class="prod-name">Krossovka</div><div class="prod-price">349 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
-                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-bag-shopping"></i></span><div class="prod-info"><div class="prod-name">Sumka</div><div class="prod-price">89 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
-                                <div class="prod"><span class="prod-ic"><i class="fa-solid fa-hat-cowboy"></i></span><div class="prod-info"><div class="prod-name">Shlyapa</div><div class="prod-price">59 000</div></div><span class="prod-add"><i class="fa-solid fa-plus"></i></span></div>
-                            </div>
-                        </div>
-                        <div class="order-bar">
-                            <span class="cart"><i class="fa-solid fa-cart-shopping"></i><span class="badge">3</span></span>
-                            <span class="order-btn">Buyurtma berish</span>
-                        </div>
-                    </div>
-                </div>
+                <video class="hv-video" autoplay muted loop playsinline preload="auto"
+                       poster="assets/hero-shop-poster.jpg"
+                       aria-label="Do'kon smartfon ilovasiga aylanadi">
+                    <source src="assets/hero-shop.mp4" type="video/mp4">
+                </video>
             </div>
         </div>
     </header>
