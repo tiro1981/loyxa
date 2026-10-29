@@ -20,8 +20,8 @@
    ============================================================ */
 'use strict';
 
-const SUPABASE_URL = "https://ctakvioxteagcwjlclnu.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YWt2aW94dGVhZ2N3amxjbG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2ODU1OTEsImV4cCI6MjA5NzI2MTU5MX0.fm8tVEvnWuvA6D2F9I7JqDvqDKgtalbKctqXSVHsCUQ";
+const SUPABASE_URL = "https://lzygxzenebutsiydujty.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6eWd4emVuZWJ1dHNpeWR1anR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzMwNDQsImV4cCI6MjEwODgwOTA0NH0.IdM00h2rsCbKF12BhTFrvQj3Rw-geuTRLOK88uW6-14";
 
 window.Cloud = (function () {
     const configured =
