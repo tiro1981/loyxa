@@ -57,6 +57,10 @@ window.Components = (function () {
 
   /* delegated handlers for any container holding product cards */
   function bindProducts(root) {
+    // root (#view) har render'da QAYTA ishlatiladi — listener faqat bir marta
+    // ulansin, aks holda "+" bosilganda mahsulot va toast N marta qo'shilardi.
+    if (root.__productsBound) return;
+    root.__productsBound = true;
     root.addEventListener("click", (e) => {
       const card = e.target.closest(".product-card");
       if (!card) return;
