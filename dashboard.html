@@ -13,8 +13,10 @@
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/dashboard.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
+    <link rel="stylesheet" href="css/space.css?v=7">
+    <script>document.documentElement.setAttribute("data-theme", "dark");</script>
 </head>
-<body class="dash-body">
+<body class="dash-body space" data-force-theme="dark" data-particles="auto" data-particles-opacity="0.35">
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
@@ -72,7 +74,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- MAIN -->
-    <main class="dash-main">
+    <main class="dash-main" data-particles-anchor>
 
         <!-- HEADER -->
         <header class="dash-header">
@@ -249,6 +251,10 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
+    <!-- Fondagi 3D zarrachalar (three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/particles.js?v=6"></script>
+
     <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/cloud.js?v=3"></script>
@@ -256,7 +262,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=10", "js/main.js?v=12", "js/dashboard.js?v=13"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=12", "js/dashboard.js?v=13"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

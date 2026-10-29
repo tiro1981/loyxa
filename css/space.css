@@ -273,3 +273,128 @@ body.auth-body.space {
     .auth-body.space .auth-side { padding: 24px 20px 8px; }
     .auth-body.space .auth-side-visual { display: none; }   /* shakl ekran markazida xira turadi */
 }
+
+/* ============================================================
+   MIJOZ PANELI (dashboard.html) — shu mavzuda
+   Panelning tungi rejim o'zgaruvchilari "kosmik" palitraga almashtiriladi:
+   sirtlar shaffof shisha, urg'u binafsha. Fonda zarrachalar xira turadi
+   (data-particles-opacity). Specificity html[data-theme="dark"] dan yuqori.
+   ============================================================ */
+html:has(body.dash-body.space) {
+    background: #05060B;
+    color-scheme: dark;
+    --bg: transparent;
+    --white: rgba(14,15,27,.80);
+    --gray-50: rgba(255,255,255,.035);
+    --gray-100: rgba(255,255,255,.07);
+    --gray-200: rgba(255,255,255,.11);
+    --gray-300: #4B5068;
+    --gray-400: #7A8099;
+    --gray-500: #9AA0B8;
+    --gray-600: #B9BED3;
+    --gray-700: #D9DCE8;
+    --gray-800: #EEF0F7;
+    --gray-900: #FFFFFF;
+    --primary: #6D5BFF;
+    --primary-dark: #5A46F0;
+    --primary-light: rgba(109,91,255,.16);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.4);
+    --shadow: 0 10px 30px -12px rgba(0,0,0,.7);
+    --shadow-lg: 0 20px 50px -20px rgba(0,0,0,.8);
+}
+.dash-body.space { background: transparent; color: var(--gray-700); }
+
+/* Shisha sirtlar — orqadagi zarrachalar xira ko'rinib tursin */
+.dash-body.space .sidebar,
+.dash-body.space .dash-header,
+.dash-body.space .panel,
+.dash-body.space .stat-card,
+.dash-body.space .sub-card,
+.dash-body.space .mp-app-card,
+.dash-body.space .no-sub-hero,
+.dash-body.space .ns-step,
+.dash-body.space .info-strip,
+.dash-body.space .support-chat,
+.dash-body.space .notif-panel {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+.dash-body.space .sidebar { background: rgba(9,10,19,.86); border-right-color: rgba(255,255,255,.07); }
+.dash-body.space .dash-header { background: rgba(5,6,11,.72); border-bottom-color: rgba(255,255,255,.07); }
+.dash-body.space .logo-icon { background: linear-gradient(135deg, #6D5BFF, #2DD4BF); }
+.dash-body.space .client-badge { background: rgba(109,91,255,.14); color: #C9C1FF; }
+.dash-body.space .side-link.active { background: rgba(109,91,255,.16); color: #fff; }
+.dash-body.space .side-link.active i { color: #A99CFF; }
+/* dashboard.css --white'ni rangli fon ustidagi MATN rangi sifatida ham ishlatadi;
+   bu yerda --white shaffof sirt bo'lgani uchun o'sha joylarda matnni oq qilamiz */
+.dash-body.space .side-badge,
+.dash-body.space .logout-btn:hover,
+.dash-body.space .stat-card-icon,
+.dash-body.space .qa-icon,
+.dash-body.space .bar span,
+.dash-body.space .subscr-banner,
+.dash-body.space .subscr-banner h2,
+.dash-body.space .btn-outline-light,
+.dash-body.space .is-icon,
+.dash-body.space .entry-ic,
+.dash-body.space .no-sub-hero,
+.dash-body.space .no-sub-hero-body h2,
+.dash-body.space .mp-popular { color: #fff; }
+.dash-body.space .btn-outline-light:hover { border-color: #fff; }
+
+/* Yashil bannerlar -> binafsha "kosmik" gradient */
+.dash-body.space .no-sub-hero,
+.dash-body.space .subscr-banner {
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(45,212,191,.28), transparent 55%),
+        linear-gradient(135deg, rgba(109,91,255,.92) 0%, rgba(91,60,220,.85) 55%, rgba(14,15,27,.9) 120%);
+    border: 1px solid rgba(255,255,255,.12);
+}
+.dash-body.space .no-sub-hero-icon { background: rgba(255,255,255,.14); color: #F5C542; }
+.dash-body.space .ns-step-num { color: rgba(255,255,255,.10); }
+.dash-body.space .mp-app-card.popular { background: linear-gradient(180deg, rgba(245,197,66,.10) 0%, var(--white) 60%); }
+.dash-body.space .bar { background: linear-gradient(180deg, rgba(109,91,255,.35), rgba(109,91,255,.15)); }
+.dash-body.space .btn-primary {
+    background: linear-gradient(135deg, #6D5BFF, #8B5CF6);
+    border-color: transparent;
+}
+.dash-body.space .btn-primary { box-shadow: 0 10px 28px -12px rgba(109,91,255,.85); }
+.dash-body.space .btn-primary:hover { background: linear-gradient(135deg, #5A46F0, #7C4DEB); }
+.dash-body.space .sub-card,
+.dash-body.space .subdomain-box,
+.dash-body.space .subdomain-input input { background: var(--white); border-color: rgba(255,255,255,.10); }
+.dash-body.space .mp-app-card.popular { box-shadow: 0 0 0 1px rgba(109,91,255,.6), 0 20px 50px -24px rgba(109,91,255,.7); }
+
+/* Tungi rejim tugmasi kerak emas — mavzu doim qorong'i */
+.dash-body.space [data-theme-toggle] { display: none; }
+
+/* Sozlamalar paneli */
+.space .settings-panel { background: #0C0D18; border-left: 1px solid rgba(255,255,255,.08); }
+.space .settings-overlay { background: rgba(0,0,0,.55); }
+.dash-body.space .btn-light { background: #fff; color: #4C3BD9; }
+.dash-body.space .btn-light:hover { background: #EEEBFF; }
+
+/* settings.css tungi rejimi bu kartalarga qattiq #1E293B beradi — shisha qilamiz */
+.dash-body.space .panel,
+.dash-body.space .stat-card,
+.dash-body.space .quick-actions,
+.dash-body.space .info-strip,
+.dash-body.space .ns-step,
+.dash-body.space .mp-app-card:not(.popular),
+.dash-body.space .settings-panel {
+    background: var(--white);
+    border-color: rgba(255,255,255,.09);
+}
+.dash-body.space .settings-panel { background: #0C0D18; }
+.dash-body.space input,
+.dash-body.space select,
+.dash-body.space textarea,
+.dash-body.space .form-input,
+.dash-body.space .form-select {
+    background: rgba(255,255,255,.04);
+    border-color: rgba(255,255,255,.12);
+    color: var(--gray-800);
+}
+.dash-body.space input:focus,
+.dash-body.space textarea:focus,
+.dash-body.space select:focus { border-color: #6D5BFF; box-shadow: 0 0 0 3px rgba(109,91,255,.18); }

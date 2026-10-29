@@ -336,6 +336,15 @@
 
     /* ============ APPLY ============ */
     function applyTheme(theme) {
+        // Zarrachali "space" sahifalar o'z qorong'i mavzusini (css/space.css) ishlatadi —
+        // saqlangan tanlovni o'zgartirmaymiz. <body data-force-theme="dark"> bo'lsa (mijoz
+        // paneli) panelning tungi rejim o'zgaruvchilari yoqiladi, aks holda o'chiriladi.
+        if (document.body && document.body.classList.contains('space')) {
+            if (document.body.dataset.forceTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            else document.documentElement.removeAttribute('data-theme');
+            if (typeof updateThemeToggleIcons === 'function') updateThemeToggleIcons();
+            return;
+        }
         if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
         else document.documentElement.removeAttribute('data-theme');
         try { localStorage.setItem(STORAGE_THEME, theme); } catch {}

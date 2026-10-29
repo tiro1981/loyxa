@@ -202,13 +202,15 @@
         const visH = 2 * Math.tan(camera.fov * Math.PI / 360) * camera.position.z, visW = visH * vw / vh;
         const el = document.querySelector('[data-particles-anchor]');
         const r = el && el.offsetParent !== null ? el.getBoundingClientRect() : null;
-        if (!r || r.width < 40 || r.height < 40) return { x: 0, y: 0, s: mobile() ? 0.7 : 0.9, ry: -0.45, o: 0.42 };
+        // <body data-particles-opacity="0.3"> — kartalar ko'p sahifalarda fon xiraroq
+        const dim = parseFloat(document.body.dataset.particlesOpacity);
+        if (!r || r.width < 40 || r.height < 40) return { x: 0, y: 0, s: mobile() ? 0.7 : 0.9, ry: -0.45, o: isNaN(dim) ? 0.42 : dim };
         const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
         return {
             x: (cx / vw - 0.5) * visW,
             y: -(cy / vh - 0.5) * visH,
             s: Math.min(1.15, (r.width / vw) * visW / 5.6, (r.height / vh) * visH / 5.2),
-            ry: -0.5, o: 1,
+            ry: -0.5, o: isNaN(dim) ? 1 : dim,
         };
     }
 
