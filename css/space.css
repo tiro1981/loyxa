@@ -488,3 +488,86 @@ html:has(body.dash-body.space) {
     .mrd.space .as-chip { padding: 8px 12px; font-size: 13px; }
     .mrd.space .as-actions .btn { flex-basis: 100%; }
 }
+
+/* Kirish: "Bosh sahifa" havolasi forma kartasi ostida qolib ketmasin —
+   absolute o'rniga kartaning tepasida, u bilan bir chiziqda turadi */
+.auth-body.space .back-home {
+    position: relative;
+    top: auto; left: auto;
+    z-index: 2;
+    align-self: center;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 16px;
+}
+
+/* ============================================================
+   SOZLAMALAR PANELI (space sahifalar) — qorong'i shisha akkordion
+   ============================================================ */
+html body.space .settings-panel { background: #0B0C17; border-left: 1px solid rgba(255,255,255,.08); }
+html body.space .settings-head { border-bottom-color: rgba(255,255,255,.07); }
+html body.space .settings-close { background: rgba(255,255,255,.06); color: #C5C9DB; }
+html body.space .settings-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+html body.space .settings-section[data-accordion] > .settings-label {
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    color: #E6E8F2;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    text-align: left;
+    line-height: 1.3;
+}
+html body.space .settings-section[data-accordion] > .settings-label > i:first-child {
+    width: 34px; height: 34px;
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    background: rgba(109,91,255,.14);
+    color: #A99CFF;
+    font-size: 14px;
+}
+html body.space .settings-section[data-accordion] > .settings-label > span { flex: 1; }
+html body.space .settings-section[data-accordion] > .settings-label:hover {
+    border-color: rgba(109,91,255,.5);
+    background: rgba(109,91,255,.08);
+    color: #fff;
+}
+html body.space .settings-section[data-accordion].open > .settings-label {
+    border-color: rgba(109,91,255,.55);
+    background: rgba(109,91,255,.10);
+    color: #fff;
+}
+html body.space .settings-acc-arrow { color: #7A8099 !important; }
+html body.space .settings-section[data-accordion].open .settings-acc-arrow { color: #A99CFF !important; }
+html body.space .settings-section[data-accordion].open .settings-section-body {
+    border: 1px solid rgba(109,91,255,.35);
+    border-top: none;
+    background: rgba(255,255,255,.02);
+}
+
+/* Formalar */
+html body.space .settings-input-row label { color: #9AA0B8; }
+html body.space .settings-input-row input {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.12);
+    color: #F3F4FA;
+}
+html body.space .settings-input-row input:focus { border-color: #6D5BFF; background: rgba(109,91,255,.06); box-shadow: 0 0 0 3px rgba(109,91,255,.18); }
+html body.space .settings-input-row input[readonly] { background: rgba(255,255,255,.02); color: #7A8099; }
+html body.space .settings-btn { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); box-shadow: 0 10px 24px -12px rgba(109,91,255,.8); }
+html body.space .settings-btn:hover { background: linear-gradient(135deg, #5A46F0, #7C4DEB); }
+
+/* Til kartalari */
+html body.space .lang-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.10); }
+html body.space .lang-card:hover { border-color: rgba(109,91,255,.5); background: rgba(109,91,255,.06); }
+html body.space .lang-card.active { border-color: #6D5BFF; background: rgba(109,91,255,.12); }
+html body.space .lang-card .lang-flag { background: rgba(255,255,255,.06); }
+html body.space .lang-card .lang-tick { background: #6D5BFF; }
+html body.space .lang-info strong { color: #F3F4FA; }
+html body.space .lang-info span { color: #9AA0B8; }

@@ -12,6 +12,7 @@
     left: 0;
     width: 260px;
     height: 100vh;
+    height: 100dvh;   /* telefonda brauzer panellari hisobga olinadi — pastki "Chiqish" ko'rinib tursin */
     background: var(--white);
     border-right: 1px solid var(--gray-200);
     display: flex;
@@ -126,8 +127,9 @@
 
 /* Sidebar Footer / Profile */
 .sidebar-footer {
-    padding: 16px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
 }
 
 .profile-card {
