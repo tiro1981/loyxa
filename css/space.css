@@ -1,0 +1,172 @@
+/* ============================================================
+   SPACE — bosh sahifaning qorong'i "zarrachalar" mavzusi
+   Fonda qotirilgan WebGL qatlami (js/particles.js) turadi: minglab
+   mayda uchburchaklar sahifa aylantirilganda bir shakldan boshqasiga
+   aylanadi. Bu fayl meridian.css ustidan qorong'i ranglarni beradi —
+   barcha bo'limlar shaffof, matn och rangda, kartalar "shisha".
+   ============================================================ */
+
+html:has(body.mrd.space) { background: #05060B; }
+body.mrd.space {
+    --mrd-blue:      #6D5BFF;
+    --mrd-blue-2:    #5A46F0;
+    --mrd-blue-lt:   #A99CFF;
+    --mrd-ink:       #F3F4FA;
+    --mrd-slate:     #C5C9DB;
+    --mrd-slate-2:   #9AA0B8;
+    --mrd-slate-3:   #7A8099;
+    --mrd-line:      rgba(255,255,255,.10);
+    --mrd-line-2:    rgba(255,255,255,.16);
+    --mrd-surface:   rgba(255,255,255,.04);
+    --space-glass:   rgba(10,11,20,.62);
+
+    background: transparent;
+    color: var(--mrd-ink);
+}
+
+/* Zarrachalar qatlami */
+#space-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    display: block;
+}
+
+/* ---------- Topbar + navbar ---------- */
+.mrd.space .mrd-topbar { background: #05060B; color: #8A90A8; border-bottom: 1px solid rgba(255,255,255,.06); }
+.mrd.space .navbar {
+    background: rgba(5,6,11,.82);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.mrd.space .navbar.scrolled { box-shadow: 0 10px 30px -18px rgba(0,0,0,.9); }
+.mrd.space .logo { color: #fff; }
+.mrd.space .logo-icon { background: linear-gradient(135deg, #6D5BFF, #2DD4BF); }
+.mrd.space .nav-link { color: #B9BED3; }
+.mrd.space .nav-link:hover,
+.mrd.space .nav-link.active { color: #fff; }
+.mrd.space .nav-link::after { background: #6D5BFF; }
+
+.mrd.space .btn-soft,
+.mrd.space .btn-outline {
+    background: rgba(255,255,255,.04);
+    color: #fff;
+    border-color: rgba(255,255,255,.18);
+}
+.mrd.space .btn-soft:hover,
+.mrd.space .btn-outline:hover { color: #fff; border-color: #6D5BFF; background: rgba(109,91,255,.14); }
+.mrd.space .btn-primary {
+    background: linear-gradient(135deg, #6D5BFF, #8B5CF6);
+    box-shadow: 0 10px 28px -10px rgba(109,91,255,.85);
+}
+.mrd.space .btn-primary:hover { background: linear-gradient(135deg, #5A46F0, #7C4DEB); }
+
+.mrd.space .settings-trigger,
+.mrd.space .hamburger {
+    background: rgba(255,255,255,.04);
+    border-color: rgba(255,255,255,.18);
+    color: #E6E8F2;
+}
+.mrd.space .hamburger span { background: #E6E8F2; }
+.mrd.space .lang-menu { background: #11131F; border-color: rgba(255,255,255,.1); box-shadow: 0 18px 40px -16px rgba(0,0,0,.9); }
+.mrd.space .lang-opt { color: #E6E8F2; }
+.mrd.space .lang-opt:hover { background: rgba(255,255,255,.06); }
+.mrd.space .lang-opt.active,
+.mrd.space .lang-opt i { color: #A99CFF; }
+
+@media (max-width: 768px) {
+    .mrd.space .nav-links { background: #0B0C16; box-shadow: -20px 0 60px -20px rgba(0,0,0,.9); }
+    .mrd.space .nav-link { border-bottom-color: rgba(255,255,255,.08); }
+}
+
+/* ---------- Hero ---------- */
+.mrd.space .hero { background: transparent; }
+.mrd.space .hero::before { display: none; }
+.mrd.space .hero-badge {
+    background: rgba(109,91,255,.14);
+    border-color: rgba(109,91,255,.42);
+    color: #C9C1FF;
+}
+.mrd.space .hero-title .text-accent,
+.mrd.space .hero-title .text-primary {
+    background: linear-gradient(90deg, #F5C542, #A99CFF 55%, #2DD4BF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.mrd.space .hero-subtitle { color: #B9BED3; }
+.mrd.space .hero-stats .hs-item .hs-num span { color: #A99CFF; }
+.mrd.space .hero-stats .hs-item .hs-label { color: #8A90A8; }
+/* Hero o'ng tomoni — zarrachali do'kon shu bo'sh joyda ko'rinadi */
+.mrd.space .hero-visual { height: 480px; }
+@media (max-width: 992px) {
+    .mrd.space .hero-visual { height: 340px; }
+}
+@media (max-width: 560px) {
+    .mrd.space .hero-visual { height: 300px; }
+}
+
+/* ---------- Bo'limlar shaffof ---------- */
+.mrd.space .trust-band,
+.mrd.space .apps-section,
+.mrd.space .reviews-section,
+.mrd.space .how-section,
+.mrd.space .cta-section,
+.mrd.space .footer { background: transparent; }
+
+.mrd.space .trust-band { border-top: 1px solid rgba(255,255,255,.06); border-bottom: 1px solid rgba(255,255,255,.06); }
+.mrd.space .trust-band .trust-logos { color: #C5C9DB; }
+
+.mrd.space .section-tag { color: #F5C542; }
+.mrd.space .section-title { color: #fff; }
+.mrd.space .section-subtitle { color: #9AA0B8; }
+
+.mrd.space .showcase-caption { color: #fff; }
+.mrd.space .showcase-nav { background: rgba(10,11,20,.8); border-color: rgba(255,255,255,.18); color: #fff; }
+.mrd.space .showcase-dots button { background: rgba(255,255,255,.22); }
+.mrd.space .showcase-dots button.on { background: #6D5BFF; }
+.mrd.space .mrd-phone .mp-label { color: #C5C9DB; }
+
+.mrd.space .custom-price-note,
+.mrd.space .how-step,
+.mrd.space .review-card {
+    background: var(--space-glass);
+    border: 1px solid rgba(255,255,255,.10);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+.mrd.space .custom-price-note { color: #C5C9DB; }
+.mrd.space .custom-price-note i { color: #F5C542; }
+.mrd.space .custom-price-note strong { color: #fff; }
+
+.mrd.space .how-section .section-tag { color: #2DD4BF; }
+.mrd.space .how-step .how-num { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); }
+.mrd.space .how-step .how-head > i { color: #2DD4BF; }
+.mrd.space .how-step p { color: #B9BED3; }
+.mrd.space .how-step code { background: rgba(45,212,191,.14); color: #5EEAD4; }
+
+/* ---------- CTA ---------- */
+.mrd.space .cta-section { padding: 40px 0 120px; }
+.mrd.space .cta-card {
+    background: rgba(10,11,20,.55);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 30px 80px -30px rgba(109,91,255,.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+.mrd.space .cta-card p { color: #C5C9DB; }
+.mrd.space .cta-actions .btn-light { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); color: #fff; }
+.mrd.space .cta-actions .btn-light:hover { background: linear-gradient(135deg, #5A46F0, #7C4DEB); }
+
+/* ---------- Footer ---------- */
+.mrd.space .footer { border-top: 1px solid rgba(255,255,255,.07); padding-top: 72px; }
+.mrd.space .footer .logo-light .logo-icon { background: linear-gradient(135deg, #6D5BFF, #2DD4BF); }
+.mrd.space .footer-contacts i { color: #A99CFF; }
+.mrd.space .social-links a:hover { background: #6D5BFF; }
+
+.mrd.space .scroll-top { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); }
+
+/* Matnlar namunadagidek pastdan sekin chiqadi */
+.mrd.space .reveal { transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
     <link rel="stylesheet" href="css/meridian.css?v=14">
+    <link rel="stylesheet" href="css/space.css?v=1">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -19,7 +20,7 @@
         } catch {}
     </script>
 </head>
-<body class="mrd">
+<body class="mrd space">
 
     <!-- TOP BAR -->
     <div class="mrd-topbar">
@@ -102,15 +103,9 @@
                 </div>
             </div>
 
-            <!-- HERO VIDEO: do'kon -> smartfon ilovasi -->
-            <div class="hero-visual reveal">
-                <div class="hv-glow"></div>
-                <video class="hv-video" autoplay muted loop playsinline preload="auto"
-                       poster="assets/hero-shop-poster.jpg"
-                       aria-label="Do'kon smartfon ilovasiga aylanadi">
-                    <source src="assets/hero-shop.mp4" type="video/mp4">
-                </video>
-            </div>
+            <!-- Hero o'ng tomoni: bu bo'sh joyda fondagi zarrachalardan yasalgan
+                 do'kon ko'rinadi (js/particles.js) -->
+            <div class="hero-visual" aria-hidden="true"></div>
         </div>
     </header>
 
@@ -267,6 +262,9 @@
         </div>
     </div>
 
+    <!-- Fondagi 3D zarrachalar (three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/particles.js?v=3"></script>
     <script src="js/settings.js?v=10"></script>
     <script src="js/main.js?v=12"></script>
     <script>
