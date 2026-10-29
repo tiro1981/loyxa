@@ -494,7 +494,7 @@ function _boAdminInit() {
        ============ TELEGRAM BOT PANELI ===================
        ==================================================== */
     function getBotApi() {
-        return (boCloudGet('bo_bot_api', '') || 'http://localhost:3344').replace(/\/+$/, '');
+        return (boCloudGet('bo_bot_api', '') || (/^(localhost|127\.)/.test(location.hostname) ? 'http://localhost:3344' : 'https://onlinebiznes.alwaysdata.net')).replace(/\/+$/, '');
     }
 
     let botPollTimer = null;

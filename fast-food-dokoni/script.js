@@ -547,7 +547,7 @@ function sendOrderToBot(order) {
     const BOT_HTTP = (function () {
       const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || '';
       if (configured) return configured.replace(/\/+$/, '');
-      return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : '';
+      return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : 'https://onlinebiznes.alwaysdata.net';
     })();
     if (!BOT_HTTP) { console.warn('[bot] Bot server manzili sozlanmagan — avval Bot sozlamalaridan server manzilini saqlang'); return; }
     fetch(`${BOT_HTTP}/store-bot/order`, {

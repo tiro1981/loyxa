@@ -14,9 +14,9 @@ const Telegram = (() => {
 
   // Bot server manzili — Cloud("bot_api") (admin sozlaydi, mijozga ham sinxron),
   // aks holda localStorage, aks holda localhost. Har chaqiruvда yangidan o'qiymiz.
-  // Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
-  // shuning uchun qattiq yozilmaydi: admin panel "1. Bot server manzili"dan saqlanadi.
-  const DEFAULT_BOT_API = '';
+  // Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
+  // admin panel "1. Bot server manzili"dan boshqa manzil saqlansa, o'sha ishlatiladi.
+  const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
   function apiBase() {
     const configured =
       (window.Cloud && Cloud.get('bot_api')) ||

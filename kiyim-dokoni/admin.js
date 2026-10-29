@@ -1382,12 +1382,12 @@ const BOT_CFG_KEY = 'moda_bot_config';
 // window.__CLIENT_ID boot-loader (admin.html) tomonidan hisoblab qo'yiladi
 // (URL ?client= -> bo_session -> kiyim_last_client -> 'shop' tartibida).
 const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
-// Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
-// shuning uchun qattiq yozilmaydi: "1. Bot server manzili" bo'limidan saqlanadi.
+// Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
+// "1. Bot server manzili" bo'limidan boshqa manzil saqlansa, o'sha ishlatiladi.
 // MUHIM: bu nom script.js dagi global `const DEFAULT_BOT_API` bilan to'qnashmasligi uchun
 // noyob nom ishlatamiz (admin.html ikkala skriptni ham yuklaydi — bir xil global nom
 // SyntaxError berib, admin.js ni butunlay ishlamay qoldirardi = panel "qotib qolgan").
-const ADMIN_DEFAULT_BOT_API = '';
+const ADMIN_DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
 function getBotApi() {
     const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
     if (configured) return configured.replace(/\/+$/, '');

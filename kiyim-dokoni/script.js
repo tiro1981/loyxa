@@ -165,9 +165,9 @@ function toast(msg, type = 'success') {
 }
 
 /* ---------- Telegram bot xabarnomasi (admin panelda ulangan bo'lsa) ---------- */
-// Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
-// shuning uchun qattiq yozilmaydi: admin panel "1. Bot server manzili"dan saqlanadi.
-const DEFAULT_BOT_API = '';
+// Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
+// admin panel "1. Bot server manzili"dan boshqa manzil saqlansa, o'sha ishlatiladi.
+const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
 function notifyTelegramBot(order) {
     try {
         const cfg = JSON.parse(localStorage.getItem('moda_bot_config') || 'null');

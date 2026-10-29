@@ -185,9 +185,9 @@ function notifyTelegramBot(order) {
         const cfg = JSON.parse(localStorage.getItem('kitob_bot_config') || 'null');
         if (!cfg || !cfg.token) return;
         const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
-        // Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
-        // shuning uchun qattiq yozilmaydi: admin panel "1. Bot server manzili"dan saqlanadi.
-        const DEFAULT_BOT_API = '';
+        // Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
+        // admin panel "1. Bot server manzili"dan boshqa manzil saqlansa, o'sha ishlatiladi.
+        const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
         const BOT_HTTP = (function () {
             const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
             if (configured) return configured.replace(/\/+$/, '');

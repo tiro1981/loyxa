@@ -1329,9 +1329,9 @@ function renderConversation(chatKey, openLayout) {
 // ====== Do'kon boti — token asosida (yagona bot) ======
 const BOT_CFG_KEY = 'kitob_bot_config';
 const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => { try { return JSON.parse(localStorage.getItem('bo_session') || '{}').clientId; } catch { return null; } })() || 'shop') + '__kitob';
-// Yagona markaziy bot server (bot/README.md) — haqiqiy manzil hali tasdiqlanmagan,
-// shuning uchun qattiq yozilmaydi: "1. Bot server manzili" bo'limidan saqlanadi.
-const DEFAULT_BOT_API = '';
+// Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
+// "1. Bot server manzili" bo'limidan boshqa manzil saqlansa, o'sha ishlatiladi.
+const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
 function getBotApi() {
     const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
     if (configured) return configured.replace(/\/+$/, '');

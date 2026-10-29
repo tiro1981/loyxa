@@ -971,11 +971,9 @@ setInterval(() => {
 const APP_SLUG = 'fastfood';
 const SHOP_KEY = (CLIENT_ID || 'demo') + '__' + APP_SLUG;
 // Yagona markaziy bot server (bot/README.md) — barcha do'konlar shu bitta bot
-// serveriga ulanadi (har biri o'z tokeni bilan). Haqiqiy manzil hali tasdiqlanmagan
-// (tiro19.alwaysdata.net mavjud emas, tiro21.alwaysdata.net boshqa botga — sms-habar —
-// tegishli), shuning uchun DEFAULT_BOT_API qattiq yozilmaydi: "1. Bot server manzili"
-// bo'limidan (pastda) admin bir marta to'g'ri manzilni kiritib saqlaydi.
-const DEFAULT_BOT_API = ''; // TODO: bot/bot.py joylashtirilgan manzil tasdiqlansa shu yerga qo'yish mumkin
+// serveriga ulanadi (har biri o'z tokeni bilan). Server AlwaysData (onlinebiznes) da;
+// "1. Bot server manzili" bo'limidan boshqa manzil saqlansa, o'sha ishlatiladi.
+const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net'; // bot/bot.py — AlwaysData (onlinebiznes) da joylashgan
 function getBotApi() {
   const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
   if (configured) return configured.replace(/\/+$/, '');
