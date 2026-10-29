@@ -17,11 +17,14 @@ const Telegram = (() => {
   // Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
   // admin panel "1. Bot server manzili"dan boshqa manzil saqlansa, o'sha ishlatiladi.
   const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
+  // Eski (o'chirilgan) AlwaysData akkauntlari — saqlangan bo'lsa ham e'tiborga olinmaydi.
+  const DEAD_BOT_HOST = /(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i;
   function apiBase() {
-    const configured =
-      (window.Cloud && Cloud.get('bot_api')) ||
-      localStorage.getItem('bo_bot_api') ||
-      localStorage.getItem('ovqat_bot_http_url') || '';
+    const configured = [
+      window.Cloud && Cloud.get('bot_api'),
+      localStorage.getItem('bo_bot_api'),
+      localStorage.getItem('ovqat_bot_http_url'),
+    ].find((u) => u && !DEAD_BOT_HOST.test(u)) || '';
     if (configured) return configured.replace(/\/+$/, '');
     if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
     return DEFAULT_BOT_API;

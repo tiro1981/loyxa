@@ -1371,7 +1371,9 @@ const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
 // SyntaxError berib, admin.js ni butunlay ishlamay qoldirardi = panel "qotib qolgan").
 const ADMIN_DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
 function getBotApi() {
-    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
+    // eski (o'chirilgan) tiro19/tiro21 manzillari e'tiborga olinmaydi
+    const configured = [(window.Cloud && Cloud.get('bot_api', '')), localStorage.getItem('bo_bot_api'), localStorage.getItem('moda_bot_http_url')]
+        .find(u => u && !/(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i.test(u)) || '';
     if (configured) return configured.replace(/\/+$/, '');
     return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : ADMIN_DEFAULT_BOT_API;
 }

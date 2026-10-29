@@ -494,7 +494,9 @@ function _boAdminInit() {
        ============ TELEGRAM BOT PANELI ===================
        ==================================================== */
     function getBotApi() {
-        return (boCloudGet('bo_bot_api', '') || (/^(localhost|127\.)/.test(location.hostname) ? 'http://localhost:3344' : 'https://onlinebiznes.alwaysdata.net')).replace(/\/+$/, '');
+        const saved = boCloudGet('bo_bot_api', '');
+        // eski (o'chirilgan) tiro19/tiro21 manzili e'tiborga olinmaydi
+        return ((saved && !/(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i.test(saved) ? saved : '') || (/^(localhost|127\.)/.test(location.hostname) ? 'http://localhost:3344' : 'https://onlinebiznes.alwaysdata.net')).replace(/\/+$/, '');
     }
 
     let botPollTimer = null;

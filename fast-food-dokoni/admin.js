@@ -99,6 +99,10 @@ onAdminReady(() => {
 // Cloud'ga (tb_bot_api) ko'chiramiz, shunda barcha qurilmalarda (mijoz QR'i ham) ishlaydi.
 function migrateBotApiToCloud() {
   if (!window.Cloud) return;
+  // eski (o'chirilgan) tiro19/tiro21 manzili saqlanib qolgan bo'lsa — tozalaymiz
+  const dead = /(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i;
+  if (dead.test(DB.get('tb_bot_api', '') || '')) DB.remove('tb_bot_api');
+  if (dead.test(localStorage.getItem('bo_bot_api') || '')) localStorage.removeItem('bo_bot_api');
   const inCloud = DB.get('tb_bot_api', '');
   const inLocal = localStorage.getItem('bo_bot_api') || '';
   if (!inCloud && inLocal) DB.set('tb_bot_api', inLocal.replace(/\/+$/, ''));
@@ -975,8 +979,10 @@ const SHOP_KEY = (CLIENT_ID || 'demo') + '__' + APP_SLUG;
 // serveriga ulanadi (har biri o'z tokeni bilan). Server AlwaysData (onlinebiznes) da;
 // "1. Bot server manzili" bo'limidan boshqa manzil saqlansa, o'sha ishlatiladi.
 const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net'; // bot/bot.py — AlwaysData (onlinebiznes) da joylashgan
+// Eski (o'chirilgan) tiro19/tiro21 AlwaysData manzillari saqlangan bo'lsa ham e'tiborga olinmaydi
+const DEAD_BOT_HOST = /(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i;
 function getBotApi() {
-  const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || '';
+  const configured = [DB.get('tb_bot_api', ''), localStorage.getItem('bo_bot_api')].find(u => u && !DEAD_BOT_HOST.test(u)) || '';
   if (configured) return configured.replace(/\/+$/, '');
   if (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname)) return 'http://localhost:3344';
   return DEFAULT_BOT_API;

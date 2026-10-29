@@ -1314,8 +1314,11 @@ const SHOP_KEY = (new URLSearchParams(location.search).get('client') || (() => {
 // Yagona markaziy bot server (bot/README.md) — AlwaysData (onlinebiznes) da joylashgan;
 // "1. Bot server manzili" bo'limidan boshqa manzil saqlansa, o'sha ishlatiladi.
 const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
+// Eski (o'chirilgan) tiro19/tiro21 AlwaysData manzillari saqlangan bo'lsa ham e'tiborga olinmaydi
+const DEAD_BOT_HOST = /(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i;
 function getBotApi() {
-    const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
+    const configured = [(window.Cloud && Cloud.get('bot_api', '')), localStorage.getItem('bo_bot_api'), localStorage.getItem('kitob_bot_http_url')]
+        .find(u => u && !DEAD_BOT_HOST.test(u)) || '';
     if (configured) return configured.replace(/\/+$/, '');
     return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
 }

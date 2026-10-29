@@ -173,7 +173,9 @@ function notifyTelegramBot(order) {
         const cfg = JSON.parse(localStorage.getItem('moda_bot_config') || 'null');
         if (!cfg || !cfg.token) return;
         const SHOP_KEY = (window.__CLIENT_ID || 'shop') + '__kiyim';
-        const _botConfigured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('moda_bot_http_url') || '';
+        // eski (o'chirilgan) tiro19/tiro21 manzillari e'tiborga olinmaydi
+        const _botConfigured = [(window.Cloud && Cloud.get('bot_api', '')), localStorage.getItem('bo_bot_api'), localStorage.getItem('moda_bot_http_url')]
+            .find(u => u && !/(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i.test(u)) || '';
         const BOT_HTTP = _botConfigured
             ? _botConfigured.replace(/\/+$/, '')
             : (/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API);

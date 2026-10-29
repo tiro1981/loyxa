@@ -544,7 +544,8 @@ function sendOrderToBot(order) {
     if (!cfg || !cfg.token) return; // bot hali ulanmagan
     const SHOP_KEY = (CLIENT_ID || 'demo') + '__fastfood';
     const BOT_HTTP = (function () {
-      const configured = DB.get('tb_bot_api', '') || localStorage.getItem('bo_bot_api') || window.BOT_HTTP_URL || '';
+      // eski (o'chirilgan) tiro19/tiro21 manzillari e'tiborga olinmaydi
+      const configured = [DB.get('tb_bot_api', ''), localStorage.getItem('bo_bot_api'), window.BOT_HTTP_URL].find(u => u && !/(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i.test(u)) || '';
       if (configured) return configured.replace(/\/+$/, '');
       return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : 'https://onlinebiznes.alwaysdata.net';
     })();

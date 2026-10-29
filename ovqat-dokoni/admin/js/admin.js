@@ -137,6 +137,11 @@
   // <script> sifatida yuklanadi, shuning uchun bu yerda Cloud allaqachon tayyor.
   (function migrateBotApiToCloud() {
     if (!window.Cloud) return;
+    // Eski (o'chirilgan) tiro19/tiro21 AlwaysData manzili saqlanib qolgan bo'lsa — tozalaymiz,
+    // shunda standart bot server (onlinebiznes) ishlatiladi.
+    const DEAD = /(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i;
+    if (DEAD.test(Cloud.get('bot_api', '') || '')) Cloud.remove('bot_api');
+    ['bo_bot_api', 'ovqat_bot_http_url'].forEach((k) => { if (DEAD.test(localStorage.getItem(k) || '')) localStorage.removeItem(k); });
     const inCloud = Cloud.get('bot_api', '');
     const inLocal = localStorage.getItem('bo_bot_api') || localStorage.getItem('ovqat_bot_http_url') || '';
     if (!inCloud && inLocal) {

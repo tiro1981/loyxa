@@ -189,7 +189,9 @@ function notifyTelegramBot(order) {
         // admin panel "1. Bot server manzili"dan boshqa manzil saqlansa, o'sha ishlatiladi.
         const DEFAULT_BOT_API = 'https://onlinebiznes.alwaysdata.net';
         const BOT_HTTP = (function () {
-            const configured = (window.Cloud && Cloud.get('bot_api', '')) || localStorage.getItem('bo_bot_api') || localStorage.getItem('kitob_bot_http_url') || '';
+            // eski (o'chirilgan) tiro19/tiro21 manzillari e'tiborga olinmaydi
+            const configured = [(window.Cloud && Cloud.get('bot_api', '')), localStorage.getItem('bo_bot_api'), localStorage.getItem('kitob_bot_http_url')]
+                .find(u => u && !/(^|\/\/)(tiro19|tiro21)\.alwaysdata\.net/i.test(u)) || '';
             if (configured) return configured.replace(/\/+$/, '');
             return /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname) ? 'http://localhost:3344' : DEFAULT_BOT_API;
         })();
