@@ -488,6 +488,7 @@
             e.preventDefault();
             const newU = document.getElementById('settingsNewUsername').value.trim();
             const pass = document.getElementById('settingsUsernamePass').value;
+            await boCloudRefresh();
             const fresh = getCurrentClient();
             if (!fresh || !fresh.me) return;
 
@@ -527,6 +528,7 @@
             const cur = document.getElementById('settingsCurrentPass').value;
             const neu = document.getElementById('settingsNewPass').value;
             const conf = document.getElementById('settingsConfirmPass').value;
+            await boCloudRefresh();
             const fresh = getCurrentClient();
             if (!fresh || !fresh.me) return;
 

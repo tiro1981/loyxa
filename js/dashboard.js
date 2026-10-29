@@ -34,12 +34,26 @@ function _boDashboardInit() {
     }
 
     /* ---------- OBUNALAR (ko'p-ilova model) ---------- */
+    // MUHIM: `client` sahifa ochilgandagi nusxa. Uni to'g'ridan-to'g'ri yozsak, shu orada
+    // (boshqa qurilmada / "parolni tiklash"da) o'zgargan parol ESKI parolga qaytib qolardi
+    // va mijoz to'g'ri parol bilan kira olmasdi. Shuning uchun avval serverdan eng so'nggi
+    // ro'yxatni olamiz va parol/username'ni serverdagi qiymatdan saqlab qolamiz.
     function persistClient() {
-        try {
-            const subs = boCloudGet('bo_subscriptions', []);
-            const idx = subs.findIndex(s => s.id === resolvedClientId);
-            if (idx >= 0) { subs[idx] = client; boCloudSet('bo_subscriptions', subs); }
-        } catch (e) { console.error('persistClient', e); }
+        const apply = () => {
+            try {
+                const subs = boCloudGet('bo_subscriptions', []);
+                const idx = subs.findIndex(s => s.id === resolvedClientId);
+                if (idx < 0) return;
+                const cur = subs[idx];
+                if (cur !== client) {
+                    client.password = cur.password;
+                    client.username = cur.username;
+                }
+                subs[idx] = client;
+                boCloudSet('bo_subscriptions', subs);
+            } catch (e) { console.error('persistClient', e); }
+        };
+        boCloudRefresh().then(apply, apply);
     }
 
     // Eski bitta-ilova modelidan ko'p-ilova (subscriptions[]) ga migratsiya

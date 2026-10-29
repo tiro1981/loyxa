@@ -40,6 +40,9 @@ window.Cloud = (function () {
         client: "global",
         mode: _sb ? "cloud" : "local",   // 'cloud' = Supabase; 'local' = localStorage fallback
         _cache: {},
+        _pending: new Set(),   // hali serverga yetib bormagan yozuvlar (refresh ularni kutadi)
+        _seq: 0,               // yozuvlar hisoblagichi
+        _writeSeq: {},         // key -> oxirgi yozuv raqami (refresh paytida yozilganini yo'qotmaslik uchun)
 
         _lsKey(key) { return "cloud__" + this.app + "__" + this.client + "__" + key; },
 
@@ -53,7 +56,7 @@ window.Cloud = (function () {
             }
             this.mode = "cloud";
             try {
-                const res = await this._fetchOnce(4000);
+                const res = await this._fetchOnce(8000);
                 if (res.__timeout || res.error) {
                     console.warn("[Cloud] init: server javob bermadi — localStorage rejimida davom etamiz.");
                     this.mode = "local";
@@ -101,6 +104,38 @@ window.Cloud = (function () {
             console.warn("[Cloud] fon rejimida qayta urinishlar tugadi — server bilan bog'lanib bo'lmadi.");
         },
 
+        // Serverdan ENG SO'NGGI ma'lumotni qayta yuklaydi (kesh faqat sahifa ochilganda
+        // bir marta to'ldiriladi — boshqa qurilmada parol o'zgargan / yangi mijoz ro'yxatdan
+        // o'tgan bo'lsa, eskirgan kesh "parol noto'g'ri" xatosiga olib kelardi).
+        // Login va muhim yozuvlardan OLDIN chaqiriladi. Muvaffaqiyatli bo'lsa true.
+        async refresh(timeoutMs = 8000) {
+            if (!_sb) return false;
+            if (this._pending.size) {
+                try { await Promise.allSettled(Array.from(this._pending)); } catch (e) {}
+            }
+            const startSeq = this._seq;
+            const res = await this._fetchOnce(timeoutMs);
+            if (res.__timeout || res.error || !res.data) return false;
+            const c = {};
+            res.data.forEach((r) => { c[r.key] = r.value; });
+            // Yuklash davomida yozilgan kalitlarni saqlab qolamiz
+            Object.keys(this._writeSeq).forEach((k) => {
+                if (this._writeSeq[k] > startSeq) {
+                    if (k in this._cache) c[k] = this._cache[k]; else delete c[k];
+                }
+            });
+            this._cache = c;
+            this.mode = "cloud";
+            return true;
+        },
+
+        _track(key, promise) {
+            this._writeSeq[key] = ++this._seq;
+            const p = Promise.resolve(promise).catch(() => {});
+            this._pending.add(p);
+            p.finally(() => this._pending.delete(p));
+        },
+
         // SINXRON o'qish (localStorage.getItem o'rnida)
         get(key, fallback = null) {
             if (this.mode === "cloud") {
@@ -116,12 +151,12 @@ window.Cloud = (function () {
         set(key, value) {
             if (this.mode === "cloud") {
                 this._cache[key] = value;
-                _sb.from("app_state")
+                this._track(key, _sb.from("app_state")
                     .upsert(
                         { app: this.app, client_id: this.client, key, value, updated_at: new Date().toISOString() },
                         { onConflict: "app,client_id,key" }
                     )
-                    .then(({ error }) => { if (error) console.error("[Cloud] set:", error); });
+                    .then(({ error }) => { if (error) console.error("[Cloud] set:", error); }));
             } else {
                 try { localStorage.setItem(this._lsKey(key), JSON.stringify(value)); }
                 catch (e) { console.warn("[Cloud] set (local):", e); }
@@ -132,9 +167,9 @@ window.Cloud = (function () {
         remove(key) {
             if (this.mode === "cloud") {
                 delete this._cache[key];
-                _sb.from("app_state").delete()
+                this._track(key, _sb.from("app_state").delete()
                     .eq("app", this.app).eq("client_id", this.client).eq("key", key)
-                    .then(({ error }) => { if (error) console.error("[Cloud] remove:", error); });
+                    .then(({ error }) => { if (error) console.error("[Cloud] remove:", error); }));
             } else {
                 try { localStorage.removeItem(this._lsKey(key)); } catch (e) {}
             }

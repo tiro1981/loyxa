@@ -187,6 +187,7 @@ function _boAdminInit() {
     document.getElementById('clientEditForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('editClientId').value;
+        await boCloudRefresh();   // eskirgan ro'yxat bilan boshqa mijozlar parolini ustidan yozmaslik uchun
         const subs = getClients();
         const idx = subs.findIndex(s => s.id === id);
         if (idx < 0) return;
@@ -211,7 +212,8 @@ function _boAdminInit() {
     function deleteClient(id) {
         const client = getClients().find(c => c.id === id);
         if (!client) return;
-        confirmAction(`${client.businessName} o'chirilsinmi?`, "Mijoz va uning ilovasi to'liq o'chiriladi.", () => {
+        confirmAction(`${client.businessName} o'chirilsinmi?`, "Mijoz va uning ilovasi to'liq o'chiriladi.", async () => {
+            await boCloudRefresh();
             const subs = getClients().filter(c => c.id !== id);
             boCloudSet('bo_subscriptions', subs);
             renderClients();
@@ -444,6 +446,7 @@ function _boAdminInit() {
         Object.keys(soc).forEach(id => { const el = document.getElementById(id); if (el) el.value = social[soc[id]] || ''; });
     }
     document.getElementById('saveAdmin').addEventListener('click', async () => {
+        await boCloudRefresh();
         const a = boCloudGet('bo_admin', {});
         a.name = document.getElementById('setAdmName').value.trim();
         a.username = document.getElementById('setAdmUser').value.trim();

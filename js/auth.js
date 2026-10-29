@@ -68,6 +68,7 @@ function assignAppByParam(clientId) {
 async function finishRegistration(username, phone, password) {
     try {
         const passwordHash = await hashPassword(password);
+        await boCloudRefresh();   // eskirgan kesh bilan boshqa mijozlarni o'chirib yubormaslik uchun
         const subs = boCloudGet('bo_subscriptions', []);
         // MUHIM: bu ID Supabase'da har bir do'konning ma'lumotini ("app_state" jadvali)
         // ajratib turadi. Ilgari "1000 + subs.length + 1" edi — bu deyarli har bir
@@ -354,6 +355,7 @@ function openForgotNewPassStep(phone) {
             return;
         }
         try {
+            await boCloudRefresh();
             const subs = boCloudGet('bo_subscriptions', []);
             const user = subs.find((s) => digits(s.phone) === digits(phone));
             if (!user) {
@@ -430,13 +432,14 @@ function _boAuthInit() {
     attachPhoneMask(forgotPhoneInput);
     const forgotSendBtn = document.getElementById('forgotSendCode');
     if (forgotSendBtn) {
-        forgotSendBtn.addEventListener('click', () => {
+        forgotSendBtn.addEventListener('click', async () => {
             const phone = (forgotPhoneInput && forgotPhoneInput.value || '').trim();
             if (digits(phone).length < 9) {
                 window.showToast && window.showToast("To'g'ri telefon raqam kiriting", 'error');
                 return;
             }
             try {
+                await boCloudRefresh();
                 const subs = boCloudGet('bo_subscriptions', []);
                 const user = subs.find((s) => digits(s.phone) === digits(phone));
                 if (!user) {
@@ -510,6 +513,12 @@ function _boAuthInit() {
             const loginDigits = digits(login);
 
             try {
+                // MUHIM: Cloud keshi faqat sahifa ochilganda bir marta yuklanadi. Server sekin
+                // javob bergan (init timeout -> localStorage rejimi) yoki parol boshqa qurilmada
+                // o'zgargan bo'lsa, eskirgan kesh bilan TO'G'RI parol ham "noto'g'ri" chiqardi.
+                // Shuning uchun tekshirishdan oldin serverdan eng so'nggi ma'lumotni olamiz.
+                await boCloudRefresh();
+
                 // ---- MAXFIY ADMIN KIRISHI ----
                 // Oddiy kirish formasiga admin login/parol terilsa — boshqaruv paneli ochiladi.
                 // (Alohida ko'rinadigan "Admin" tugmasi yo'q — maxfiy)
@@ -596,7 +605,7 @@ function _boAuthInit() {
         const phoneInput = registerForm.querySelector('[name="phone"]');
         attachPhoneMask(phoneInput);
 
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = registerForm.username.value.trim();
             const phone = registerForm.phone.value.trim();
@@ -630,6 +639,7 @@ function _boAuthInit() {
             }
 
             try {
+                await boCloudRefresh();
                 const subs = boCloudGet('bo_subscriptions', []);
 
                 // Foydalanuvchi nomi band emasligini tekshirish (katta-kichik harf farqsiz)
@@ -662,6 +672,7 @@ function _boAuthInit() {
             const password = adminForm.password.value;
 
             try {
+                await boCloudRefresh();
                 const admin = boCloudGet('bo_admin', {});
                 const check = user === admin.username ? await verifyPassword(password, admin.password) : { ok: false };
                 if (check.ok) {
