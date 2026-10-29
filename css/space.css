@@ -192,7 +192,8 @@ body.auth-body.space {
     background: transparent;
     color: var(--mrd-ink);
 }
-.auth-body.space .auth-wrap { grid-template-columns: minmax(0, 1fr) minmax(440px, 540px); }
+/* Ekran teng ikkiga: chapda animatsiya, o'ngda forma (yarmining markazida) */
+.auth-body.space .auth-wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
 /* Chap panel — shaffof; matn chapda, shakl o'ng yarmida */
 .auth-body.space .auth-side { background: transparent; padding: 40px 56px; }
@@ -206,10 +207,10 @@ body.auth-body.space {
 .auth-body.space .auth-side-decor i { color: #A99CFF; }
 .auth-body.space .auth-side-visual {
     position: absolute;
-    top: 12%;
-    bottom: 12%;
-    right: 2%;
-    width: 46%;
+    top: 14%;
+    bottom: 8%;
+    left: 6%;
+    right: 6%;
     pointer-events: none;
 }
 
@@ -256,18 +257,6 @@ body.auth-body.space {
 .auth-body.space .demo-hint { background: rgba(109,91,255,.12); color: #C9C1FF; }
 .auth-body.space .demo-hint code { background: rgba(109,91,255,.22); color: #fff; }
 
-/* O'rta ekran: chap panel tor — shakl matn ustiga tushmasin, uning ostida tursin */
-@media (max-width: 1299px) and (min-width: 901px) {
-    .auth-body.space .auth-side { padding: 36px 32px; }
-    .auth-body.space .auth-side-visual {
-        position: relative;
-        top: auto; bottom: auto; right: auto;
-        width: 100%;
-        height: 30vh;
-        min-height: 200px;
-        flex-shrink: 0;
-    }
-}
 @media (max-width: 900px) {
     .auth-body.space .auth-wrap { grid-template-columns: minmax(0, 1fr); }
     .auth-body.space .auth-side { padding: 24px 20px 8px; }

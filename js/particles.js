@@ -291,7 +291,8 @@
         return {
             x: (cx / vw - 0.5) * visW,
             y: -(cy / vh - 0.5) * visH,
-            s: Math.min(1.15, (r.width / vw) * visW / 5.6, (r.height / vh) * visH / 5.2),
+            // globus orbitasi bilan ~7.2 birlik keng — shakl joyiga to'liq sig'sin
+            s: Math.min(1.0, (r.width / vw) * visW / 7.4, (r.height / vh) * visH / 6.2),
             ry: -0.5, o: isNaN(dim) ? 1 : dim,
         };
     }
