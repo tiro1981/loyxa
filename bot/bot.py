@@ -48,7 +48,7 @@ from aiohttp import web, ClientSession, ClientTimeout
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8843518782:AAHiVrJ7EDtLkAsMw1LviuNlTv0ZB7cyDNw")
 HTTP_PORT = int(os.getenv("PORT", "3344"))
 # Standart — faqat localhost (admin panel shu mashinada). Internetga ochish uchun HOST=0.0.0.0
-HTTP_HOST = os.getenv("HOST", "127.0.0.1")
+HTTP_HOST = os.getenv("IP") or os.getenv("HOST", "127.0.0.1")  # AlwaysData IP env (IPv6) ni afzal ko'radi
 DB_FILE = Path(__file__).parent / "bot-db.json"
 # Bot bilan muloqot qilgan foydalanuvchilar (broadcast uchun)
 USERS_FILE = Path(__file__).parent / "bot-users.json"
