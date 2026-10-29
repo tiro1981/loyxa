@@ -221,7 +221,12 @@
 
 /* Til tanlash — globus tugmasi + ochiladigan ro'yxat */
 .mrd .lang-switch { position: relative; }
-.mrd .lang-trigger { width: auto; padding: 0 12px; gap: 7px; }
+.mrd .lang-trigger {
+    width: auto; padding: 0 12px; gap: 7px;
+    transition: border-color .2s, color .2s, transform .2s ease;
+}
+/* qo'shni "Kirish"/"Ro'yxatdan o'tish" tugmalari kabi yuqoriga ko'tariladi */
+.mrd .lang-trigger:hover { transform: translateY(-2px); }
 .mrd .lang-trigger .lang-code { font-size: 13px; font-weight: 700; letter-spacing: .02em; }
 .mrd .lang-switch.open .lang-trigger { border-color: var(--mrd-blue); color: var(--mrd-blue); }
 .mrd .lang-menu {
