@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="css/style.css?v=7" />
     <link rel="stylesheet" href="css/settings.css?v=7" />
     <link rel="stylesheet" href="css/meridian.css?v=14" />
-    <link rel="stylesheet" href="css/space.css?v=10" />
+    <link rel="stylesheet" href="css/space.css?v=11" />
     <script>
       try {
         const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
@@ -229,7 +229,7 @@
       </div>
     </div>
 
-    <!-- APPS SECTION — fondagi zarrachalar tanlangan ilova belgisiga yig'iladi -->
+    <!-- APPS SECTION — orbita: markazda zarrachali yadro, atrofida ilovalar -->
     <section class="apps-section" id="apps">
       <div class="container">
         <div class="section-head reveal">
@@ -244,11 +244,12 @@
         </div>
 
         <div class="app-stage reveal" id="appStage">
-          <!-- Bo'sh joy: shu yerda zarrachalardan ilova belgisi yig'iladi (js/particles.js) -->
-          <div class="as-visual" aria-hidden="true"></div>
+          <!-- Markazda zarrachalardan yadro (js/particles.js), atrofida ilova tugunlari -->
+          <div class="as-visual" id="appOrbit" role="tablist" aria-label="Ilovalar">
+            <div class="orbit-ring" aria-hidden="true"></div>
+          </div>
           <div class="as-card" id="appCard" aria-live="polite"></div>
         </div>
-        <div class="as-chips" id="appChips" role="tablist" aria-label="Ilovalar"></div>
 
         <div class="custom-price-note reveal">
           <i class="fa-solid fa-gift"></i>
@@ -428,7 +429,7 @@
 
     <!-- Fondagi 3D zarrachalar (three.js) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/particles.js?v=7"></script>
+    <script src="js/particles.js?v=8"></script>
     <script src="js/settings.js?v=10"></script>
     <script src="js/main.js?v=12"></script>
     <script>
@@ -519,28 +520,37 @@
         ];
 
         const stage = document.getElementById("appStage");
+        const orbit = document.getElementById("appOrbit");
         const card = document.getElementById("appCard");
-        const chipsWrap = document.getElementById("appChips");
-        if (!stage || !card || !chipsWrap) return;
+        if (!stage || !orbit || !card) return;
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const N = APPS.length, STEP = (Math.PI * 2) / N, FRONT = Math.PI / 2;
 
-        const chips = APPS.map((a, i) => {
+        // Orbitadagi tugunlar
+        const nodes = APPS.map((a, i) => {
           const b = document.createElement("button");
           b.type = "button";
-          b.className = "as-chip";
+          b.className = "orbit-node";
           b.setAttribute("role", "tab");
+          b.setAttribute("aria-label", a.name);
           b.style.setProperty("--acc", a.acc);
-          b.innerHTML = `<i class="fa-solid ${a.icon}"></i><span>${a.name}</span>`;
+          b.innerHTML = `<span class="on-dot"><i class="fa-solid ${a.icon}"></i></span><span class="on-label">${a.name}</span>`;
           b.addEventListener("click", () => { go(i); restart(); });
-          chipsWrap.appendChild(b);
+          orbit.appendChild(b);
           return b;
         });
 
-        let active = -1;
+        // Burchak: tanlangan ilova doim oldinda (pastda, burchak = 90°)
+        let angle = FRONT, target = FRONT, active = -1, last = performance.now();
         function go(i) {
-          const n = APPS.length;
-          i = ((i % n) + n) % n;
+          i = ((i % N) + N) % N;
           if (i === active) return;
+          // eng qisqa yo'l bilan aylanamiz
+          let want = FRONT - i * STEP;
+          while (want - target > Math.PI) want -= Math.PI * 2;
+          while (want - target < -Math.PI) want += Math.PI * 2;
+          target = want;
+          if (reduce) angle = target;
           active = i;
           const a = APPS[i];
           card.style.setProperty("--acc", a.acc);
@@ -555,11 +565,27 @@
                 <a href="kirish.html?tab=register" class="btn btn-primary">Bepul boshlash <i class="fa-solid fa-arrow-right" style="font-size: 12px"></i></a>
               </div>
             </div>`;
-          chips.forEach((c, k) => {
-            c.classList.toggle("active", k === i);
-            c.setAttribute("aria-selected", k === i ? "true" : "false");
+          nodes.forEach((n, k) => {
+            n.classList.toggle("active", k === i);
+            n.setAttribute("aria-selected", k === i ? "true" : "false");
           });
-          if (window.BOParticles) window.BOParticles.setApp(a.key);
+        }
+
+        // Har kadr: tugunlarni ellips bo'ylab joylash (old tomondagilar katta va yorqin)
+        function place(now) {
+          const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+          angle += (target - angle) * Math.min(1, dt * 3.2);
+          const w = orbit.clientWidth, h = orbit.clientHeight;
+          const rx = w * 0.42, ry = h * 0.3, cx = w / 2, cy = h / 2;
+          nodes.forEach((n, i) => {
+            const t = angle + i * STEP, depth = Math.sin(t);     // -1 (orqa) .. 1 (old)
+            const k = (depth + 1) / 2;
+            n.style.transform = `translate(${cx + Math.cos(t) * rx}px, ${cy + depth * ry}px) translate(-50%, -50%) scale(${0.68 + k * 0.42})`;
+            n.style.opacity = (0.4 + k * 0.6).toFixed(2);
+            n.style.zIndex = Math.round(k * 10) + (depth > 0 ? 10 : 0);
+            n.classList.toggle("behind", depth < -0.2);
+          });
+          requestAnimationFrame(place);
         }
 
         /* avto-almashish: bo'lim ko'rinib turganda, sichqoncha ustida bo'lmasa */
@@ -574,6 +600,8 @@
         } else { inView = true; start(); }
 
         go(0);
+        angle = target;
+        requestAnimationFrame(place);
       })();
     </script>
 

@@ -407,7 +407,7 @@ html:has(body.dash-body.space) {
 
 /* ============================================================
    ILOVALAR VITRINASI (bosh sahifa) — chapda zarrachalardan yig'ilgan
-   ilova belgisi (.as-visual — bo'sh joy), o'ngda shisha karta, ostida chiplar
+   orbita (.as-visual: markazda zarrachali yadro, atrofida ilova tugunlari), o'ngda shisha karta
    ============================================================ */
 .mrd.space .app-stage {
     display: grid;
@@ -448,33 +448,53 @@ html:has(body.dash-body.space) {
 .mrd.space .as-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 .mrd.space .as-actions .btn { flex: 1 1 auto; }
 
-.mrd.space .as-chips {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 28px;
+/* Orbita: DOM halqa + ilova tugunlari (joylashuvi index.html skriptida) */
+.mrd.space .as-visual { position: relative; }
+.mrd.space .orbit-ring {
+    position: absolute;
+    left: 8%; right: 8%; top: 20%; bottom: 20%;
+    border-radius: 50%;
+    border: 1px dashed rgba(169,156,255,.35);
+    box-shadow: 0 0 60px -10px rgba(109,91,255,.35) inset;
+    pointer-events: none;
 }
-.mrd.space .as-chip {
+.mrd.space .orbit-node {
     --acc: #A99CFF;
-    display: inline-flex; align-items: center; gap: 9px;
-    padding: 10px 16px;
-    border-radius: 100px;
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(255,255,255,.04);
-    color: #C5C9DB;
-    font: inherit; font-size: 14px; font-weight: 700;
+    position: absolute;
+    left: 0; top: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: none; border: 0; padding: 0;
+    font: inherit; color: #C5C9DB;
     cursor: pointer;
-    transition: border-color .2s, color .2s, background .2s, transform .2s;
+    will-change: transform, opacity;
 }
-.mrd.space .as-chip i { color: var(--acc); }
-.mrd.space .as-chip:hover { transform: translateY(-2px); color: #fff; }
-.mrd.space .as-chip.active {
-    color: #fff;
+.mrd.space .on-dot {
+    width: 66px; height: 66px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(12,13,24,.78);
+    border: 1px solid color-mix(in srgb, var(--acc) 45%, transparent);
+    color: var(--acc);
+    font-size: 24px;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px -14px var(--acc);
+    transition: box-shadow .3s, border-color .3s, background .3s;
+}
+.mrd.space .on-label {
+    font-size: 13px; font-weight: 700; white-space: nowrap;
+    padding: 3px 10px; border-radius: 100px;
+    background: rgba(5,6,11,.6);
+    transition: color .3s;
+}
+.mrd.space .orbit-node:hover .on-dot { border-color: var(--acc); }
+.mrd.space .orbit-node.active { color: #fff; }
+.mrd.space .orbit-node.active .on-dot {
+    background: color-mix(in srgb, var(--acc) 22%, rgba(12,13,24,.85));
     border-color: var(--acc);
-    background: color-mix(in srgb, var(--acc) 16%, transparent);
-    box-shadow: 0 8px 24px -12px var(--acc);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--acc) 16%, transparent), 0 0 40px -4px var(--acc);
 }
+.mrd.space .orbit-node.behind .on-label { opacity: 0; }
 
 @media (max-width: 900px) {
     .mrd.space .app-stage { grid-template-columns: minmax(0, 1fr); gap: 8px; min-height: 0; }
@@ -483,8 +503,8 @@ html:has(body.dash-body.space) {
     .mrd.space .as-card h3 { font-size: 22px; }
 }
 @media (max-width: 480px) {
-    .mrd.space .as-visual { height: 250px; }
-    .mrd.space .as-chips { gap: 8px; }
-    .mrd.space .as-chip { padding: 8px 12px; font-size: 13px; }
+    .mrd.space .as-visual { height: 280px; }
+    .mrd.space .on-dot { width: 52px; height: 52px; font-size: 19px; }
+    .mrd.space .on-label { font-size: 11.5px; padding: 2px 8px; }
     .mrd.space .as-actions .btn { flex-basis: 100%; }
 }
