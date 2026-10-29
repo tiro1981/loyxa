@@ -364,8 +364,32 @@
             });
         });
 
-        document.querySelectorAll('.lang-card').forEach(c => {
+        document.querySelectorAll('.lang-card, .lang-opt').forEach(c => {
             c.classList.toggle('active', c.dataset.lang === lang);
+            if (c.classList.contains('lang-opt')) c.setAttribute('aria-checked', c.dataset.lang === lang ? 'true' : 'false');
+        });
+        document.querySelectorAll('[data-lang-current]').forEach(el => { el.textContent = lang.toUpperCase(); });
+    }
+
+    /* ============ TIL TANLASH (navbar dropdown) ============ */
+    // `data-lang-switch` — globus tugmasi; bosilganda tillar ro'yxati ochiladi.
+    function setupLangSwitch() {
+        document.querySelectorAll('[data-lang-switch]').forEach(wrap => {
+            const btn = wrap.querySelector('.lang-trigger');
+            const setOpen = (open) => {
+                wrap.classList.toggle('open', open);
+                btn?.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+            btn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(!wrap.classList.contains('open'));
+            });
+            wrap.querySelectorAll('.lang-opt').forEach(opt => {
+                opt.addEventListener('click', () => { applyLang(opt.dataset.lang); setOpen(false); });
+            });
+            document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) setOpen(false); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
         });
     }
 
@@ -397,6 +421,7 @@
         document.querySelectorAll('.lang-card').forEach(card => {
             card.addEventListener('click', () => applyLang(card.dataset.lang));
         });
+        setupLangSwitch();
 
         // Akkordion — sozlamalar bo'limlari sarlavhasiga bosilganda ochiladi/yopiladi
         document.querySelectorAll('.settings-section[data-accordion] > .settings-label').forEach(label => {

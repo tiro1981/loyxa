@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=9">
+    <link rel="stylesheet" href="css/meridian.css?v=10">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -50,9 +50,16 @@
             <div class="nav-actions">
                 <a href="kirish.html" class="btn btn-soft btn-sm" data-i18n="nav.login">Kirish</a>
                 <a href="kirish.html?tab=register" class="btn btn-primary btn-sm" data-i18n="nav.register">Ro'yxatdan o'tish</a>
-                <button class="settings-trigger" data-settings-open aria-label="Settings" title="Sozlamalar">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
+                <div class="lang-switch" data-lang-switch>
+                    <button type="button" class="settings-trigger lang-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Til / Язык / Language" title="Til">
+                        <i class="fa-solid fa-globe"></i><span class="lang-code" data-lang-current>UZ</span>
+                    </button>
+                    <div class="lang-menu" role="menu">
+                        <button type="button" class="lang-opt" data-lang="uz" role="menuitemradio"><span class="lang-flag">🇺🇿</span><span>O'zbekcha</span><i class="fa-solid fa-check"></i></button>
+                        <button type="button" class="lang-opt" data-lang="ru" role="menuitemradio"><span class="lang-flag">🇷🇺</span><span>Русский</span><i class="fa-solid fa-check"></i></button>
+                        <button type="button" class="lang-opt" data-lang="en" role="menuitemradio"><span class="lang-flag">🇬🇧</span><span>English</span><i class="fa-solid fa-check"></i></button>
+                    </div>
+                </div>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -334,7 +341,7 @@
         </div>
     </div>
 
-    <script src="js/settings.js?v=9"></script>
+    <script src="js/settings.js?v=10"></script>
     <script src="js/main.js?v=12"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
