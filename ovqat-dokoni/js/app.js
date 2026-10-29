@@ -204,6 +204,15 @@ Store.on("orders:change", () => {
 // Cloud FONDA yangilanganda (server ma'lumoti kech kelgach) — katalogni qayta yuklab,
 // joriy ko'rinishni qayta chizamiz. Sahifa darrov ochiladi, so'ng eng yangi do'kon
 // ma'lumoti sokin yangilanadi ("qotish" yo'q).
+// Admin javoblari sahifani YANGILAMASDAN keladi — "messages" serverdan muntazam tekshiriladi
+if (window.Cloud && Cloud.watch) {
+  Cloud.watch(["messages"], (key, value) => {
+    Cloud.adopt(key, value);
+    const cur = (navStack[navStack.length - 1] || {}).view;
+    if (cur === "chat" && typeof window.__ovqatChatRefresh === "function") window.__ovqatChatRefresh();
+  });
+}
+
 window.addEventListener("cloud:updated", () => {
   try {
     if (window.DATA && DATA.reloadCatalog) DATA.reloadCatalog();

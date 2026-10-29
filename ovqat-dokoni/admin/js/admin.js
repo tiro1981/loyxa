@@ -1279,4 +1279,30 @@
       render();
     } catch (e) { console.error("cloud:updated (admin):", e); }
   });
+
+  // Mijoz yozgan xabarlar sahifani YANGILAMASDAN keladi: "messages" kalitini serverdan
+  // muntazam tekshiramiz, o'zgarsa nishon (badge) va ochiq suhbat qayta chiziladi.
+  if (window.Cloud && Cloud.watch) {
+    Cloud.watch(["messages"], (key, value) => {
+      const before = loadMessages().length;
+      Cloud.adopt(key, value);
+      const after = loadMessages();
+      buildNav();
+      if (activeSection === "messages") {
+        // yozilayotgan javob va mobil "suhbat ochiq" holati saqlanib qolsin
+        const inp = el("chatInput");
+        const draft = inp ? inp.value : "";
+        const hadFocus = inp && document.activeElement === inp;
+        const convOpen = el("chatLayout") && el("chatLayout").classList.contains("show-conv");
+        render();
+        if (convOpen && el("chatLayout")) el("chatLayout").classList.add("show-conv");
+        const ni = el("chatInput");
+        if (ni) { ni.value = draft; if (hadFocus) ni.focus(); }
+        const body = el("convBody");
+        if (body) body.scrollTop = body.scrollHeight;
+      }
+      const last = after[after.length - 1];
+      if (after.length > before && last && last.from === "user") toast("Yangi xabar: " + String(last.text || "").slice(0, 40), "info");
+    });
+  }
 })();

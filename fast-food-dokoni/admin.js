@@ -935,6 +935,29 @@ window.addEventListener('cloud:updated', () => {
   } catch (err) { console.error('cloud:updated (admin):', err); }
 });
 
+// ========== JONLI XABARLAR (sahifani yangilamasdan) ==========
+// Mijoz yozgan xabar serverga tushgach, admin panel uni o'zi oladi: tb_messages
+// muntazam tekshiriladi, o'zgarsa ro'yxat, nishonlar va ochiq suhbat qayta chiziladi.
+if (window.Cloud && Cloud.watch) {
+  Cloud.watch(['tb_messages'], (key, value) => {
+    if (!DB.get('tb_admin_session')) return;
+    const unreadBefore = DB.get('tb_messages', []).filter(m => m.unread).length;
+    Cloud.adopt(key, value);
+    try { renderMessages(); } catch (e) { console.error('renderMessages:', e); }
+    try { renderDashboard(); } catch (e) { console.error('renderDashboard:', e); }
+    const body = document.getElementById('chatBody');
+    if (activeMsgId && body) {
+      const m = DB.get('tb_messages', []).find(x => x.id === activeMsgId);
+      if (m) {
+        body.innerHTML = m.messages.map(b => `<div class="bubble ${b.from === 'admin' ? 'out' : 'in'}">${b.text}</div>`).join('');
+        body.scrollTop = body.scrollHeight;
+      }
+    }
+    const unreadAfter = DB.get('tb_messages', []).filter(m => m.unread).length;
+    if (unreadAfter > unreadBefore) toast('Yangi xabar keldi 💬');
+  });
+}
+
 // ========== AUTO-REFRESH (yangi buyurtmalar uchun) ==========
 let lastOrderCount = DB.get('tb_orders', []).length;
 setInterval(() => {

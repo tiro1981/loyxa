@@ -111,6 +111,33 @@ function initAdmin() {
         if (currentPage === 'messages') renderMessageThreads();
         if (currentPage === 'messages' && currentChatKey) renderConversation(currentChatKey, false);
     });
+
+    // Mijoz yozgan xabar (va yangi buyurtma) sahifani YANGILAMASDAN keladi: "store"
+    // serverdan muntazam tekshiriladi. Mijoz tomoni yozadigan qismlar (chats, orders,
+    // customers) admin xotirasidagi data'ga qo'shiladi — admin keyingi saqlashda ularni
+    // eski nusxa bilan bosib ketmaydi.
+    if (window.Cloud && Cloud.watch) {
+        Cloud.watch(['store'], (key, remote) => {
+            if (!remote || typeof remote !== 'object') return;
+            const unread = () => (data.chats || []).reduce((s, c) => s + (c.unreadAdmin || 0), 0);
+            const before = { chats: JSON.stringify(data.chats || []), orders: JSON.stringify(data.orders || []), unread: unread() };
+            ['chats', 'orders', 'customers'].forEach(k => { if (k in remote) data[k] = remote[k]; });
+            Cloud.adopt(key, remote);
+            if (JSON.stringify(data.chats || []) !== before.chats) {
+                updateMsgBadge();
+                setupNotifications();
+                if (currentPage === 'messages') renderMessageThreads();
+                if (currentPage === 'messages' && currentChatKey) renderConversation(currentChatKey, false);
+                if (unread() > before.unread) toast('Yangi xabar keldi 💬', 'info');
+            }
+            if (JSON.stringify(data.orders || []) !== before.orders) {
+                updateNavBadge();
+                setupNotifications();
+                if (currentPage === 'orders') renderOrders();
+                if (currentPage === 'dashboard') renderDashboard();
+            }
+        });
+    }
 }
 
 function setupDropdown(btnId, menuId) {

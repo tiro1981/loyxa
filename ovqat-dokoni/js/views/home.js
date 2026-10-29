@@ -1,5 +1,5 @@
 /* Bosh sahifa (home tab) — manzil header, qidiruv, reklama karuseli,
-   kategoriya chiplari, chegirmalar va mashhur mahsulotlar. */
+   kategoriya chiplari, chegirmalar va barcha mahsulotlar. */
 window.Views = window.Views || {};
 
 window.Views.home = function (root) {
@@ -13,9 +13,7 @@ window.Views.home = function (root) {
   const cats = DATA.categories || [];
   const deals = (DATA.products || []).filter((p) => p.oldPrice);
 
-  // Mashhur mahsulotlar avval, keyin qolganlari (takrorsiz)
   const all = DATA.products || [];
-  const popularFirst = all.slice().sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
 
   // --- HTML ---
   root.innerHTML = `
@@ -57,10 +55,10 @@ window.Views.home = function (root) {
 
       <section class="section">
         <div class="section-head">
-          <div class="section-title">⭐ Mashhur mahsulotlar</div>
+          <div class="section-title">🛒 Barcha mahsulotlar</div>
         </div>
         <div class="product-grid stagger">
-          ${popularFirst.map((p) => Components.productCard(p)).join("")}
+          ${all.map((p) => Components.productCard(p)).join("")}
         </div>
       </section>
     </div>

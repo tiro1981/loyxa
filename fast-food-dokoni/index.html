@@ -130,7 +130,7 @@
 
       <!-- Popular foods -->
       <div class="section-head">
-        <h3>Mashhur taomlar</h3>
+        <h3>Barcha taomlar</h3>
         <a href="#" class="see-all">Hammasi</a>
       </div>
       <div class="food-grid" id="foodGrid"><!-- JS render --></div>
@@ -398,7 +398,7 @@
 
   <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="cloud.js?v=4"></script>
+  <script src="cloud.js?v=6"></script>
   <!-- Boot-loader: AVVAL Cloud.init (serverdagi menyu/buyurtma/sozlama), keyin script.js.
        CLIENT_ID — ?client= yoki bo_session orqali (QR tizimi o'zgarmaydi). -->
   <script>
@@ -411,7 +411,7 @@
         || "demo";
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("fastfood", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-      for (const src of ["uzbekistan-regions.js", "script.js?v=8"]) {
+      for (const src of ["uzbekistan-regions.js", "script.js?v=9"]) {
         await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=6"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();

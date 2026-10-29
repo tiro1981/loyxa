@@ -843,6 +843,14 @@ $('uchatForm').addEventListener('submit', (e) => {
   renderChat();
 });
 
+// Admin javobi sahifani YANGILAMASDAN keladi — tb_messages serverdan muntazam tekshiriladi
+if (window.Cloud && Cloud.watch) {
+  Cloud.watch(['tb_messages'], (key, value) => {
+    Cloud.adopt(key, value);
+    if ($('chatModal') && $('chatModal').classList.contains('show') && currentUser) renderChat();
+  });
+}
+
 // ========== PROMO / FILTER ==========
 // (Reklama promo-banneri olib tashlangani uchun uning tugma ishlovchisi ham olib tashlandi)
 document.querySelectorAll('.see-all').forEach(a => a.addEventListener('click', (e) => {

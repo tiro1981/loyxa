@@ -393,21 +393,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         }
     }
 
-    function renderTrending() {
-        const top = [...data.products].filter(p => p.active && p.stock > 0).sort((a,b) => b.sold - a.sold).slice(0, 8);
-        document.getElementById('trendingScroll').innerHTML = top.map(p => `
-            <div class="trend-card" data-pid="${p.id}">
-                <div class="img">
-                    <span class="fire-badge">🔥 Hit</span>
-                    <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy">
-                </div>
-                <div class="body">
-                    <h4>${escapeHtml(p.name)}</h4>
-                    <div class="price">${money(p.price)}</div>
-                </div>
-            </div>`).join('');
-    }
-
     /* ============ PRODUCT DETAIL ============ */
     function openProductDetail(id) {
         const p = data.products.find(x => x.id === id);
@@ -737,7 +722,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     document.addEventListener('click', e => {
         const fav = e.target.closest('[data-fav]');
         const add = e.target.closest('[data-add]');
-        const card = e.target.closest('.p-card, .trend-card');
+        const card = e.target.closest('.p-card');
 
         if (fav) {
             e.stopPropagation();
@@ -746,7 +731,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
             else favorites.push(id);
             saveFavs();
             renderProductGrid();
-            renderTrending();
             const sheet = document.getElementById('productSheet');
             if (sheet.classList.contains('show')) openProductDetail(id);
             return;
@@ -835,16 +819,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         renderChips();
         renderProductGrid();
         updateFilterIndicator();
-    };
-
-    /* ============ SEE-ALL ============ */
-    // (Reklama banneri olib tashlangani uchun "heroCta" ishlovchisi ham olib tashlandi)
-    document.getElementById('seeAllTrending').onclick = () => {
-        fState.sort = 'popular';
-        renderProductGrid();
-        updateFilterIndicator();
-        document.getElementById('gridTitle').textContent = 'Mashhur mahsulotlar';
-        document.getElementById('gridTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     /* ============ NOTIFICATIONS ============ */
@@ -1393,13 +1367,21 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
         }
     });
 
+    // Admin javobi sahifani YANGILAMASDAN keladi: "store" serverdan muntazam tekshiriladi,
+    // o'zgarsa keshga olinib, yuqoridagi 'storage' ishlovchisi (chat, nishon, toast) chaqiriladi.
+    if (window.Cloud && Cloud.watch) {
+        Cloud.watch(['store'], (key, remote) => {
+            Cloud.adopt(key, remote);
+            window.dispatchEvent(new StorageEvent('storage', { key: STORE_KEY }));
+        });
+    }
+
     // Cloud FONDA yangilanganda (server ma'lumoti kelgach) — UI ni yangilaymiz.
     // Sahifa darrov ochiladi, so'ng eng yangi do'kon ma'lumoti sokin yangilanadi ("qotish" yo'q).
     window.addEventListener('cloud:updated', () => {
         try {
             data = Store.load();
             renderChips();
-            renderTrending();
             renderProductGrid();
             updateCartBadge();
             renderProfile();
@@ -1410,7 +1392,6 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
 
     /* ============ INIT ============ */
     renderChips();
-    renderTrending();
     renderProductGrid();
     updateCartBadge();
     updateFilterIndicator();

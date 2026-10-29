@@ -710,7 +710,7 @@
 
     <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="cloud.js?v=4"></script>
+    <script src="cloud.js?v=6"></script>
     <!-- Boot-loader: AVVAL Cloud.init, keyin script.js (Store) va admin.js.
          MUHIM ustuvorlik: ?client -> kiyim_last_client (oxirgi boshqarilgan do'kon)
          -> bo_session -> default. "kiyim_last_client" "bo_session"dan OLDIN turishi shart,
@@ -725,7 +725,7 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js?v=14", "admin.js?v=8"]) {
+        for (const src of ["script.js?v=15", "admin.js?v=9"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

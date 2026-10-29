@@ -54,11 +54,6 @@
 
         <!-- Reklama banneri (hero) olib tashlandi — endi to'g'ridan-to'g'ri mahsulotlar ko'rsatiladi -->
 
-        <div class="section-head">
-            <h3>Trend mahsulotlar</h3>
-            <button class="see-all" id="seeAllTrending">Hammasi <span>›</span></button>
-        </div>
-        <div class="trending-scroll" id="trendingScroll"></div>
 
         <div class="section-head">
             <h3 id="gridTitle">Barcha mahsulotlar</h3>
@@ -406,7 +401,7 @@
 
 <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cloud.js?v=4"></script>
+<script src="cloud.js?v=6"></script>
 <!-- Boot-loader: AVVAL Cloud.init (serverdagi do'kon ma'lumotini yuklaydi), keyin script.js.
      CLIENT_ID — ?client= yoki bo_session orqali (QR/subdomen tizimi o'zgarmaydi). -->
 <script>
@@ -422,7 +417,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kiyim", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=14"]) {
+    for (const src of ["uzbekistan-regions.js?v=4", "script.js?v=15"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

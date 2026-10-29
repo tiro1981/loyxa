@@ -38,6 +38,7 @@ window.Cloud = (function () {
     client: "demo",
     mode: _sb ? "cloud" : "local",   // 'cloud' = Supabase; 'local' = localStorage fallback
     _cache: {},
+    _lastSet: {},   // key -> oxirgi yozuv vaqti (watch yaqinda yozilganini bosib ketmasin)
 
     _lsKey(key) { return "cloud__" + this.app + "__" + this.client + "__" + key; },
 
@@ -180,6 +181,7 @@ window.Cloud = (function () {
 
     // Yozish (localStorage.setItem o'rnida) — keshni yangilab, fonda serverga yuboradi
     set(key, value) {
+      this._lastSet[key] = Date.now();
       if (this.mode === "cloud") {
         this._cache[key] = value;
         this._saveMirror(this._cache);   // mirror ham yangilanadi (keyingi ochilish darrov chizadi)
@@ -193,6 +195,42 @@ window.Cloud = (function () {
         try { localStorage.setItem(this._lsKey(key), JSON.stringify(value)); }
         catch (e) { console.warn("[Cloud] set (local):", e); }
       }
+    },
+
+    // ---- Jonli kuzatish: sahifani yangilamasdan yangi xabarlarni olish ----
+    // `keys` kalitlarini har `ms` millisekundda serverdan tekshiradi. Qiymat keshdagidan
+    // farq qilsa onChange(key, value) chaqiriladi (keshni chaqiruvchi Cloud.adopt bilan
+    // yangilaydi). Vkladkaga qaytilganda darrov tekshiradi (fonda brauzer taymerni sekinlatadi).
+    watch(keys, onChange, ms = 4000) {
+      if (!_sb) return () => {};
+      let busy = false;
+      const tick = async () => {
+        if (busy || this.mode !== "cloud") return;
+        busy = true;
+        try {
+          const { data, error } = await _sb
+            .from("app_state").select("key,value")
+            .eq("app", this.app).eq("client_id", this.client).in("key", keys);
+          if (error || !data) return;
+          data.forEach((r) => {
+            // O'zimiz yaqinda yozgan kalit — server hali eski qiymatni qaytarishi mumkin
+            if (Date.now() - (this._lastSet[r.key] || 0) < 5000) return;
+            if (JSON.stringify(r.value) === JSON.stringify(this._cache[r.key])) return;
+            try { onChange(r.key, r.value); } catch (e) { console.error("[Cloud] watch:", e); }
+          });
+        } catch (e) { /* tarmoq xatosi — keyingi safar */ }
+        finally { busy = false; }
+      };
+      const id = setInterval(tick, ms);
+      const onVis = () => { if (!document.hidden) tick(); };
+      document.addEventListener("visibilitychange", onVis);
+      return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
+    },
+
+    // Serverdan kelgan qiymatni keshga yozish (serverga QAYTA yubormasdan)
+    adopt(key, value) {
+      this._cache[key] = value;
+      if (this._saveMirror) this._saveMirror(this._cache);
     },
 
     // O'chirish (localStorage.removeItem o'rnida)

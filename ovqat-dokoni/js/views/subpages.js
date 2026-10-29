@@ -270,6 +270,9 @@ window.Views.chat = function (root) {
     field.focus();
   }
 
+  // Admin javobi sahifani yangilamasdan kelganda (app.js dagi Cloud.watch) shu chaqiriladi
+  window.__ovqatChatRefresh = () => { wrap.innerHTML = renderMsgs(); toBottom(); };
+
   root.querySelector("#chatSend").onclick = send;
   field.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {

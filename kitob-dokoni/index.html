@@ -52,11 +52,6 @@
 
         <div class="chips-scroll" id="catChips"></div>
 
-        <div class="section-head">
-            <h3>Mashhur kitoblar</h3>
-            <button class="see-all" id="seeAllTrending">Hammasi <span>›</span></button>
-        </div>
-        <div class="trending-scroll" id="trendingScroll"></div>
 
         <div class="section-head">
             <h3 id="gridTitle">Barcha kitoblar</h3>
@@ -414,7 +409,7 @@
 
 <!-- Supabase + Cloud (boshqa skriptlardan OLDIN) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cloud.js?v=4"></script>
+<script src="cloud.js?v=6"></script>
 <script>
   (async () => {
     const _urlClient = new URLSearchParams(location.search).get("client");
@@ -425,7 +420,7 @@
       || "shop";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["uzbekistan-regions.js?v=1", "script.js?v=12"]) {
+    for (const src of ["uzbekistan-regions.js?v=1", "script.js?v=13"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();
