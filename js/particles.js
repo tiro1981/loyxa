@@ -3,10 +3,9 @@
    Minglab mayda rangli uchburchaklar sahifa aylantirilganda bir
    shakldan boshqasiga oqib o'tadi:
      hero      -> do'kon binosi
-     ilovalar  -> sochilgan "galaktika"
+     ilovalar  -> tanlangan ilova belgisi
      qanday    -> smartfon
-     CTA       -> globus
-     footer    -> gul / portlash
+     CTA/footer-> globus (sayyora)
    Har o'tishda zarrachalar avval sochilib, keyin yangi shaklga
    yig'iladi. Sichqoncha bilan sahna biroz buriladi.
    Talab: window.THREE (three.js r128, cdnjs).
@@ -170,15 +169,6 @@
         ]);
     })();
 
-    // 5) Gul / portlash — 5 ta yaproqli burama shakl
-    const BLOOM = build([[1, () => {
-        const k = Math.floor(rnd() * 5), t = Math.pow(rnd(), 0.8);
-        const a0 = k * Math.PI * 2 / 5, w = Math.sin(Math.PI * t) * 0.55;
-        const a = a0 + R(-w, w) * 0.6 + t * 0.9;
-        const r = 0.25 + t * 3.0;
-        return [Math.cos(a) * r, Math.sin(a) * r, Math.sin(t * Math.PI) * 1.2 * Math.cos(a0 * 2) + R(-.15, .15)];
-    }]]);
-
     /* ---------------- Ilova belgilari (ilovalar bo'limi) ---------------- */
     const seg = (a, b, j = 0.02) => () => { const t = rnd(); return [J(a[0] + (b[0] - a[0]) * t, j), J(a[1] + (b[1] - a[1]) * t, j), J(a[2] + (b[2] - a[2]) * t, j)]; };
     const segs = (list, j) => { const fs = list.map(([a, b]) => seg(a, b, j)); const L = list.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2])); const T = L.reduce((x, y) => x + y, 0);
@@ -255,7 +245,7 @@
     const APP_SLOT = new Float32Array(CART);
     let appFrom = CART, appTo = CART, appT = 1;
 
-    const SHAPES = [SHOP, APP_SLOT, PHONE, GLOBE, BLOOM];
+    const SHAPES = [SHOP, APP_SLOT, PHONE, GLOBE];
 
     /* ---------------- Sahifa bo'limlariga bog'lash ----------------
        x/y — sahna markazining siljishi, s — o'lcham, ry — burilish, o — shaffoflik */
@@ -264,14 +254,13 @@
         { sel: '#apps',    anchor: '#apps .as-visual', ry: -0.35, d: { x: -3.2, y: 0, s: 0.95, ry: -0.35, o: 1 }, m: { x: 0, y: 1.6, s: 0.55, ry: -0.3, o: 1 } },
         { sel: '#how',     d: { x: 5.3,  y: -0.6,  s: 1.05, ry: -0.5,  o: 0.95 }, m: { x: 0, y: 0.6,  s: 0.75, ry: -0.3, o: 0.5 } },
         { sel: '#contact', d: { x: 0,    y: 0.1,   s: 1.15, ry: 0.3,   o: 0.7  }, m: { x: 0, y: 0,    s: 0.8,  ry: 0.3,  o: 0.5 } },
-        { sel: '.footer',  d: { x: 0,    y: 0.4,   s: 1.0,  ry: 0,     o: 0.9  }, m: { x: 0, y: 0.6,  s: 0.75, ry: 0,    o: 0.6 } },
     ];
     /* ---------------- Avtomatik rejim (aylantirilmaydigan sahifalar) ----------------
        <body data-particles="auto"> — shakllar vaqt bo'yicha almashadi. Sahna
        [data-particles-anchor] elementi markaziga joylashadi; u ko'rinmasa —
        ekran markazida, xiraroq turadi. */
     const AUTO = document.body.dataset.particles === 'auto';
-    const AUTO_SEQ = [0, 2, 3, 4];                 // do'kon -> smartfon -> globus -> gul
+    const AUTO_SEQ = [0, 2, 3];                    // do'kon -> smartfon -> globus
     const AUTO_HOLD = 4.2, AUTO_MORPH = 2.6;       // soniya
     // Element markazi -> sahna koordinatasi (o'lchami ham elementga mos)
     function placeAt(el, ry, o) {
@@ -296,7 +285,7 @@
         const el = document.querySelector('[data-particles-anchor]');
         const r = el && el.offsetParent !== null ? el.getBoundingClientRect() : null;
         // <body data-particles-opacity="0.3"> — kartalar ko'p sahifalarda fon xiraroq
-        const dim = parseFloat(document.body.dataset.particlesOpacity);
+        const dim = parseFloat(document.body ? document.body.dataset.particlesOpacity : '');
         if (!r || r.width < 40 || r.height < 40) return { x: 0, y: 0, s: mobile() ? 0.7 : 0.9, ry: -0.45, o: isNaN(dim) ? 0.42 : dim };
         const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
         return {
