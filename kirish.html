@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=6">
     <link rel="stylesheet" href="css/auth.css?v=8">
+    <link rel="stylesheet" href="css/space.css?v=3">
     <script>
         try {
             const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
@@ -17,7 +18,7 @@
         } catch {}
     </script>
 </head>
-<body class="auth-body">
+<body class="auth-body space" data-particles="auto">
 
     <div class="auth-wrap">
         <!-- LEFT SIDE -->
@@ -35,6 +36,8 @@
                     <li><i class="fa-solid fa-circle-check"></i> 24/7 qo'llab-quvvatlash</li>
                 </ul>
             </div>
+            <!-- Zarrachalardan yasalgan shakl shu joyda turadi (js/particles.js) -->
+            <div class="auth-side-visual" data-particles-anchor aria-hidden="true"></div>
             <div class="auth-side-decor">
                 <i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz shifrlangan · O'zbekiston serverlarida
             </div>
@@ -230,6 +233,9 @@
     <div class="toast" id="toast"></div>
 
     <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
+    <!-- Fondagi 3D zarrachalar (three.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/particles.js?v=5"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/cloud.js?v=3"></script>
     <!-- Boot-loader: AVVAL Cloud.init (platforma ma'lumotini yuklaydi), keyin ilova skriptlari. -->

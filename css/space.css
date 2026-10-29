@@ -170,3 +170,106 @@ body.mrd.space {
 
 /* Matnlar namunadagidek pastdan sekin chiqadi */
 .mrd.space .reveal { transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+
+/* ============================================================
+   KIRISH / RO'YXATDAN O'TISH sahifasi (kirish.html) — shu mavzuda
+   Chapda: matn + zarrachalardan yasalgan, o'zi almashinuvchi shakl
+   (js/particles.js, data-particles="auto"); o'ngda: shisha forma.
+   ============================================================ */
+html:has(body.auth-body.space) { background: #05060B; }
+body.auth-body.space {
+    --mrd-blue:      #6D5BFF;
+    --mrd-blue-2:    #5A46F0;
+    --mrd-blue-lt:   #A99CFF;
+    --mrd-blue-soft: rgba(109,91,255,.14);
+    --mrd-ink:       #F3F4FA;
+    --mrd-slate:     #C5C9DB;
+    --mrd-slate-2:   #9AA0B8;
+    --mrd-slate-3:   #7A8099;
+    --mrd-line:      rgba(255,255,255,.10);
+    --mrd-line-2:    rgba(255,255,255,.16);
+    --mrd-surface:   rgba(255,255,255,.04);
+    background: transparent;
+    color: var(--mrd-ink);
+}
+.auth-body.space .auth-wrap { grid-template-columns: minmax(0, 1fr) minmax(440px, 540px); }
+
+/* Chap panel — shaffof; matn chapda, shakl o'ng yarmida */
+.auth-body.space .auth-side { background: transparent; padding: 40px 56px; }
+.auth-body.space .auth-side::before { display: none; }
+.auth-body.space .auth-side-content { max-width: 440px; }
+.auth-body.space .auth-side .logo-light .logo-icon { background: linear-gradient(135deg, #6D5BFF, #2DD4BF); }
+.auth-body.space .auth-side-content p { color: #B9BED3; }
+.auth-body.space .auth-side-list li { color: #E6E8F2; }
+.auth-body.space .auth-side-list i { color: #2DD4BF; }
+.auth-body.space .auth-side-decor { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.10); color: #B9BED3; }
+.auth-body.space .auth-side-decor i { color: #A99CFF; }
+.auth-body.space .auth-side-visual {
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    right: 2%;
+    width: 46%;
+    pointer-events: none;
+}
+
+/* O'ng — forma */
+.auth-body.space .auth-main { background: transparent; }
+.auth-body.space .back-home { color: #9AA0B8; }
+.auth-body.space .back-home:hover { color: #fff; }
+.auth-body.space .auth-card {
+    background: rgba(12,13,24,.72);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 40px 90px -40px rgba(109,91,255,.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+.auth-body.space .role-tabs { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.auth-body.space .role-tab i { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.10); color: #9AA0B8; }
+.auth-body.space .role-tab.active { background: rgba(109,91,255,.14); box-shadow: inset 0 0 0 1px rgba(109,91,255,.45); }
+.auth-body.space .role-tab.active i { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); border-color: transparent; color: #fff; }
+.auth-body.space .role-tab.active strong { color: #fff; }
+.auth-body.space .auth-input { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); }
+.auth-body.space .auth-input:focus-within {
+    background: rgba(109,91,255,.08);
+    border-color: #6D5BFF;
+    box-shadow: 0 0 0 4px rgba(109,91,255,.18);
+}
+.auth-body.space .auth-input:focus-within > i,
+.auth-body.space .eye-btn:hover { color: #A99CFF; }
+/* brauzer avto-to'ldirgan maydonlar oq bo'lib qolmasin */
+.auth-body.space .auth-input input:-webkit-autofill {
+    -webkit-text-fill-color: #F3F4FA;
+    -webkit-box-shadow: 0 0 0 1000px #15172A inset;
+    caret-color: #F3F4FA;
+}
+.auth-body.space .btn-primary {
+    background: linear-gradient(135deg, #6D5BFF, #8B5CF6);
+    box-shadow: 0 10px 28px -10px rgba(109,91,255,.85);
+}
+.auth-body.space .btn-primary:hover { background: linear-gradient(135deg, #5A46F0, #7C4DEB); }
+.auth-body.space .auth-divider span { background: #0C0D18; }
+.auth-body.space .forgot-link,
+.auth-body.space .auth-foot a { color: #A99CFF; }
+.auth-body.space .forgot-link:hover,
+.auth-body.space .auth-foot a:hover { color: #fff; }
+.auth-body.space .demo-hint { background: rgba(109,91,255,.12); color: #C9C1FF; }
+.auth-body.space .demo-hint code { background: rgba(109,91,255,.22); color: #fff; }
+
+/* O'rta ekran: chap panel tor — shakl matn ustiga tushmasin, uning ostida tursin */
+@media (max-width: 1299px) and (min-width: 901px) {
+    .auth-body.space .auth-side { padding: 36px 32px; }
+    .auth-body.space .auth-side-visual {
+        position: relative;
+        top: auto; bottom: auto; right: auto;
+        width: 100%;
+        height: 30vh;
+        min-height: 200px;
+        flex-shrink: 0;
+    }
+}
+@media (max-width: 900px) {
+    .auth-body.space .auth-wrap { grid-template-columns: minmax(0, 1fr); }
+    .auth-body.space .auth-side { padding: 24px 20px 8px; }
+    .auth-body.space .auth-side-visual { display: none; }   /* shakl ekran markazida xira turadi */
+}

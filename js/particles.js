@@ -190,6 +190,28 @@
         { sel: '#contact', d: { x: 0,    y: 0.1,   s: 1.15, ry: 0.3,   o: 0.7  }, m: { x: 0, y: 0,    s: 0.8,  ry: 0.3,  o: 0.5 } },
         { sel: '.footer',  d: { x: 0,    y: 0.4,   s: 1.0,  ry: 0,     o: 0.9  }, m: { x: 0, y: 0.6,  s: 0.75, ry: 0,    o: 0.6 } },
     ];
+    /* ---------------- Avtomatik rejim (aylantirilmaydigan sahifalar) ----------------
+       <body data-particles="auto"> — shakllar vaqt bo'yicha almashadi. Sahna
+       [data-particles-anchor] elementi markaziga joylashadi; u ko'rinmasa —
+       ekran markazida, xiraroq turadi. */
+    const AUTO = document.body.dataset.particles === 'auto';
+    const AUTO_SEQ = [0, 2, 3, 4];                 // do'kon -> smartfon -> globus -> gul
+    const AUTO_HOLD = 4.2, AUTO_MORPH = 2.6;       // soniya
+    function autoPlace() {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const visH = 2 * Math.tan(camera.fov * Math.PI / 360) * camera.position.z, visW = visH * vw / vh;
+        const el = document.querySelector('[data-particles-anchor]');
+        const r = el && el.offsetParent !== null ? el.getBoundingClientRect() : null;
+        if (!r || r.width < 40 || r.height < 40) return { x: 0, y: 0, s: mobile() ? 0.7 : 0.9, ry: -0.45, o: 0.42 };
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        return {
+            x: (cx / vw - 0.5) * visW,
+            y: -(cy / vh - 0.5) * visH,
+            s: Math.min(1.15, (r.width / vw) * visW / 5.6, (r.height / vh) * visH / 5.2),
+            ry: -0.5, o: 1,
+        };
+    }
+
     let anchors = [];
     function measure() {
         const vh = window.innerHeight, maxS = document.documentElement.scrollHeight - vh;
@@ -330,14 +352,28 @@
 
     function frame(now) {
         if (!running) return;
-        const dt = Math.min((now - last) / 1000, 0.05); last = now;
+        // rAF vaqti performance.now() dan oldin bo'lishi mumkin — manfiy dt bo'lmasin
+        const dt = Math.max(0, Math.min((now - last) / 1000, 0.05)); last = now;
         time += reduceMotion ? 0 : dt;
 
-        const target = scrollProgress();
-        prog += (target - prog) * (reduceMotion ? 1 : Math.min(1, dt * 4.5));
-        const i0 = Math.min(Math.floor(prog), SHAPES.length - 1), i1 = Math.min(i0 + 1, SHAPES.length - 1);
-        const f = prog - i0, A = SHAPES[i0], B = SHAPES[i1];
-        const burst = (i0 === i1) ? 0 : 2.4;
+        let A, B, f, burst, ka, kb;
+        const m = mobile() ? 'm' : 'd';
+        if (AUTO) {
+            // Avtomatik rejim: shakllar vaqt bo'yicha navbat bilan almashadi
+            const per = AUTO_HOLD + AUTO_MORPH, loop = per * AUTO_SEQ.length, c = ((time % loop) + loop) % loop;
+            const k = Math.floor(c / per), within = c - k * per;
+            f = within < AUTO_HOLD ? 0 : (within - AUTO_HOLD) / AUTO_MORPH;
+            A = SHAPES[AUTO_SEQ[k]]; B = SHAPES[AUTO_SEQ[(k + 1) % AUTO_SEQ.length]];
+            burst = f > 0 ? 2.4 : 0;
+            ka = kb = autoPlace();
+        } else {
+            const target = scrollProgress();
+            prog += (target - prog) * (reduceMotion ? 1 : Math.min(1, dt * 4.5));
+            const i0 = Math.min(Math.floor(prog), SHAPES.length - 1), i1 = Math.min(i0 + 1, SHAPES.length - 1);
+            f = prog - i0; A = SHAPES[i0]; B = SHAPES[i1];
+            burst = (i0 === i1) ? 0 : 2.4;
+            ka = KEYS[i0][m]; kb = KEYS[i1][m];
+        }
 
         for (let i = 0; i < N; i++) {
             let t = (f - delay[i]) / 0.62;
@@ -352,7 +388,7 @@
         geo.attributes.position.needsUpdate = true;
 
         // Sahna joylashuvi: ikki bo'lim o'rtasida silliq o'tadi
-        const m = mobile() ? 'm' : 'd', ka = KEYS[i0][m], kb = KEYS[i1][m], te = ease(Math.min(1, f * 1.4));
+        const te = ease(Math.min(1, f * 1.4));
         mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
         group.position.set(lerp(ka.x, kb.x, te), lerp(ka.y, kb.y, te), 0);
         group.scale.setScalar(lerp(ka.s, kb.s, te));
