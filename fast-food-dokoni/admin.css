@@ -101,6 +101,7 @@ input, select { font-family: inherit; outline: none; }
 .hamb { display: none; font-size: 20px; }
 .searchbox {
   flex: 1;
+  min-width: 0;
   max-width: 420px;
   display: flex; align-items: center; gap: 10px;
   background: var(--bg);
@@ -108,7 +109,7 @@ input, select { font-family: inherit; outline: none; }
   padding: 11px 16px;
 }
 .searchbox i { color: var(--text-sub); }
-.searchbox input { flex: 1; background: transparent; border: none; font-size: 14px; color: var(--text); }
+.searchbox input { flex: 1; min-width: 0; width: 100%; background: transparent; border: none; font-size: 14px; color: var(--text); }
 
 .atop-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
 .acirc {
@@ -572,6 +573,9 @@ input, select { font-family: inherit; outline: none; }
   .stats { grid-template-columns: 1fr; }
   .atable { font-size: 11px; }
   .atable th, .atable td { padding: 10px 6px; }
+  .atopbar { gap: 10px; }
+  .atop-right { gap: 8px; }
+  .acirc { width: 38px; height: 38px; }
 }
 
 /* ========== LOGIN SCREEN ========== */
@@ -1408,3 +1412,6 @@ input, select { font-family: inherit; outline: none; }
   .bot2-preview { position: static; max-width: 360px; margin: 0 auto; width: 100%; }
   .bot2-row2 { grid-template-columns: 1fr; }
 }
+
+/* Gorizontal skroll himoyasi (kichik ekranlar) */
+html { overflow-x: hidden; }

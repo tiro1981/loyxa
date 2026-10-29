@@ -2026,3 +2026,20 @@ img { max-width: 100%; display: block; }
   .bot2-preview { position: static; max-width: 360px; margin: 0 auto; width: 100%; }
   .bot2-row2 { grid-template-columns: 1fr; }
 }
+
+/* ============ RESPONSIVE: dropdownlar va gorizontal skroll ============ */
+html { overflow-x: hidden; }
+@media (max-width: 600px) {
+    /* Ochilmagan (opacity:0) dropdown ham kenglik egallab sahifani suradi —
+       telefonda ularni ekran bo'ylab fixed qilib qo'yamiz */
+    .dd-menu,
+    .dd-menu.right {
+        position: fixed;
+        top: calc(var(--header-h) + env(safe-area-inset-top) + 6px);
+        left: 12px;
+        right: 12px;
+        min-width: 0;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

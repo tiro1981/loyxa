@@ -462,3 +462,44 @@ input, textarea, select { font-family: inherit; }
 .fly-dot { position: fixed; z-index: 999; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); pointer-events: none; box-shadow: var(--shadow-glow); display: grid; place-items: center; font-size: 12px; }
 
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .001s !important; transition-duration: .05s !important; } }
+
+/* ---------- RESPONSIVE: planshet va kompyuter ----------
+   520–699px oralig'ida ilova telefon ramkasida qoladi. 700px dan katta
+   ekranda (planshet, kompyuter) ramka olib tashlanadi va ilova oynaga
+   kengayadi. */
+@media (min-width: 700px) {
+  body { padding: 0; }
+  .app {
+    max-width: 1240px;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    outline: none;
+    box-shadow: none;
+  }
+  .appbar, .view-pad, .product-grid, .hscroll, .ads { padding-left: 32px; padding-right: 32px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .ad-slide { flex-basis: calc(50% - 7px); height: 190px; }
+  .qgrid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+  /* mahsulot ro'yxati bo'lmagan sahifalar — o'qish uchun qulay kenglik */
+  #view[data-view="cart"] > *,
+  #view[data-view="checkout"] > *,
+  #view[data-view="product"] > *,
+  #view[data-view="orders"] > *,
+  #view[data-view="profile"] > *,
+  #view[data-view="addresses"] > *,
+  #view[data-view="payments"] > *,
+  #view[data-view="chat"] > *,
+  #view[data-view="help"] > *,
+  #view[data-view="privacy"] > * {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tabbar { width: min(560px, calc(100% - 24px)); margin-left: auto; margin-right: auto; }
+  .sheet { max-width: 600px; margin: 0 auto; }
+}

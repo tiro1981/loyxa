@@ -2101,3 +2101,19 @@ body.dark .t-icon .icon-sun { display: block; }
   .qr-grid { grid-template-columns: 1fr; }
   .qr-preview-card .panel-body { align-items: center; }
 }
+/* ============ RESPONSIVE: dropdownlar va gorizontal skroll ============ */
+html { overflow-x: hidden; }
+@media (max-width: 600px) {
+    /* Ochilmagan (opacity:0) dropdown ham kenglik egallab sahifani suradi —
+       telefonda ularni ekran bo'ylab fixed qilib qo'yamiz */
+    .dd-menu,
+    .dd-menu.right {
+        position: fixed;
+        top: calc(var(--header-h) + env(safe-area-inset-top) + 6px);
+        left: 12px;
+        right: 12px;
+        min-width: 0;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

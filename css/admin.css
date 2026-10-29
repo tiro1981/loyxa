@@ -1182,3 +1182,17 @@
 
 html[data-theme="dark"] .bot-hint { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.3); color: #93C5FD; }
 html[data-theme="dark"] .bot-status { background: rgba(255,255,255,0.06); }
+
+/* ===== RESPONSIVE: tor ekranlar ===== */
+/* Grid ustunlari ichidagi jadvallar ustunni kengaytirib yubormasin */
+.d-grid-2 > *, .kpi-grid > * { min-width: 0; }
+.topbar-search, .topbar-search input { min-width: 0; }
+@media (max-width: 600px) {
+    .admin-topbar { gap: 10px; }
+    .topbar-actions { gap: 6px; }
+    .adm-panel { padding: 16px; }
+}
+@media (max-width: 400px) {
+    .topbar-search { padding: 9px 10px; }
+    .topbar-icon { width: 36px; height: 36px; }
+}

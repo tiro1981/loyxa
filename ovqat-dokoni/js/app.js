@@ -176,6 +176,7 @@ function render() {
   const root = document.getElementById("view");
   const fn = (window.Views || {})[entry.view] || window.Views.home;
   root.scrollTop = 0;
+  root.dataset.view = entry.view;   // CSS: katta ekranda sahifa turiga qarab kenglik
   root.innerHTML = "";
   root.classList.remove("view-enter"); void root.offsetWidth; root.classList.add("view-enter");
   try { fn(root, entry.params); }

@@ -417,7 +417,7 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-wrap { grid-template-columns: minmax(0, 1fr); }
     .auth-side {
         padding: 28px 24px 24px;
         min-height: auto;
@@ -434,4 +434,9 @@
     .back-home { top: 16px; left: 16px; font-size: 13px; }
     .role-tab span { display: none; }
     .auth-side-content h1 { font-size: 23px; }
+}
+@media (max-width: 360px) {
+    .auth-card { padding: 20px 14px; }
+    .auth-main { padding: 20px 12px 32px; }
+    .auth-side { padding: 22px 16px 18px; }
 }

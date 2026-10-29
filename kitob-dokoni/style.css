@@ -2260,3 +2260,42 @@ a:focus-visible {
     white-space: nowrap;
     border: 1px solid rgba(0,0,0,.06);
 }
+
+/* ============ RESPONSIVE: planshet va kompyuter ============ */
+/* Telefonda ilova tor ustun bo'lib qoladi; kattaroq ekranlarda konteyner
+   kengayadi va mahsulotlar ko'proq ustunda joylashadi. */
+@media (min-width: 768px) {
+    :root { --page-pad: 28px; }
+    .app { max-width: 960px; }
+    .greet-title { font-size: 28px; }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 18px;
+    }
+    .trend-card { width: 200px; }
+    /* savat, buyurtmalar va profil — juda cho'zilib ketmasin */
+    .screen[data-screen="cart"],
+    .screen[data-screen="orders"],
+    .screen[data-screen="profile"] {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    .sheet { max-width: 600px; }
+    .bnav-inner { max-width: 560px; }
+}
+@media (min-width: 1200px) {
+    .app { max-width: 1240px; }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 22px;
+    }
+    .chips-scroll { flex-wrap: wrap; overflow: visible; }
+}
+/* Sichqoncha bilan ishlovchi qurilmalarda gorizontal lentalar aylantirilishi
+   uchun ingichka skrollbar ko'rsatiladi */
+@media (hover: hover) and (pointer: fine) {
+    .trending-scroll { scrollbar-width: thin; }
+    .trending-scroll::-webkit-scrollbar { display: block; height: 6px; }
+    .trending-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .p-card, .trend-card { cursor: pointer; }
+}

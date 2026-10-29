@@ -1047,3 +1047,33 @@ input { font-family: inherit; outline: none; border: none; background: transpare
   background: #E5E7EB; color: #6B7280;
   padding: 3px 8px; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
 }
+
+/* ========== RESPONSIVE: planshet va kompyuter ========== */
+/* Telefonda tor ustun; kattaroq ekranda konteyner kengayadi, taomlar
+   ko'proq ustunda, modallar esa ekran markazida ochiladi. */
+@media (min-width: 768px) {
+  .app { max-width: 960px; box-shadow: none; }
+  .page { padding: 0 32px; }
+  .home-head h1 { font-size: 32px; }
+  .food-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+  }
+  #page-cart, #page-orders, #page-profile, #page-favorites {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .detail-modal, .mini-modal { align-items: center; padding: 24px; }
+  .detail-content, .mini-content {
+    max-width: 520px;
+    border-radius: 26px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .bottom-nav { max-width: 520px; }
+}
+@media (min-width: 1200px) {
+  .app { max-width: 1240px; }
+  .food-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
+  .categories { flex-wrap: wrap; overflow: visible; }
+}

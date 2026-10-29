@@ -193,7 +193,7 @@ input, select, textarea { font-family: inherit; }
 .topbar h1 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; white-space: nowrap; }
 .topbar .top-search {
   margin-left: 12px;
-  flex: 1; max-width: 360px;
+  flex: 1; min-width: 0; max-width: 360px;
   display: flex; align-items: center; gap: 8px;
   padding: 9px 14px;
   background: var(--surface); border: 1px solid var(--border);
@@ -692,6 +692,9 @@ select.input { cursor: pointer; }
 }
 
 @media (max-width: 560px) {
+  .topbar { gap: 8px; padding: 10px 12px; }
+  .topbar .top-search { margin-left: 4px; padding: 8px 10px; }
+  .topbar h1 { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .kpi .kval { font-size: 19px; }
   .form-grid { grid-template-columns: 1fr; }
@@ -835,3 +838,11 @@ select.input { cursor: pointer; }
   .qr-steps { grid-template-columns: 1fr; }
   .qr-frame { width: 240px; height: 240px; }
 }
+
+@media (max-width: 420px) {
+  /* juda tor ekranda qidiruv maydoni sarlavha va tugmalarni siqib chiqarmasin */
+  .topbar .top-search { display: none; }
+}
+
+/* Gorizontal skroll himoyasi */
+html { overflow-x: hidden; }

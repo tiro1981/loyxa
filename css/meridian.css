@@ -76,6 +76,10 @@
     background: #fff;
     border-bottom: 1px solid var(--mrd-line);
     box-shadow: none;
+    /* style.css'dagi backdrop-filter fixed mobil menyuni navbar ichiga "qamab"
+       qo'yadi (menyu ekrandan tashqarida ko'rinib, gorizontal skroll beradi) */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     transition: box-shadow .25s ease, background .25s ease;
 }
 .mrd .navbar.scrolled {
@@ -874,6 +878,9 @@
 }
 
 /* ---------- APP SHOWCASE (coverflow) ---------- */
+/* Yon telefonlar ekrandan chiqib turadi — telefonda brauzer buni sahifa
+   kengligi deb hisoblab, butun saytni kichraytirib yubormasin */
+.mrd .apps-section { overflow: hidden; }
 .mrd .app-showcase {
     position: relative;
     display: flex;
@@ -1511,6 +1518,7 @@
     .mrd .nav-links {
         position: fixed;
         top: 0;
+        left: auto;
         right: 0;
         height: 100vh;
         width: min(320px, 84vw);
@@ -1527,6 +1535,10 @@
         overflow-y: auto;
     }
     .mrd .nav-links.open { transform: translateX(0); }
+    .mrd .nav-links > li { width: 100%; }
+    .mrd .nav-link { display: block; }
+    /* menyu ochiq bo'lganda ham yopish tugmasi ko'rinib tursin */
+    .mrd .hamburger { position: relative; z-index: 1001; }
     .mrd .nav-link { font-size: 17px; padding: 12px 4px; border-bottom: 1px solid var(--mrd-line); }
     .mrd .nav-link::after { display: none; }
     .mrd .nav-links .nav-auth { display: block; margin-top: 8px; }
@@ -1549,10 +1561,25 @@
 }
 
 @media (max-width: 560px) {
+    .mrd .container { padding: 0 16px; }
     .mrd-topbar .tb-left { font-size: 12px; }
     .mrd-topbar .tb-right .tb-langs { display: none; }
     .mrd .hero-visual { transform: scale(.85); height: 380px; }
     .mrd .hero-stats { gap: 18px; }
     .mrd .hero-stats .hs-sep { display: none; }
     .mrd .showcase-nav { display: none; }
+}
+
+@media (max-width: 420px) {
+    .mrd-topbar .tb-left { display: none; }
+    .mrd-topbar .container { justify-content: center; }
+}
+
+@media (max-width: 380px) {
+    .mrd .nav-container { gap: 10px; }
+    .mrd .logo { font-size: 18px; gap: 8px; }
+    .mrd .logo-icon { width: 36px; height: 36px; font-size: 15px; }
+    .mrd .nav-actions { gap: 8px; }
+    .mrd .hero-title { font-size: 32px; }
+    .mrd .section-title { font-size: 26px; }
 }
