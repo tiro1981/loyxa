@@ -179,23 +179,89 @@
         return [Math.cos(a) * r, Math.sin(a) * r, Math.sin(t * Math.PI) * 1.2 * Math.cos(a0 * 2) + R(-.15, .15)];
     }]]);
 
-    /* ---------------- Yadro (ilovalar bo'limi — orbita markazi) ----------------
-       Zich porlayotgan shar + atrofida yassi halo. Ilova tugunlari uning
-       atrofida sahifadagi (DOM) orbitada aylanadi. */
-    const CORE = build([
-        [46, () => { const z = R(-1, 1), a = R(0, Math.PI * 2), q = Math.sqrt(1 - z * z), r = 1.15; return [q * Math.cos(a) * r, z * r, q * Math.sin(a) * r]; }],
-        [22, () => { const z = R(-1, 1), a = R(0, Math.PI * 2), q = Math.sqrt(1 - z * z), r = 1.1 * Math.cbrt(rnd()); return [q * Math.cos(a) * r, z * r, q * Math.sin(a) * r]; }],
-        [22, () => { const a = R(0, Math.PI * 2), r = R(1.5, 2.3); return [Math.cos(a) * r, R(-.08, .08) + Math.sin(a) * r * 0.08, Math.sin(a) * r * 0.35]; }],
-        [10, () => { const z = R(-1, 1), a = R(0, Math.PI * 2), q = Math.sqrt(1 - z * z), r = R(1.3, 2.6); return [q * Math.cos(a) * r, z * r * 0.8, q * Math.sin(a) * r]; }],
+    /* ---------------- Ilova belgilari (ilovalar bo'limi) ---------------- */
+    const seg = (a, b, j = 0.02) => () => { const t = rnd(); return [J(a[0] + (b[0] - a[0]) * t, j), J(a[1] + (b[1] - a[1]) * t, j), J(a[2] + (b[2] - a[2]) * t, j)]; };
+    const segs = (list, j) => { const fs = list.map(([a, b]) => seg(a, b, j)); const L = list.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2])); const T = L.reduce((x, y) => x + y, 0);
+        return () => { let r = rnd() * T; for (let i = 0; i < fs.length; i++) { r -= L[i]; if (r <= 0) return fs[i](); } return fs[0](); }; };
+    const disc = (cy, r, h, squash = 1) => () => {   // yassi silindr (ustki/pastki yuz + yon)
+        const a = R(0, Math.PI * 2), k = rnd();
+        if (k < 0.45) { const rr = r * Math.sqrt(rnd()); return [Math.cos(a) * rr, cy + h / 2, Math.sin(a) * rr * squash]; }
+        if (k < 0.6)  { const rr = r * Math.sqrt(rnd()); return [Math.cos(a) * rr, cy - h / 2, Math.sin(a) * rr * squash]; }
+        return [Math.cos(a) * r, cy + R(-h / 2, h / 2), Math.sin(a) * r * squash];
+    };
+
+    // Burger (Fast Food): kunjutli ustki non, salat, pishloq, kotlet, pastki non
+    const BURGER = build([
+        [30, () => { const a = R(0, Math.PI * 2), ph = Math.acos(rnd()) ; const r = 2.25; return [Math.cos(a) * Math.sin(ph) * r, 0.75 + Math.cos(ph) * 1.15, Math.sin(a) * Math.sin(ph) * r]; }],
+        [4,  () => { const a = R(0, Math.PI * 2), ph = Math.acos(R(0.35, 1)); const r = 2.3; return [J(Math.cos(a) * Math.sin(ph) * r, .03), 0.75 + Math.cos(ph) * 1.2, J(Math.sin(a) * Math.sin(ph) * r, .03)]; }],
+        [12, () => { const a = R(0, Math.PI * 2); const r = 2.45 + Math.sin(a * 9) * 0.18; return [Math.cos(a) * r, 0.55 + Math.sin(a * 13) * 0.06, Math.sin(a) * r]; }],
+        [10, () => { const x = R(-2.2, 2.2), z = R(-2.2, 2.2); const drip = (Math.abs(x) > 1.9 || Math.abs(z) > 1.9) && rnd() < .5 ? R(0, .35) : 0; return [x, 0.35 - drip, z]; }],
+        [20, disc(0.0, 2.35, 0.55)],
+        [24, () => { const a = R(0, Math.PI * 2), k = rnd(); const r = 2.25;
+            if (k < 0.5) { const rr = r * Math.sqrt(rnd()); return [Math.cos(a) * rr, -0.75, Math.sin(a) * rr]; }
+            return [Math.cos(a) * r, R(-0.75, -0.3), Math.sin(a) * r]; }],
     ]);
 
-    const SHAPES = [SHOP, CORE, PHONE, GLOBE, BLOOM];
+    // Futbolka (Moda): kontur (old va orqa), yoqa, chok chiziqlari
+    const TSHIRT = (() => {
+        const P = [[-0.65, 2.0], [-2.3, 1.45], [-2.85, 0.35], [-1.9, -0.05], [-1.6, 0.5], [-1.6, -2.3], [1.6, -2.3], [1.6, 0.5], [1.9, -0.05], [2.85, 0.35], [2.3, 1.45], [0.65, 2.0]];
+        const outline = (z) => { const L = []; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; if (i === P.length - 1) continue; L.push([[a[0], a[1], z], [b[0], b[1], z]]); } return L; };
+        const collar = (z) => () => { const a = R(Math.PI * 1.05, Math.PI * 1.95); return [Math.cos(a) * 0.65, 2.0 + Math.sin(a) * 0.55, z]; };
+        const inside = () => { for (;;) { const x = R(-2.85, 2.85), y = R(-2.3, 2.0);
+            if (Math.abs(x) <= 1.6 && y <= 1.85 && !(y > 1.45 && Math.abs(x) < 0.65 - (2.0 - y) * 0.2)) return [x, y];
+            if (Math.abs(x) > 1.6 && y > -0.05 + (Math.abs(x) - 1.9) * 0.4 && y < 1.45 - (Math.abs(x) - 2.3) * 2 && y < 1.75) return [x, y]; } };
+        return build([
+            [30, segs(outline(0.18), .02)], [14, segs(outline(-0.18), .02)],
+            [8, collar(0.18)], [3, collar(-0.18)],
+            [6, segs([[[-1.6, 0.5, 0.19], [-1.6, 1.7, 0.19]], [[1.6, 0.5, 0.19], [1.6, 1.7, 0.19]]], .015)],
+            [26, () => { const [x, y] = inside(); return [x, y, 0.18]; }],
+            [13, () => { const [x, y] = inside(); return [x, y, -0.18]; }],
+        ]);
+    })();
+
+    // Savat (Ovqat): trapetsiya to'rli savat, tutqich, g'ildiraklar
+    const CART = (() => {
+        const D = 1.4;
+        const L = [];
+        for (const z of [D / 2, -D / 2]) {
+            L.push([[-2.0, 1.2, z], [2.2, 1.2, z]], [[-1.6, -0.8, z], [1.8, -0.8, z]], [[-2.0, 1.2, z], [-1.6, -0.8, z]], [[2.2, 1.2, z], [1.8, -0.8, z]]);
+            for (let k = 1; k < 6; k++) { const t = k / 6; L.push([[-2.0 + 0.4 * t, 1.2 - 2.0 * t, z], [2.2 - 0.4 * t, 1.2 - 2.0 * t, z]]); }
+            for (let k = 1; k < 8; k++) { const t = k / 8; L.push([[-2.0 + 4.2 * t, 1.2, z], [-1.6 + 3.4 * t, -0.8, z]]); }
+        }
+        for (const [x, y] of [[-2.0, 1.2], [2.2, 1.2], [-1.6, -0.8], [1.8, -0.8]]) L.push([[x, y, D / 2], [x, y, -D / 2]]);
+        L.push([[-2.0, 1.2, 0], [-2.7, 1.9, 0]], [[-2.7, 1.9, 0], [-3.3, 1.9, 0]]);     // tutqich
+        L.push([[-1.6, -0.8, 0], [-1.4, -1.35, 0]], [[1.8, -0.8, 0], [1.6, -1.35, 0]], [[-1.4, -1.35, 0], [1.6, -1.35, 0]]);
+        const wheel = (cx) => () => { const a = R(0, Math.PI * 2), r = 0.32; return [cx + Math.cos(a) * r, -1.75 + Math.sin(a) * r, J(0, .06)]; };
+        return build([[78, segs(L, .02)], [6, wheel(-1.2)], [6, wheel(1.3)],
+            [10, () => [R(-1.3, 1.5), R(1.25, 1.9), R(-.4, .4)]]]);              // ichidagi mahsulotlar
+    })();
+
+    // Ochiq kitob (Kitob): egilgan ikki sahifa, matn qatorlari, muqova
+    const BOOK = (() => {
+        // sahifa o'rtasi biroz ko'tarilgan (egilgan qog'oz)
+        const page = () => (x, y) => { const u = Math.abs(x) / 2.6; return [x, y, Math.sin(u * Math.PI) * 0.45]; };
+        const surf = (side) => () => { const x = side * R(0.05, 2.6), y = R(-1.8, 1.8); return page(side)(x, y); };
+        const lines = (side) => () => { const row = Math.floor(rnd() * 9), y = 1.4 - row * 0.34, x = side * R(0.35, 2.3); return page(side)(J(x, .01), J(y, .01)).map((v, i) => i === 2 ? v + 0.02 : v); };
+        const edge = (side) => () => { const k = rnd(); const x = k < .5 ? side * R(0.05, 2.6) : side * 2.6, y = k < .5 ? (rnd() < .5 ? 1.8 : -1.8) : R(-1.8, 1.8); return page(side)(x, y); };
+        return build([
+            [18, surf(-1)], [18, surf(1)], [14, lines(-1)], [14, lines(1)], [10, edge(-1)], [10, edge(1)],
+            [6, () => [J(0, .03), R(-1.85, 1.85), J(-0.05, .03)]],                       // umurtqa
+            [10, () => { const x = R(-2.75, 2.75), u = Math.abs(x) / 2.6; return [x, rnd() < .5 ? -1.95 : R(-1.95, -1.9), Math.sin(Math.min(u, 1) * Math.PI) * 0.45 - 0.25]; }], // muqova
+        ]);
+    })();
+
+    const APP_SHAPES = { ovqat: CART, fastfood: BURGER, kiyim: TSHIRT, kitob: BOOK };
+    // Ilovalar bo'limidagi "jonli" slot: tanlangan ilova belgisi (o'tishda aralashma)
+    const APP_SLOT = new Float32Array(CART);
+    let appFrom = CART, appTo = CART, appT = 1;
+
+    const SHAPES = [SHOP, APP_SLOT, PHONE, GLOBE, BLOOM];
 
     /* ---------------- Sahifa bo'limlariga bog'lash ----------------
        x/y — sahna markazining siljishi, s — o'lcham, ry — burilish, o — shaffoflik */
     const KEYS = [
         { sel: '#home',    d: { x: 3.4,  y: -0.3,  s: 1.18, ry: -0.6,  o: 1.0  }, m: { x: 0, y: -2.2, s: 0.62, ry: -0.5, o: 0.9 } },
-        { sel: '#apps',    anchor: '#apps .as-visual', ry: 0, d: { x: -3.2, y: 0, s: 0.95, ry: 0, o: 1 }, m: { x: 0, y: 1.6, s: 0.55, ry: 0, o: 1 } },
+        { sel: '#apps',    anchor: '#apps .as-visual', ry: -0.35, d: { x: -3.2, y: 0, s: 0.95, ry: -0.35, o: 1 }, m: { x: 0, y: 1.6, s: 0.55, ry: -0.3, o: 1 } },
         { sel: '#how',     d: { x: 5.3,  y: -0.6,  s: 1.05, ry: -0.5,  o: 0.95 }, m: { x: 0, y: 0.6,  s: 0.75, ry: -0.3, o: 0.5 } },
         { sel: '#contact', d: { x: 0,    y: 0.1,   s: 1.15, ry: 0.3,   o: 0.7  }, m: { x: 0, y: 0,    s: 0.8,  ry: 0.3,  o: 0.5 } },
         { sel: '.footer',  d: { x: 0,    y: 0.4,   s: 1.0,  ry: 0,     o: 0.9  }, m: { x: 0, y: 0.6,  s: 0.75, ry: 0,    o: 0.6 } },
@@ -404,6 +470,17 @@
             ka = keyPlace(KEYS[i0], m); kb = keyPlace(KEYS[i1], m);
         }
 
+        if (appT < 1) {
+            appT = Math.min(1, appT + dt / 1.5);
+            for (let i = 0; i < N; i++) {
+                let t = (appT - delay[i]) / 0.62; t = t < 0 ? 0 : t > 1 ? 1 : t;
+                const e = ease(t), bump = Math.sin(Math.PI * t) * 1.6, j = i * 3;
+                APP_SLOT[j]     = appFrom[j]     + (appTo[j]     - appFrom[j])     * e + dir[j]     * bump;
+                APP_SLOT[j + 1] = appFrom[j + 1] + (appTo[j + 1] - appFrom[j + 1]) * e + dir[j + 1] * bump;
+                APP_SLOT[j + 2] = appFrom[j + 2] + (appTo[j + 2] - appFrom[j + 2]) * e + dir[j + 2] * bump;
+            }
+        }
+
         for (let i = 0; i < N; i++) {
             let t = (f - delay[i]) / 0.62;
             t = t < 0 ? 0 : t > 1 ? 1 : t;
@@ -440,6 +517,18 @@
         renderer.render(scene, camera);
         requestAnimationFrame(frame);
     }
+
+    // Tashqi boshqaruv: ilovalar bo'limi tanlangan ilovani shu orqali bildiradi
+    window.BOParticles = {
+        setApp(key) {
+            const target = APP_SHAPES[key];
+            if (!target || target === appTo) return;
+            appFrom = new Float32Array(APP_SLOT);   // joriy holatdan (o'tish o'rtasida ham) boshlaymiz
+            appTo = target;
+            appT = reduceMotion ? 1 : 0;
+            if (reduceMotion) APP_SLOT.set(target);
+        },
+    };
 
     resize();
     requestAnimationFrame(frame);
