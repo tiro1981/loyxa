@@ -404,3 +404,87 @@ html:has(body.dash-body.space) {
 .dash-body.space .app-detail-box { background: #0E0F1C; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 40px 90px -30px rgba(109,91,255,.5); }
 .dash-body.space .app-free-tag { background: rgba(45,212,191,.12); border-color: rgba(45,212,191,.25); color: #5EEAD4; }
 .dash-body.space .detail-app-icon { background: rgba(255,255,255,.06); }
+
+/* ============================================================
+   ILOVALAR VITRINASI (bosh sahifa) — chapda zarrachalardan yig'ilgan
+   ilova belgisi (.as-visual — bo'sh joy), o'ngda shisha karta, ostida chiplar
+   ============================================================ */
+.mrd.space .app-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+    min-height: 460px;
+}
+.mrd.space .as-visual { height: 440px; }
+.mrd.space .as-card {
+    --acc: #A99CFF;
+    background: rgba(10,11,20,.62);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 22px;
+    padding: 30px 30px 26px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 30px 80px -40px var(--acc);
+    transition: box-shadow .5s ease;
+}
+.mrd.space .as-card-in { animation: asIn .5s cubic-bezier(.2,.7,.2,1); }
+@keyframes asIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.mrd.space .as-icon {
+    width: 48px; height: 48px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 14px;
+    color: var(--acc);
+    background: color-mix(in srgb, var(--acc) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--acc) 40%, transparent);
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+.mrd.space .as-card h3 { font-size: 26px; font-weight: 800; color: #fff; margin: 0 0 8px; letter-spacing: -.01em; }
+.mrd.space .as-card p { color: #B9BED3; font-size: 15px; line-height: 1.6; margin: 0 0 18px; }
+.mrd.space .as-card ul { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 10px; }
+.mrd.space .as-card li { display: flex; align-items: flex-start; gap: 10px; color: #E6E8F2; font-size: 14.5px; }
+.mrd.space .as-card li i { color: var(--acc); margin-top: 4px; font-size: 12px; }
+.mrd.space .as-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.mrd.space .as-actions .btn { flex: 1 1 auto; }
+
+.mrd.space .as-chips {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+}
+.mrd.space .as-chip {
+    --acc: #A99CFF;
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 10px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.04);
+    color: #C5C9DB;
+    font: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s, transform .2s;
+}
+.mrd.space .as-chip i { color: var(--acc); }
+.mrd.space .as-chip:hover { transform: translateY(-2px); color: #fff; }
+.mrd.space .as-chip.active {
+    color: #fff;
+    border-color: var(--acc);
+    background: color-mix(in srgb, var(--acc) 16%, transparent);
+    box-shadow: 0 8px 24px -12px var(--acc);
+}
+
+@media (max-width: 900px) {
+    .mrd.space .app-stage { grid-template-columns: minmax(0, 1fr); gap: 8px; min-height: 0; }
+    .mrd.space .as-visual { height: 300px; }
+    .mrd.space .as-card { padding: 22px 20px; }
+    .mrd.space .as-card h3 { font-size: 22px; }
+}
+@media (max-width: 480px) {
+    .mrd.space .as-visual { height: 250px; }
+    .mrd.space .as-chips { gap: 8px; }
+    .mrd.space .as-chip { padding: 8px 12px; font-size: 13px; }
+    .mrd.space .as-actions .btn { flex-basis: 100%; }
+}

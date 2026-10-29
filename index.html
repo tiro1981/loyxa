@@ -1,247 +1,407 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun korporativ darajadagi SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar.">
-    <title>BiznesOnline — Biznesingizni ishonchli tarzda Online ga aylantiring</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=7">
-    <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/meridian.css?v=14">
-    <link rel="stylesheet" href="css/space.css?v=3">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="BiznesOnline — O'zbekistondagi kichik bizneslar uchun korporativ darajadagi SaaS platforma. Do'kon, fast food va kafe uchun tayyor veb-ilovalar."
+    />
+    <title>
+      BiznesOnline — Biznesingizni ishonchli tarzda Online ga aylantiring
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css?v=7" />
+    <link rel="stylesheet" href="css/settings.css?v=7" />
+    <link rel="stylesheet" href="css/meridian.css?v=14" />
+    <link rel="stylesheet" href="css/space.css?v=10" />
     <script>
-        try {
-            const _s = JSON.parse(localStorage.getItem('bo_session') || 'null');
-            if (_s && _s.type === 'client') window.location.replace('dashboard.html');
-        } catch {}
+      try {
+        const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
+        if (_s && _s.type === "client")
+          window.location.replace("dashboard.html");
+      } catch {}
     </script>
-</head>
-<body class="mrd space">
-
+  </head>
+  <body class="mrd space">
     <!-- TOP BAR -->
     <div class="mrd-topbar">
-        <div class="container">
-            <span class="tb-left"><i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz shifrlangan · O'zbekiston serverlarida</span>
-            <span class="tb-right">
-                <a href="tel:+998992823115" class="tb-phone"><i class="fa-solid fa-phone" style="font-size:11px;"></i> +998 99 282 31 15</a>
-                <span class="tb-langs">UZ · RU · EN</span>
-            </span>
-        </div>
+      <div class="container">
+        <span class="tb-left"
+          ><i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz
+          shifrlangan · O'zbekiston serverlarida</span
+        >
+        <span class="tb-right">
+          <a href="tel:+998992823115" class="tb-phone"
+            ><i class="fa-solid fa-phone" style="font-size: 11px"></i> +998 99
+            282 31 15</a
+          >
+          <span class="tb-langs">UZ · RU · EN</span>
+        </span>
+      </div>
     </div>
 
     <!-- NAVIGATION -->
     <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
-                <span class="logo-text">BiznesOnline</span>
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home" class="nav-link active" data-i18n="nav.home">Bosh sahifa</a></li>
-                <li><a href="#apps" class="nav-link" data-i18n="nav.apps">Ilovalar</a></li>
-                <li><a href="#how" class="nav-link" data-i18n="nav.how">Qanday ishlaydi</a></li>
-                <li><a href="#contact" class="nav-link" data-i18n="nav.contact">Bog'lanish</a></li>
-                <li class="nav-auth"><a href="kirish.html" class="btn btn-soft btn-block" data-i18n="nav.login">Kirish</a></li>
-                <li class="nav-auth"><a href="kirish.html?tab=register" class="btn btn-primary btn-block" data-i18n="nav.register">Ro'yxatdan o'tish</a></li>
-            </ul>
-            <div class="nav-actions">
-                <a href="kirish.html" class="btn btn-soft btn-sm" data-i18n="nav.login">Kirish</a>
-                <a href="kirish.html?tab=register" class="btn btn-primary btn-sm" data-i18n="nav.register">Ro'yxatdan o'tish</a>
-                <div class="lang-switch" data-lang-switch>
-                    <button type="button" class="settings-trigger lang-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Til / Язык / Language" title="Til">
-                        <i class="fa-solid fa-globe"></i><span class="lang-code" data-lang-current>UZ</span>
-                    </button>
-                    <div class="lang-menu" role="menu">
-                        <button type="button" class="lang-opt" data-lang="uz" role="menuitemradio"><span class="lang-flag">🇺🇿</span><span>O'zbekcha</span><i class="fa-solid fa-check"></i></button>
-                        <button type="button" class="lang-opt" data-lang="ru" role="menuitemradio"><span class="lang-flag">🇷🇺</span><span>Русский</span><i class="fa-solid fa-check"></i></button>
-                        <button type="button" class="lang-opt" data-lang="en" role="menuitemradio"><span class="lang-flag">🇬🇧</span><span>English</span><i class="fa-solid fa-check"></i></button>
-                    </div>
-                </div>
-                <button class="hamburger" id="hamburger" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
+      <div class="container nav-container">
+        <a href="index.html" class="logo">
+          <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+          <span class="logo-text">BiznesOnline</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+          <li>
+            <a href="#home" class="nav-link active" data-i18n="nav.home"
+              >Bosh sahifa</a
+            >
+          </li>
+          <li>
+            <a href="#apps" class="nav-link" data-i18n="nav.apps">Ilovalar</a>
+          </li>
+          <li>
+            <a href="#how" class="nav-link" data-i18n="nav.how"
+              >Qanday ishlaydi</a
+            >
+          </li>
+          <li>
+            <a href="#contact" class="nav-link" data-i18n="nav.contact"
+              >Bog'lanish</a
+            >
+          </li>
+          <li class="nav-auth">
+            <a
+              href="kirish.html"
+              class="btn btn-soft btn-block"
+              data-i18n="nav.login"
+              >Kirish</a
+            >
+          </li>
+          <li class="nav-auth">
+            <a
+              href="kirish.html?tab=register"
+              class="btn btn-primary btn-block"
+              data-i18n="nav.register"
+              >Ro'yxatdan o'tish</a
+            >
+          </li>
+        </ul>
+        <div class="nav-actions">
+          <a
+            href="kirish.html"
+            class="btn btn-soft btn-sm"
+            data-i18n="nav.login"
+            >Kirish</a
+          >
+          <a
+            href="kirish.html?tab=register"
+            class="btn btn-primary btn-sm"
+            data-i18n="nav.register"
+            >Ro'yxatdan o'tish</a
+          >
+          <div class="lang-switch" data-lang-switch>
+            <button
+              type="button"
+              class="settings-trigger lang-trigger"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-label="Til / Язык / Language"
+              title="Til"
+            >
+              <i class="fa-solid fa-globe"></i
+              ><span class="lang-code" data-lang-current>UZ</span>
+            </button>
+            <div class="lang-menu" role="menu">
+              <button
+                type="button"
+                class="lang-opt"
+                data-lang="uz"
+                role="menuitemradio"
+              >
+                <span class="lang-flag">🇺🇿</span><span>O'zbekcha</span
+                ><i class="fa-solid fa-check"></i>
+              </button>
+              <button
+                type="button"
+                class="lang-opt"
+                data-lang="ru"
+                role="menuitemradio"
+              >
+                <span class="lang-flag">🇷🇺</span><span>Русский</span
+                ><i class="fa-solid fa-check"></i>
+              </button>
+              <button
+                type="button"
+                class="lang-opt"
+                data-lang="en"
+                role="menuitemradio"
+              >
+                <span class="lang-flag">🇬🇧</span><span>English</span
+                ><i class="fa-solid fa-check"></i>
+              </button>
             </div>
+          </div>
+          <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
+      </div>
     </nav>
 
     <!-- HERO -->
     <header class="hero" id="home">
-        <div class="container hero-container">
-            <div class="hero-content reveal">
-                <span class="hero-badge"><i class="fa-solid fa-award"></i> <span data-i18n="hero.badge">O'zbekiston #1 biznes platforma</span></span>
-                <h1 class="hero-title">
-                    <span data-i18n="hero.title_1">Biznesingizni</span> <span data-i18n="hero.title_2">ishonchli tarzda</span> <span class="text-accent" data-i18n="hero.title_online">online</span> <span data-i18n="hero.title_3">ga aylantiring</span>
-                </h1>
-                <p class="hero-subtitle" data-i18n="hero.subtitle">Do'kon, fast food va kafe uchun korporativ darajadagi veb-ilova va boshqaruv paneli. Xavfsiz, tez va 24/7 qo'llab-quvvatlash bilan.</p>
-                <div class="hero-buttons">
-                    <a href="kirish.html?tab=register" class="btn btn-primary btn-lg">
-                        <span data-i18n="hero.btn_subscribe">Bepul boshlash</span> <i class="fa-solid fa-arrow-right" style="font-size:13px;"></i>
-                    </a>
-                    <a href="#apps" class="btn btn-outline btn-lg">
-                        <i class="fa-solid fa-grid-2"></i> <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="hs-item">
-                        <div class="hs-num"><span class="stat-number" data-target="200">0</span></div>
-                        <div class="hs-label">Faol biznes</div>
-                    </div>
-                    <div class="hs-sep"></div>
-                    <div class="hs-item">
-                        <div class="hs-num">99.9%</div>
-                        <div class="hs-label">Uptime SLA</div>
-                    </div>
-                    <div class="hs-sep"></div>
-                    <div class="hs-item">
-                        <div class="hs-num">4.9<span>/5</span></div>
-                        <div class="hs-label">Reyting</div>
-                    </div>
-                </div>
+      <div class="container hero-container">
+        <div class="hero-content reveal">
+          <span class="hero-badge"
+            ><i class="fa-solid fa-award"></i>
+            <span data-i18n="hero.badge"
+              >O'zbekiston #1 biznes platforma</span
+            ></span
+          >
+          <h1 class="hero-title">
+            <span data-i18n="hero.title_1">Biznesingizni</span>
+            <span data-i18n="hero.title_2">ishonchli tarzda</span>
+            <span class="text-accent" data-i18n="hero.title_online"
+              >online</span
+            >
+            <span data-i18n="hero.title_3">ga aylantiring</span>
+          </h1>
+          <p class="hero-subtitle" data-i18n="hero.subtitle">
+            Do'kon, fast food va kafe uchun korporativ darajadagi veb-ilova va
+            boshqaruv paneli. Xavfsiz, tez va 24/7 qo'llab-quvvatlash bilan.
+          </p>
+          <div class="hero-buttons">
+            <a href="kirish.html?tab=register" class="btn btn-primary btn-lg">
+              <span data-i18n="hero.btn_subscribe">Bepul boshlash</span>
+              <i class="fa-solid fa-arrow-right" style="font-size: 13px"></i>
+            </a>
+            <a href="#apps" class="btn btn-outline btn-lg">
+              <i class="fa-solid fa-grid-2"></i>
+              <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hs-item">
+              <div class="hs-num">
+                <span class="stat-number" data-target="200">0</span>
+              </div>
+              <div class="hs-label">Faol biznes</div>
             </div>
-
-            <!-- Hero o'ng tomoni: bu bo'sh joyda fondagi zarrachalardan yasalgan
-                 do'kon ko'rinadi (js/particles.js) -->
-            <div class="hero-visual" aria-hidden="true"></div>
+            <div class="hs-sep"></div>
+            <div class="hs-item">
+              <div class="hs-num">99.9%</div>
+              <div class="hs-label">Uptime SLA</div>
+            </div>
+            <div class="hs-sep"></div>
+            <div class="hs-item">
+              <div class="hs-num">4.9<span>/5</span></div>
+              <div class="hs-label">Reyting</div>
+            </div>
+          </div>
         </div>
+
+        <!-- Hero o'ng tomoni: bu bo'sh joyda fondagi zarrachalardan yasalgan
+                 do'kon ko'rinadi (js/particles.js) -->
+        <div class="hero-visual" aria-hidden="true"></div>
+      </div>
     </header>
 
     <!-- TRUST LOGOS -->
     <div class="trust-band">
-        <div class="container">
-            <div class="trust-label reveal">Ular bizga ishonadi</div>
-            <div class="trust-logos reveal">
-                <span><i class="fa-solid fa-store"></i> Toshkent Burger</span>
-                <span><i class="fa-solid fa-mug-hot"></i> Coffee Time</span>
-                <span><i class="fa-solid fa-basket-shopping"></i> Mahalla Do'kon</span>
-                <span><i class="fa-solid fa-pizza-slice"></i> Milano Pizza</span>
-                <span><i class="fa-solid fa-ice-cream"></i> Sweet Lab</span>
-            </div>
+      <div class="container">
+        <div class="trust-label reveal">Ular bizga ishonadi</div>
+        <div class="trust-logos reveal">
+          <span><i class="fa-solid fa-store"></i> Toshkent Burger</span>
+          <span><i class="fa-solid fa-mug-hot"></i> Coffee Time</span>
+          <span
+            ><i class="fa-solid fa-basket-shopping"></i> Mahalla Do'kon</span
+          >
+          <span><i class="fa-solid fa-pizza-slice"></i> Milano Pizza</span>
+          <span><i class="fa-solid fa-ice-cream"></i> Sweet Lab</span>
         </div>
+      </div>
     </div>
 
-    <!-- APPS SECTION — platforma ilovalari vitrinasi (coverflow) -->
+    <!-- APPS SECTION — fondagi zarrachalar tanlangan ilova belgisiga yig'iladi -->
     <section class="apps-section" id="apps">
-        <div class="container">
-            <div class="section-head reveal">
-                <span class="section-tag" data-i18n="apps.tag">YECHIMLAR</span>
-                <h2 class="section-title" data-i18n="apps.title">Biznesingizga mos ilovani tanlang</h2>
-                <p class="section-subtitle" data-i18n="apps.subtitle">Har bir soha uchun maxsus sozlangan, tayyor ishga tushiriladigan yechimlar.</p>
-            </div>
-
-            <div class="app-showcase reveal" id="appShowcase">
-                <div class="showcase-stage" id="showcaseStage"></div>
-            </div>
-            <div class="showcase-caption" id="showcaseCaption"></div>
-            <div class="showcase-dots" id="showcaseDots"></div>
-
-            <div class="custom-price-note reveal">
-                <i class="fa-solid fa-gift"></i>
-                <p>Barcha ilovalar — <strong>mutlaqo bepul</strong>. Ilovani olish uchun shunchaki <strong>ro'yxatdan o'ting</strong> va biznesingiz uchun veb-ilovani bir necha daqiqada ishga tushiring.</p>
-            </div>
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag" data-i18n="apps.tag">YECHIMLAR</span>
+          <h2 class="section-title" data-i18n="apps.title">
+            Biznesingizga mos ilovani tanlang
+          </h2>
+          <p class="section-subtitle" data-i18n="apps.subtitle">
+            Har bir soha uchun maxsus sozlangan, tayyor ishga tushiriladigan
+            yechimlar.
+          </p>
         </div>
+
+        <div class="app-stage reveal" id="appStage">
+          <!-- Bo'sh joy: shu yerda zarrachalardan ilova belgisi yig'iladi (js/particles.js) -->
+          <div class="as-visual" aria-hidden="true"></div>
+          <div class="as-card" id="appCard" aria-live="polite"></div>
+        </div>
+        <div class="as-chips" id="appChips" role="tablist" aria-label="Ilovalar"></div>
+
+        <div class="custom-price-note reveal">
+          <i class="fa-solid fa-gift"></i>
+          <p>
+            Barcha ilovalar — <strong>mutlaqo bepul</strong>. Ilovani olish
+            uchun shunchaki <strong>ro'yxatdan o'ting</strong> va biznesingiz
+            uchun veb-ilovani bir necha daqiqada ishga tushiring.
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- HOW IT WORKS -->
     <section class="how-section" id="how">
-        <div class="container">
-            <div class="section-head reveal">
-                <span class="section-tag" data-i18n="how.tag">QANDAY ISHLAYDI</span>
-                <h2 class="section-title" data-i18n="how.title">3 qadamda ishga tushiring</h2>
-                <p class="section-subtitle" data-i18n="how.subtitle">5 daqiqada biznesingizni online ga olib chiqing</p>
-            </div>
-            <div class="how-grid">
-                <div class="how-step reveal">
-                    <div class="how-head"><span class="how-num">1</span><i class="fa-solid fa-hand-pointer"></i></div>
-                    <h3>Ilovani tanlang</h3>
-                    <p>Biznesingizga mos ilova turini — do'kon, fast food yoki kafe — tanlang.</p>
-                </div>
-                <div class="how-step reveal">
-                    <div class="how-head"><span class="how-num">2</span><i class="fa-solid fa-sliders"></i></div>
-                    <h3>Sozlang</h3>
-                    <p>Nom, manzil, mahsulot va to'lov usullarini qo'shing.</p>
-                </div>
-                <div class="how-step reveal">
-                    <div class="how-head"><span class="how-num">3</span><i class="fa-solid fa-globe"></i></div>
-                    <h3>Ishga tushiring</h3>
-                    <p>Shaxsiy domenda darhol online bo'ling: <code>sizning-biznes.biznesonline.uz</code></p>
-                </div>
-            </div>
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag" data-i18n="how.tag">QANDAY ISHLAYDI</span>
+          <h2 class="section-title" data-i18n="how.title">
+            3 qadamda ishga tushiring
+          </h2>
+          <p class="section-subtitle" data-i18n="how.subtitle">
+            5 daqiqada biznesingizni online ga olib chiqing
+          </p>
         </div>
+        <div class="how-grid">
+          <div class="how-step reveal">
+            <div class="how-head">
+              <span class="how-num">1</span
+              ><i class="fa-solid fa-hand-pointer"></i>
+            </div>
+            <h3>Ilovani tanlang</h3>
+            <p>
+              Biznesingizga mos ilova turini — do'kon, fast food yoki kafe —
+              tanlang.
+            </p>
+          </div>
+          <div class="how-step reveal">
+            <div class="how-head">
+              <span class="how-num">2</span><i class="fa-solid fa-sliders"></i>
+            </div>
+            <h3>Sozlang</h3>
+            <p>Nom, manzil, mahsulot va to'lov usullarini qo'shing.</p>
+          </div>
+          <div class="how-step reveal">
+            <div class="how-head">
+              <span class="how-num">3</span><i class="fa-solid fa-globe"></i>
+            </div>
+            <h3>Ishga tushiring</h3>
+            <p>
+              Shaxsiy domenda darhol online bo'ling:
+              <code>sizning-biznes.biznesonline.uz</code>
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- CTA -->
     <section class="cta-section" id="contact">
-        <div class="container">
-            <div class="cta-card reveal">
-                <div class="cta-content">
-                    <h2 data-i18n="cta.title">Bugun boshlang — bepul</h2>
-                    <p>Ro'yxatdan o'ting va korporativ darajadagi veb-ilovangizni bir necha daqiqada oling.</p>
-                </div>
-                <div class="cta-actions">
-                    <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
-                        <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn_start">Bepul boshlash</span>
-                    </a>
-                    <a href="tel:+998992823115" class="btn btn-ghost btn-lg">
-                        <i class="fa-solid fa-headset"></i> Savdo bo'limi bilan
-                    </a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="cta-card reveal">
+          <div class="cta-content">
+            <h2 data-i18n="cta.title">Bugun boshlang — bepul</h2>
+            <p>
+              Ro'yxatdan o'ting va korporativ darajadagi veb-ilovangizni bir
+              necha daqiqada oling.
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
+              <i class="fa-solid fa-rocket"></i>
+              <span data-i18n="cta.btn_start">Bepul boshlash</span>
+            </a>
+            <a href="tel:+998992823115" class="btn btn-ghost btn-lg">
+              <i class="fa-solid fa-headset"></i> Savdo bo'limi bilan
+            </a>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- FOOTER -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <a href="index.html" class="logo logo-light">
-                        <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
-                        <span class="logo-text">BiznesOnline</span>
-                    </a>
-                    <p class="footer-desc">O'zbekistondagi kichik bizneslar uchun ishonchli, korporativ darajadagi SaaS platforma. Biznesingizni online ga oling.</p>
-                    <div class="social-links">
-                        <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-col">
-                    <h4>Mahsulot</h4>
-                    <ul class="footer-links">
-                        <li><a href="#apps">Do'kon</a></li>
-                        <li><a href="#apps">Fast Food</a></li>
-                        <li><a href="#apps">Kafe / Restoran</a></li>
-                        <li><a href="#how">Qanday ishlaydi</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Kompaniya</h4>
-                    <ul class="footer-links">
-                        <li><a href="kirish.html?tab=register">Ro'yxatdan o'tish</a></li>
-                        <li><a href="kirish.html">Kirish</a></li>
-                        <li><a href="#contact">Bog'lanish</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Bog'lanish</h4>
-                    <ul class="footer-contacts">
-                        <li><a href="tel:+998992823115"><i class="fa-solid fa-phone"></i> +998 99 282 31 15</a></li>
-                        <li><a href="mailto:info@biznesonline.uz"><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</a></li>
-                        <li><i class="fa-solid fa-location-dot"></i> Toshkent, O'zbekiston</li>
-                        <li><i class="fa-solid fa-clock"></i> Dush-Shanba, 9:00 - 18:00</li>
-                    </ul>
-                </div>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <a href="index.html" class="logo logo-light">
+              <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+              <span class="logo-text">BiznesOnline</span>
+            </a>
+            <p class="footer-desc">
+              O'zbekistondagi kichik bizneslar uchun ishonchli, korporativ
+              darajadagi SaaS platforma. Biznesingizni online ga oling.
+            </p>
+            <div class="social-links">
+              <a href="#" aria-label="Telegram"
+                ><i class="fa-brands fa-telegram"></i
+              ></a>
+              <a href="#" aria-label="Instagram"
+                ><i class="fa-brands fa-instagram"></i
+              ></a>
+              <a href="#" aria-label="Facebook"
+                ><i class="fa-brands fa-facebook"></i
+              ></a>
+              <a href="#" aria-label="YouTube"
+                ><i class="fa-brands fa-youtube"></i
+              ></a>
             </div>
-            <div class="footer-bottom">
-                <p>© 2026 BiznesOnline. Barcha huquqlar himoyalangan.</p>
-                <p>Maxfiylik · Shartlar</p>
-            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Mahsulot</h4>
+            <ul class="footer-links">
+              <li><a href="#apps">Do'kon</a></li>
+              <li><a href="#apps">Fast Food</a></li>
+              <li><a href="#apps">Kafe / Restoran</a></li>
+              <li><a href="#how">Qanday ishlaydi</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Kompaniya</h4>
+            <ul class="footer-links">
+              <li><a href="kirish.html?tab=register">Ro'yxatdan o'tish</a></li>
+              <li><a href="kirish.html">Kirish</a></li>
+              <li><a href="#contact">Bog'lanish</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Bog'lanish</h4>
+            <ul class="footer-contacts">
+              <li>
+                <a href="tel:+998992823115"
+                  ><i class="fa-solid fa-phone"></i> +998 99 282 31 15</a
+                >
+              </li>
+              <li>
+                <a href="mailto:info@biznesonline.uz"
+                  ><i class="fa-solid fa-envelope"></i> info@biznesonline.uz</a
+                >
+              </li>
+              <li>
+                <i class="fa-solid fa-location-dot"></i> Toshkent, O'zbekiston
+              </li>
+              <li>
+                <i class="fa-solid fa-clock"></i> Dush-Shanba, 9:00 - 18:00
+              </li>
+            </ul>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>© 2026 BiznesOnline. Barcha huquqlar himoyalangan.</p>
+          <p>Maxfiylik · Shartlar</p>
+        </div>
+      </div>
     </footer>
 
     <!-- TOAST -->
@@ -249,225 +409,211 @@
 
     <!-- SCROLL TO TOP -->
     <button class="scroll-top" id="scrollTop" aria-label="Yuqoriga">
-        <i class="fa-solid fa-arrow-up"></i>
+      <i class="fa-solid fa-arrow-up"></i>
     </button>
 
     <!-- APP DETAIL MODAL -->
     <div class="app-detail-overlay" id="appDetailModal">
-        <div class="app-detail-box">
-            <button class="app-detail-close" id="appDetailClose" aria-label="Yopish">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="app-detail-inner" id="appDetailContent"></div>
-        </div>
+      <div class="app-detail-box">
+        <button
+          class="app-detail-close"
+          id="appDetailClose"
+          aria-label="Yopish"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="app-detail-inner" id="appDetailContent"></div>
+      </div>
     </div>
 
     <!-- Fondagi 3D zarrachalar (three.js) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/particles.js?v=5"></script>
+    <script src="js/particles.js?v=7"></script>
     <script src="js/settings.js?v=10"></script>
     <script src="js/main.js?v=12"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('appDetailModal');
-            const closeBtn = document.getElementById('appDetailClose');
-            if (closeBtn) closeBtn.addEventListener('click', () => {
-                modal.classList.remove('show');
-                document.body.style.overflow = '';
-            });
-            if (modal) modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                    document.body.style.overflow = '';
-                }
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
-                    modal.classList.remove('show');
-                    document.body.style.overflow = '';
-                }
-            });
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("appDetailModal");
+        const closeBtn = document.getElementById("appDetailClose");
+        if (closeBtn)
+          closeBtn.addEventListener("click", () => {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+          });
+        if (modal)
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+              modal.classList.remove("show");
+              document.body.style.overflow = "";
+            }
+          });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal && modal.classList.contains("show")) {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+          }
         });
+      });
     </script>
 
-    <!-- APP SHOWCASE (coverflow) — platforma ilovalari vitrinasi -->
+    <!-- ILOVALAR VITRINASI — zarrachali belgi + ma'lumot kartasi -->
     <script>
-    (function () {
-        // Telefon ichida — HAQIQIY web-ilova (jonli iframe). url = ilovaning o'zi.
+      (function () {
         const APPS = [
-            { name: "Ovqat Dokoni", label: "Ovqat",     url: "ovqat-dokoni/index.html",     acc: "#16A34A" },
-            { name: "Fast Food",    label: "Fast Food",  url: "fast-food-dokoni/index.html", acc: "#EA580C" },
-            { name: "Moda",         label: "Moda",       url: "kiyim-dokoni/index.html",     acc: "#DB2777" },
-            { name: "Kitob Olami",  label: "Kitob",      url: "kitob-dokoni/index.html",     acc: "#4F46E5" }
+          {
+            key: "ovqat",
+            name: "Ovqat Dokoni",
+            icon: "fa-cart-shopping",
+            acc: "#2DD4BF",
+            url: "ovqat-dokoni/index.html",
+            tag: "Oziq-ovqat do'koni uchun onlayn buyurtma va yetkazib berish",
+            feats: [
+              "Mahsulotlar katalogi va kategoriyalar",
+              "Savat, buyurtma va yetkazib berish",
+              "Telegram bot va QR kod menyu",
+              "Naqd yoki karta — yetkazilganda to'lov",
+            ],
+          },
+          {
+            key: "fastfood",
+            name: "Fast Food",
+            icon: "fa-burger",
+            acc: "#F5C542",
+            url: "fast-food-dokoni/index.html",
+            tag: "Restoran va fast food uchun onlayn menyu",
+            feats: [
+              "Onlayn menyu va taom kartalari",
+              "Tez buyurtma va yetkazib berish",
+              "Buyurtmalar Telegram kanalga",
+              "Alohida boshqaruv paneli",
+            ],
+          },
+          {
+            key: "kiyim",
+            name: "Moda — Kiyim do'koni",
+            icon: "fa-shirt",
+            acc: "#F472B6",
+            url: "kiyim-dokoni/index.html",
+            tag: "Kiyim va moda do'koni uchun zamonaviy onlayn-magazin",
+            feats: [
+              "Katalog, o'lcham va rang tanlash",
+              "Kuponlar va chegirmalar",
+              "Mijozlar bilan jonli chat",
+              "To'liq admin panel",
+            ],
+          },
+          {
+            key: "kitob",
+            name: "Kitob Olami",
+            icon: "fa-book-open",
+            acc: "#A99CFF",
+            url: "kitob-dokoni/index.html",
+            tag: "Onlayn kitob do'koni",
+            feats: [
+              "Kitoblar katalogi: muallif va janr",
+              "Savat va buyurtma tizimi",
+              "Sevimlilar va manzillar",
+              "Telegram bot xabarnomalari",
+            ],
+          },
         ];
 
-        const stage = document.getElementById('showcaseStage');
-        const dotsWrap = document.getElementById('showcaseDots');
-        const caption = document.getElementById('showcaseCaption');
-        const showcaseEl = document.getElementById('appShowcase');
-        if (!stage) return;
+        const stage = document.getElementById("appStage");
+        const card = document.getElementById("appCard");
+        const chipsWrap = document.getElementById("appChips");
+        if (!stage || !card || !chipsWrap) return;
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        function screenHTML(a) {
-            return `
-                <div class="mp-frame">
-                    <span class="mp-btn silent"></span>
-                    <span class="mp-btn volup"></span>
-                    <span class="mp-btn voldn"></span>
-                    <span class="mp-btn power"></span>
-                    <div class="mp-bezel">
-                        <div class="mp-island"></div>
-                        <div class="mp-screen" style="--acc:${a.acc}">
-                            <div class="mp-statusbar"></div>
-                            <div class="mp-loading"><i class="fa-solid fa-store"></i></div>
-                            <iframe class="mp-appframe" src="${a.url}?demo=1" title="${esc(a.name)}" loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
-                        </div>
-                    </div>
-                </div>
-                <div class="mp-label">${esc(a.label)}</div>`;
-        }
-
-        let active = 0;
-        const phones = APPS.map((a, i) => {
-            const el = document.createElement('div');
-            el.className = 'mrd-phone';
-            el.innerHTML = screenHTML(a);
-            const scr = el.querySelector('.mp-screen');
-            const fr = el.querySelector('iframe');
-            fr.addEventListener('load', () => scr.classList.add('loaded'));
-            // Telefonni bosish faqat karuselni aylantiradi — ilova ichiga KIRMAYDI
-            el.addEventListener('click', () => {
-                if (i !== active) { go(i); bump(); }
-            });
-            stage.appendChild(el);
-            return el;
+        const chips = APPS.map((a, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "as-chip";
+          b.setAttribute("role", "tab");
+          b.style.setProperty("--acc", a.acc);
+          b.innerHTML = `<i class="fa-solid ${a.icon}"></i><span>${a.name}</span>`;
+          b.addEventListener("click", () => { go(i); restart(); });
+          chipsWrap.appendChild(b);
+          return b;
         });
 
-        // dots
-        APPS.forEach((a, i) => {
-            const b = document.createElement('button');
-            b.setAttribute('aria-label', a.label);
-            b.addEventListener('click', () => { go(i); bump(); });
-            dotsWrap.appendChild(b);
-        });
-        const dots = [...dotsWrap.children];
-
-        function layout() {
-            const stageW = stage.clientWidth || 900;
-            const cs = Math.max(0.56, Math.min(1, (stageW * 0.55) / 264));
-            stage.style.height = Math.round(558 * cs + 82) + 'px';
-            const w = 264 * cs;
-            const n = APPS.length;
-            phones.forEach((el, i) => {
-                let off = i - active;
-                if (off > n / 2) off -= n;
-                if (off < -n / 2) off += n;
-                const aoff = Math.abs(off);
-                const dir = off > 0 ? 1 : -1;
-                let x = 0, sc = cs, z = 6, op = 1, ry = 0;
-                if (aoff === 0) { x = 0;               sc = cs;        z = 6; op = 1;   ry = 0; }
-                else if (aoff === 1) { x = dir * w * 1.06; sc = cs * 0.80; z = 5; op = .97; ry = dir * -16; }
-                else if (aoff === 2) { x = dir * w * 1.86; sc = cs * 0.62; z = 4; op = .45; ry = dir * -24; }
-                else { x = dir * w * 2.2; sc = cs * 0.5; z = 3; op = 0; ry = dir * -28; }
-                el.style.transform = `translateX(${x}px) scale(${sc}) rotateY(${ry}deg)`;
-                el.style.zIndex = z;
-                el.style.opacity = op;
-                el.style.pointerEvents = op === 0 ? 'none' : 'auto';
-                el.classList.toggle('is-center', aoff === 0);
-            });
-            dots.forEach((d, i) => d.classList.toggle('on', i === active));
-            if (caption) caption.textContent = APPS[active].label;
-        }
-
+        let active = -1;
         function go(i) {
-            const n = APPS.length;
-            active = ((i % n) + n) % n;
-            layout();
+          const n = APPS.length;
+          i = ((i % n) + n) % n;
+          if (i === active) return;
+          active = i;
+          const a = APPS[i];
+          card.style.setProperty("--acc", a.acc);
+          card.innerHTML = `
+            <div class="as-card-in">
+              <span class="as-icon"><i class="fa-solid ${a.icon}"></i></span>
+              <h3>${a.name}</h3>
+              <p>${a.tag}</p>
+              <ul>${a.feats.map((f) => `<li><i class="fa-solid fa-check"></i>${f}</li>`).join("")}</ul>
+              <div class="as-actions">
+                <a href="${a.url}?demo=1" target="_blank" rel="noopener" class="btn btn-outline"><i class="fa-solid fa-eye"></i> Demo ko'rish</a>
+                <a href="kirish.html?tab=register" class="btn btn-primary">Bepul boshlash <i class="fa-solid fa-arrow-right" style="font-size: 12px"></i></a>
+              </div>
+            </div>`;
+          chips.forEach((c, k) => {
+            c.classList.toggle("active", k === i);
+            c.setAttribute("aria-selected", k === i ? "true" : "false");
+          });
+          if (window.BOParticles) window.BOParticles.setApp(a.key);
         }
 
-        /* ---- avto-aylanish (autoplay) ---- */
+        /* avto-almashish: bo'lim ko'rinib turganda, sichqoncha ustida bo'lmasa */
         let timer = null, inView = false, hovering = false;
-        function tick() { go(active + 1); }
-        function startAuto() {
-            stopAuto();
-            if (prefersReduced || !inView || hovering) return;
-            timer = setInterval(tick, 4200);
-        }
-        function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
-        function bump() { startAuto(); }   // foydalanuvchi amalidan keyin sanoqni qayta boshlash
+        const stop = () => { clearInterval(timer); timer = null; };
+        const start = () => { stop(); if (!reduce && inView && !hovering) timer = setInterval(() => go(active + 1), 5500); };
+        const restart = () => start();
+        stage.addEventListener("mouseenter", () => { hovering = true; stop(); });
+        stage.addEventListener("mouseleave", () => { hovering = false; start(); });
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver((ents) => { inView = ents[0].isIntersecting; inView ? start() : stop(); }, { threshold: 0.3 }).observe(stage);
+        } else { inView = true; start(); }
 
-        showcaseEl.addEventListener('mouseenter', () => { hovering = true; stopAuto(); });
-        showcaseEl.addEventListener('mouseleave', () => { hovering = false; startAuto(); });
-
-        if ('IntersectionObserver' in window) {
-            new IntersectionObserver((ents) => {
-                inView = ents[0].isIntersecting;
-                inView ? startAuto() : stopAuto();
-            }, { threshold: 0.35 }).observe(showcaseEl);
-        } else { inView = true; startAuto(); }
-
-        /* ---- swipe / drag ---- */
-        let sx = null;
-        const onDown = (e) => { sx = (e.touches ? e.touches[0].clientX : e.clientX); };
-        const onUp = (e) => {
-            if (sx === null) return;
-            const ex = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX);
-            const d = ex - sx;
-            if (Math.abs(d) > 40) { go(active + (d < 0 ? 1 : -1)); bump(); }
-            sx = null;
-        };
-        stage.addEventListener('touchstart', onDown, { passive: true });
-        stage.addEventListener('touchend', onUp);
-        stage.addEventListener('mousedown', onDown);
-        window.addEventListener('mouseup', onUp);
-
-        /* ---- klaviatura ---- */
-        showcaseEl.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') { go(active - 1); bump(); }
-            if (e.key === 'ArrowRight') { go(active + 1); bump(); }
-        });
-
-        let rid;
-        window.addEventListener('resize', () => { clearTimeout(rid); rid = setTimeout(layout, 120); });
-        layout();
-    })();
+        go(0);
+      })();
     </script>
 
     <!-- Footer ijtimoiy tarmoq havolalari — admin panelidan (Cloud) o'qiladi -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/cloud.js?v=3"></script>
     <script>
-    (function () {
+      (function () {
         function normUrl(u) {
-            u = (u || '').trim();
-            if (!u) return '';
-            if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
-            return 'https://' + u;
+          u = (u || "").trim();
+          if (!u) return "";
+          if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+          return "https://" + u;
         }
         function applySocial() {
-            const s = (window.Cloud ? Cloud.get('bo_social', {}) : {}) || {};
-            document.querySelectorAll('.social-links a[aria-label]').forEach(function (a) {
-                const key = a.getAttribute('aria-label').toLowerCase();
-                const url = normUrl(s[key]);
-                if (url) {
-                    a.href = url;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    a.style.display = '';
-                } else {
-                    a.removeAttribute('href');
-                    a.style.display = 'none';   // havola belgilanmagan ijtimoiy tarmoq yashiriladi
-                }
+          const s = (window.Cloud ? Cloud.get("bo_social", {}) : {}) || {};
+          document
+            .querySelectorAll(".social-links a[aria-label]")
+            .forEach(function (a) {
+              const key = a.getAttribute("aria-label").toLowerCase();
+              const url = normUrl(s[key]);
+              if (url) {
+                a.href = url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.style.display = "";
+              } else {
+                a.removeAttribute("href");
+                a.style.display = "none"; // havola belgilanmagan ijtimoiy tarmoq yashiriladi
+              }
             });
         }
         (async function () {
-            try { await Cloud.init(); } catch (e) {}
-            applySocial();
-            window.addEventListener('cloud:updated', applySocial);
+          try {
+            await Cloud.init();
+          } catch (e) {}
+          applySocial();
+          window.addEventListener("cloud:updated", applySocial);
         })();
-    })();
+      })();
     </script>
-</body>
+  </body>
 </html>
