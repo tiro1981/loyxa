@@ -4,7 +4,6 @@
 
 const STORE_KEY = 'kitob_store_v1';
 const CART_KEY = 'kitob_cart_v1';
-const INSTALL_DISMISS_KEY = 'kitob_install_dismissed';
 
 /* Shu qurilmaga xos, bir martalik va doimiy mijoz ID'si (localStorage'da, Cloud'ga
    yozilmaydi). Buyurtmalar umumiy (Cloud) saqlangani uchun, "Buyurtmalarim" ro'yxatini
@@ -31,43 +30,6 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(() => {});
     });
 }
-
-/* ============ PWA: Install Prompt ============ */
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
-    if (dismissed && (Date.now() - +dismissed) < 7 * 86400000) return;
-    const prompt = document.getElementById('installPrompt');
-    if (prompt) setTimeout(() => prompt.classList.add('show'), 2500);
-});
-
-window.addEventListener('appinstalled', () => {
-    const prompt = document.getElementById('installPrompt');
-    if (prompt) prompt.classList.remove('show');
-    if (typeof toast === 'function') toast('Ilova o\'rnatildi! 🎉', 'success');
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const ipInstall = document.getElementById('ipInstall');
-    const ipClose = document.getElementById('ipClose');
-    const prompt = document.getElementById('installPrompt');
-    if (ipInstall) ipInstall.onclick = async () => {
-        if (!deferredInstallPrompt) {
-            toast('Brauzer menyusidan "Bosh ekranga qo\'shish" ni tanlang', 'info');
-            return;
-        }
-        deferredInstallPrompt.prompt();
-        const { outcome } = await deferredInstallPrompt.userChoice;
-        if (outcome === 'accepted') prompt.classList.remove('show');
-        deferredInstallPrompt = null;
-    };
-    if (ipClose) ipClose.onclick = () => {
-        prompt.classList.remove('show');
-        localStorage.setItem(INSTALL_DISMISS_KEY, Date.now() + '');
-    };
-});
 
 /* ---------- Default Demo Data ---------- */
 const DEFAULT_DATA = {
