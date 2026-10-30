@@ -19,7 +19,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
+  <!-- Telegram Mini App: ilova yarim oynada ochilganda pastki menyu ekrandan tashqarida
+       qolib ketardi. Ilovani to'liq ekranga yoyamiz va ko'rinadigan balandlikni (--tg-vh)
+       CSS'ga beramiz — menyu shunga bog'langan. Oddiy brauzerda hech narsa o'zgarmaydi. -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    (function () {
+      var tg = window.Telegram && window.Telegram.WebApp;
+      if (!tg || !tg.platform || tg.platform === 'unknown') return;
+      var root = document.documentElement;
+      root.classList.add('in-tg');
+      function setVh() { root.style.setProperty('--tg-vh', (tg.viewportStableHeight || window.innerHeight) + 'px'); }
+      setVh();
+      tg.onEvent('viewportChanged', setVh);
+      tg.ready();
+      tg.expand();
+      try { if (tg.isVersionAtLeast && tg.isVersionAtLeast('7.7')) tg.disableVerticalSwipes(); } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 

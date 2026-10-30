@@ -100,4 +100,7 @@ const Telegram = (() => {
   return { SHOP_KEY, get API_URL() { return apiBase(); }, status, health, connect, disconnect, setChannel, broadcast, sendOrder, sendStatusUpdate, isEnabled };
 })();
 
-window.Telegram = Telegram;
+// MUHIM: window.Telegram'ni ALMASHTIRMAYMIZ — u yerda Telegram Mini App SDK
+// (Telegram.WebApp / Telegram.WebView) turadi; Telegram ilovasi viewport hodisalarini
+// shu obyekt orqali yuboradi. Faqat o'z metodlarimizni qo'shamiz.
+window.Telegram = Object.assign(window.Telegram || {}, Telegram);

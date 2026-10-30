@@ -1078,3 +1078,10 @@ input { font-family: inherit; outline: none; border: none; background: transpare
   .food-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
   .categories { flex-wrap: wrap; overflow: visible; }
 }
+
+/* Telegram Mini App — menyu ko'rinadigan balandlik (--tg-vh) pastiga bog'lanadi (index.html) */
+html.in-tg .bottom-nav {
+  bottom: auto;
+  top: calc(var(--tg-vh, 100vh) - 14px - env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, -100%);
+}

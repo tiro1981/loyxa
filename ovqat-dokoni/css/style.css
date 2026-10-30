@@ -506,3 +506,7 @@ input, textarea, select { font-family: inherit; }
   .tabbar { width: min(560px, calc(100% - 24px)); margin-left: auto; margin-right: auto; }
   .sheet { max-width: 600px; margin: 0 auto; }
 }
+
+/* Telegram Mini App — ilova balandligi ko'rinadigan qism (--tg-vh) bilan cheklanadi,
+   shunda pastki menyu (.tabbar) doim ekranda qoladi (index.html) */
+html.in-tg .app { height: var(--tg-vh, 100dvh); }

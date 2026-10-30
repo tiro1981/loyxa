@@ -239,6 +239,20 @@ async def broadcast_message(bot: "Bot", text: str) -> dict:
 STORE_DB_FILE = Path(__file__).parent / "store-bots.json"
 TOKEN_RE = re.compile(r"^\d{6,}:[A-Za-z0-9_-]{30,}$")
 
+# Platformaning TIZIM botlari — ularni do'kon boti sifatida ulab bo'lmaydi.
+# Aks holda bu server ham o'sha tokenni polling qiladi va /start'ga do'kon javobini
+# ("🛍 Ilovani ochish") beradi — masalan SMS tasdiqlash boti (@onlinebiznes_smsbot)
+# telefon so'rash o'rniga ilova tugmasini yuborib qo'yardi.
+# Bot ID = tokenning ":" dan oldingi qismi. RESERVED_BOT_IDS env bilan qo'shimcha ID berish mumkin.
+RESERVED_BOT_IDS = {
+    BOT_TOKEN.split(":", 1)[0],   # shu platforma boti
+    "8938349890",                 # @onlinebiznes_smsbot — SMS (OTP) tasdiqlash boti
+} | {x.strip() for x in os.getenv("RESERVED_BOT_IDS", "").split(",") if x.strip()}
+
+
+def is_reserved_token(token: str) -> bool:
+    return str(token or "").split(":", 1)[0] in RESERVED_BOT_IDS
+
 # clientId -> {"bot": Bot, "dp": Dispatcher, "task": asyncio.Task}
 store_runtime: dict = {}
 
@@ -481,6 +495,13 @@ async def start_store_bot(client_id: str, cfg: dict) -> dict:
 async def start_all_store_bots() -> None:
     """Server ishga tushganda saqlangan barcha do'kon botlarini tiklaydi."""
     db = load_store_db()
+    # Tizim botlari tokeni bilan ulangan eski yozuvlarni uzamiz (yuqoridagi RESERVED_BOT_IDS izohi)
+    reserved = [cid for cid, c in db.items() if c.get("status") == "connected" and is_reserved_token(c.get("token"))]
+    for cid in reserved:
+        db[cid]["status"] = "disconnected"
+        log.warning("⛔ Store bot uzildi — tizim boti tokeni ishlatilgan: %s (%s)", db[cid].get("username"), cid)
+    if reserved:
+        save_store_db(db)
     for client_id, cfg in db.items():
         if cfg.get("status") != "connected":
             continue
@@ -840,8 +861,8 @@ async def handle_store_connect(request: web.Request) -> web.Response:
         return web.json_response({"ok": False, "error": "clientId va token kerak"}, status=400)
     if not TOKEN_RE.match(token):
         return web.json_response({"ok": False, "error": "Token formati noto'g'ri"}, status=400)
-    if token == BOT_TOKEN:
-        return web.json_response({"ok": False, "error": "Bu token buyurtma boti tomonidan band"}, status=409)
+    if is_reserved_token(token):
+        return web.json_response({"ok": False, "error": "Bu platformaning tizim boti — uni ulab bo'lmaydi. Do'koningiz uchun @BotFather'da yangi bot yarating."}, status=409)
 
     db = load_store_db()
     # Shu token boshqa client_id ostida (eski/stale yozuv yoki kalit o'zgargan) bo'lsa —

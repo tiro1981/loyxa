@@ -92,18 +92,21 @@ def norm_phone(p) -> str:
 router = Router()
 
 
-@router.message(CommandStart())
-async def cmd_start(message: Message) -> None:
-    """/start — telefon yuborish tugmasini ko'rsatadi (bot faqat tasdiqlash uchun)."""
-    kb = ReplyKeyboardMarkup(
+def contact_kb() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton(text="📱 Telefon raqamni yuborish", request_contact=True)]],
         resize_keyboard=True,
         one_time_keyboard=True,
     )
+
+
+@router.message(CommandStart())
+async def cmd_start(message: Message) -> None:
+    """/start — faqat telefon raqamini so'raydi (bot faqat tasdiqlash uchun)."""
     await message.answer(
         "Ro'yxatdan o'tishni tasdiqlash uchun pastdagi tugma bilan "
         "telefon raqamingizni yuboring.",
-        reply_markup=kb,
+        reply_markup=contact_kb(),
         parse_mode=None,
     )
 
@@ -111,6 +114,15 @@ async def cmd_start(message: Message) -> None:
 @router.message(F.contact)
 async def on_contact(message: Message) -> None:
     """Kontakt kelganda 4 xonali tasdiqlash kodini yaratib yuboradi."""
+    # Faqat foydalanuvchining O'Z raqami — boshqa odamning kontakt kartasini yuborib,
+    # begona raqamni "tasdiqlab" olishning oldini olamiz.
+    if not message.from_user or message.contact.user_id != message.from_user.id:
+        await message.answer(
+            "Faqat o'zingizning raqamingizni pastdagi tugma orqali yuboring.",
+            reply_markup=contact_kb(),
+            parse_mode=None,
+        )
+        return
     phone = norm_phone(message.contact.phone_number)
     CHAT_PHONE[message.chat.id] = phone          # keyin "Yangi kod olish" uchun eslab qolamiz
     code = issue_code(phone, message.chat.id)
@@ -129,6 +141,16 @@ async def on_newcode(cb: CallbackQuery) -> None:
     code = issue_code(phone, cb.message.chat.id)
     await cb.message.answer(code_text(code), reply_markup=refresh_kb(), parse_mode=None)
     await cb.answer("Yangi kod yuborildi ✅")
+
+
+@router.message()
+async def on_other(message: Message) -> None:
+    """Boshqa har qanday xabar — yana telefon so'raymiz."""
+    await message.answer(
+        "Tasdiqlash kodi olish uchun pastdagi tugma bilan telefon raqamingizni yuboring.",
+        reply_markup=contact_kb(),
+        parse_mode=None,
+    )
 
 
 # ============ HTTP SERVER (sayt /verify/check shu yerga murojaat qiladi) ============
