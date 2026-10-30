@@ -147,6 +147,13 @@ body.mrd.space {
 .mrd.space .how-step p { color: #B9BED3; }
 .mrd.space .how-step code { background: rgba(45,212,191,.14); color: #5EEAD4; }
 
+/* Qadamlar vertikal, chap ustunda — o'ngdagi zarracha shakli (#how) ochiq qoladi */
+@media (min-width: 993px) {
+    .mrd.space .how-section .section-head { text-align: left; margin: 0 0 40px; max-width: 560px; }
+    .mrd.space .how-grid { grid-template-columns: 1fr; max-width: 560px; gap: 18px; }
+    .mrd.space .how-step { padding: 26px 28px; }
+}
+
 /* ---------- CTA ---------- */
 .mrd.space .cta-section { padding: 40px 0 120px; }
 .mrd.space .cta-card {
