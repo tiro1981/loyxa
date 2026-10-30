@@ -33,6 +33,14 @@ function _boDashboardInit() {
         return;
     }
 
+    // Admin bloklagan mijoz — ochiq sessiyasi bo'lsa ham chiqariladi
+    if (client.status === 'blocked' || client.status === 'paused' || client.status === 'rejected') {
+        try { localStorage.removeItem('bo_session'); } catch {}
+        alert("Hisobingiz bloklangan. Batafsil ma'lumot uchun administrator bilan bog'laning.");
+        window.location.replace('kirish.html');
+        return;
+    }
+
     /* ---------- OBUNALAR (ko'p-ilova model) ---------- */
     // MUHIM: `client` sahifa ochilgandagi nusxa. Uni to'g'ridan-to'g'ri yozsak, shu orada
     // (boshqa qurilmada / "parolni tiklash"da) o'zgargan parol ESKI parolga qaytib qolardi
