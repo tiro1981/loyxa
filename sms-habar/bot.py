@@ -266,6 +266,10 @@ async def main() -> None:
         except asyncio.CancelledError:
             raise
         except Exception as e:
+            if "conflict" in str(e).lower():
+                log.error("❗ Shu bot tokenini BOSHQA dastur ham tinglayapti (Telegram Conflict). "
+                          "Ikkinchi nusxani to'xtating — masalan asosiy bot (bot/bot.py) Environment'ida "
+                          "BOT_TOKEN adashib SMS bot tokeniga qo'yilgan bo'lishi mumkin.")
             log.error("Polling xatosi: %s — 5 soniyadan keyin qayta urinamiz", e)
             await asyncio.sleep(5)
     await runner.cleanup()

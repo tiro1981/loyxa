@@ -244,10 +244,11 @@ TOKEN_RE = re.compile(r"^\d{6,}:[A-Za-z0-9_-]{30,}$")
 # ("🛍 Ilovani ochish") beradi — masalan SMS tasdiqlash boti (@onlinebiznes_smsbot)
 # telefon so'rash o'rniga ilova tugmasini yuborib qo'yardi.
 # Bot ID = tokenning ":" dan oldingi qismi. RESERVED_BOT_IDS env bilan qo'shimcha ID berish mumkin.
-RESERVED_BOT_IDS = {
-    BOT_TOKEN.split(":", 1)[0],   # shu platforma boti
+# Boshqa dastur (sms-habar/bot.py) ishlatadigan botlar — bu server ularni HECH QACHON tinglamasin.
+FOREIGN_BOT_IDS = {
     "8938349890",                 # @onlinebiznes_smsbot — SMS (OTP) tasdiqlash boti
 } | {x.strip() for x in os.getenv("RESERVED_BOT_IDS", "").split(",") if x.strip()}
+RESERVED_BOT_IDS = FOREIGN_BOT_IDS | {BOT_TOKEN.split(":", 1)[0]}   # + shu platforma boti
 
 
 def is_reserved_token(token: str) -> bool:
@@ -1244,6 +1245,22 @@ async def main() -> None:
     await start_all_store_bots()
     # Supabase'dagi yangi buyurtmalarni kanalga yuboruvchi fon vazifasi
     asyncio.create_task(supabase_order_poller())
+    # Serverda BOT_TOKEN adashib SMS bot tokeniga o'rnatilgan bo'lsa — shu tokenni TINGLAMAYMIZ.
+    # Aks holda ikki dastur bitta botni navbatma-navbat tinglaydi va @onlinebiznes_smsbot
+    # /start'ga telefon so'rash o'rniga shu botning "🚀 Ilovani ochish" javobini berib qo'yadi.
+    if BOT_TOKEN.split(":", 1)[0] in FOREIGN_BOT_IDS:
+        log.error("❌ BOT_TOKEN — SMS tasdiqlash botining tokeni! Bu bot faqat sms-habar/bot.py da "
+                  "ishlashi kerak. Polling O'CHIRILDI (HTTP server ishlayveradi). AlwaysData → shu sayt → "
+                  "Environment'da BOT_TOKEN ni @onlinebiznes_uz_bot tokeniga almashtiring.")
+        try:
+            await asyncio.Event().wait()
+        finally:
+            for cid in list(store_runtime.keys()):
+                await stop_store_bot(cid)
+            await runner.cleanup()
+            await bot.session.close()
+        return
+
     log.info("✅ Telegram bot polling rejimida ishga tushdi")
 
     try:
