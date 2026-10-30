@@ -155,7 +155,7 @@ body.mrd.space {
 }
 
 /* ---------- CTA ---------- */
-.mrd.space .cta-section { padding: 40px 0 120px; }
+.mrd.space .finale-section { height: 70vh; min-height: 420px; }
 .mrd.space .cta-card {
     background: rgba(10,11,20,.55);
     border: 1px solid rgba(255,255,255,.12);

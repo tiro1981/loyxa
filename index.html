@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="css/style.css?v=7" />
     <link rel="stylesheet" href="css/settings.css?v=7" />
     <link rel="stylesheet" href="css/meridian.css?v=14" />
-    <link rel="stylesheet" href="css/space.css?v=15" />
+    <link rel="stylesheet" href="css/space.css?v=16" />
     <script>
       try {
         const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
@@ -33,23 +33,6 @@
     </script>
   </head>
   <body class="mrd space">
-    <!-- TOP BAR -->
-    <div class="mrd-topbar">
-      <div class="container">
-        <span class="tb-left"
-          ><i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz
-          shifrlangan · O'zbekiston serverlarida</span
-        >
-        <span class="tb-right">
-          <a href="tel:+998992823115" class="tb-phone"
-            ><i class="fa-solid fa-phone" style="font-size: 11px"></i> +998 99
-            282 31 15</a
-          >
-          <span class="tb-langs">UZ · RU · EN</span>
-        </span>
-      </div>
-    </div>
-
     <!-- NAVIGATION -->
     <nav class="navbar" id="navbar">
       <div class="container nav-container">
@@ -159,12 +142,6 @@
     <header class="hero" id="home">
       <div class="container hero-container">
         <div class="hero-content reveal">
-          <span class="hero-badge"
-            ><i class="fa-solid fa-award"></i>
-            <span data-i18n="hero.badge"
-              >O'zbekiston #1 biznes platforma</span
-            ></span
-          >
           <h1 class="hero-title">
             <span data-i18n="hero.title_1">Biznesingizni</span>
             <span data-i18n="hero.title_2">ishonchli tarzda</span>
@@ -306,32 +283,11 @@
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta-section" id="contact">
-      <div class="container">
-        <div class="cta-card reveal">
-          <div class="cta-content">
-            <h2 data-i18n="cta.title">Bugun boshlang — bepul</h2>
-            <p>
-              Ro'yxatdan o'ting va korporativ darajadagi veb-ilovangizni bir
-              necha daqiqada oling.
-            </p>
-          </div>
-          <div class="cta-actions">
-            <a href="kirish.html?tab=register" class="btn btn-light btn-lg">
-              <i class="fa-solid fa-rocket"></i>
-              <span data-i18n="cta.btn_start">Bepul boshlash</span>
-            </a>
-            <a href="tel:+998992823115" class="btn btn-ghost btn-lg">
-              <i class="fa-solid fa-headset"></i> Savdo bo'limi bilan
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- FINAL — bo'sh joy: zarrachalar shu yerda globusga aylanadi (js/particles.js) -->
+    <section class="finale-section" id="finale" aria-hidden="true"></section>
 
     <!-- FOOTER -->
-    <footer class="footer">
+    <footer class="footer" id="contact">
       <div class="container">
         <div class="footer-grid">
           <div class="footer-col">
@@ -428,7 +384,7 @@
 
     <!-- Fondagi 3D zarrachalar (three.js) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/particles.js?v=11"></script>
+    <script src="js/particles.js?v=12"></script>
     <script src="js/settings.js?v=10"></script>
     <script src="js/main.js?v=12"></script>
     <script>

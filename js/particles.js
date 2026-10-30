@@ -253,7 +253,7 @@
         { sel: '#home',    d: { x: 3.4,  y: -0.3,  s: 1.18, ry: -0.6,  o: 1.0  }, m: { x: 0, y: -2.2, s: 0.62, ry: -0.5, o: 0.9 } },
         { sel: '#apps',    anchor: '#apps .as-visual', ry: -0.35, d: { x: -3.2, y: 0, s: 0.95, ry: -0.35, o: 1 }, m: { x: 0, y: 1.6, s: 0.55, ry: -0.3, o: 1 } },
         { sel: '#how',     d: { x: 5.3,  y: -0.6,  s: 1.05, ry: -0.5,  o: 0.95 }, m: { x: 0, y: 0.6,  s: 0.75, ry: -0.3, o: 0.5 } },
-        { sel: '#contact', d: { x: 0,    y: 0.1,   s: 1.15, ry: 0.3,   o: 0.7  }, m: { x: 0, y: 0,    s: 0.8,  ry: 0.3,  o: 0.5 } },
+        { sel: '#finale',  d: { x: 0,    y: 0.1,   s: 1.15, ry: 0.3,   o: 0.7  }, m: { x: 0, y: 0,    s: 0.8,  ry: 0.3,  o: 0.5 } },
     ];
     /* ---------------- Avtomatik rejim (aylantirilmaydigan sahifalar) ----------------
        <body data-particles="auto"> — shakllar vaqt bo'yicha almashadi. Sahna
