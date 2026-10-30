@@ -44,6 +44,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiohttp import web, ClientSession, ClientTimeout
 
+import sms_otp   # SMS (OTP) tasdiqlash boti — shu jarayonda ishlaydi (SMS_BOT_TOKEN env)
+
 # ============ CONFIG ============
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8843518782:AAHiVrJ7EDtLkAsMw1LviuNlTv0ZB7cyDNw")
 HTTP_PORT = int(os.getenv("PORT", "3344"))
@@ -1126,6 +1128,11 @@ async def cors_middleware(request, handler):
     return response
 
 
+async def handle_health(request: web.Request) -> web.Response:
+    """Tiriklik tekshiruvi (deploy/monitoring uchun)."""
+    return web.json_response({"ok": True, "service": "biznesonline-bot", "sms": bool(sms_otp.SMS_BOT_TOKEN)})
+
+
 def build_http_app(bot: Bot) -> web.Application:
     app = web.Application(middlewares=[cors_middleware])
     app["bot"] = bot
@@ -1229,8 +1236,10 @@ async def main() -> None:
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
 
-    # HTTP server (admin panel orderlari uchun)
+    # HTTP server (admin panel orderlari uchun) + sayt uchun /verify/* (SMS tasdiqlash)
     app = build_http_app(bot)
+    sms_otp.add_routes(app)
+    app.router.add_get("/", handle_health)
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, HTTP_HOST, HTTP_PORT)
@@ -1245,6 +1254,8 @@ async def main() -> None:
     await start_all_store_bots()
     # Supabase'dagi yangi buyurtmalarni kanalga yuboruvchi fon vazifasi
     asyncio.create_task(supabase_order_poller())
+    # SMS tasdiqlash boti (@onlinebiznes_smsbot) — alohida sayt/jarayon shart emas
+    asyncio.create_task(sms_otp.run_polling())
     # Serverda BOT_TOKEN adashib SMS bot tokeniga o'rnatilgan bo'lsa — shu tokenni TINGLAMAYMIZ.
     # Aks holda ikki dastur bitta botni navbatma-navbat tinglaydi va @onlinebiznes_smsbot
     # /start'ga telefon so'rash o'rniga shu botning "🚀 Ilovani ochish" javobini berib qo'yadi.
