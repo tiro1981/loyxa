@@ -143,16 +143,114 @@ body.mrd.space {
 .mrd.space .custom-price-note strong { color: #fff; }
 
 .mrd.space .how-section .section-tag { color: #2DD4BF; }
-.mrd.space .how-step .how-num { background: linear-gradient(135deg, #6D5BFF, #8B5CF6); }
-.mrd.space .how-step .how-head > i { color: #2DD4BF; }
-.mrd.space .how-step p { color: #B9BED3; }
-.mrd.space .how-step code { background: rgba(45,212,191,.14); color: #5EEAD4; }
+/* ---------- QANDAY ISHLAYDI — vertikal timeline ----------
+   Raqamlar chapdagi doira tugunlarga aylanadi va gradient chiziq bilan ulanadi;
+   ikonka kartaning yuqori o'ng burchagida. Hammasi chap ustunda — o'ngdagi
+   zarracha shakli (#how) ochiq qoladi. */
+.mrd.space .how-grid {
+    position: relative;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    max-width: 600px;
+    padding-left: 76px;
+}
+/* tugunlarni ulovchi chiziq — har qadamdan keyingisigacha (oxirgisida yo'q) */
+.mrd.space .how-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: -49px;
+    top: 76px;
+    height: calc(100% - 38px);
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(109,91,255,.75), rgba(45,212,191,.45));
+}
+.mrd.space .how-step {
+    position: relative;
+    padding: 24px 26px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(109,91,255,.07), rgba(10,11,20,.62) 55%);
+    transition: opacity .6s ease, transform .4s cubic-bezier(.34,1.36,.64,1),
+                border-color .3s ease, box-shadow .3s ease;
+}
+/* tugundan kartaga ulagich */
+.mrd.space .how-step::before {
+    content: "";
+    position: absolute;
+    left: -21px;
+    top: 47px;
+    width: 21px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(109,91,255,.6), rgba(255,255,255,.12));
+}
+.mrd.space .how-step .how-head { margin: 0; }
+.mrd.space .how-step .how-num {
+    position: absolute;
+    left: -76px;
+    top: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    font-size: 20px;
+    background: #090A14;
+    border: 2px solid rgba(109,91,255,.6);
+    box-shadow: 0 0 0 6px #05060B, 0 0 26px -4px rgba(109,91,255,.7);
+    transition: background .35s ease, transform .4s cubic-bezier(.34,1.56,.64,1), border-color .35s ease;
+}
+.mrd.space .how-step:last-child .how-num { border-color: rgba(45,212,191,.6); box-shadow: 0 0 0 6px #05060B, 0 0 26px -4px rgba(45,212,191,.6); }
+.mrd.space .how-step .how-head > i {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 17px;
+    color: #2DD4BF;
+    background: rgba(45,212,191,.10);
+    border: 1px solid rgba(45,212,191,.18);
+}
+.mrd.space .how-step h3 { font-size: 19px; margin: 2px 0 8px; padding-right: 56px; }
+.mrd.space .how-step p { color: #B9BED3; font-size: 15px; }
+.mrd.space .how-step code {
+    display: inline-block;
+    margin-top: 4px;
+    white-space: nowrap;
+    background: rgba(45,212,191,.14);
+    color: #5EEAD4;
+}
+.mrd.space .how-step:hover {
+    transform: translateX(6px);
+    border-color: rgba(109,91,255,.45);
+    box-shadow: 0 24px 60px -28px rgba(109,91,255,.75);
+}
+.mrd.space .how-step:hover .how-num {
+    background: linear-gradient(135deg, #6D5BFF, #8B5CF6);
+    border-color: transparent;
+    transform: scale(1.08);
+}
+.mrd.space .how-step:last-child:hover .how-num { background: linear-gradient(135deg, #14B8A6, #2DD4BF); }
 
-/* Qadamlar vertikal, chap ustunda — o'ngdagi zarracha shakli (#how) ochiq qoladi */
 @media (min-width: 993px) {
-    .mrd.space .how-section .section-head { text-align: left; margin: 0 0 40px; max-width: 560px; }
-    .mrd.space .how-grid { grid-template-columns: 1fr; max-width: 560px; gap: 18px; }
-    .mrd.space .how-step { padding: 26px 28px; }
+    .mrd.space .how-section .section-head { text-align: left; margin: 0 0 40px; max-width: 600px; }
+}
+@media (max-width: 992px) {
+    .mrd.space .how-grid { margin: 0 auto; }
+}
+@media (max-width: 600px) {
+    .mrd.space .how-grid { padding-left: 58px; gap: 14px; }
+    .mrd.space .how-step:not(:last-child)::after { left: -37px; top: 62px; height: calc(100% - 30px); }
+    .mrd.space .how-step { padding: 20px 18px; }
+    .mrd.space .how-step::before { left: -14px; top: 40px; width: 14px; }
+    .mrd.space .how-step .how-num { left: -58px; top: 18px; width: 44px; height: 44px; font-size: 17px; box-shadow: 0 0 0 5px #05060B, 0 0 20px -4px rgba(109,91,255,.7); }
+    .mrd.space .how-step .how-head > i { top: 16px; right: 16px; width: 36px; height: 36px; font-size: 15px; }
+    .mrd.space .how-step h3 { font-size: 17px; }
+    .mrd.space .how-step code { white-space: normal; word-break: break-all; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mrd.space .how-step:hover { transform: none; }
 }
 
 /* ---------- CTA ---------- */
