@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/dashboard.css?v=10">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/space.css?v=16">
+    <link rel="stylesheet" href="css/space.css?v=17">
     <script>document.documentElement.setAttribute("data-theme", "dark");</script>
 </head>
 <body class="dash-body space" data-force-theme="dark" data-particles="auto" data-particles-opacity="0.35">
@@ -262,7 +262,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=12", "js/dashboard.js?v=15"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=15"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

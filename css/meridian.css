@@ -124,32 +124,63 @@
     padding: 0;
 }
 .mrd .nav-links .nav-auth { display: none; }
+.mrd .nav-links { position: relative; }
 .mrd .nav-link {
     font-size: 15px;
     color: var(--mrd-slate);
     font-weight: 600;
     text-decoration: none;
     position: relative;
+    z-index: 1;
     padding: 4px 0;
     background: transparent;
     border-radius: 0;
-    transition: color .2s;
+    transition: color .3s ease;
 }
 .mrd .nav-link.active { background: transparent; }
-.mrd .nav-link::after {
-    content: '';
+.mrd .nav-link:hover,
+.mrd .nav-link.is-hover,
+.mrd .nav-link.active { color: var(--mrd-blue); }
+
+/* Sirpanuvchi indikator (js/main.js) — havolalar orasida "prujina" bilan suzadi */
+.mrd .nav-indicator {
     position: absolute;
     left: 0;
-    bottom: -2px;
-    width: 0;
-    height: 2px;
-    background: var(--mrd-blue);
-    border-radius: 2px;
-    transition: width .25s ease;
+    top: 50%;
+    height: 36px;
+    margin-top: -18px;
+    border-radius: 999px;
+    background: rgba(109,91,255,.08);
+    box-shadow: inset 0 0 0 1px rgba(109,91,255,.16);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(0);
+    transition: opacity .3s ease;
 }
-.mrd .nav-link:hover,
-.mrd .nav-link.active { color: var(--mrd-blue); }
-.mrd .nav-link.active::after { width: 100%; }
+.mrd .nav-indicator::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -9px;
+    width: 26px;
+    height: 3px;
+    margin-left: -13px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--mrd-blue), #2DD4BF);
+    box-shadow: 0 0 12px 1px rgba(109,91,255,.75);
+    transition: width .45s cubic-bezier(.34,1.56,.64,1), margin-left .45s cubic-bezier(.34,1.56,.64,1);
+}
+.mrd .nav-indicator.on { opacity: 1; }
+.mrd .nav-indicator.ready {
+    transition:
+        transform .5s cubic-bezier(.34,1.36,.64,1),
+        width .5s cubic-bezier(.34,1.36,.64,1),
+        opacity .3s ease;
+}
+.mrd .nav-links:hover .nav-indicator::after { width: 40px; margin-left: -20px; }
+@media (prefers-reduced-motion: reduce) {
+    .mrd .nav-indicator.ready, .mrd .nav-indicator::after { transition: opacity .2s ease; }
+}
 
 .mrd .nav-actions {
     display: flex;
@@ -1189,7 +1220,7 @@
     /* menyu ochiq bo'lganda ham yopish tugmasi ko'rinib tursin */
     .mrd .hamburger { position: relative; z-index: 1001; }
     .mrd .nav-link { font-size: 17px; padding: 12px 4px; border-bottom: 1px solid var(--mrd-line); }
-    .mrd .nav-link::after { display: none; }
+    .mrd .nav-indicator { display: none; }
     .mrd .nav-links .nav-auth { display: block; margin-top: 8px; }
     .mrd .nav-links .nav-auth .btn { width: 100%; }
     .mrd .section-title { font-size: 32px; }

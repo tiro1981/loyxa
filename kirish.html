@@ -16,7 +16,7 @@
     />
     <link rel="stylesheet" href="css/style.css?v=6" />
     <link rel="stylesheet" href="css/auth.css?v=8" />
-    <link rel="stylesheet" href="css/space.css?v=16" />
+    <link rel="stylesheet" href="css/space.css?v=17" />
     <script>
       try {
         const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
@@ -367,7 +367,7 @@
         } catch (e) {
           console.error("[boot] Cloud.init:", e);
         }
-        for (const src of ["js/main.js?v=12", "js/auth.js?v=15"]) {
+        for (const src of ["js/main.js?v=13", "js/auth.js?v=15"]) {
           await new Promise((res, rej) => {
             const s = document.createElement("script");
             s.src = src;

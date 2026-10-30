@@ -130,32 +130,72 @@ function _boMainInit() {
         });
     }
 
-    /* ---------- ACTIVE NAVIGATION HIGHLIGHT ---------- */
-    const sections = document.querySelectorAll('section[id], header[id]');
-    const navLinkItems = document.querySelectorAll('.nav-link');
+    /* ---------- ACTIVE NAVIGATION + SIRPANUVCHI INDIKATOR ----------
+       Barcha havolalar uchun bitta indikator (pill + porloq chiziq): sichqoncha
+       qaysi havola ustida bo'lsa o'shanga sirpanadi, ketganda faol bo'limga qaytadi;
+       sahifa aylantirilganda bo'limdan bo'limga suzib o'tadi. */
+    const navList = document.getElementById('navLinks');
+    const navLinkItems = [...document.querySelectorAll('.nav-link')];
+    const sectionOf = (link) => {
+        const href = link.getAttribute('href') || '';
+        return href.startsWith('#') ? document.querySelector(href) : null;
+    };
 
-    if (sections.length && navLinkItems.length) {
+    if (navList && navLinkItems.length) {
+        const indicator = document.createElement('span');
+        indicator.className = 'nav-indicator';
+        indicator.setAttribute('aria-hidden', 'true');
+        navList.appendChild(indicator);
+
+        let activeLink = navLinkItems.find(l => l.classList.contains('active')) || null;
+        let hoverLink = null;
+
+        const moveTo = (link) => {
+            if (!link || !link.offsetWidth) { indicator.classList.remove('on'); return; }
+            const pad = 14;
+            indicator.style.width = (link.offsetWidth + pad * 2) + 'px';
+            indicator.style.transform = `translateX(${link.offsetLeft - pad}px)`;
+            indicator.classList.add('on');
+            if (!indicator.classList.contains('ready')) {
+                // birinchi joylashuv — animatsiyasiz, keyingi harakatlar sirpanadi
+                requestAnimationFrame(() => indicator.classList.add('ready'));
+            }
+        };
+        const sync = () => {
+            navLinkItems.forEach(l => l.classList.toggle('is-hover', l === hoverLink));
+            moveTo(hoverLink || activeLink);
+        };
+
+        navLinkItems.forEach(link => {
+            link.addEventListener('mouseenter', () => { hoverLink = link; sync(); });
+            link.addEventListener('focus', () => { hoverLink = link; sync(); });
+            link.addEventListener('blur', () => { hoverLink = null; sync(); });
+        });
+        navList.addEventListener('mouseleave', () => { hoverLink = null; sync(); });
+
         const setActive = () => {
             const scrollPos = window.scrollY + 120;
-            let current = '';
-
-            sections.forEach(sec => {
-                const top = sec.offsetTop;
-                const height = sec.offsetHeight;
-                if (scrollPos >= top && scrollPos < top + height) {
-                    current = sec.id;
-                }
-            });
-
+            const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+            let current = null;
             navLinkItems.forEach(link => {
-                link.classList.remove('active');
-                const href = link.getAttribute('href');
-                if (href === `#${current}`) {
-                    link.classList.add('active');
-                }
+                const sec = sectionOf(link);
+                if (!sec) return;
+                const top = sec.getBoundingClientRect().top + window.scrollY;
+                if (scrollPos >= top && scrollPos < top + sec.offsetHeight) current = link;
             });
+            // Sahifa oxirida (footer qisqa bo'lsa ham) — oxirgi havola ("Bog'lanish")
+            if (atBottom) current = navLinkItems.filter(sectionOf).pop() || current;
+            if (current === activeLink) return;
+            activeLink = current;
+            navLinkItems.forEach(l => l.classList.toggle('active', l === activeLink));
+            sync();
         };
-        window.addEventListener('scroll', setActive);
+
+        window.addEventListener('scroll', setActive, { passive: true });
+        window.addEventListener('resize', () => { indicator.classList.remove('ready'); sync(); requestAnimationFrame(() => indicator.classList.add('ready')); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
+        setActive();
+        sync();
     }
 
     /* ---------- REVEAL ON SCROLL ---------- */

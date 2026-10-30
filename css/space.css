@@ -46,8 +46,9 @@ body.mrd.space {
 .mrd.space .logo-icon { background: linear-gradient(135deg, #6D5BFF, #2DD4BF); }
 .mrd.space .nav-link { color: #B9BED3; }
 .mrd.space .nav-link:hover,
+.mrd.space .nav-link.is-hover,
 .mrd.space .nav-link.active { color: #fff; }
-.mrd.space .nav-link::after { background: #6D5BFF; }
+.mrd.space .nav-indicator { background: rgba(109,91,255,.14); box-shadow: inset 0 0 0 1px rgba(169,156,255,.22); }
 
 .mrd.space .btn-soft,
 .mrd.space .btn-outline {
