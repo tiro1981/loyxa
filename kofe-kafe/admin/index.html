@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
-  <link rel="stylesheet" href="admin.css?v=1" />
+  <link rel="stylesheet" href="admin.css?v=2" />
 </head>
 <body>
   <div class="layout">
@@ -50,7 +50,7 @@
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("kofe", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
       for (const src of ["../js/data.js", "../telegram.js", "admin.js"]) {
-        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=1"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
+        await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=2"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();
   </script>

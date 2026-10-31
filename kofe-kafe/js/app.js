@@ -15,6 +15,7 @@
   const LS_CART = "kofe_cart__" + CID;
   const LS_PROFILE = "kofe_profile__" + CID;
   const LS_MYORDERS = "kofe_myorders__" + CID;
+  const LS_CHATSEEN = "kofe_chatseen__" + CID;
 
   /* ---------- ikonkalar ---------- */
   const sv = (p) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + "</svg>";
@@ -27,6 +28,8 @@
     plus: sv('<path d="M12 5v14M5 12h14"/>'),
     back: sv('<path d="m15 5-7 7 7 7"/>'),
     bell: sv('<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+    chat: sv('<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12Z"/>'),
+    send: sv('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'),
   };
 
   /* ---------- ma'lumot ---------- */
@@ -60,6 +63,17 @@
     return (Cloud.get("orders", []) || [])
       .filter((o) => ids.includes(o.id) || (ph && normPhone(o.phone) === ph))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  // Admin bilan yozishma (Cloud "messages", telefon raqami bo'yicha)
+  function myMessages() {
+    const ph = normPhone(profile().phone);
+    if (!ph) return [];
+    return (Cloud.get("messages", []) || []).filter((m) => normPhone(m.phone) === ph);
+  }
+  function unreadAdmin() {
+    const seen = ls.get(LS_CHATSEEN, "");
+    return myMessages().filter((m) => m.from === "admin" && m.at > seen).length;
   }
 
   /* ---------- holat va navigatsiya ---------- */
@@ -328,6 +342,7 @@
       '<div class="card"><div class="loy-head"><b>Sadoqat kartasi</b><span>' + have + "/" + every + '</span></div><div class="stamps">' +
       Array.from({ length: every }, (_, i) => '<span class="stamp' + (i < have ? " on" : "") + (i === every - 1 ? " gift" : "") + '">' + (i === every - 1 ? "🎁" : "☕") + "</span>").join("") +
       '</div><p style="font-size:13px;color:var(--mut);margin-top:10px">Har ' + every + "-chi ichimlik bepul. Jami buyurtmalar: " + (c ? c.orders || 0 : 0) + "</p></div>" +
+      '<button class="card chat-entry" data-go="chat">' + I.chat + '<span><b>Admin bilan chat</b><small>Savol va murojaat</small></span>' + (unreadAdmin() ? '<span class="cnt-dot">' + unreadAdmin() + "</span>" : "") + "</button>" +
       '<div class="card"><div class="field"><label for="pName">Ism</label><input id="pName" value="' + esc(pr.name) + '"></div>' +
       '<div class="field"><label for="pPhone">Telefon</label><input id="pPhone" type="tel" inputmode="tel" value="' + esc(pr.phone) + '"></div>' +
       '<button class="btn-ghost" id="saveProfile" style="width:100%">Saqlash</button></div>' +
@@ -336,21 +351,56 @@
     );
   }
 
+  /* ---------- 6. Admin bilan chat ---------- */
+  function viewChat() {
+    const pr = profile();
+    const head = '<div class="top"><div style="display:flex;align-items:center;gap:12px"><button class="ib" data-go="profile" aria-label="Orqaga">' + I.back + '</button><div><h1 style="font-size:21px">Admin bilan chat</h1><small>' + esc(settings().shopName) + "</small></div></div></div>";
+    if (normPhone(pr.phone).length < 9 || (pr.name || "").length < 2) {
+      return head + '<div class="card"><p style="margin-bottom:12px">Yozishish uchun ismingiz va telefon raqamingizni kiriting — admin sizga shu orqali javob beradi.</p>' +
+        '<div class="field"><label for="cName">Ismingiz</label><input id="cName" value="' + esc(pr.name) + '"></div>' +
+        '<div class="field"><label for="cPhone">Telefon</label><input id="cPhone" type="tel" inputmode="tel" value="' + esc(pr.phone) + '" placeholder="+998 90 123 45 67"></div>' +
+        '<div class="field"><span class="err" id="cErr"></span></div><button class="btn-ghost" id="chatProfile" style="width:100%">Davom etish</button></div>';
+    }
+    const list = myMessages();
+    ls.set(LS_CHATSEEN, new Date().toISOString());
+    return head + '<div class="chat-body" id="chatBody">' +
+      (list.length ? list.map((m) => '<div class="bub ' + (m.from === "user" ? "me" : "them") + '">' + esc(m.text) + "<small>" + new Date(m.at).toTimeString().slice(0, 5) + "</small></div>").join("")
+        : '<div class="empty" style="padding:30px 0"><div class="e">💬</div><p>Savolingizni yozing — admin javob beradi.</p></div>') +
+      '</div><form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Xabar yozing..." autocomplete="off" aria-label="Xabar"><button class="add" type="submit" aria-label="Yuborish" style="width:46px;height:46px">' + I.send + "</button></form>";
+  }
+  async function sendMessage(text) {
+    const pr = profile();
+    const list = (await Cloud.fetchKey("messages", [])) || [];
+    list.push({ id: "m" + Date.now().toString(36), phone: pr.phone, name: pr.name, from: "user", text, at: new Date().toISOString(), read: false });
+    Cloud.set("messages", list.slice(-1000));
+    render();
+  }
+
   /* ---------- render ---------- */
   function renderTabs() {
     const n = cart.reduce((a, l) => a + l.qty, 0);
     const tabs = [["menu", "Menyu", I.menu], ["cart", "Savat", I.cart], ["orders", "Buyurtmalar", I.orders], ["profile", "Profil", I.user]];
-    const cur = state.view === "product" ? "menu" : state.view;
+    const cur = state.view === "product" ? "menu" : state.view === "chat" ? "profile" : state.view;
+    const unread = unreadAdmin();
     document.getElementById("tabbar").innerHTML = tabs.map((t) =>
       '<button class="tab' + (cur === t[0] ? " on" : "") + '" data-go="' + t[0] + '"' + (cur === t[0] ? ' aria-current="page"' : "") + ">" + t[2] + "<span>" + t[1] + "</span>" +
-      (t[0] === "cart" && n ? '<span class="cnt">' + n + "</span>" : "") + "</button>").join("");
+      (t[0] === "cart" && n ? '<span class="cnt">' + n + "</span>" : "") +
+      (t[0] === "profile" && unread ? '<span class="cnt">' + unread + "</span>" : "") + "</button>").join("");
   }
   function render() {
     const s = settings();
     document.title = s.shopName + " — Menyu";
-    const html = { menu: viewMenu, product: viewProduct, cart: viewCart, orders: viewOrders, profile: viewProfile }[state.view] || viewMenu;
+    const html = { menu: viewMenu, product: viewProduct, cart: viewCart, orders: viewOrders, profile: viewProfile, chat: viewChat }[state.view] || viewMenu;
     $view.innerHTML = '<div class="view">' + html() + "</div>";
     renderTabs();
+    const cb = document.getElementById("chatBody");
+    if (cb) cb.scrollTop = cb.scrollHeight;
+    const cf = document.getElementById("chatForm");
+    if (cf) cf.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = document.getElementById("chatInput").value.trim();
+      if (v) sendMessage(v);
+    });
     const q = document.getElementById("q");
     if (q) q.addEventListener("input", () => {
       state.q = q.value;
@@ -413,6 +463,14 @@
       toast("Savatga qo'shildi");
       return go("cart");
     }
+    if (t.id === "chatProfile") {
+      const name = document.getElementById("cName").value.trim();
+      const phone = document.getElementById("cPhone").value.trim();
+      if (name.length < 2) { document.getElementById("cErr").textContent = "Ismingizni kiriting"; return; }
+      if (normPhone(phone).length < 9) { document.getElementById("cErr").textContent = "Telefon raqamini to'liq kiriting"; return; }
+      ls.set(LS_PROFILE, { name, phone });
+      return render();
+    }
     if (t.id === "saveProfile") {
       const name = document.getElementById("pName").value.trim();
       const phone = document.getElementById("pPhone").value.trim();
@@ -424,7 +482,7 @@
 
   // Admin menyuni yoki buyurtma holatini o'zgartirsa — jonli yangilanadi
   if (Cloud.watch) {
-    Cloud.watch(["menu", "orders", "customers", "settings"], (key, value) => {
+    Cloud.watch(["menu", "orders", "customers", "settings", "messages"], (key, value) => {
       Cloud.adopt(key, value);
       const typing = document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
       if (!typing) render();

@@ -1,7 +1,10 @@
 /* ============================================================
    KOFE KAFE — admin panel
-   Bo'limlar: buyurtmalar (taxta), menyu, mijozlar, statistika, stol QR, sozlamalar.
-   Ma'lumot: Cloud "menu" / "orders" / "customers" / "settings" (app="kofe").
+   Bo'limlar: buyurtmalar (taxta + tarix), menyu (mahsulot + kategoriya), mijozlar,
+   xabarlar (mijoz bilan chat), statistika, Telegram bot, QR kod, sozlamalar.
+   Telegram bot va QR — platformadagi boshqa admin panellar bilan bir xil tizim
+   (ovqat-dokoni/admin/js/admin.js: viewBot / viewQr).
+   Ma'lumot: Cloud "menu" / "orders" / "customers" / "messages" / "settings" (app="kofe").
    ============================================================ */
 (function () {
   "use strict";
@@ -18,6 +21,7 @@
   const saveMenu = (m) => Cloud.set("menu", m);
   const orders = () => Cloud.get("orders", []) || [];
   const customers = () => Cloud.get("customers", []) || [];
+  const messages = () => Cloud.get("messages", []) || [];
   function settings() { return Object.assign({}, K.SETTINGS, Cloud.get("settings", null) || {}); }
   const saveSettings = (s) => Cloud.set("settings", s);
 
@@ -34,20 +38,65 @@
   /* ---------- yordamchilar ---------- */
   const $ = (id) => document.getElementById(id);
   let toastT;
-  function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
+  function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2400); }
   const dayKey = (d) => { const x = new Date(d); return x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate(); };
   const isToday = (iso) => dayKey(iso) === dayKey(Date.now());
   const live = (o) => o.status !== "cancelled";
-  const ago = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60000); return m < 1 ? "hozir" : m < 60 ? m + " daq oldin" : Math.round(m / 60) + " soat oldin"; };
+  const ago = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60000); return m < 1 ? "hozir" : m < 60 ? m + " daq oldin" : m < 1440 ? Math.round(m / 60) + " soat oldin" : Math.round(m / 1440) + " kun oldin"; };
+  const hm = (iso) => { const d = new Date(iso); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+  const dmy = (iso) => { const d = new Date(iso); return String(d.getDate()).padStart(2, "0") + "." + String(d.getMonth() + 1).padStart(2, "0") + " " + hm(iso); };
   const typeLabel = (o) => (o.type === "table" ? "Stol " + esc(o.table) : o.type === "delivery" ? "Yetkazish" : "Olib ketish");
+  const normPhone = (p) => (p || "").replace(/\D/g, "").slice(-9);
   function thumb(p) { return p.image ? '<img src="' + esc(p.image) + '" alt="">' : esc(p.emoji || "☕"); }
-  function storeUrl(table) {
-    const u = new URL("../index.html", location.href);
-    u.searchParams.set("client", CID);
-    if (table) u.searchParams.set("stol", table);
-    return u.href;
+
+  /* ---------- QR — platformaning standart tizimi (api.qrserver.com) ---------- */
+  function qrStoreUrl(table) {
+    try {
+      const u = new URL("../index.html", location.href);
+      u.searchParams.set("client", CID);
+      if (table) u.searchParams.set("stol", table);
+      return u.href;
+    } catch (e) { return "../index.html"; }
   }
-  const qrImg = (url, size) => "https://api.qrserver.com/v1/create-qr-code/?size=" + size + "x" + size + "&margin=8&data=" + encodeURIComponent(url);
+  function qrApiSrc(url, size) {
+    return "https://api.qrserver.com/v1/create-qr-code/?size=" + size + "x" + size + "&margin=10&qzone=1&data=" + encodeURIComponent(url);
+  }
+  async function qrDownload(url, name) {
+    try {
+      const res = await fetch(qrApiSrc(url, 600));
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      toast("QR kod yuklab olindi");
+    } catch (e) { window.open(qrApiSrc(url, 600), "_blank"); }
+  }
+  function qrPrint(items) {
+    const w = window.open("", "_blank", "width=520,height=720");
+    if (!w) return toast("Chop etish oynasi bloklandi");
+    const name = settings().shopName;
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR kod</title><style>body{font-family:system-ui,sans-serif;color:#1B120D;margin:0}.p{text-align:center;padding:40px;page-break-after:always}.p:last-child{page-break-after:auto}img{width:300px;height:300px}h2{margin:0 0 4px}p{margin:0}</style></head><body>' +
+      items.map((it) => '<div class="p"><h2>' + esc(name) + '</h2><p style="color:#6b5a4c;margin-bottom:16px">' + esc(it.label) + '</p><img src="' + qrApiSrc(it.url, 400) + '"><p style="margin-top:16px;font-size:18px">📷 Telefon kamerasi bilan skaner qiling</p><p style="color:#6b5a4c;font-size:12px;word-break:break-all;margin-top:6px">' + esc(it.url) + "</p></div>").join("") +
+      "</body></html>");
+    w.document.close();
+    setTimeout(() => { try { w.focus(); w.print(); } catch (er) {} }, 900);
+  }
+
+  /* ---------- Telegram bot holati ---------- */
+  let botStatus = null;
+  let botTokenShown = false;
+  function botErr(e) {
+    const m = (e && e.message) ? e.message : String(e || "Xatolik");
+    if (/Failed to fetch|NetworkError|load failed/i.test(m)) return "Bot serveri topilmadi (" + (window.Telegram ? Telegram.API_URL : "") + ")";
+    return m;
+  }
+  async function botRefresh() {
+    if (!window.Telegram || !Telegram.status) return;
+    const st = await Telegram.status();
+    botStatus = st && st.ok ? st : { error: st && st.error };
+    if (state.page === "bot") render();
+  }
 
   // Buyurtma holatini o'zgartirish — avval serverdagi eng yangi ro'yxatni o'qiymiz
   async function setStatus(id, status) {
@@ -60,7 +109,7 @@
     render();
   }
 
-  // Yangi buyurtma ovozi
+  // Yangi buyurtma / xabar ovozi
   let audioCtx;
   function beep() {
     try {
@@ -77,16 +126,23 @@
   }
 
   /* ---------- navigatsiya ---------- */
+  function unreadChats() {
+    const by = {};
+    messages().forEach((m) => { (by[normPhone(m.phone)] = by[normPhone(m.phone)] || []).push(m); });
+    return Object.values(by).filter((list) => list.some((m) => m.from === "user" && !m.read)).length;
+  }
   const PAGES = [
-    { id: "orders",    ic: "🧾", label: "Buyurtmalar", sub: "Yangi → Tayyorlanmoqda → Tayyor" },
-    { id: "menu",      ic: "☕", label: "Menyu",       sub: "Mahsulotlar, narxlar va mavjudlik" },
+    { id: "orders",    ic: "🧾", label: "Buyurtmalar", sub: "Yangi → Tayyorlanmoqda → Tayyor", badge: () => orders().filter((o) => o.status === "new").length },
+    { id: "menu",      ic: "☕", label: "Menyu",       sub: "Mahsulotlar, kategoriyalar va mavjudlik" },
     { id: "customers", ic: "👥", label: "Mijozlar",    sub: "Buyurtmalar va sadoqat kartasi" },
+    { id: "messages",  ic: "💬", label: "Xabarlar",    sub: "Mijozlar bilan yozishma", badge: unreadChats },
     { id: "stats",     ic: "📈", label: "Statistika",  sub: "Tushum va eng ko'p sotilganlar" },
-    { id: "qr",        ic: "🔳", label: "Stol QR",     sub: "Har stol uchun QR kod" },
-    { id: "settings",  ic: "⚙️", label: "Sozlamalar",  sub: "Kafe ma'lumotlari va Telegram" },
+    { id: "bot",       ic: "✈️", label: "Telegram bot", sub: "Buyurtmalar kanalga yuboriladi" },
+    { id: "qr",        ic: "🔳", label: "QR kod",      sub: "Kafe va stollar uchun QR kodlar" },
+    { id: "settings",  ic: "⚙️", label: "Sozlamalar",  sub: "Kafe ma'lumotlari" },
   ];
-  const state = { page: "orders", cat: "all", period: "today", fresh: new Set() };
-  function go(page) { state.page = page; closeSide(); render(); window.scrollTo(0, 0); }
+  const state = { page: "orders", cat: "all", q: "", hist: "all", hq: "", period: "today", chat: null, fresh: new Set() };
+  function go(page) { state.page = page; closeSide(); render(); window.scrollTo(0, 0); if (page === "bot") botRefresh(); }
   const closeSide = () => { $("side").classList.remove("open"); $("overlay").classList.remove("show"); };
 
   /* ---------- 1. Buyurtmalar ---------- */
@@ -112,6 +168,14 @@
       '<span style="display:flex;gap:6px">' + (c.st === "new" ? '<button class="btn btn-line btn-sm btn-bad" data-st="cancelled" data-id="' + esc(o.id) + '">Bekor</button>' : "") +
       '<button class="btn btn-acc btn-sm" data-st="' + c.next + '" data-id="' + esc(o.id) + '">' + c.btn + "</button></span></div></div>";
 
+    // Tarix: barcha buyurtmalar, holat filtri va qidiruv bilan
+    const q = state.hq.trim().toLowerCase();
+    const hist = all
+      .filter((o) => state.hist === "all" || o.status === state.hist)
+      .filter((o) => !q || ("#" + o.no + " " + o.name + " " + o.phone).toLowerCase().includes(q))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 50);
+    const HF = [["all", "Hammasi"], ["new", "Yangi"], ["preparing", "Tayyorlanmoqda"], ["ready", "Tayyor"], ["done", "Berildi"], ["cancelled", "Bekor"]];
+
     return (
       '<div class="kpis">' +
       '<div class="kpi"><small>Bugungi buyurtmalar</small><b>' + cnt + "</b><span>" + yest.filter(live).length + " ta kecha</span></div>" +
@@ -123,7 +187,14 @@
         return '<div class="col"><div class="col-h">' + c.title + "<span>" + list.length + "</span></div>" +
           (list.length ? list.map((o) => ticket(o, c)).join("") : '<div class="col-empty">Bo\'sh</div>') + "</div>";
       }).join("") + "</div>" +
-      '<div class="grid-2">' + hourlyCard(today) + topCard(today, "Bugun mashhur") + "</div>"
+      '<div class="grid-2">' + hourlyCard(today) + topCard(today, "Bugun mashhur") + "</div>" +
+      '<div class="card" style="margin-top:12px"><div class="card-top"><h3>Buyurtmalar tarixi</h3><input class="search" id="histQ" type="search" placeholder="#raqam, ism yoki telefon" value="' + esc(state.hq) + '" aria-label="Buyurtma qidirish"></div>' +
+      '<div class="chips">' + HF.map((f) => '<button class="chip' + (state.hist === f[0] ? " on" : "") + '" data-hist="' + f[0] + '">' + f[1] + "</button>").join("") + "</div>" +
+      (hist.length ? '<div class="rows">' + hist.map((o) => {
+        const st = K.STATUS[o.status] || K.STATUS.new;
+        return '<div class="row"><span class="th" style="font-size:13px;font-weight:700;color:var(--head)">#' + o.no + '</span><div class="b"><b>' + esc(o.name) + " · " + esc(o.items.map((i) => i.qty + "× " + i.name).join(", ")) + "</b><small>" + dmy(o.createdAt) + " · " + typeLabel(o) + " · " + esc(o.phone) + "</small></div>" +
+          '<span class="pill ' + st.tone + '">' + st.label + '</span><span class="pr">' + fmt(o.total) + "</span></div>";
+      }).join("") + "</div>" : '<div class="empty" style="padding:24px 0">Buyurtma topilmadi</div>') + "</div>"
     );
   }
   function hourlyCard(list) {
@@ -146,14 +217,19 @@
   /* ---------- 2. Menyu ---------- */
   function pageMenu() {
     const m = menu();
-    const list = m.products.filter((p) => state.cat === "all" || p.cat === state.cat);
-    return '<div class="chips"><button class="chip' + (state.cat === "all" ? " on" : "") + '" data-cat="all">Hammasi</button>' +
-      m.categories.map((c) => '<button class="chip' + (state.cat === c.id ? " on" : "") + '" data-cat="' + esc(c.id) + '">' + esc(c.emoji + " " + c.name) + "</button>").join("") + "</div>" +
+    const q = state.q.trim().toLowerCase();
+    const list = m.products
+      .filter((p) => state.cat === "all" || p.cat === state.cat)
+      .filter((p) => !q || p.name.toLowerCase().includes(q));
+    return '<div class="card-top" style="margin-bottom:12px"><input class="search" id="menuQ" type="search" placeholder="Mahsulot qidirish" value="' + esc(state.q) + '" aria-label="Mahsulot qidirish">' +
+      '<button class="btn btn-line" id="manageCats">Kategoriyalar</button></div>' +
+      '<div class="chips"><button class="chip' + (state.cat === "all" ? " on" : "") + '" data-cat="all">Hammasi · ' + m.products.length + "</button>" +
+      m.categories.map((c) => '<button class="chip' + (state.cat === c.id ? " on" : "") + '" data-cat="' + esc(c.id) + '">' + esc(c.emoji + " " + c.name) + " · " + m.products.filter((p) => p.cat === c.id).length + "</button>").join("") + "</div>" +
       '<div class="card"><div class="rows">' + (list.length ? list.map((p) =>
-        '<div class="row' + (p.available === false ? " off" : "") + '"><span class="th">' + thumb(p) + '</span><div class="b"><b>' + esc(p.name) + (p.popular ? " ⭐" : "") + "</b><small>" + esc(((m.categories.find((c) => c.id === p.cat) || {}).name) || "") + (p.available === false ? " · tugagan" : "") + "</small></div>" +
+        '<div class="row' + (p.available === false ? " off" : "") + '"><span class="th">' + thumb(p) + '</span><div class="b"><b>' + esc(p.name) + (p.popular ? " ⭐" : "") + "</b><small>" + esc(((m.categories.find((c) => c.id === p.cat) || {}).name) || "Kategoriyasiz") + (p.available === false ? " · tugagan" : "") + "</small></div>" +
         '<span class="pr">' + fmt(p.price) + "</span>" +
         '<button class="toggle' + (p.available !== false ? " on" : "") + '" data-avail="' + esc(p.id) + '" role="switch" aria-checked="' + (p.available !== false) + '" aria-label="' + esc(p.name) + ' mavjud"></button>' +
-        '<button class="btn btn-line btn-sm" data-edit="' + esc(p.id) + '">Tahrirlash</button></div>').join("") : '<div class="empty">Bu kategoriyada mahsulot yo\'q</div>') + "</div></div>";
+        '<button class="btn btn-line btn-sm" data-edit="' + esc(p.id) + '">Tahrirlash</button></div>').join("") : '<div class="empty">Mahsulot topilmadi</div>') + "</div></div>";
   }
   function editProduct(id) {
     const m = menu();
@@ -222,6 +298,44 @@
       saveMenu(mm); closeModal(); toast("O'chirildi"); render();
     };
   }
+  // Kategoriyalar: nomi, emoji, sadoqat kartasiga hisoblanadimi (ichimlik)
+  function manageCategories() {
+    const draw = () => {
+      const m = menu();
+      $("modalBox").innerHTML =
+        '<div class="modal-h"><h2 id="modalTitle">Kategoriyalar</h2><button class="ib" data-close aria-label="Yopish">×</button></div>' +
+        '<div class="rows">' + m.categories.map((c, i) =>
+          '<div class="row cat-row"><input class="cat-emoji" data-ci="' + i + '" data-k="emoji" value="' + esc(c.emoji) + '" maxlength="4" aria-label="Emoji">' +
+          '<input class="cat-name" data-ci="' + i + '" data-k="name" value="' + esc(c.name) + '" aria-label="Kategoriya nomi">' +
+          '<label class="checks" style="font-size:13px"><input type="checkbox" data-ci="' + i + '" data-k="drink"' + (c.drink ? " checked" : "") + "> Ichimlik</label>" +
+          '<button class="btn btn-line btn-sm btn-bad" data-catdel="' + i + '">O\'chirish</button></div>').join("") + "</div>" +
+        '<p style="font-size:12.5px;color:var(--mut);margin-top:10px">"Ichimlik" belgilangan kategoriyadagi har bir mahsulot sadoqat kartasiga marka qo\'shadi.</p>' +
+        '<div class="modal-f"><button class="btn btn-line" id="catAdd" style="margin-right:auto">+ Kategoriya</button><button class="btn btn-acc" data-close>Tayyor</button></div>';
+      $("modalBox").querySelectorAll("[data-ci]").forEach((inp) => {
+        inp.onchange = () => {
+          const mm = menu(); const c = mm.categories[Number(inp.dataset.ci)];
+          if (inp.dataset.k === "drink") c.drink = inp.checked;
+          else c[inp.dataset.k] = inp.value.trim() || c[inp.dataset.k];
+          saveMenu(mm); render();
+        };
+      });
+      $("modalBox").querySelectorAll("[data-catdel]").forEach((b) => {
+        b.onclick = () => {
+          const mm = menu(); const c = mm.categories[Number(b.dataset.catdel)];
+          const n = mm.products.filter((p) => p.cat === c.id).length;
+          if (n) return toast("Avval bu kategoriyadagi " + n + " ta mahsulotni boshqa kategoriyaga o'tkazing");
+          mm.categories.splice(Number(b.dataset.catdel), 1);
+          saveMenu(mm); if (state.cat === c.id) state.cat = "all"; draw(); render();
+        };
+      });
+      $("catAdd").onclick = () => {
+        const mm = menu();
+        mm.categories.push({ id: "c" + Date.now().toString(36), name: "Yangi kategoriya", emoji: "🍽️", drink: false });
+        saveMenu(mm); draw(); render();
+      };
+    };
+    draw(); openModal();
+  }
 
   /* ---------- 3. Mijozlar ---------- */
   function pageCustomers() {
@@ -229,12 +343,60 @@
     const list = customers().slice().sort((a, b) => (b.lastAt || "").localeCompare(a.lastAt || ""));
     if (!list.length) return '<div class="card"><div class="empty">Hali mijoz yo\'q. Birinchi buyurtmadan keyin shu yerda ko\'rinadi.</div></div>';
     return '<div class="card"><div class="rows">' + list.map((c) =>
-      '<div class="row"><span class="th">' + esc((c.name || "?").charAt(0).toUpperCase()) + '</span><div class="b"><b>' + esc(c.name || "—") + "</b><small>" + esc(c.phone) + " · " + (c.orders || 0) + " ta buyurtma</small></div>" +
+      '<div class="row"><span class="th">' + esc((c.name || "?").charAt(0).toUpperCase()) + '</span><div class="b"><b>' + esc(c.name || "—") + "</b><small>" + esc(c.phone) + " · " + (c.orders || 0) + " ta buyurtma" + (c.lastAt ? " · " + ago(c.lastAt) : "") + "</small></div>" +
       '<span class="pill ' + ((c.stamps || 0) >= every ? "ok" : "acc") + '">☕ ' + Math.min(c.stamps || 0, every) + "/" + every + "</span>" +
-      '<span class="pr">' + fmt(c.spent || 0) + "</span></div>").join("") + "</div></div>";
+      '<span class="pr">' + fmt(c.spent || 0) + '</span><button class="btn btn-line btn-sm" data-openchat="' + esc(c.phone) + '">Yozish</button></div>').join("") + "</div></div>";
   }
 
-  /* ---------- 4. Statistika ---------- */
+  /* ---------- 4. Xabarlar (mijoz bilan chat) ---------- */
+  function conversations() {
+    const by = {};
+    messages().forEach((m) => {
+      const k = normPhone(m.phone);
+      (by[k] = by[k] || { phone: m.phone, name: m.name, list: [] }).list.push(m);
+      if (m.from === "user" && m.name) by[k].name = m.name;
+    });
+    customers().forEach((c) => { const k = normPhone(c.phone); if (by[k] && !by[k].name) by[k].name = c.name; });
+    return Object.entries(by).map(([k, v]) => Object.assign({ key: k }, v))
+      .sort((a, b) => b.list[b.list.length - 1].at.localeCompare(a.list[a.list.length - 1].at));
+  }
+  function pageMessages() {
+    const convs = conversations();
+    if (state.chat && !convs.find((c) => c.key === state.chat)) {
+      const cu = customers().find((c) => normPhone(c.phone) === state.chat);
+      if (cu) convs.unshift({ key: state.chat, phone: cu.phone, name: cu.name, list: [] });
+    }
+    if (!state.chat && convs.length) state.chat = convs[0].key;
+    const cur = convs.find((c) => c.key === state.chat);
+    if (!convs.length) return '<div class="card"><div class="empty">Hali xabar yo\'q. Mijozlar ilovadagi "Profil → Admin bilan chat" orqali yozadi.</div></div>';
+    return '<div class="chat"><div class="chat-list">' + convs.map((c) => {
+      const last = c.list[c.list.length - 1];
+      const unread = c.list.filter((m) => m.from === "user" && !m.read).length;
+      return '<button class="chat-li' + (c.key === state.chat ? " on" : "") + '" data-chat="' + esc(c.key) + '"><span class="th">' + esc((c.name || "?").charAt(0).toUpperCase()) + '</span><span class="b"><b>' + esc(c.name || c.phone) + "</b><small>" + esc(last ? last.text : "Yangi suhbat") + "</small></span>" +
+        (unread ? '<span class="n">' + unread + "</span>" : last ? "<small>" + hm(last.at) + "</small>" : "") + "</button>";
+    }).join("") + '</div><div class="chat-conv">' +
+      (cur ? '<div class="chat-h"><b>' + esc(cur.name || "Mijoz") + "</b><small>" + esc(cur.phone) + '</small></div><div class="chat-body" id="chatBody">' +
+        (cur.list.length ? cur.list.map((m) => '<div class="bub ' + (m.from === "admin" ? "me" : "them") + '">' + esc(m.text) + "<small>" + dmy(m.at) + "</small></div>").join("") : '<div class="empty" style="padding:30px 0">Birinchi xabarni yozing</div>') +
+        '</div><form class="chat-f" id="chatForm"><input id="chatInput" placeholder="Javob yozing..." autocomplete="off" aria-label="Javob"><button class="btn btn-acc" type="submit">Yuborish</button></form>' : "") +
+      "</div></div>";
+  }
+  async function markRead(key) {
+    const list = (await Cloud.fetchKey("messages", [])) || [];
+    let changed = false;
+    list.forEach((m) => { if (normPhone(m.phone) === key && m.from === "user" && !m.read) { m.read = true; changed = true; } });
+    if (changed) { Cloud.set("messages", list); render(); }
+  }
+  async function sendAdminMessage(text) {
+    const conv = conversations().find((c) => c.key === state.chat);
+    const cu = customers().find((c) => normPhone(c.phone) === state.chat);
+    const phone = conv ? conv.phone : cu ? cu.phone : state.chat;
+    const list = (await Cloud.fetchKey("messages", [])) || [];
+    list.push({ id: "m" + Date.now().toString(36), phone, name: conv ? conv.name : cu ? cu.name : "", from: "admin", text, at: new Date().toISOString() });
+    Cloud.set("messages", list.slice(-1000));
+    render();
+  }
+
+  /* ---------- 5. Statistika ---------- */
   function pageStats() {
     const all = orders().filter(live);
     const days = state.period === "today" ? 1 : state.period === "week" ? 7 : 30;
@@ -250,25 +412,63 @@
       chart = '<div class="card"><h3>Kunlik tushum</h3><div class="bars">' + ds.map((d, i) =>
         '<div class="bar" title="' + d.getDate() + "." + (d.getMonth() + 1) + " — " + fmt(sums[i]) + ' so\'m"><i style="height:' + Math.round((sums[i] / max) * 100) + '%"></i><small>' + (days === 7 || i % 5 === 0 ? d.getDate() : "") + "</small></div>").join("") + "</div></div>";
     }
+    const byType = { pickup: 0, table: 0, delivery: 0 };
+    list.forEach((o) => { byType[o.type] = (byType[o.type] || 0) + 1; });
     return '<div class="seg">' + [["today", "Bugun"], ["week", "7 kun"], ["month", "30 kun"]].map((x) => '<button data-period="' + x[0] + '" class="' + (state.period === x[0] ? "on" : "") + '">' + x[1] + "</button>").join("") + "</div>" +
-      '<div class="kpis"><div class="kpi"><small>Tushum, so\'m</small><b>' + fmt(rev) + '</b></div><div class="kpi"><small>Buyurtmalar</small><b>' + list.length + '</b></div>' +
+      '<div class="kpis"><div class="kpi"><small>Tushum, so\'m</small><b>' + fmt(rev) + '</b></div><div class="kpi"><small>Buyurtmalar</small><b>' + list.length + "</b><span>" + byType.pickup + " olib ketish · " + byType.table + ' stol</span></div>' +
       '<div class="kpi"><small>O\'rtacha chek</small><b>' + fmt(list.length ? rev / list.length : 0) + '</b></div><div class="kpi"><small>Sadoqat sovg\'alari</small><b>' + list.filter((o) => o.discount > 0).length + "</b></div></div>" +
       '<div class="grid-2">' + chart + topCard(list, "Eng ko'p sotilganlar") + "</div>";
   }
 
-  /* ---------- 5. Stol QR ---------- */
-  function pageQr() {
-    const s = settings();
-    const n = Math.max(0, Math.min(60, s.tables || 6));
-    return '<div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:end;flex-wrap:wrap">' +
-      '<div class="f" style="width:160px"><label for="tCount">Stollar soni</label><input id="tCount" type="number" min="0" max="60" value="' + n + '"></div>' +
-      '<button class="btn btn-line" id="tSave">Yangilash</button><button class="btn btn-line" onclick="window.print()">Chop etish</button>' +
-      '<p style="flex-basis:100%;font-size:13px;color:var(--mut)">Mijoz QR\'ni skanerlasa menyu stol raqami bilan ochiladi — buyurtma o\'sha stolga yoziladi.</p></div>' +
-      '<div class="qr-grid"><div class="qr"><img src="' + qrImg(storeUrl(), 300) + '" alt="Kafe QR kodi" loading="lazy"><b>' + esc(s.shopName) + '</b><small>Olib ketish uchun</small></div>' +
-      Array.from({ length: n }, (_, i) => '<div class="qr"><img src="' + qrImg(storeUrl(i + 1), 300) + '" alt="Stol ' + (i + 1) + ' QR kodi" loading="lazy"><b>Stol ' + (i + 1) + "</b><small>" + esc(s.shopName) + "</small></div>").join("") + "</div>";
+  /* ---------- 6. Telegram bot (boshqa panellar bilan bir xil) ---------- */
+  function pageBot() {
+    const st = botStatus || {};
+    const connected = !!st.connected;
+    const username = st.username || "";
+    const channel = st.channel || "";
+    return '<div class="bot-top"><span class="bot-pill ' + (connected ? "on" : "off") + '"><i></i>' + (botStatus ? (connected ? "Ulangan" : "Ulanmagan") : "Tekshirilmoqda…") + "</span>" +
+      '<span class="bot-stat"><b>' + fmt(st.userCount || 0) + '</b> obunachi</span><span class="bot-stat"><b>' + fmt(st.sentCount || 0) + "</b> yuborilgan</span>" +
+      (st.error ? '<span class="bot-err">' + esc(botErr({ message: st.error })) + "</span>" : "") + "</div>" +
+      '<div class="grid-2" style="margin-top:0">' +
+      '<div class="card"><h3>1. Botni ulash</h3><div class="f"><label for="botToken">Bot tokeni</label><div class="token-row"><input id="botToken" type="' + (botTokenShown ? "text" : "password") + '" placeholder="123456789:AAE-..." autocomplete="off"><button class="ib" id="botEye" type="button" aria-label="Tokenni ko\'rsatish">👁</button></div>' +
+      '<p class="hint">@BotFather → /newbot → tokenni nusxalab joylang</p></div>' +
+      '<div class="modal-f" style="justify-content:flex-start"><button class="btn btn-acc" id="botConnect">Botni ulash</button><button class="btn btn-line btn-bad" id="botDisconnect">Uzish</button></div>' +
+      (connected && username ? '<div class="bot-card"><span>✈️</span><div><b>' + esc(username) + '</b><small>Faol — buyurtmalarni yuboradi</small></div><a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="https://t.me/' + esc(username.replace(/^@/, "")) + '">Ochish</a></div>' : "") +
+      "</div>" +
+      '<div class="card"><h3>2. Buyurtma kanali</h3><div class="f"><label for="botChannel">Kanal username yoki ID</label><input id="botChannel" placeholder="@kanal_nomi" value="' + esc(channel) + '">' +
+      '<p class="hint">Botni kanalga admin qiling, so\'ng shu yerga username yozing</p></div>' +
+      '<div class="modal-f" style="justify-content:flex-start"><button class="btn btn-acc" id="botSetChannel">Kanalni ulash</button><button class="btn btn-line" id="botTest">Test xabar</button></div>' +
+      '<p class="hint" style="margin-top:10px">' + (channel ? "🟢 Ulangan: " + esc(channel) : "⚪ Kanal ulanmagan") + "</p></div></div>" +
+      '<div class="card" style="margin-top:12px"><h3>3. Mijozlarga ommaviy xabar</h3><div class="f"><textarea id="botBroadcast" rows="3" placeholder="Barcha bot obunachilariga yuboriladigan xabar (masalan: bugun barcha latte −20%)"></textarea></div>' +
+      '<div class="modal-f"><button class="btn btn-acc" id="botBroadcastBtn">Hammaga yuborish</button></div></div>' +
+      '<div class="card" style="margin-top:12px"><h3>Qanday ishlaydi?</h3><ol class="steps">' +
+      "<li><b>@BotFather</b> dan <b>/newbot</b> orqali bot yarating va tokenni oling.</li>" +
+      "<li>Tokenni yuqoriga joylab <b>Botni ulang</b>.</li>" +
+      "<li>Telegram kanal oching va botni kanalga <b>admin</b> qiling.</li>" +
+      "<li>Kanal username'ini (masalan <code>@kafe_buyurtmalar</code>) kiritib <b>Kanalni ulang</b>.</li>" +
+      "<li>Endi har bir yangi buyurtma avtomatik kanalga yuboriladi. ✅</li></ol></div>";
   }
 
-  /* ---------- 6. Sozlamalar ---------- */
+  /* ---------- 7. QR kod (standart tizim + stol QR) ---------- */
+  function pageQr() {
+    const s = settings();
+    const n = Math.max(0, Math.min(60, s.tables != null ? s.tables : 6));
+    const url = qrStoreUrl();
+    return '<div class="qr-wrap"><div class="card qr-prev"><div class="qr-frame"><img id="qrImage" src="' + qrApiSrc(url, 320) + '" alt="Kafe QR kodi"></div>' +
+      '<b class="qr-name">' + esc(s.shopName) + '</b><small>📷 Telefon bilan skaner qiling</small></div>' +
+      '<div class="card qr-info"><span class="pill acc">VEB-ILOVA QR KODI</span><h3 style="margin-top:10px">Mijozlar QR kodni skaner qilib ilovangizni ochadi</h3>' +
+      '<p class="hint">Telefon kamerasi bilan skaner qilinganda kafengizning veb-ilovasi avtomatik ochiladi. QR kodni kassa, vitrina, menyu yoki reklama varaqasiga joylashtiring.</p>' +
+      '<div class="f" style="margin-top:12px"><label for="qrUrl">Ilova manzili (URL)</label><input id="qrUrl" readonly value="' + esc(url) + '"></div>' +
+      '<p class="hint">Bu havola QR kodga yozilgan (<code>?client=</code> bilan). Mijoz skanerlasa shu sahifa ochiladi.</p>' +
+      '<div class="qr-actions"><button class="btn btn-line" id="qrCopy">Nusxalash</button><button class="btn btn-line" id="qrDown">Yuklab olish</button><button class="btn btn-line" id="qrPrint">Chop etish</button><a class="btn btn-line" href="' + esc(url) + '" target="_blank" rel="noopener">Ochish</a></div></div></div>' +
+      '<div class="qr-steps"><div><span>1️⃣</span><b>QR kodni joylashtiring</b><small>Kassa, stol, vitrina yoki reklamaga</small></div><div><span>2️⃣</span><b>Mijoz skaner qiladi</b><small>Telefon kamerasi yoki QR-skaner orqali</small></div><div><span>3️⃣</span><b>Ilova ochiladi</b><small>Mijoz to\'g\'ridan-to\'g\'ri buyurtma beradi</small></div></div>' +
+      '<div class="card" style="margin-top:12px"><div class="card-top"><div><h3 style="margin:0">Stol QR kodlari</h3><p class="hint">Stol QR\'i skanerlansa menyu stol raqami bilan ochiladi — buyurtma o\'sha stolga yoziladi.</p></div>' +
+      '<div style="display:flex;gap:8px;align-items:end"><div class="f" style="width:110px"><label for="tCount">Stollar soni</label><input id="tCount" type="number" min="0" max="60" value="' + n + '"></div><button class="btn btn-line" id="tSave">Yangilash</button>' + (n ? '<button class="btn btn-line" id="tPrint">Hammasini chop etish</button>' : "") + "</div></div>" +
+      (n ? '<div class="qr-grid">' + Array.from({ length: n }, (_, i) => '<div class="qr"><img src="' + qrApiSrc(qrStoreUrl(i + 1), 300) + '" alt="Stol ' + (i + 1) + ' QR kodi" loading="lazy"><b>Stol ' + (i + 1) + '</b><button class="btn btn-sm qr-dl" data-tqr="' + (i + 1) + '">Yuklab olish</button></div>').join("") + "</div>" : '<div class="empty" style="padding:20px 0">Stollar soni 0 — faqat umumiy QR ishlatiladi</div>') +
+      "</div>";
+  }
+
+  /* ---------- 8. Sozlamalar ---------- */
   function pageSettings() {
     const s = settings();
     return '<div class="card"><h3>Kafe ma\'lumotlari</h3><div class="form">' +
@@ -279,21 +479,8 @@
       '<div class="f"><label for="sLoy">Sadoqat: har nechanchi ichimlik bepul</label><input id="sLoy" type="number" min="2" max="20" value="' + esc(s.loyaltyEvery) + '"></div>' +
       '<div class="f"><label>Yetkazib berish</label><div class="checks"><label><input type="checkbox" disabled> Tez orada (2-versiya)</label></div></div>' +
       '</div><div class="modal-f"><button class="btn btn-acc" id="sSave">Saqlash</button></div></div>' +
-      '<div class="card" style="margin-top:12px"><h3>Telegram bot</h3><p style="font-size:13.5px;color:var(--mut);margin-bottom:12px">Yangi buyurtma kelganda kafe botingiz kanalga xabar yuboradi. @BotFather\'dan olingan tokenni kiriting.</p>' +
-      '<div class="form"><div class="f full"><label for="bToken">Bot tokeni</label><input id="bToken" placeholder="123456:ABC..." autocomplete="off"></div>' +
-      '<div class="f full"><label for="bChan">Kanal (ixtiyoriy)</label><input id="bChan" placeholder="@kafe_buyurtmalar"></div></div>' +
-      '<p id="bStatus" style="font-size:13.5px;margin-top:10px;color:var(--mut)">Holat tekshirilmoqda…</p>' +
-      '<div class="modal-f"><button class="btn btn-line btn-bad" id="bOff">Uzish</button><button class="btn btn-line" id="bChanSave">Kanalni saqlash</button><button class="btn btn-acc" id="bOn">Ulash</button></div></div>';
-  }
-  async function refreshBot() {
-    const el = $("bStatus");
-    if (!el || !window.Telegram || !Telegram.status) return;
-    const st = await Telegram.status();
-    if (!$("bStatus")) return;
-    el.textContent = st && st.ok && st.connected
-      ? "Ulangan: @" + (st.username || "bot") + (st.channel ? " · kanal " + st.channel : " · kanal ulanmagan")
-      : "Bot ulanmagan" + (st && st.error ? " (" + st.error + ")" : "");
-    el.style.color = st && st.ok && st.connected ? "var(--ok)" : "var(--mut)";
+      '<div class="card" style="margin-top:12px"><h3>Ma\'lumotlarni tozalash</h3><p class="hint" style="margin-bottom:12px">Sinov buyurtmalarini o\'chirish uchun. Menyu va sozlamalar saqlanib qoladi.</p>' +
+      '<button class="btn btn-line btn-bad" id="clearOrders">Barcha buyurtmalarni o\'chirish</button></div>';
   }
 
   /* ---------- modal ---------- */
@@ -305,19 +492,33 @@
     const s = settings();
     $("brandName").textContent = s.shopName;
     document.title = s.shopName + " · Admin";
-    const pending = orders().filter((o) => o.status === "new").length;
-    $("nav").innerHTML = PAGES.map((p) => '<button class="' + (state.page === p.id ? "on" : "") + '" data-page="' + p.id + '"' + (state.page === p.id ? ' aria-current="page"' : "") + '><span class="ic" aria-hidden="true">' + p.ic + "</span>" + p.label + (p.id === "orders" && pending ? '<span class="n">' + pending + "</span>" : "") + "</button>").join("");
+    $("nav").innerHTML = PAGES.map((p) => {
+      const n = p.badge ? p.badge() : 0;
+      return '<button class="' + (state.page === p.id ? "on" : "") + '" data-page="' + p.id + '"' + (state.page === p.id ? ' aria-current="page"' : "") + '><span class="ic" aria-hidden="true">' + p.ic + "</span>" + p.label + (n ? '<span class="n">' + n + "</span>" : "") + "</button>";
+    }).join("");
     const pg = PAGES.find((p) => p.id === state.page);
     $("pageTitle").textContent = pg.label;
     $("pageSub").textContent = pg.sub;
     $("headActions").innerHTML = state.page === "menu"
       ? '<button class="btn btn-acc" id="addProduct">+ Mahsulot</button>'
-      : state.page === "orders" ? '<a class="btn btn-line" href="' + esc(storeUrl()) + '" target="_blank" rel="noopener">Ilovani ochish</a>' : "";
-    $("page").innerHTML = { orders: pageOrders, menu: pageMenu, customers: pageCustomers, stats: pageStats, qr: pageQr, settings: pageSettings }[state.page]();
-    if (state.page === "settings") refreshBot();
-    const live = Cloud.mode === "cloud";
-    $("syncDot").classList.toggle("ok", live);
-    $("syncText").textContent = live ? "Sinxron (bulut)" : "Faqat shu qurilma";
+      : state.page === "orders" ? '<a class="btn btn-line" href="' + esc(qrStoreUrl()) + '" target="_blank" rel="noopener">Ilovani ochish</a>' : "";
+    $("page").innerHTML = { orders: pageOrders, menu: pageMenu, customers: pageCustomers, messages: pageMessages, stats: pageStats, bot: pageBot, qr: pageQr, settings: pageSettings }[state.page]();
+    const isLive = Cloud.mode === "cloud";
+    $("syncDot").classList.toggle("ok", isLive);
+    $("syncText").textContent = isLive ? "Sinxron (bulut)" : "Faqat shu qurilma";
+
+    // sahifaga xos ulanishlar
+    const sq = (id, key) => { const el = $(id); if (el) el.oninput = () => { state[key] = el.value; const pos = el.selectionStart; render(); const n = $(id); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} }; };
+    sq("histQ", "hq"); sq("menuQ", "q");
+    if (state.page === "messages") {
+      const body = $("chatBody"); if (body) body.scrollTop = body.scrollHeight;
+      const f = $("chatForm");
+      if (f) f.onsubmit = (e) => { e.preventDefault(); const v = $("chatInput").value.trim(); if (v) sendAdminMessage(v); };
+      if (state.chat) {
+        const conv = conversations().find((c) => c.key === state.chat);
+        if (conv && conv.list.some((m) => m.from === "user" && !m.read)) markRead(state.chat);
+      }
+    }
   }
 
   /* ---------- hodisalar ---------- */
@@ -332,7 +533,9 @@
       state.fresh.delete(t.dataset.id);
       return setStatus(t.dataset.id, t.dataset.st);
     }
+    if (t.dataset.hist) { state.hist = t.dataset.hist; return render(); }
     if (t.dataset.cat) { state.cat = t.dataset.cat; return render(); }
+    if (t.id === "manageCats") return manageCategories();
     if (t.dataset.avail) {
       const m = menu();
       const p = m.products.find((x) => String(x.id) === t.dataset.avail);
@@ -345,11 +548,25 @@
     if (t.id === "addProduct") return editProduct(null);
     if (t.hasAttribute("data-close")) return closeModal();
     if (t.dataset.period) { state.period = t.dataset.period; return render(); }
+    if (t.dataset.chat) { state.chat = t.dataset.chat; return render(); }
+    if (t.dataset.openchat) { state.chat = normPhone(t.dataset.openchat); return go("messages"); }
+
+    // QR
+    if (t.id === "qrCopy") return navigator.clipboard.writeText(qrStoreUrl()).then(() => toast("Havola nusxalandi"), () => toast("Nusxalab bo'lmadi"));
+    if (t.id === "qrDown") return qrDownload(qrStoreUrl(), "qr-kod.png");
+    if (t.id === "qrPrint") return qrPrint([{ url: qrStoreUrl(), label: "Veb-ilovamizni oching" }]);
+    if (t.dataset.tqr) return qrDownload(qrStoreUrl(t.dataset.tqr), "stol-" + t.dataset.tqr + "-qr.png");
+    if (t.id === "tPrint") {
+      const n = settings().tables != null ? settings().tables : 6;
+      return qrPrint(Array.from({ length: n }, (_, i) => ({ url: qrStoreUrl(i + 1), label: "Stol " + (i + 1) })));
+    }
     if (t.id === "tSave") {
       const s = settings();
       s.tables = Math.max(0, Math.min(60, parseInt($("tCount").value, 10) || 0));
       saveSettings(s); toast("Yangilandi"); return render();
     }
+
+    // Sozlamalar
     if (t.id === "sSave") {
       const s = settings();
       Object.assign(s, {
@@ -358,35 +575,61 @@
       });
       saveSettings(s); toast("Sozlamalar saqlandi"); return render();
     }
-    if (t.id === "bOn") {
-      const token = $("bToken").value.trim();
-      if (!/^\d+:[\w-]{20,}$/.test(token)) return toast("Token formati noto'g'ri");
-      t.disabled = true;
-      try { await Telegram.connect({ token, shopName: settings().shopName, storeUrl: storeUrl() }); $("bToken").value = ""; toast("Bot ulandi"); }
-      catch (err) { toast("Ulanmadi: " + err.message); }
-      t.disabled = false; return refreshBot();
+    if (t.id === "clearOrders") {
+      if (!confirm("Barcha buyurtmalar o'chirilsinmi? Bu amalni qaytarib bo'lmaydi.")) return;
+      Cloud.set("orders", []); toast("Buyurtmalar o'chirildi"); return render();
     }
-    if (t.id === "bOff") { await Telegram.disconnect(); toast("Bot uzildi"); return refreshBot(); }
-    if (t.id === "bChanSave") {
-      const ch = $("bChan").value.trim();
-      if (!ch) return toast("Kanal nomini kiriting");
-      try { await Telegram.setChannel(ch); toast("Kanal saqlandi"); } catch (err) { toast("Xato: " + err.message); }
-      return refreshBot();
+
+    // Telegram bot
+    if (t.id === "botEye") { botTokenShown = !botTokenShown; const i = $("botToken"); i.type = botTokenShown ? "text" : "password"; return; }
+    if (t.id === "botConnect") {
+      const token = ($("botToken").value || "").trim();
+      if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) return toast("Token formati noto'g'ri");
+      if (!window.Telegram || !Telegram.connect) return toast("Telegram klienti yuklanmadi");
+      t.disabled = true; const old = t.textContent; t.textContent = "Ulanmoqda…";
+      try { const r = await Telegram.connect({ token, shopName: settings().shopName, storeUrl: qrStoreUrl() }); toast("Bot ulandi" + (r && r.username ? ": " + r.username : "")); }
+      catch (err) { toast(botErr(err)); }
+      t.disabled = false; t.textContent = old;
+      return botRefresh();
+    }
+    if (t.id === "botDisconnect") { if (window.Telegram) await Telegram.disconnect(); toast("Bot uzildi"); return botRefresh(); }
+    if (t.id === "botSetChannel") {
+      const ch = ($("botChannel").value || "").trim();
+      if (!ch) return toast("Kanal username kiriting");
+      try { await Telegram.setChannel(ch); toast("Kanal ulandi: " + ch); } catch (err) { toast(botErr(err)); }
+      return botRefresh();
+    }
+    if (t.id === "botTest") {
+      const r = await Telegram.sendOrder({ id: "TEST-" + Math.floor(1000 + Math.random() * 9000), userName: "Test mijoz", phone: "+998 90 000 00 00", address: "Stol 1", payment: "Joyida", items: [{ name: "Cappuccino (M 350 ml)", qty: 1, price: 26000 }], total: 26000 });
+      return toast(r && r.ok ? "Test xabar kanalga yuborildi" : botErr({ message: (r && r.error) || "Yuborilmadi" }));
+    }
+    if (t.id === "botBroadcastBtn") {
+      const text = ($("botBroadcast").value || "").trim();
+      if (!text) return toast("Xabar matnini kiriting");
+      try { const r = await Telegram.broadcast(text); toast("Yuborildi: " + (r.sent || 0) + "/" + (r.total || 0)); $("botBroadcast").value = ""; }
+      catch (err) { toast(botErr(err)); }
     }
   });
   $("overlay").addEventListener("click", closeSide);
   $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeModal(); closeSide(); } });
 
-  // Jonli yangilanish: yangi buyurtma kelsa — ovoz va belgi
+  // Jonli yangilanish: yangi buyurtma yoki xabar kelsa — ovoz va belgi
   let known = new Set(orders().map((o) => o.id));
+  let knownMsg = messages().length;
   if (Cloud.watch) {
-    Cloud.watch(["orders", "customers", "menu", "settings"], (key, value) => {
+    Cloud.watch(["orders", "customers", "menu", "settings", "messages"], (key, value) => {
       Cloud.adopt(key, value);
       if (key === "orders") {
         const fresh = (value || []).filter((o) => !known.has(o.id));
         if (fresh.length) { fresh.forEach((o) => state.fresh.add(o.id)); beep(); toast("Yangi buyurtma: #" + fresh[fresh.length - 1].no); }
         known = new Set((value || []).map((o) => o.id));
+      }
+      if (key === "messages") {
+        const list = value || [];
+        const last = list[list.length - 1];
+        if (list.length > knownMsg && last && last.from === "user") { beep(); toast("Yangi xabar: " + String(last.text || "").slice(0, 40)); }
+        knownMsg = list.length;
       }
       if ($("modal").classList.contains("show")) return;
       const typing = document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
