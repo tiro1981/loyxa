@@ -19,7 +19,8 @@ body.mrd.space {
     --mrd-line-2:    rgba(255,255,255,.16);
     --mrd-surface:   rgba(255,255,255,.04);
     --space-glass:   rgba(10,11,20,.62);
-    --hero-lime:     #C8F560;
+    --hero-lime:     #8E9BFF;   /* oldin lime edi — endi och indigo-ko'k */
+    --hero-blue:     #4458F0;
     --hero-mint:     #5EEAD4;
     --hero-sky:      #7DD3FC;
 
@@ -103,7 +104,7 @@ body.mrd.space {
 }
 .mrd.space .hero-title .text-accent,
 .mrd.space .hero-title .text-primary {
-    background: linear-gradient(100deg, var(--hero-lime) 0%, var(--hero-mint) 55%, var(--hero-sky) 100%);
+    background: linear-gradient(100deg, #A9B4FF 0%, #6B7CFF 50%, var(--hero-sky) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -143,9 +144,9 @@ body.mrd.space {
 
 .mrd.space .hero-btn-main {
     padding: 0 6px 0 26px;
-    background: var(--hero-lime);
-    color: #0A0D05;
-    box-shadow: 0 0 0 1px rgba(200,245,96,.5), 0 14px 40px -14px rgba(200,245,96,.75);
+    background: linear-gradient(135deg, #4458F0, #5A6CF6);
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(142,155,255,.45), 0 14px 40px -14px rgba(68,88,240,.85);
 }
 /* hover'da yaltiroq chiziq o'tadi */
 .mrd.space .hero-btn-main::before {
@@ -153,13 +154,13 @@ body.mrd.space {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
     transform: translateX(-120%);
     transition: transform .7s ease;
 }
 .mrd.space .hero-btn-main:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 0 1px rgba(200,245,96,.8), 0 20px 50px -14px rgba(200,245,96,.9);
+    box-shadow: 0 0 0 1px rgba(142,155,255,.7), 0 20px 50px -14px rgba(68,88,240,.95);
 }
 .mrd.space .hero-btn-main:hover::before { transform: translateX(120%); }
 .mrd.space .hb-arrow {
@@ -168,8 +169,8 @@ body.mrd.space {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: #0A0D05;
-    color: var(--hero-lime);
+    background: #fff;
+    color: var(--hero-blue);
     font-size: 14px;
     overflow: hidden;
 }
@@ -230,7 +231,7 @@ body.mrd.space {
 .mrd.space .trust-band { border-top: 1px solid rgba(255,255,255,.06); border-bottom: 1px solid rgba(255,255,255,.06); }
 .mrd.space .trust-band .trust-logos { color: #C5C9DB; }
 
-.mrd.space .section-tag { color: #F5C542; }
+.mrd.space .section-tag { color: #8E9BFF; }
 .mrd.space .section-title { color: #fff; }
 .mrd.space .section-subtitle { color: #9AA0B8; }
 
@@ -597,9 +598,9 @@ html:has(body.dash-body.space) {
         linear-gradient(135deg, rgba(68,88,240,.92) 0%, rgba(51,69,220,.85) 55%, rgba(14,15,27,.9) 120%);
     border: 1px solid rgba(255,255,255,.12);
 }
-.dash-body.space .no-sub-hero-icon { background: rgba(255,255,255,.14); color: #F5C542; }
+.dash-body.space .no-sub-hero-icon { background: rgba(255,255,255,.14); color: #fff; }
 .dash-body.space .ns-step-num { color: rgba(255,255,255,.10); }
-.dash-body.space .mp-app-card.popular { background: linear-gradient(180deg, rgba(245,197,66,.10) 0%, var(--white) 60%); }
+.dash-body.space .mp-app-card.popular { background: linear-gradient(180deg, rgba(142,155,255,.10) 0%, var(--white) 60%); }
 .dash-body.space .bar { background: linear-gradient(180deg, rgba(68,88,240,.35), rgba(68,88,240,.15)); }
 .dash-body.space .btn-primary {
     background: linear-gradient(135deg, #4458F0, #5A6CF6);
@@ -956,3 +957,6 @@ html body.space .lang-info span { color: #9AA0B8; }
     .shop-name-form { padding: 22px 20px 22px; }
     .sn-actions { flex-direction: column-reverse; }
 }
+
+/* Sharh yulduzlari — sariq o'rniga ko'k */
+.mrd.space .review-stars { color: #8E9BFF; }
