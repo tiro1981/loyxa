@@ -618,3 +618,6 @@ button.kpi-card:hover { border-color: color-mix(in srgb, var(--kc) 45%, transpar
     .adm-modal-box.sm { margin: 16px; border-radius: 18px; }
     .topbar-search input { font-size: 16px; }
 }
+
+/* Ilova logosi (rasm) chip ichida */
+.app-chip img { width: 16px; height: 16px; border-radius: 4px; object-fit: cover; vertical-align: -3px; }

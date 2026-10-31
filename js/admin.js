@@ -340,7 +340,7 @@ function _boAdminInit() {
         subsEl.innerHTML = subs.length
             ? subs.map(s => `
                 <div class="cm-sub-row">
-                    <div class="cm-sub-ic">${s.logo ? `<img src="${escapeHtml(s.logo)}" alt="">` : escapeHtml(s.logoEmoji || '📱')}</div>
+                    <div class="cm-sub-ic">${subIcon(s)}</div>
                     <div class="cm-sub-info">
                         <strong>${escapeHtml(s.shopName || s.name || 'Ilova')}</strong>
                         <span>${s.shopName ? escapeHtml(s.name || 'Ilova') + ' · ' : ''}${formatDate(s.activatedAt)} dan beri</span>
@@ -1074,6 +1074,13 @@ function _boAdminInit() {
         return r + (r.includes('?') ? '&' : '?') + 'client=' + encodeURIComponent(c.id);
     }
 
+    // Obunadagi logo obuna paytida nusxalangan — joriy ilova logosini ko'rsatamiz
+    function subIcon(s) {
+        const apps = getApps();
+        const app = apps.find(a => a.id === s.appId) || apps.find(a => a.slug && a.slug === s.slug);
+        const logo = app ? app.logo : s.logo;
+        return logo ? `<img src="${escapeHtml(logo)}" alt="">` : escapeHtml((app && app.logoEmoji) || s.logoEmoji || '📱');
+    }
     function appIcon(a) {
         return a.logo ? `<img src="${escapeHtml(a.logo)}" alt="">` : escapeHtml(a.logoEmoji || '📱');
     }
@@ -1090,7 +1097,7 @@ function _boAdminInit() {
     function subChips(c) {
         const subs = activeSubsOf(c);
         if (!subs.length) return `<span class="muted">—</span>`;
-        const shown = subs.slice(0, 2).map(s => `<span class="app-chip">${escapeHtml(s.logoEmoji || '📱')} ${escapeHtml(s.name || '')}</span>`).join('');
+        const shown = subs.slice(0, 2).map(s => `<span class="app-chip">${subIcon(s)} ${escapeHtml(s.name || '')}</span>`).join('');
         return `<div class="chip-wrap">${shown}${subs.length > 2 ? `<span class="app-chip more">+${subs.length - 2}</span>` : ''}</div>`;
     }
     function statusPill(c) {

@@ -696,13 +696,16 @@ html[data-theme="dark"] .toast.info i { color: #4458f0; }
     .dash-main { padding: 0 16px 40px; }
     .dash-header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto minmax(0, 1fr) auto;
         grid-template-areas: "menu logo actions" "greet greet greet";
         row-gap: 18px; column-gap: 10px;
         padding: calc(14px + env(safe-area-inset-top, 0px)) 0 20px;
     }
     .menu-toggle { grid-area: menu; display: inline-flex; }
-    .mobile-logo { grid-area: logo; display: inline-flex; font-size: 17px; }
+    .mobile-logo { grid-area: logo; display: inline-flex; font-size: 17px; min-width: 0; overflow: hidden; }
+    .mobile-logo .logo-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* telefonda do'kon nomi kesilmasin — 2 qatorgacha */
+    .sub-card-info h3 { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.25; }
     .mobile-logo .logo-icon { width: 32px; height: 32px; font-size: 13px; }
     .dash-header-right { grid-area: actions; }
     .dash-header-left { grid-area: greet; }
@@ -730,6 +733,14 @@ html[data-theme="dark"] .toast.info i { color: #4458f0; }
     .settings-panel { width: 100vw; }
     .support-thread { height: 58vh; padding: 16px; }
     .msg-bubble { max-width: 86%; }
+}
+
+@media (max-width: 340px) {
+    .mobile-logo .logo-text { display: none; }
+    .dash-header-right { gap: 6px; }
+    .sub-card { padding: 16px; }
+    .sub-card-top { flex-wrap: wrap; }
+    .sub-status-pill { order: 3; }
 }
 
 @media (prefers-reduced-motion: reduce) {

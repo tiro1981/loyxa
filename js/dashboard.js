@@ -320,6 +320,23 @@ function _boDashboardInit() {
     /* ====================================================
        ============ OBUNA TIZIMI (ko'p-ilova) =============
        ==================================================== */
+    // Obunadagi logo/nom obuna paytida nusxalangan — admin ilova logosini yoki nomini
+    // o'zgartirsa, kartada ham yangisi chiqishi uchun joriy ilova ma'lumotidan olamiz
+    function liveApp(sub) {
+        const all = boCloudGet('bo_apps', []) || [];
+        return all.find(a => a.id === sub.appId) || all.find(a => a.slug && a.slug === sub.slug) || null;
+    }
+    function subIconHtml(sub) {
+        const app = liveApp(sub);
+        const logo = app ? app.logo : sub.logo;
+        const emoji = (app && app.logoEmoji) || sub.logoEmoji || '📱';
+        return logo ? `<img src="${escapeHtml(logo)}" alt="">` : escapeHtml(emoji);
+    }
+    function subAppName(sub) {
+        const app = liveApp(sub);
+        return (app && app.name) || sub.name;
+    }
+
     function isSubscribedTo(appId) {
         return activeSubs().some(s => s.appId === appId);
     }
@@ -415,10 +432,10 @@ function _boDashboardInit() {
         container.innerHTML = subs.map(sub => `
             <div class="sub-card reveal visible" data-sub="${escapeHtml(sub.id)}">
                 <div class="sub-card-top">
-                    <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
+                    <div class="sub-icon">${subIconHtml(sub)}</div>
                     <div class="sub-card-info">
-                        <h3>${escapeHtml(sub.shopName || sub.name)}</h3>
-                        ${sub.shopName ? `<span class="sub-card-app">${escapeHtml(sub.name)}</span>` : ''}
+                        <h3>${escapeHtml(sub.shopName || subAppName(sub))}</h3>
+                        ${sub.shopName ? `<span class="sub-card-app">${escapeHtml(subAppName(sub))}</span>` : ''}
                     </div>
                     <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
                 </div>
