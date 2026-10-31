@@ -131,15 +131,28 @@
     messages().forEach((m) => { (by[normPhone(m.phone)] = by[normPhone(m.phone)] || []).push(m); });
     return Object.values(by).filter((list) => list.some((m) => m.from === "user" && !m.read)).length;
   }
+  // Chiziqli SVG ikonkalar (currentColor) — menyu uchun
+  const sv = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + "</svg>";
+  const ICO = {
+    orders: sv('<path d="M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5Z"/><path d="M9 8h6M9 12h6M9 16h3"/>'),
+    menu: sv('<path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2M10 2v2M14 2v2"/>'),
+    customers: sv('<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>'),
+    messages: sv('<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12Z"/>'),
+    stats: sv('<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>'),
+    bot: sv('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'),
+    qr: sv('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4"/>'),
+    settings: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'),
+    ext: sv('<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'),
+  };
   const PAGES = [
-    { id: "orders",    ic: "🧾", label: "Buyurtmalar", sub: "Yangi → Tayyorlanmoqda → Tayyor", badge: () => orders().filter((o) => o.status === "new").length },
-    { id: "menu",      ic: "☕", label: "Menyu",       sub: "Mahsulotlar, kategoriyalar va mavjudlik" },
-    { id: "customers", ic: "👥", label: "Mijozlar",    sub: "Buyurtmalar va sadoqat kartasi" },
-    { id: "messages",  ic: "💬", label: "Xabarlar",    sub: "Mijozlar bilan yozishma", badge: unreadChats },
-    { id: "stats",     ic: "📈", label: "Statistika",  sub: "Tushum va eng ko'p sotilganlar" },
-    { id: "bot",       ic: "✈️", label: "Telegram bot", sub: "Buyurtmalar kanalga yuboriladi" },
-    { id: "qr",        ic: "🔳", label: "QR kod",      sub: "Kafe va stollar uchun QR kodlar" },
-    { id: "settings",  ic: "⚙️", label: "Sozlamalar",  sub: "Kafe ma'lumotlari" },
+    { id: "orders",    group: "Ish joyi",  label: "Buyurtmalar", sub: "Yangi → Tayyorlanmoqda → Tayyor", badge: () => orders().filter((o) => o.status === "new").length },
+    { id: "menu",      group: "Ish joyi",  label: "Menyu",       sub: "Mahsulotlar, kategoriyalar va mavjudlik" },
+    { id: "customers", group: "Mijozlar",  label: "Mijozlar",    sub: "Buyurtmalar va sadoqat kartasi" },
+    { id: "messages",  group: "Mijozlar",  label: "Xabarlar",    sub: "Mijozlar bilan yozishma", badge: unreadChats },
+    { id: "stats",     group: "Mijozlar",  label: "Statistika",  sub: "Tushum va eng ko'p sotilganlar" },
+    { id: "bot",       group: "Ulanishlar", label: "Telegram bot", sub: "Buyurtmalar kanalga yuboriladi" },
+    { id: "qr",        group: "Ulanishlar", label: "QR kod",      sub: "Kafe va stollar uchun QR kodlar" },
+    { id: "settings",  group: "Ulanishlar", label: "Sozlamalar",  sub: "Kafe ma'lumotlari" },
   ];
   const state = { page: "orders", cat: "all", q: "", hist: "all", hq: "", period: "today", chat: null, fresh: new Set() };
   function go(page) { state.page = page; closeSide(); render(); window.scrollTo(0, 0); if (page === "bot") botRefresh(); }
@@ -163,7 +176,7 @@
     const ticket = (o, c) =>
       '<div class="tk' + (state.fresh.has(o.id) ? " fresh" : "") + '"><div class="tk-h"><b>#' + o.no + "</b><small>" + ago(o.createdAt) + "</small></div>" +
       "<ul>" + o.items.map((i) => "<li>" + esc(i.qty + "× " + i.name) + (i.opts ? ' <span style="color:var(--mut)">(' + esc(i.opts) + ")</span>" : "") + "</li>").join("") + "</ul>" +
-      '<div class="tk-who">' + esc(o.name) + " · " + esc(o.phone) + (o.note ? " · " + esc(o.note) : "") + (o.address ? "<br>" + esc(o.address) : "") + "</div>" +
+      '<div class="tk-who">' + esc(o.name) + " · " + esc(o.phone) + (o.note ? " · " + esc(o.note) : "") + (o.tip ? " · choychaq " + fmt(o.tip) : "") + (o.address ? "<br>" + esc(o.address) : "") + "</div>" +
       '<div class="tk-f"><span class="pill ' + (o.type === "table" ? "acc" : "") + '">' + typeLabel(o) + "</span><b>" + fmt(o.total) + "</b>" +
       '<span style="display:flex;gap:6px">' + (c.st === "new" ? '<button class="btn btn-line btn-sm btn-bad" data-st="cancelled" data-id="' + esc(o.id) + '">Bekor</button>' : "") +
       '<button class="btn btn-acc btn-sm" data-st="' + c.next + '" data-id="' + esc(o.id) + '">' + c.btn + "</button></span></div></div>";
@@ -226,7 +239,7 @@
       '<div class="chips"><button class="chip' + (state.cat === "all" ? " on" : "") + '" data-cat="all">Hammasi · ' + m.products.length + "</button>" +
       m.categories.map((c) => '<button class="chip' + (state.cat === c.id ? " on" : "") + '" data-cat="' + esc(c.id) + '">' + esc(c.emoji + " " + c.name) + " · " + m.products.filter((p) => p.cat === c.id).length + "</button>").join("") + "</div>" +
       '<div class="card"><div class="rows">' + (list.length ? list.map((p) =>
-        '<div class="row' + (p.available === false ? " off" : "") + '"><span class="th">' + thumb(p) + '</span><div class="b"><b>' + esc(p.name) + (p.popular ? " ⭐" : "") + "</b><small>" + esc(((m.categories.find((c) => c.id === p.cat) || {}).name) || "Kategoriyasiz") + (p.available === false ? " · tugagan" : "") + "</small></div>" +
+        '<div class="row' + (p.available === false ? " off" : "") + '"><span class="th">' + thumb(p) + '</span><div class="b"><b>' + esc(p.name) + (p.popular ? ' <span class="pill acc">HIT</span>' : "") + (p.isNew ? ' <span class="pill ok">YANGI</span>' : "") + "</b><small>" + esc(((m.categories.find((c) => c.id === p.cat) || {}).name) || "Kategoriyasiz") + (p.available === false ? " · tugagan" : "") + "</small></div>" +
         '<span class="pr">' + fmt(p.price) + "</span>" +
         '<button class="toggle' + (p.available !== false ? " on" : "") + '" data-avail="' + esc(p.id) + '" role="switch" aria-checked="' + (p.available !== false) + '" aria-label="' + esc(p.name) + ' mavjud"></button>' +
         '<button class="btn btn-line btn-sm" data-edit="' + esc(p.id) + '">Tahrirlash</button></div>').join("") : '<div class="empty">Mahsulot topilmadi</div>') + "</div></div>";
@@ -250,7 +263,8 @@
       '<label><input type="checkbox" id="oS"' + (d.opts && d.opts.s ? " checked" : "") + "> Hajm (S/M/L)</label>" +
       '<label><input type="checkbox" id="oM"' + (d.opts && d.opts.m ? " checked" : "") + "> Sut turi</label>" +
       '<label><input type="checkbox" id="oW"' + (d.opts && d.opts.sw ? " checked" : "") + "> Shirinlik</label>" +
-      '<label><input type="checkbox" id="oP"' + (d.popular ? " checked" : "") + "> Mashhur</label></div></div>" +
+      '<label><input type="checkbox" id="oP"' + (d.popular ? " checked" : "") + "> Mashhur (HIT)</label>" +
+      '<label><input type="checkbox" id="oN"' + (d.isNew ? " checked" : "") + "> Yangi</label></div></div>" +
       '<div class="f full"><span class="err" id="eErr"></span></div></div>' +
       '<div class="modal-f">' + (p ? '<button class="btn btn-line btn-bad" id="eDel" style="margin-right:auto">O\'chirish</button>' : "") +
       '<button class="btn btn-line" data-close>Bekor qilish</button><button class="btn btn-acc" id="eSave">Saqlash</button></div>';
@@ -284,7 +298,7 @@
       const mm = menu();
       const data = {
         name, price, cat: $("eCat").value, emoji: $("eEmoji").value.trim() || "☕", desc: $("eDesc").value.trim(), image: img,
-        opts: { s: $("oS").checked, m: $("oM").checked, sw: $("oW").checked }, popular: $("oP").checked,
+        opts: { s: $("oS").checked, m: $("oM").checked, sw: $("oW").checked }, popular: $("oP").checked, isNew: $("oN").checked,
       };
       if (p) Object.assign(mm.products.find((x) => String(x.id) === String(p.id)), data);
       else mm.products.push(Object.assign({ id: mm.products.reduce((a, x) => Math.max(a, Number(x.id) || 0), 0) + 1, available: true }, data));
@@ -477,6 +491,8 @@
       '<div class="f"><label for="sAddr">Manzil</label><input id="sAddr" value="' + esc(s.address) + '"></div>' +
       '<div class="f"><label for="sHours">Ish vaqti</label><input id="sHours" value="' + esc(s.hours) + '"></div>' +
       '<div class="f"><label for="sLoy">Sadoqat: har nechanchi ichimlik bepul</label><input id="sLoy" type="number" min="2" max="20" value="' + esc(s.loyaltyEvery) + '"></div>' +
+      '<div class="f"><label for="sFeat">Kun ichimligi (bosh sahifa kartasi)</label><select id="sFeat"><option value="">Avtomatik (birinchi mashhur)</option>' +
+      menu().products.map((p) => '<option value="' + esc(p.id) + '"' + (String(s.featured) === String(p.id) ? " selected" : "") + ">" + esc(p.name) + "</option>").join("") + "</select></div>" +
       '<div class="f"><label>Yetkazib berish</label><div class="checks"><label><input type="checkbox" disabled> Tez orada (2-versiya)</label></div></div>' +
       '</div><div class="modal-f"><button class="btn btn-acc" id="sSave">Saqlash</button></div></div>' +
       '<div class="card" style="margin-top:12px"><h3>Ma\'lumotlarni tozalash</h3><p class="hint" style="margin-bottom:12px">Sinov buyurtmalarini o\'chirish uchun. Menyu va sozlamalar saqlanib qoladi.</p>' +
@@ -492,10 +508,14 @@
     const s = settings();
     $("brandName").textContent = s.shopName;
     document.title = s.shopName + " · Admin";
+    let lastGroup = "";
     $("nav").innerHTML = PAGES.map((p) => {
       const n = p.badge ? p.badge() : 0;
-      return '<button class="' + (state.page === p.id ? "on" : "") + '" data-page="' + p.id + '"' + (state.page === p.id ? ' aria-current="page"' : "") + '><span class="ic" aria-hidden="true">' + p.ic + "</span>" + p.label + (n ? '<span class="n">' + n + "</span>" : "") + "</button>";
+      const head = p.group !== lastGroup ? '<div class="nav-group">' + p.group + "</div>" : "";
+      lastGroup = p.group;
+      return head + '<button class="' + (state.page === p.id ? "on" : "") + '" data-page="' + p.id + '"' + (state.page === p.id ? ' aria-current="page"' : "") + ">" + ICO[p.id] + "<span>" + p.label + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</button>";
     }).join("");
+    $("sideCafe").innerHTML = '<span class="cafe-av">' + esc((s.shopName || "K").trim().charAt(0).toUpperCase()) + '</span><span class="cafe-b"><b>' + esc(s.shopName) + '</b><small><i class="dot' + (Cloud.mode === "cloud" ? " ok" : "") + '"></i>' + (Cloud.mode === "cloud" ? "Sinxron" : "Faqat shu qurilma") + '</small></span><a class="cafe-open" href="' + esc(qrStoreUrl()) + '" target="_blank" rel="noopener" title="Ilovani ochish" aria-label="Ilovani ochish">' + ICO.ext + "</a>";
     const pg = PAGES.find((p) => p.id === state.page);
     $("pageTitle").textContent = pg.label;
     $("pageSub").textContent = pg.sub;
@@ -503,9 +523,6 @@
       ? '<button class="btn btn-acc" id="addProduct">+ Mahsulot</button>'
       : state.page === "orders" ? '<a class="btn btn-line" href="' + esc(qrStoreUrl()) + '" target="_blank" rel="noopener">Ilovani ochish</a>' : "";
     $("page").innerHTML = { orders: pageOrders, menu: pageMenu, customers: pageCustomers, messages: pageMessages, stats: pageStats, bot: pageBot, qr: pageQr, settings: pageSettings }[state.page]();
-    const isLive = Cloud.mode === "cloud";
-    $("syncDot").classList.toggle("ok", isLive);
-    $("syncText").textContent = isLive ? "Sinxron (bulut)" : "Faqat shu qurilma";
 
     // sahifaga xos ulanishlar
     const sq = (id, key) => { const el = $(id); if (el) el.oninput = () => { state[key] = el.value; const pos = el.selectionStart; render(); const n = $(id); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} }; };
@@ -571,7 +588,7 @@
       const s = settings();
       Object.assign(s, {
         shopName: $("sName").value.trim() || "Kofe Kafe", phone: $("sPhone").value.trim(), address: $("sAddr").value.trim(),
-        hours: $("sHours").value.trim(), loyaltyEvery: Math.max(2, Math.min(20, parseInt($("sLoy").value, 10) || 5)), shopNameApplied: true,
+        hours: $("sHours").value.trim(), loyaltyEvery: Math.max(2, Math.min(20, parseInt($("sLoy").value, 10) || 5)), featured: $("sFeat").value || null, shopNameApplied: true,
       });
       saveSettings(s); toast("Sozlamalar saqlandi"); return render();
     }

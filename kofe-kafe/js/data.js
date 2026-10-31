@@ -25,7 +25,7 @@ window.KOFE = (function () {
     { id: 8,  cat: "sovuq",  name: "Cold Brew",     price: 25000, emoji: "🧊", desc: "12 soat sovuq damlangan qahva.", opts: { s: true, m: false, sw: true } },
     { id: 9,  cat: "sovuq",  name: "Frappe",        price: 29000, emoji: "🥤", desc: "Muz, qahva va sut ko'pigi.", opts: { s: true, m: true, sw: true } },
     { id: 10, cat: "choy",   name: "Ko'k choy",     price: 12000, emoji: "🍵", desc: "Choynakda, limon bilan.", opts: { s: false, m: false, sw: true } },
-    { id: 11, cat: "choy",   name: "Matcha latte",  price: 28000, emoji: "🍵", desc: "Yapon matchasi va sut.", opts: { s: true, m: true, sw: true } },
+    { id: 11, cat: "choy",   name: "Matcha latte",  price: 28000, emoji: "🍵", desc: "Yapon matchasi va sut.", opts: { s: true, m: true, sw: true }, isNew: true },
     { id: 12, cat: "desert", name: "Cheesecake",    price: 30000, emoji: "🍰", desc: "Klassik Nyu-York cheesecake.", opts: {} },
     { id: 13, cat: "desert", name: "Tiramisu",      price: 32000, emoji: "🍮", desc: "Mascarpone va espresso bilan.", opts: {} },
     { id: 14, cat: "snack",  name: "Kruassan",      price: 16000, emoji: "🥐", desc: "Sariyog'li, yangi pishgan.", opts: {} },
