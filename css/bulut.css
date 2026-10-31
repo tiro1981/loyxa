@@ -265,7 +265,7 @@ body.dash-body {
 .dash-header-left { min-width: 0; }
 .dash-header-left h1 { font-size: 28px; font-weight: 700; letter-spacing: -.4px; overflow-wrap: anywhere; }
 .dash-header-left p { margin-top: 4px; color: var(--mut); font-size: 14px; }
-.dash-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.dash-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto; }
 
 /* ---------- Bildirishnomalar dropdown ---------- */
 .notif-wrap { position: relative; }
@@ -733,6 +733,12 @@ html[data-theme="dark"] .toast.info i { color: #4458f0; }
     .settings-panel { width: 100vw; }
     .support-thread { height: 58vh; padding: 16px; }
     .msg-bubble { max-width: 86%; }
+}
+
+/* Salomlashuv faqat bosh sahifada (js/dashboard.js body[data-view] qo'yadi) */
+body.dash-body:not([data-view="home"]) .dash-header-left { display: none; }
+@media (max-width: 760px) {
+    body.dash-body:not([data-view="home"]) .dash-header { grid-template-areas: "menu logo actions"; row-gap: 0; }
 }
 
 @media (max-width: 340px) {

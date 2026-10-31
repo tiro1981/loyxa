@@ -113,6 +113,8 @@ function _boDashboardInit() {
 
     function showView(view) {
         hideAllViews();
+        // Salomlashuv (sarlavhadagi "Salom, ...!") faqat bosh sahifada ko'rinadi — css/bulut.css
+        document.body.dataset.view = view || 'home';
         if (view === 'marketplace') {
             marketplaceWrap.style.display = 'block';
             renderMarketplace();
