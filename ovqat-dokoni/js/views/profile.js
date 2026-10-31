@@ -76,7 +76,7 @@ window.Views.profile = function (root) {
       </div>
 
       <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text-3)">
-        Ovqat Dokoni · v1.0.0
+        ${window.shopNameHtml()} · v1.0.0
       </div>
     </section>
   `;

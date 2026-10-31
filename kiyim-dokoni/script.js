@@ -104,6 +104,26 @@ const Store = {
     clear() { if (window.Cloud) Cloud.remove("store"); localStorage.removeItem(CART_KEY); }
 };
 
+/* ---------- Do'kon nomi (brend) ----------
+   Nom sozlamalarda (settings.storeName) saqlanadi; obunada kiritilgan nom admin
+   panel ochilganda ?shop=... orqali bir marta shu yerga yoziladi. Vitrina va admin
+   paneldagi qattiq yozilgan standart nom shu nom bilan almashtiriladi. */
+const DEFAULT_STORE_NAME = DEFAULT_DATA.settings.storeName;
+function storeNameOf(d) {
+    return (d && d.settings && (d.settings.storeName || d.settings.shopName)) || DEFAULT_STORE_NAME;
+}
+function applyStoreBrand(d) {
+    const name = storeNameOf(d);
+    document.querySelectorAll('.brand-foot, .about-body h3, .ab-copy, .brand-text strong').forEach(el => {
+        if (el.dataset.tpl === undefined) el.dataset.tpl = el.textContent;
+        el.textContent = el.dataset.tpl.split(DEFAULT_STORE_NAME).join(name);
+    });
+    if (document.documentElement.dataset.titleTpl === undefined) document.documentElement.dataset.titleTpl = document.title;
+    const tpl = document.documentElement.dataset.titleTpl;
+    document.title = tpl.includes(DEFAULT_STORE_NAME) ? tpl.split(DEFAULT_STORE_NAME).join(name)
+        : (name === DEFAULT_STORE_NAME ? tpl : name + ' — ' + tpl.replace(/^[^—]*—\s*/, ''));
+}
+
 /* ---------- Utilities ---------- */
 function normPhone(p) { return (p || '').replace(/\D/g, ''); }
 function money(n) {
@@ -1381,6 +1401,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     window.addEventListener('cloud:updated', () => {
         try {
             data = Store.load();
+            applyStoreBrand(data);
             renderChips();
             renderProductGrid();
             updateCartBadge();
@@ -1391,6 +1412,7 @@ if (document.querySelector('.app .screen[data-screen="home"]')) {
     });
 
     /* ============ INIT ============ */
+    applyStoreBrand(data);
     renderChips();
     renderProductGrid();
     updateCartBadge();

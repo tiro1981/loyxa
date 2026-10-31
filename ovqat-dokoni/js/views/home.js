@@ -19,7 +19,7 @@ window.Views.home = function (root) {
   root.innerHTML = `
     <header class="appbar">
       <div class="location">
-        <small>Yetkazib berish</small>
+        <small>${window.shopNameHtml()} · Yetkazib berish</small>
         <b>${ICONS.pin} ${addrLabel}, ${addrText}</b>
       </div>
       <div class="spacer"></div>

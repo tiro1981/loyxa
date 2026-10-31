@@ -108,6 +108,26 @@
     freeFrom: 100000,
     minOrder: 30000,
   };
+  // Saqlangan sozlamalar (Cloud "settings" — do'kon sahifasi ham shu yerdan o'qiydi)
+  (function loadSettings() {
+    const saved = window.Cloud ? Cloud.get("settings", null) : null;
+    if (saved && typeof saved === "object") Object.assign(SETTINGS, saved);
+    // Obunada kiritilgan do'kon nomi dashboarddan ?shop=... bilan keladi — bir marta qo'llanadi
+    // (keyin "Sozlamalar"dan o'zgartirilsa, qayta bosib ketilmaydi)
+    const shop = (new URLSearchParams(location.search).get("shop") || "").trim().slice(0, 60);
+    if (shop && !SETTINGS.shopNameApplied) {
+      SETTINGS.shopName = shop;
+      SETTINGS.shopNameApplied = true;
+      if (window.Cloud) Cloud.set("settings", Object.assign({}, SETTINGS));
+    }
+  })();
+  function applyBrand() {
+    const name = SETTINGS.shopName || "Ovqat Dokoni";
+    const b = document.getElementById("brandName");
+    if (b) b.textContent = name;
+    document.title = name + " · Admin Panel";
+  }
+  applyBrand();
 
   /* ----------------------------------------------------------
      3) Holat (state)
@@ -697,7 +717,7 @@
     return '<div class="dash-row dash-2b">' +
       '<div class="card"><div class="card-head"><h3>Do\'kon ma\'lumotlari</h3></div><div class="card-pad">' +
         '<div class="form-grid">' +
-          '<div class="field span2"><label>Do\'kon nomi</label><input class="input" id="s_name" value="' + SETTINGS.shopName + '"/></div>' +
+          '<div class="field span2"><label>Do\'kon nomi</label><input class="input" id="s_name" value="' + esc(SETTINGS.shopName) + '"/></div>' +
           '<div class="field"><label>Telefon</label><input class="input" id="s_phone" value="' + SETTINGS.phone + '"/></div>' +
           '<div class="field"><label>Ish vaqti</label><input class="input" id="s_hours" value="' + SETTINGS.hours + '"/></div>' +
           '<div class="field span2"><label>Manzil</label><input class="input" id="s_addr" value="' + SETTINGS.address + '"/></div>' +
@@ -972,6 +992,8 @@
       SETTINGS.delivery = parseInt(el("s_del").value, 10) || 0;
       SETTINGS.freeFrom = parseInt(el("s_free").value, 10) || 0;
       SETTINGS.minOrder = parseInt(el("s_min").value, 10) || 0;
+      if (window.Cloud) Cloud.set("settings", Object.assign({}, SETTINGS));
+      applyBrand();
       toast("Sozlamalar saqlandi", "ok");
     });
     const themeToggle = el("themeToggle");

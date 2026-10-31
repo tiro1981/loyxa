@@ -43,6 +43,14 @@ function initAdmin() {
     if (__adminInited) return;
     __adminInited = true;
 
+    // Obunada kiritilgan do'kon nomi (dashboard ?shop=... bilan uzatadi) — bir marta qo'llanadi
+    const shopParam = (new URLSearchParams(location.search).get('shop') || '').trim().slice(0, 60);
+    if (shopParam && !(data.settings && data.settings.shopNameApplied)) {
+        data.settings = Object.assign({}, data.settings, { storeName: shopParam, shopNameApplied: true });
+        Store.save(data);
+    }
+    applyStoreBrand(data);
+
     // Sidebar nav
     document.querySelectorAll('.nav-link').forEach(b => b.onclick = () => navigate(b.dataset.page));
     document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => navigate(b.dataset.go));
@@ -1104,6 +1112,7 @@ function setupSettingsPage() {
             logo: document.getElementById('stLogo').value,
         });
         Store.save(data);
+        applyStoreBrand(data);
         toast('Sozlamalar saqlandi', 'success');
     };
 

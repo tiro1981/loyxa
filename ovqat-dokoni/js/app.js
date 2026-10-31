@@ -46,6 +46,16 @@ window.ICONS = (function () {
 })();
 
 /* ---------------- UI helpers ---------------- */
+/* Do'kon nomi — admin "Sozlamalar"dan (Cloud "settings"); obunada kiritilgan nom ham shu yerga yoziladi */
+window.shopName = function () {
+  try { return ((window.Cloud && Cloud.get("settings", null)) || {}).shopName || "Ovqat Dokoni"; }
+  catch (e) { return "Ovqat Dokoni"; }
+};
+window.shopNameHtml = function () {
+  return window.shopName().replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+};
+document.title = window.shopName() + " — Yetkazib berish";
+
 window.UI = (function () {
   const app = () => document.getElementById("app");
   const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
