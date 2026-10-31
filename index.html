@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="css/style.css?v=7" />
     <link rel="stylesheet" href="css/settings.css?v=7" />
     <link rel="stylesheet" href="css/meridian.css?v=15" />
-    <link rel="stylesheet" href="css/space.css?v=20" />
+    <link rel="stylesheet" href="css/space.css?v=21" />
     <script>
       try {
         const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
@@ -491,17 +491,25 @@
           active = i;
           const a = APPS[i];
           card.style.setProperty("--acc", a.acc);
+          const num = (k) => String(k + 1).padStart(2, "0");
           card.innerHTML = `
             <div class="as-card-in">
-              <span class="as-icon"><i class="fa-solid ${a.icon}"></i></span>
-              <h3>${a.name}</h3>
-              <p>${a.tag}</p>
-              <ul>${a.feats.map((f) => `<li><i class="fa-solid fa-check"></i>${f}</li>`).join("")}</ul>
-              <div class="as-actions">
-                <a href="${a.url}?demo=1" target="_blank" rel="noopener" class="btn btn-outline"><i class="fa-solid fa-eye"></i> Demo ko'rish</a>
-                <a href="kirish.html?tab=register" class="btn btn-primary">Bepul boshlash <i class="fa-solid fa-arrow-right" style="font-size: 12px"></i></a>
+              <div class="as-head">
+                <span class="as-icon"><i class="fa-solid ${a.icon}"></i></span>
+                <div class="as-meta">
+                  <span class="as-kicker">${num(i)} <em>/ ${num(n - 1)}</em> · <b>Bepul</b></span>
+                  <h3>${a.name}</h3>
+                </div>
               </div>
-            </div>`;
+              <p>${a.tag}</p>
+              <ul class="as-feats">${a.feats.map((f) => `<li><span class="as-check"><i class="fa-solid fa-check"></i></span>${f}</li>`).join("")}</ul>
+              <div class="as-actions">
+                <a href="${a.url}?demo=1" target="_blank" rel="noopener" class="hero-btn hero-btn-ghost"><i class="fa-solid fa-eye" aria-hidden="true"></i><span>Demo ko'rish</span></a>
+                <a href="kirish.html?tab=register" class="hero-btn hero-btn-main"><span>Bepul boshlash</span><span class="hb-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span></a>
+              </div>
+            </div>
+            <div class="as-progress" aria-hidden="true"><span></span></div>`;
+          syncBar();
           chips.forEach((c, k) => {
             c.classList.toggle("active", k === i);
             c.setAttribute("aria-selected", k === i ? "true" : "false");
@@ -511,8 +519,16 @@
 
         /* avto-almashish: bo'lim ko'rinib turganda, sichqoncha ustida bo'lmasa */
         let timer = null, inView = false, hovering = false;
-        const stop = () => { clearInterval(timer); timer = null; };
-        const start = () => { stop(); if (!reduce && inView && !hovering) timer = setInterval(() => go(active + 1), 5500); };
+        /* progress chizig'i avto-almashish taymeri bilan bir xil boshlanadi */
+        function syncBar() {
+          const bar = card.querySelector(".as-progress span");
+          if (!bar) return;
+          bar.style.animation = "none";
+          void bar.offsetWidth;
+          bar.style.animation = timer ? "" : "none";
+        }
+        const stop = () => { clearInterval(timer); timer = null; syncBar(); };
+        const start = () => { clearInterval(timer); timer = null; if (!reduce && inView && !hovering) timer = setInterval(() => go(active + 1), 5500); syncBar(); };
         const restart = () => start();
         stage.addEventListener("mouseenter", () => { hovering = true; stop(); });
         stage.addEventListener("mouseleave", () => { hovering = false; start(); });
