@@ -389,7 +389,9 @@ input { font-family: inherit; outline: none; border: none; background: transpare
   font-size: 54px;
   text-align: center;
   display: flex; align-items: center; justify-content: center;
-  height: 158px;
+  /* qat'iy balandlik o'rniga nisbat — keng kartalarda rasm kesilib qolmasin;
+     admin oldindan ko'rish va mahsulot oynasi bilan bir xil (213:158) */
+  aspect-ratio: 213 / 158;
   overflow: hidden;
   background: var(--gray-light);
 }
