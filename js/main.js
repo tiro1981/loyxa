@@ -387,22 +387,26 @@ function seedDefaultApps() {
         const savedVersion = boCloudGet('bo_apps_version', null);
         const existing = boCloudGet('bo_apps', []);
 
-        if (existing.length === 0 || savedVersion !== APPS_VERSION) {
-            const defaultIds = new Set(defaults.map(d => d.id));
-            const userApps = existing.filter(a => !defaultIds.has(a.id) && !removedIds.has(a.id));
-            boCloudSet('bo_apps', [...defaults, ...userApps]);
-            boCloudSet('bo_apps_version', APPS_VERSION);
-            return;
-        }
-
-        let changed = false;
+        // MUHIM: admin panelda o'zgartirilgan maydonlar (logo, nom, tavsif, narx, faollik)
+        // HECH QACHON standart qiymat bilan bosib ketilmaydi. Oldin APPS_VERSION o'zgarganda
+        // standart ilovalar butunlay qayta yozilardi (logo: null) va har yangi versiyada
+        // yuklangan logotiplar o'chib ketardi. Endi faqat:
+        //   - olib tashlangan ilovalar (removedIds) o'chiriladi,
+        //   - ro'yxatda yo'q standart ilova qo'shiladi,
+        //   - mavjud ilovada yo'q maydonlargina standartdan to'ldiriladi.
+        let list = existing.filter(a => a && !removedIds.has(a.id));
+        let changed = list.length !== existing.length;
         defaults.forEach(d => {
-            if (!existing.find(a => a.id === d.id)) {
-                existing.push(d);
+            const i = list.findIndex(a => a.id === d.id);
+            if (i < 0) { list.push(d); changed = true; return; }
+            const missing = Object.keys(d).filter(k => !(k in list[i]));
+            if (missing.length) {
+                list[i] = Object.assign({}, d, list[i]);
                 changed = true;
             }
         });
-        if (changed) boCloudSet('bo_apps', existing);
+        if (changed) boCloudSet('bo_apps', list);
+        if (savedVersion !== APPS_VERSION) boCloudSet('bo_apps_version', APPS_VERSION);
     } catch (e) { console.error(e); }
 }
 
