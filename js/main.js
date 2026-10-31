@@ -379,10 +379,33 @@ function seedDefaultApps() {
                 popular: false,
                 active: true,
                 createdAt: new Date().toISOString()
+            },
+            {
+                id: 'app-kofe-kafe',
+                slug: 'kofe-kafe',
+                name: 'Kofe Kafe',
+                desc: 'Kofe kafe uchun "buyurtma + sadoqat" ilovasi — menyu, hajm/sut/shirinlik tanlash, olib ketish, stol QR kodlari va admin panel (buyurtmalar taxtasi, statistika)',
+                logo: null,
+                logoEmoji: '☕',
+                price: 0,
+                priceLabel: 'bepul',
+                features: [
+                    'Menyu, qidiruv va kategoriyalar',
+                    'Hajm, sut turi va shirinlikni tanlash',
+                    'Har 5-chi qahva bepul — sadoqat kartasi',
+                    'Stollar uchun QR kod menyu',
+                    'Buyurtmalar taxtasi: Yangi → Tayyorlanmoqda → Tayyor',
+                    'Telegram orqali yangi buyurtma xabari'
+                ],
+                demoUrl: 'kofe-kafe/index.html',
+                adminUrl: 'kofe-kafe/admin/index.html',
+                popular: false,
+                active: true,
+                createdAt: new Date().toISOString()
             }
         ];
 
-        const APPS_VERSION = 'v12-remove-nura-kosmetika';
+        const APPS_VERSION = 'v13-add-kofe-kafe';
         const removedIds = new Set(['app-salqin', 'app-kofe', 'app-lume', 'app-nura']);
         const savedVersion = boCloudGet('bo_apps_version', null);
         const existing = boCloudGet('bo_apps', []);

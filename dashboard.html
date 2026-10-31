@@ -286,7 +286,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=15", "js/dashboard.js?v=21"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=16", "js/dashboard.js?v=21"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

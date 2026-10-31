@@ -240,7 +240,17 @@
         ]);
     })();
 
-    const APP_SHAPES = { ovqat: CART, fastfood: BURGER, kiyim: TSHIRT, kitob: BOOK };
+    // Qahva finjoni (Kofe): devor, chet, qahva yuzasi, tutqich, likopcha, bug'
+    const CUP = build([
+        [34, () => { const a = R(0, Math.PI * 2), t = rnd(); const r = 1.15 + 0.45 * t; return [Math.cos(a) * r, -1.1 + t * 2.2, Math.sin(a) * r]; }],
+        [10, () => { const a = R(0, Math.PI * 2); return [Math.cos(a) * 1.6, 1.1, Math.sin(a) * 1.6]; }],
+        [8,  () => { const a = R(0, Math.PI * 2), rr = 1.5 * Math.sqrt(rnd()); return [Math.cos(a) * rr, 0.85, Math.sin(a) * rr]; }],
+        [12, () => { const a = R(-Math.PI / 2, Math.PI / 2); return [1.6 + Math.cos(a) * 0.55, 0.1 + Math.sin(a) * 0.55, J(0, .06)]; }],
+        [22, () => { const a = R(0, Math.PI * 2), rr = 2.6 * Math.sqrt(rnd()); return [Math.cos(a) * rr, -1.25, Math.sin(a) * rr * 0.9]; }],
+        [14, () => { const k = Math.floor(rnd() * 3), y = R(1.4, 3.0); return [(k - 1) * 0.55 + Math.sin(y * 3 + k) * 0.18, y, J(0, .05)]; }],
+    ]);
+
+    const APP_SHAPES = { ovqat: CART, fastfood: BURGER, kiyim: TSHIRT, kitob: BOOK, kofe: CUP };
     // Ilovalar bo'limidagi "jonli" slot: tanlangan ilova belgisi (o'tishda aralashma)
     const APP_SLOT = new Float32Array(CART);
     let appFrom = CART, appTo = CART, appT = 1;
