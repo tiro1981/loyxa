@@ -846,7 +846,22 @@ input { font-family: inherit; outline: none; border: none; background: transpare
 .cart-emoji { overflow: hidden; }
 .cart-emoji img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 .detail-img { overflow: hidden; }
-.detail-img img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; display: block; }
+/* Rasm oynaning tepasini chetdan-chetga to'ldiradi — to'g'ri to'rtburchak,
+   nisbati kartochka va admin oldindan ko'rish bilan bir xil (213:158) */
+.detail-img:has(img) {
+  margin: -22px -22px 18px;
+  aspect-ratio: 213 / 158;
+  max-height: 60vh;
+  border-radius: 26px 26px 0 0;
+  background: var(--gray-light);
+}
+.detail-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; display: block; }
+.detail-content .close-btn {
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
 
 /* ========== UNIVERSAL FORM (UFM) ========== */
 .ufm { display: flex; flex-direction: column; gap: 14px; }

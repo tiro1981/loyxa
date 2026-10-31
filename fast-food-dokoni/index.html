@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tasty Bite - Fast Food</title>
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -275,9 +275,7 @@
         <div class="detail-body">
           <h2 id="dName">Burger</h2>
           <div class="detail-meta">
-            <span><i class="fa-solid fa-star"></i> 4.8</span>
-            <span><i class="fa-solid fa-clock"></i> 15 daq</span>
-            <span><i class="fa-solid fa-fire"></i> 320 kkal</span>
+            <span><i class="fa-solid fa-clock"></i> <span id="dTime">15</span> daq</span>
           </div>
           <p class="detail-desc" id="dDesc">Tavsif...</p>
           <div class="qty-row">
@@ -428,7 +426,7 @@
         || "demo";
       window.__CLIENT_ID = CLIENT_ID;
       try { await Cloud.init("fastfood", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-      for (const src of ["uzbekistan-regions.js", "script.js?v=11"]) {
+      for (const src of ["uzbekistan-regions.js", "script.js?v=12"]) {
         await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=6"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
       }
     })();

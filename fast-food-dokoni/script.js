@@ -412,6 +412,7 @@ function openDetail(id) {
   $('dImg').innerHTML = foodImageHTML(f);
   $('dName').textContent = f.name;
   $('dDesc').textContent = f.desc;
+  $('dTime').textContent = f.time || 15;
   $('dPrice').textContent = formatPrice(f.price);
   $('qVal').textContent = qty;
   detailModal.classList.add('show');
