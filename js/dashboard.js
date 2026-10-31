@@ -227,13 +227,13 @@ function _boDashboardInit() {
             const view = link.dataset.view;
             // data-view yo'q (masalan "Sozlamalar") — bu panel ochadi, view emas
             if (!view) {
-                if (window.innerWidth <= 992) close();
+                if (window.innerWidth <= 760) close();
                 return;
             }
             document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
             showView(view);
-            if (window.innerWidth <= 992) close();
+            if (window.innerWidth <= 760) close();
         });
     });
 
@@ -410,6 +410,8 @@ function _boDashboardInit() {
             wireViewTriggers(container);
             return;
         }
+        // Bosh sahifada qisqa "To'xtatish", Obuna bo'limida to'liq yozuv
+        const stopLabel = container.id === 'subsGrid' ? "Obunani to'xtatish" : "To'xtatish";
         container.innerHTML = subs.map(sub => `
             <div class="sub-card reveal visible" data-sub="${escapeHtml(sub.id)}">
                 <div class="sub-card-top">
@@ -425,9 +427,9 @@ function _boDashboardInit() {
                     <span><i class="fa-solid fa-calendar-day"></i> ${formatDate(sub.activatedAt)}</span>
                 </div>
                 <div class="sub-actions">
-                    <button class="btn btn-primary btn-sm" data-open="${escapeHtml(sub.id)}"><i class="fa-solid fa-mobile-screen"></i> Ilovani ochish</button>
-                    <button class="btn btn-outline btn-sm" data-admin="${escapeHtml(sub.id)}"><i class="fa-solid fa-sliders"></i> Ilova boshqaruvi</button>
-                    <button class="btn btn-ghost-danger btn-sm" data-cancel="${escapeHtml(sub.id)}"><i class="fa-solid fa-circle-xmark"></i> Obunani to'xtatish</button>
+                    <button class="btn btn-primary btn-sm" data-open="${escapeHtml(sub.id)}"><i class="fa-solid fa-mobile-screen"></i> <span class="lbl-long">Ilovani ochish</span><span class="lbl-short">Ochish</span></button>
+                    <button class="btn btn-outline btn-sm" data-admin="${escapeHtml(sub.id)}"><i class="fa-solid fa-sliders"></i> <span class="lbl-long">Ilova boshqaruvi</span><span class="lbl-short">Boshqaruv</span></button>
+                    <button class="btn btn-ghost-danger btn-sm" data-cancel="${escapeHtml(sub.id)}"><i class="fa-solid fa-circle-xmark"></i> ${stopLabel}</button>
                 </div>
             </div>
         `).join('');
@@ -704,8 +706,11 @@ function _boDashboardInit() {
     }
     function formatDate(iso) {
         if (!iso) return '—';
-        try { return new Date(iso).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric' }); }
-        catch { return '—'; }
+        // 'uz-UZ' lokali brauzerlarda "2026 M10 29" chiqaradi — o'zimiz formatlaymiz: 29.10.2026
+        const d = new Date(iso);
+        if (isNaN(d)) return '—';
+        const p2 = (n) => String(n).padStart(2, '0');
+        return `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.${d.getFullYear()}`;
     }
     function timeAgo(iso) {
         try {

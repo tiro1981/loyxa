@@ -2,21 +2,19 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <!-- Telegram Mini App SDK — havolalar Telegram ichida ochilishi uchun -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <title>Mening Dashbordim — BiznesOnline</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=7">
-    <link rel="stylesheet" href="css/dashboard.css?v=10">
-    <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/space.css?v=22">
-    <script>document.documentElement.setAttribute("data-theme", "dark");</script>
+    <link rel="stylesheet" href="css/bulut.css?v=1">
+    <!-- Mavzu: saqlangan tanlov (js/settings.js bilan bir xil kalit) — sahifa chizilishidan oldin -->
+    <script>try { if (localStorage.getItem("bo_theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}</script>
 </head>
-<body class="dash-body space" data-force-theme="dark" data-particles="auto" data-particles-opacity="0.35">
+<body class="dash-body">
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
@@ -74,13 +72,17 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- MAIN -->
-    <main class="dash-main" data-particles-anchor>
+    <main class="dash-main">
 
         <!-- HEADER -->
         <header class="dash-header">
-            <button class="menu-toggle" id="menuToggle" aria-label="Menyu">
+            <button class="menu-toggle icon-btn" id="menuToggle" aria-label="Menyu">
                 <i class="fa-solid fa-bars"></i>
             </button>
+            <a href="index.html" class="logo mobile-logo">
+                <span class="logo-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="logo-text">BiznesOnline</span>
+            </a>
             <div class="dash-header-left">
                 <h1 id="welcomeTitle">Salom 👋</h1>
                 <p id="todayDate">Bugun: 19 may, 2026</p>
@@ -277,10 +279,6 @@
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <!-- Fondagi 3D zarrachalar (three.js) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/particles.js?v=12"></script>
-
     <!-- Supabase + Cloud qatlami (boshqa skriptlardan OLDIN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/cloud.js?v=3"></script>
@@ -288,7 +286,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=17"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=18"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();
