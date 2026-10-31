@@ -90,16 +90,128 @@ body.mrd.space {
     border-color: rgba(109,91,255,.42);
     color: #C9C1FF;
 }
+.mrd.space .hero {
+    --hero-lime: #C8F560;
+    --hero-mint: #5EEAD4;
+    --hero-sky:  #7DD3FC;
+}
+.mrd.space .hero-title {
+    font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(34px, 4.4vw, 60px);
+    line-height: 1.04;
+    letter-spacing: -.045em;
+    color: #F5F7FF;
+}
 .mrd.space .hero-title .text-accent,
 .mrd.space .hero-title .text-primary {
-    background: linear-gradient(90deg, #F5C542, #A99CFF 55%, #2DD4BF);
+    background: linear-gradient(100deg, var(--hero-lime) 0%, var(--hero-mint) 55%, var(--hero-sky) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    font-style: italic;
+    padding-right: .06em;
 }
-.mrd.space .hero-subtitle { color: #B9BED3; }
-.mrd.space .hero-stats .hs-item .hs-num span { color: #A99CFF; }
-.mrd.space .hero-stats .hs-item .hs-label { color: #8A90A8; }
+.mrd.space .hero-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    letter-spacing: -.005em;
+    color: #A3A9BF;
+    max-width: 500px;
+}
+.mrd.space .hero-buttons { gap: 12px; }
+
+/* Hero tugmalari — "pill" shakli; asosiy tugmada aylana strelka */
+.mrd.space .hero-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    height: 54px;
+    border-radius: 999px;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    isolation: isolate;
+    overflow: hidden;
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, background .25s ease, border-color .25s ease, color .25s ease;
+}
+.mrd.space .hero-btn:focus-visible { outline: 2px solid var(--hero-lime); outline-offset: 3px; }
+.mrd.space .hero-btn:active { transform: scale(.97); }
+
+.mrd.space .hero-btn-main {
+    padding: 0 6px 0 26px;
+    background: var(--hero-lime);
+    color: #0A0D05;
+    box-shadow: 0 0 0 1px rgba(200,245,96,.5), 0 14px 40px -14px rgba(200,245,96,.75);
+}
+/* hover'da yaltiroq chiziq o'tadi */
+.mrd.space .hero-btn-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .7s ease;
+}
+.mrd.space .hero-btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px rgba(200,245,96,.8), 0 20px 50px -14px rgba(200,245,96,.9);
+}
+.mrd.space .hero-btn-main:hover::before { transform: translateX(120%); }
+.mrd.space .hb-arrow {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #0A0D05;
+    color: var(--hero-lime);
+    font-size: 14px;
+    overflow: hidden;
+}
+.mrd.space .hb-arrow i { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.mrd.space .hero-btn-main:hover .hb-arrow i { transform: translateX(3px) rotate(-45deg); }
+
+.mrd.space .hero-btn-ghost {
+    padding: 0 26px 0 22px;
+    color: #E8EBF5;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+.mrd.space .hero-btn-ghost i { font-size: 14px; color: var(--hero-mint); transition: transform .3s ease; }
+.mrd.space .hero-btn-ghost:hover {
+    transform: translateY(-2px);
+    color: #fff;
+    border-color: rgba(94,234,212,.55);
+    background: rgba(94,234,212,.08);
+}
+.mrd.space .hero-btn-ghost:hover i { transform: rotate(90deg); }
+
+.mrd.space .hero-stats .hs-item .hs-num {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    letter-spacing: -.03em;
+}
+.mrd.space .hero-stats .hs-item .hs-num span { color: var(--hero-lime); }
+.mrd.space .hero-stats .hs-item .hs-label { color: #7E849C; font-size: 12.5px; letter-spacing: .02em; }
+.mrd.space .hero-stats .hs-sep { background: linear-gradient(transparent, rgba(255,255,255,.18), transparent); }
+
+@media (max-width: 480px) {
+    .mrd.space .hero-buttons { flex-direction: column; align-items: stretch; }
+    .mrd.space .hero-btn { justify-content: space-between; }
+    .mrd.space .hero-btn-ghost { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mrd.space .hero-btn, .mrd.space .hero-btn-main::before, .mrd.space .hb-arrow i { transition: none; }
+}
 /* Hero o'ng tomoni — zarrachali do'kon shu bo'sh joyda ko'rinadi */
 .mrd.space .hero-visual { height: 480px; }
 @media (max-width: 992px) {
@@ -130,7 +242,6 @@ body.mrd.space {
 .mrd.space .showcase-dots button.on { background: #6D5BFF; }
 .mrd.space .mrd-phone .mp-label { color: #C5C9DB; }
 
-.mrd.space .custom-price-note,
 .mrd.space .how-step,
 .mrd.space .review-card {
     background: var(--space-glass);
@@ -138,9 +249,6 @@ body.mrd.space {
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
 }
-.mrd.space .custom-price-note { color: #C5C9DB; }
-.mrd.space .custom-price-note i { color: #F5C542; }
-.mrd.space .custom-price-note strong { color: #fff; }
 
 .mrd.space .how-section .section-tag { color: #2DD4BF; }
 /* ---------- QANDAY ISHLAYDI — vertikal timeline ----------

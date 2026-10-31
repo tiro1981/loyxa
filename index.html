@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Nunito:wght@700;800;900&family=Sora:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="css/style.css?v=7" />
     <link rel="stylesheet" href="css/settings.css?v=7" />
     <link rel="stylesheet" href="css/meridian.css?v=15" />
-    <link rel="stylesheet" href="css/space.css?v=19" />
+    <link rel="stylesheet" href="css/space.css?v=20" />
     <script>
       try {
         const _s = JSON.parse(localStorage.getItem("bo_session") || "null");
@@ -155,12 +155,12 @@
             boshqaruv paneli. Xavfsiz, tez va 24/7 qo'llab-quvvatlash bilan.
           </p>
           <div class="hero-buttons">
-            <a href="kirish.html?tab=register" class="btn btn-primary btn-lg">
+            <a href="kirish.html?tab=register" class="hero-btn hero-btn-main">
               <span data-i18n="hero.btn_subscribe">Bepul boshlash</span>
-              <i class="fa-solid fa-arrow-right" style="font-size: 13px"></i>
+              <span class="hb-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
             </a>
-            <a href="#apps" class="btn btn-outline btn-lg">
-              <i class="fa-solid fa-grid-2"></i>
+            <a href="#apps" class="hero-btn hero-btn-ghost">
+              <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
               <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
             </a>
           </div>
@@ -226,15 +226,6 @@
           <div class="as-card" id="appCard" aria-live="polite"></div>
         </div>
         <div class="as-chips" id="appChips" role="tablist" aria-label="Ilovalar"></div>
-
-        <div class="custom-price-note reveal">
-          <i class="fa-solid fa-gift"></i>
-          <p>
-            Barcha ilovalar — <strong>mutlaqo bepul</strong>. Ilovani olish
-            uchun shunchaki <strong>ro'yxatdan o'ting</strong> va biznesingiz
-            uchun veb-ilovani bir necha daqiqada ishga tushiring.
-          </p>
-        </div>
       </div>
     </section>
 
