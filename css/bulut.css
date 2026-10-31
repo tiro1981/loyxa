@@ -736,3 +736,13 @@ html[data-theme="dark"] .toast.info i { color: #4458f0; }
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     .reveal { opacity: 1; transform: none; }
 }
+
+/* Logotip belgisi — kvadrat ichida "BO" harflari */
+.logo-icon .logo-mark {
+    font-family: 'Plus Jakarta Sans', 'Outfit', 'Inter', system-ui, sans-serif;
+    font-weight: 800;
+    font-size: .8em;
+    letter-spacing: -.05em;
+    line-height: 1;
+    color: #fff;
+}
