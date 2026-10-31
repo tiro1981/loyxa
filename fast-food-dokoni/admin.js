@@ -13,7 +13,7 @@ const _clientInfo = (() => {
   } catch { return null; }
 })();
 // Obuna paytida kiritilgan do'kon nomi (yangi obunalar) — yangi do'kon sozlamalari uchun standart nom
-const _subShopName = (_clientInfo?.subscriptions || []).find(s => s.slug === 'fastfood' && s.shopName)?.shopName || null;
+const _subShopName = (_urlP.get('shop') || '').trim().slice(0, 60) || (_clientInfo?.subscriptions || []).find(s => s.slug === 'fastfood' && s.shopName)?.shopName || null;
 
 // ========== SHARED DB — har mijozga alohida prefix ==========
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha

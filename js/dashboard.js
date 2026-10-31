@@ -154,7 +154,12 @@ function _boDashboardInit() {
     };
     // Har bir obuna uchun ilova / boshqaruv URL'lari
     function subAppUrl(sub)   { return buildUrl(sub.demoUrl,  'fast-food-dokoni/index.html'); }
-    function subAdminUrl(sub) { return buildUrl(sub.adminUrl, 'fast-food-dokoni/admin.html'); }
+    // Boshqaruv paneliga obunada kiritilgan do'kon nomi ham uzatiladi (&shop=...) —
+    // panel uni bir marta do'kon sozlamalariga yozadi (brend nomi sifatida)
+    function subAdminUrl(sub) {
+        const url = buildUrl(sub.adminUrl, 'fast-food-dokoni/admin.html');
+        return sub.shopName ? url + '&shop=' + encodeURIComponent(sub.shopName) : url;
+    }
 
     function isInTelegram() {
         // Telegram ichidaligini bir nechta signal bilan aniqlaymiz (platform ba'zan 'unknown' bo'ladi).
