@@ -376,7 +376,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/particles.js?v=14"></script>
     <script src="js/settings.js?v=10"></script>
-    <script src="js/main.js?v=13"></script>
+    <script src="js/main.js?v=14"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("appDetailModal");
@@ -574,18 +574,23 @@
            do'konlar        = barcha mijozlarning to'xtatilmagan obunalari yig'indisi */
         function heroCounts() {
           const subs = (window.Cloud ? Cloud.get("bo_subscriptions", []) : []) || [];
-          const apps = (window.Cloud ? Cloud.get("bo_apps", []) : []) || [];
+          const apps = ((window.Cloud ? Cloud.get("bo_apps", []) : []) || []).filter(function (a) { return a && a.active !== false; });
+          // platformadan olib tashlangan ilovalarga (masalan NURA) qolgan obunalar hisoblanmaydi
+          const live = new Set();
+          apps.forEach(function (a) { live.add(a.id); if (a.slug) live.add(a.slug); });
           let stores = 0;
           subs.forEach(function (c) {
             if (Array.isArray(c.subscriptions)) {
-              stores += c.subscriptions.filter(function (x) { return x && x.status !== "cancelled"; }).length;
+              stores += c.subscriptions.filter(function (x) {
+                return x && x.status !== "cancelled" && (live.has(x.appId) || live.has(x.slug));
+              }).length;
             } else if (c.app && c.status === "active") {
               stores += 1; // eski bitta-ilova modeli
             }
           });
           return {
             users: subs.length,
-            apps: apps.filter(function (a) { return a && a.active !== false; }).length,
+            apps: apps.length,
             stores: stores
           };
         }

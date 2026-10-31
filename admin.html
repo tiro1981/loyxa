@@ -549,7 +549,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/main.js?v=13", "js/admin.js?v=15"]) {
+        for (const src of ["js/main.js?v=14", "js/admin.js?v=15"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

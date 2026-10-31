@@ -87,8 +87,8 @@ function _boDashboardInit() {
     }
 
     // Platformadan olib tashlangan ilovalarni mijoz obunalaridan ham tozalash
-    const REMOVED_APP_IDS   = new Set(['app-salqin', 'app-kofe', 'app-lume']);
-    const REMOVED_APP_SLUGS = new Set(['lume-kosmetika']);
+    const REMOVED_APP_IDS   = new Set(['app-salqin', 'app-kofe', 'app-lume', 'app-nura']);
+    const REMOVED_APP_SLUGS = new Set(['lume-kosmetika', 'nura-kosmetika']);
     if (Array.isArray(client.subscriptions)) {
         const before = client.subscriptions.length;
         client.subscriptions = client.subscriptions.filter(
