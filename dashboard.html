@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/style.css?v=7">
     <link rel="stylesheet" href="css/dashboard.css?v=10">
     <link rel="stylesheet" href="css/settings.css?v=7">
-    <link rel="stylesheet" href="css/space.css?v=19">
+    <link rel="stylesheet" href="css/space.css?v=22">
     <script>document.documentElement.setAttribute("data-theme", "dark");</script>
 </head>
 <body class="dash-body space" data-force-theme="dark" data-particles="auto" data-particles-opacity="0.35">
@@ -247,6 +247,32 @@
         </div>
     </div>
 
+    <!-- Obuna: do'kon nomini so'rash oynasi (js/dashboard.js → askShopName) -->
+    <div class="app-detail-overlay" id="shopNameModal" role="dialog" aria-modal="true" aria-labelledby="snTitle">
+        <div class="app-detail-box shop-name-box">
+            <button type="button" class="app-detail-close" data-sn-close aria-label="Yopish">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <form class="shop-name-form" id="shopNameForm" novalidate>
+                <div class="sn-app">
+                    <span class="sn-icon" id="snIcon"></span>
+                    <div>
+                        <span class="sn-kicker">Ilovaga obuna</span>
+                        <strong id="snAppName"></strong>
+                    </div>
+                </div>
+                <h3 id="snTitle">Do'koningiz nomi</h3>
+                <p class="sn-sub">Bu nom ilovangizda va boshqaruv panelida ko'rinadi.</p>
+                <label class="sn-label" for="shopNameInput">Do'kon nomi</label>
+                <input type="text" id="shopNameInput" class="sn-input" maxlength="60" autocomplete="organization" placeholder="Masalan: Toshkent Burger">
+                <div class="sn-error" id="shopNameError" aria-live="polite"></div>
+                <div class="sn-actions">
+                    <button type="button" class="btn btn-outline" data-sn-close>Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Obuna bo'lish</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
@@ -262,7 +288,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=15"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=16"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

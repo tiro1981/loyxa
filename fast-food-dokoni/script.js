@@ -16,6 +16,8 @@ const _clientInfo = (() => {
     return subs.find(s => s.id === CLIENT_ID) || null;
   } catch { return null; }
 })();
+// Obuna paytida kiritilgan do'kon nomi (yangi obunalar) — yangi do'kon sozlamalari uchun standart nom
+const _subShopName = (_clientInfo?.subscriptions || []).find(s => s.slug === 'fastfood' && s.shopName)?.shopName || null;
 
 // ========== SHARED DB (auto-prefixes tb_* keys per client) ==========
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
@@ -74,7 +76,7 @@ if (!DB.get('tb_users')) DB.set('tb_users', []);
 if (!DB.get('tb_messages')) DB.set('tb_messages', []);
 if (!DB.get('tb_settings')) {
   DB.set('tb_settings', {
-    restaurantName: _clientInfo?.businessName || 'Mening restoranim',
+    restaurantName: _subShopName || _clientInfo?.businessName || 'Mening restoranim',
     address: _clientInfo?.address ? `${_clientInfo.city || ''}, ${_clientInfo.address}`.trim().replace(/^,\s*/, '') : 'Manzilni kiriting',
     hours: '09:00 - 23:00',
     deliveryFee: 15000

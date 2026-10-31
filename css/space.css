@@ -910,3 +910,49 @@ html body.space .lang-card .lang-flag { background: rgba(255,255,255,.06); }
 html body.space .lang-card .lang-tick { background: #6D5BFF; }
 html body.space .lang-info strong { color: #F3F4FA; }
 html body.space .lang-info span { color: #9AA0B8; }
+
+/* ============================================================
+   OBUNA: do'kon nomi oynasi (dashboard)
+   ============================================================ */
+.dash-body.space .shop-name-box { max-width: 440px; }
+.dash-body.space .app-detail-close { background: rgba(255,255,255,.06); color: #C5C9DB; }
+.dash-body.space .app-detail-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+.shop-name-form { padding: 26px 28px 28px; }
+.sn-app { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.sn-icon {
+    width: 46px; height: 46px; flex: 0 0 auto;
+    display: grid; place-items: center;
+    border-radius: 14px;
+    font-size: 22px;
+    background: rgba(109,91,255,.14);
+    border: 1px solid rgba(169,156,255,.25);
+    overflow: hidden;
+}
+.sn-icon img { width: 100%; height: 100%; object-fit: cover; }
+.sn-kicker { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #8A90A8; }
+.sn-app strong { font-size: 15px; color: #fff; }
+.shop-name-form h3 { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.02em; margin: 0 0 6px; }
+.sn-sub { font-size: 14px; color: #9AA0B8; margin: 0 0 20px; line-height: 1.55; }
+.sn-label { display: block; font-size: 13px; font-weight: 700; color: #C5C9DB; margin-bottom: 8px; }
+.sn-input {
+    width: 100%;
+    height: 50px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.04);
+    color: #fff;
+    font: inherit;
+    font-size: 15px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.sn-input::placeholder { color: #6B7089; }
+.sn-input:focus { outline: none; border-color: #6D5BFF; background: rgba(109,91,255,.06); box-shadow: 0 0 0 4px rgba(109,91,255,.18); }
+.sn-error { min-height: 20px; margin-top: 6px; font-size: 12.5px; color: #F87171; }
+.sn-actions { display: flex; gap: 10px; margin-top: 10px; }
+.sn-actions .btn { flex: 1; justify-content: center; }
+.dash-body.space .sub-card-app { display: block; font-size: 12.5px; color: #8A90A8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) {
+    .shop-name-form { padding: 22px 20px 22px; }
+    .sn-actions { flex-direction: column-reverse; }
+}

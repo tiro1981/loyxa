@@ -208,7 +208,7 @@ function _boAdminInit() {
         if (clientQuery) {
             const qDigits = clientQuery.replace(/\D/g, '');
             list = list.filter(c => {
-                const hay = [c.id, c.username, c.businessName, c.email, ...activeSubsOf(c).map(s => s.name)]
+                const hay = [c.id, c.username, c.businessName, c.email, ...activeSubsOf(c).flatMap(s => [s.name, s.shopName || ''])]
                     .filter(Boolean).join(' ').toLowerCase();
                 return hay.includes(clientQuery) || (qDigits.length >= 3 && digitsOf(c.phone).includes(qDigits));
             });
@@ -342,8 +342,8 @@ function _boAdminInit() {
                 <div class="cm-sub-row">
                     <div class="cm-sub-ic">${s.logo ? `<img src="${escapeHtml(s.logo)}" alt="">` : escapeHtml(s.logoEmoji || '📱')}</div>
                     <div class="cm-sub-info">
-                        <strong>${escapeHtml(s.name || 'Ilova')}</strong>
-                        <span>${formatDate(s.activatedAt)} dan beri</span>
+                        <strong>${escapeHtml(s.shopName || s.name || 'Ilova')}</strong>
+                        <span>${s.shopName ? escapeHtml(s.name || 'Ilova') + ' · ' : ''}${formatDate(s.activatedAt)} dan beri</span>
                     </div>
                     <a class="icon-act" href="${escapeHtml(storeUrl(c, s.demoUrl, 'index.html', s))}" target="_blank" rel="noopener" title="Do'konni ochish"><i class="fa-solid fa-store"></i></a>
                     <a class="icon-act" href="${escapeHtml(storeUrl(c, s.adminUrl, 'admin.html', s))}" target="_blank" rel="noopener" title="Do'kon boshqaruvi"><i class="fa-solid fa-sliders"></i></a>
@@ -369,7 +369,7 @@ function _boAdminInit() {
         const c = getClients().find(x => x.id === clientId);
         const s = c && activeSubsOf(c).find(x => x.id === subId);
         if (!s) return;
-        confirmAction(`"${s.name}" obunasi bekor qilinsinmi?`, "Ilova mijoz dashbordidan olib tashlanadi. Mijoz keyin qayta obuna bo'lishi mumkin.", async () => {
+        confirmAction(`"${s.shopName || s.name}" obunasi bekor qilinsinmi?`, "Ilova mijoz dashbordidan olib tashlanadi. Mijoz keyin qayta obuna bo'lishi mumkin.", async () => {
             const upd = await updateClient(clientId, (cl) => {
                 const sub = (cl.subscriptions || []).find(x => x.id === subId);
                 if (!sub) return false;
@@ -418,7 +418,7 @@ function _boAdminInit() {
         const head = ['ID', 'Foydalanuvchi', 'Telefon', 'Ilovalar', "Ro'yxatdan o'tgan", 'Holat'];
         const rows = list.map(c => [
             c.id, displayName(c), c.phone || '',
-            activeSubsOf(c).map(s => s.name).join('; '),
+            activeSubsOf(c).map(s => s.shopName ? `${s.shopName} (${s.name})` : s.name).join('; '),
             c.createdAt ? new Date(c.createdAt).toISOString().slice(0, 10) : '',
             isBlocked(c) ? 'Bloklangan' : 'Faol'
         ]);

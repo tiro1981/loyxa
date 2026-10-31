@@ -12,6 +12,8 @@ const _clientInfo = (() => {
     return subs.find(s => s.id === CLIENT_ID) || null;
   } catch { return null; }
 })();
+// Obuna paytida kiritilgan do'kon nomi (yangi obunalar) — yangi do'kon sozlamalari uchun standart nom
+const _subShopName = (_clientInfo?.subscriptions || []).find(s => s.slug === 'fastfood' && s.shopName)?.shopName || null;
 
 // ========== SHARED DB — har mijozga alohida prefix ==========
 // Serverga (Cloud/Supabase) ko'chiriladigan UMUMIY kalitlar — Cloud client_id bo'yicha
@@ -44,7 +46,7 @@ if (!DB.get('tb_messages')) DB.set('tb_messages', []);
 if (!DB.get('tb_settings')) {
   // Mijozning o'zining biznes nomi va manzili default qiymat sifatida
   DB.set('tb_settings', {
-    restaurantName: _clientInfo?.businessName || 'Mening biznesim',
+    restaurantName: _subShopName || _clientInfo?.businessName || 'Mening biznesim',
     address: _clientInfo?.address ? `${_clientInfo.city || ''}, ${_clientInfo.address}`.trim().replace(/^,\s*/, '') : 'Manzilni kiriting',
     hours: '09:00 - 23:00',
     deliveryFee: 15000,
@@ -66,11 +68,12 @@ function showApp() {
     if (avEl) avEl.textContent = (acc.name || 'A')[0].toUpperCase();
 
     // Sahifa sarlavhasi va sidebar brandini mijoz biznes nomi bilan brending qilish
-    if (_clientInfo && _clientInfo.businessName) {
-      document.title = `${_clientInfo.businessName} — Ilova boshqaruvi`;
+    const brandName = _subShopName || (_clientInfo && _clientInfo.businessName);
+    if (brandName) {
+      document.title = `${brandName} — Ilova boshqaruvi`;
       const brandEl = document.querySelector('.sidebar .brand span');
       if (brandEl) {
-        brandEl.innerHTML = escapeBrand(_clientInfo.businessName);
+        brandEl.innerHTML = escapeBrand(brandName);
       }
     }
 

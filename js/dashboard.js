@@ -318,18 +318,25 @@ function _boDashboardInit() {
     function isSubscribedTo(appId) {
         return activeSubs().some(s => s.appId === appId);
     }
-    // Obuna — subdomen so'ralmaydi. Mijoz do'koniga eski havola orqali kiradi:
-    //   /{papka}/index.html?client={client_id}
+    // Obuna — avval do'kon nomi so'raladi (askShopName), keyin obuna yaratiladi.
+    // Mijoz do'koniga eski havola orqali kiradi: /{papka}/index.html?client={client_id}
+    // Eski obunalarda shopName yo'q — ular o'zgarishsiz qoladi (ilova nomi ko'rsatiladi).
     function subscribeToApp(app) {
         if (isSubscribedTo(app.id)) {
             window.showToast?.('Siz bu ilovaga allaqachon obuna bo\'lgansiz', 'info');
             return;
         }
+        askShopName(app, (shopName) => createSubscription(app, shopName));
+    }
+
+    function createSubscription(app, shopName) {
+        if (isSubscribedTo(app.id)) return;
         const sub = {
             id: 'sub-' + Date.now() + '-' + Math.floor(Math.random() * 1e4),
             appId: app.id,
             slug: app.slug || app.id,
             name: app.name,
+            shopName,
             logoEmoji: app.logoEmoji || null,
             logo: app.logo || null,
             demoUrl: app.demoUrl || null,
@@ -341,9 +348,46 @@ function _boDashboardInit() {
         client.subscriptions.push(sub);
         persistClient();
         hasActiveSubscription = true;
-        window.showToast?.(`${app.name} — obuna bo'ldingiz! 🎉 Havola va QR kod "Ilova boshqaruvi"da.`, 'success');
+        window.showToast?.(`${shopName} — obuna bo'ldingiz! 🎉 Havola va QR kod "Ilova boshqaruvi"da.`, 'success');
         document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.view === 'subscription'));
         showView('subscription');
+    }
+
+    /* ---------- DO'KON NOMI OYNASI ---------- */
+    function askShopName(app, onSubmit) {
+        const modal = document.getElementById('shopNameModal');
+        const form = document.getElementById('shopNameForm');
+        const input = document.getElementById('shopNameInput');
+        const err = document.getElementById('shopNameError');
+        if (!modal || !form || !input) return;
+        document.getElementById('snAppName').textContent = app.name;
+        document.getElementById('snIcon').innerHTML = app.logo
+            ? `<img src="${escapeHtml(app.logo)}" alt="">`
+            : escapeHtml(app.logoEmoji || '📱');
+        input.value = '';
+        err.textContent = '';
+        const close = () => {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+            form.onsubmit = null;
+        };
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const name = input.value.replace(/\s+/g, ' ').trim();
+            if (name.length < 2) {
+                err.textContent = "Do'kon nomini kiriting (kamida 2 ta belgi)";
+                input.focus();
+                return;
+            }
+            close();
+            onSubmit(name);
+        };
+        modal.querySelectorAll('[data-sn-close]').forEach(b => { b.onclick = close; });
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+        modal.onkeydown = (e) => { if (e.key === 'Escape') close(); };
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => input.focus(), 60);
     }
 
     /* ---------- OBUNA KARTALARI ---------- */
@@ -366,7 +410,8 @@ function _boDashboardInit() {
                 <div class="sub-card-top">
                     <div class="sub-icon">${sub.logo ? `<img src="${sub.logo}" alt="">` : (sub.logoEmoji || '📱')}</div>
                     <div class="sub-card-info">
-                        <h3>${escapeHtml(sub.name)}</h3>
+                        <h3>${escapeHtml(sub.shopName || sub.name)}</h3>
+                        ${sub.shopName ? `<span class="sub-card-app">${escapeHtml(sub.name)}</span>` : ''}
                     </div>
                     <span class="sub-status-pill"><i class="fa-solid fa-circle"></i> Faol</span>
                 </div>
@@ -391,7 +436,7 @@ function _boDashboardInit() {
     function cancelSubscription(subId) {
         const sub = (client.subscriptions || []).find(s => s.id === subId);
         if (!sub) return;
-        if (!confirm(`"${sub.name}" obunasini to'xtatasizmi?`)) return;
+        if (!confirm(`"${sub.shopName || sub.name}" obunasini to'xtatasizmi?`)) return;
         client.subscriptions = client.subscriptions.filter(s => s.id !== subId);
         persistClient();
         hasActiveSubscription = activeSubs().length > 0;
