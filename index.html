@@ -164,22 +164,21 @@
               <span data-i18n="hero.btn_view_apps">Ilovalarni ko'rish</span>
             </a>
           </div>
-          <div class="hero-stats">
+          <!-- Real raqamlar — platforma bazasidan (pastdagi skript to'ldiradi) -->
+          <div class="hero-stats" id="heroStats">
             <div class="hs-item">
-              <div class="hs-num">
-                <span class="stat-number" data-target="200">0</span>
-              </div>
-              <div class="hs-label">Faol biznes</div>
+              <div class="hs-num"><span class="hs-count" data-stat="users">0</span></div>
+              <div class="hs-label">Foydalanuvchi</div>
             </div>
             <div class="hs-sep"></div>
             <div class="hs-item">
-              <div class="hs-num">99.9%</div>
-              <div class="hs-label">Uptime SLA</div>
+              <div class="hs-num"><span class="hs-count" data-stat="apps">0</span></div>
+              <div class="hs-label">Web ilova</div>
             </div>
             <div class="hs-sep"></div>
             <div class="hs-item">
-              <div class="hs-num">4.9<span>/5</span></div>
-              <div class="hs-label">Reyting</div>
+              <div class="hs-num"><span class="hs-count" data-stat="stores">0</span></div>
+              <div class="hs-label">Obuna bo'lgan do'kon</div>
             </div>
           </div>
         </div>
@@ -569,12 +568,52 @@
               }
             });
         }
+        /* Hero statistikasi — real raqamlar:
+           foydalanuvchilar = ro'yxatdan o'tgan mijozlar,
+           web ilovalar     = faol ilovalar,
+           do'konlar        = barcha mijozlarning to'xtatilmagan obunalari yig'indisi */
+        function heroCounts() {
+          const subs = (window.Cloud ? Cloud.get("bo_subscriptions", []) : []) || [];
+          const apps = (window.Cloud ? Cloud.get("bo_apps", []) : []) || [];
+          let stores = 0;
+          subs.forEach(function (c) {
+            if (Array.isArray(c.subscriptions)) {
+              stores += c.subscriptions.filter(function (x) { return x && x.status !== "cancelled"; }).length;
+            } else if (c.app && c.status === "active") {
+              stores += 1; // eski bitta-ilova modeli
+            }
+          });
+          return {
+            users: subs.length,
+            apps: apps.filter(function (a) { return a && a.active !== false; }).length,
+            stores: stores
+          };
+        }
+        function animateCount(el, to) {
+          const from = parseInt(el.textContent, 10) || 0;
+          if (from === to) return;
+          const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (reduce) { el.textContent = to; return; }
+          const t0 = performance.now(), dur = 1200;
+          (function step(now) {
+            const p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(from + (to - from) * e);
+            if (p < 1) requestAnimationFrame(step);
+          })(t0);
+        }
+        function applyHeroStats() {
+          const n = heroCounts();
+          document.querySelectorAll("#heroStats [data-stat]").forEach(function (el) {
+            animateCount(el, n[el.dataset.stat] || 0);
+          });
+        }
         (async function () {
           try {
             await Cloud.init();
           } catch (e) {}
           applySocial();
-          window.addEventListener("cloud:updated", applySocial);
+          applyHeroStats();
+          window.addEventListener("cloud:updated", function () { applySocial(); applyHeroStats(); });
         })();
       })();
     </script>
