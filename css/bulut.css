@@ -308,6 +308,18 @@ body.dash-body {
 .ns-apps-head h3 { font-size: 22px; font-weight: 700; }
 .myapps-head p, .mp-head p, .ns-apps-head p { margin-top: 4px; color: var(--mut); font-size: 14.5px; }
 .mp-head, .ns-apps-head { display: block; }
+/* "Ilovalar" bo'limidagi qidiruv */
+.mp-head.mp-head-search { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.mp-search {
+    display: flex; align-items: center; gap: 10px;
+    width: min(320px, 100%); height: 44px; padding: 0 16px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--solid);
+    color: var(--mut); transition: border-color .18s, box-shadow .18s;
+}
+.mp-search:focus-within { border-color: var(--acc); box-shadow: 0 0 0 4px var(--acc-soft); }
+.mp-search i { font-size: 14px; }
+.dash-body .mp-search input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; background: none; box-shadow: none; outline: 0; color: var(--ink); font-size: 14.5px; }
+.dash-body .mp-search input:focus { box-shadow: none; }
 
 /* ============================================================
    1. OBUNASIZ HOLAT
@@ -715,6 +727,7 @@ html[data-theme="dark"] .toast.info i { color: #4458f0; }
     .no-sub-hero-icon { width: 64px; height: 64px; font-size: 28px; border-radius: 18px; }
     .no-sub-hero-body h2 { font-size: 23px; }
     .ns-apps-grid { grid-template-columns: minmax(0, 1fr); }
+    .mp-search { width: 100%; }
 
     .lbl-long { display: none; }
     .lbl-short { display: inline; }

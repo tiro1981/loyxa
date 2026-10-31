@@ -259,9 +259,23 @@ function _boDashboardInit() {
         catch { return []; }
     }
 
-    function renderAppCards(container, emptyMsg) {
+    function renderAppCards(container, emptyMsg, query) {
         if (!container) return;
-        const apps = getApps();
+        let apps = getApps();
+        // Qidiruv (faqat "Ilovalar" bo'limida): nomi, tavsifi va imkoniyatlari bo'yicha
+        const q = (query || '').trim().toLowerCase();
+        if (q) {
+            apps = apps.filter(a => [a.name, a.desc, ...(a.features || [])].join(' ').toLowerCase().includes(q));
+            if (!apps.length) {
+                container.innerHTML = `
+                <div class="ns-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h3>"${escapeHtml(query.trim())}" bo'yicha ilova topilmadi</h3>
+                    <p>Boshqa so'z bilan qidirib ko'ring</p>
+                </div>`;
+                return;
+            }
+        }
 
         if (apps.length === 0) {
             container.innerHTML = `
@@ -505,8 +519,10 @@ function _boDashboardInit() {
     })();
 
     function renderMarketplace() {
-        renderAppCards(document.getElementById('marketplaceGrid'));
+        const search = document.getElementById('mpSearch');
+        renderAppCards(document.getElementById('marketplaceGrid'), null, search ? search.value : '');
     }
+    document.getElementById('mpSearch')?.addEventListener('input', renderMarketplace);
 
     function renderNoSubApps() {
         renderAppCards(document.getElementById('noSubAppsGrid'));

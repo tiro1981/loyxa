@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/bulut.css?v=6">
+    <link rel="stylesheet" href="css/bulut.css?v=7">
     <!-- Mavzu: saqlangan tanlov (js/settings.js bilan bir xil kalit) — sahifa chizilishidan oldin -->
     <script>try { if (localStorage.getItem("bo_theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}</script>
 </head>
@@ -166,9 +166,15 @@
             <!-- ILOVALAR MARKETPLACE VIEW — sidebar Ilovalar bossa -->
             <!-- =================================================== -->
             <div class="marketplace-wrap" id="marketplaceWrap" style="display:none;">
-                <div class="mp-head reveal">
-                    <h2 data-i18n="dash.mp_title">BiznesOnline Ilovalari</h2>
-                    <p data-i18n="dash.mp_subtitle">Biznesingizga mos ilovani tanlang va obuna bo'ling</p>
+                <div class="mp-head mp-head-search reveal">
+                    <div>
+                        <h2 data-i18n="dash.mp_title">BiznesOnline Ilovalari</h2>
+                        <p data-i18n="dash.mp_subtitle">Biznesingizga mos ilovani tanlang va obuna bo'ling</p>
+                    </div>
+                    <label class="mp-search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" id="mpSearch" placeholder="Ilova qidirish..." autocomplete="off" aria-label="Ilova qidirish">
+                    </label>
                 </div>
                 <div class="ns-apps-grid" id="marketplaceGrid">
                     <!-- JS dinamik to'ldiradi -->
@@ -286,7 +292,7 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=16", "js/dashboard.js?v=21"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=16", "js/dashboard.js?v=22"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();
