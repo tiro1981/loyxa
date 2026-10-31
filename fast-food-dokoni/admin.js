@@ -301,7 +301,6 @@ function openFoodModal(id) {
     document.getElementById('foodCat').value = f.cat;
     document.getElementById('foodEmoji').value = f.emoji;
     document.getElementById('foodPrice').value = f.price;
-    document.getElementById('foodRating').value = f.rating;
     document.getElementById('foodTime').value = f.time;
     document.getElementById('foodDesc').value = f.desc;
     document.getElementById('foodActive').checked = f.active !== false;
@@ -421,7 +420,6 @@ document.getElementById('foodForm').addEventListener('submit', (e) => {
     emoji: document.getElementById('foodEmoji').value.trim(),
     image: document.getElementById('foodImageData').value || null,
     price: parseInt(document.getElementById('foodPrice').value),
-    rating: parseFloat(document.getElementById('foodRating').value) || 4.5,
     time: parseInt(document.getElementById('foodTime').value) || 15,
     desc: document.getElementById('foodDesc').value.trim(),
     active: document.getElementById('foodActive').checked

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel - TastyBite</title>
-  <link rel="stylesheet" href="admin.css?v=2" />
+  <link rel="stylesheet" href="admin.css?v=3" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -489,8 +489,7 @@
       </label>
       <label>Emoji (rasm bo'lmasa)<input type="text" id="foodEmoji" placeholder="🍔" maxlength="4" required></label>
       <label>Narxi (so'm)<input type="number" id="foodPrice" required></label>
-      <label>Reyting<input type="number" id="foodRating" step="0.1" min="0" max="5" value="4.5"></label>
-      <label>Tayyorlash vaqti (daq)<input type="number" id="foodTime" value="15"></label>
+      <label class="full-row">Tayyorlash vaqti (daq)<input type="number" id="foodTime" value="15"></label>
       <label class="full-row">Tavsif<textarea id="foodDesc" rows="3" required></textarea></label>
       <label class="full-row checkbox-row">
         <input type="checkbox" id="foodActive" checked> Faol (menyuda ko'rinsin)
@@ -570,7 +569,7 @@
       || "demo";
     window.__CLIENT_ID = CLIENT_ID;
     try { await Cloud.init("fastfood", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-    for (const src of ["admin.js?v=5"]) {
+    for (const src of ["admin.js?v=6"]) {
       await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src + "?v=4"; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
     }
   })();

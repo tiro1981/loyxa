@@ -314,7 +314,6 @@ function renderFoods() {
   );
   if (filterState.sort === 'priceAsc') list.sort((a, b) => a.price - b.price);
   if (filterState.sort === 'priceDesc') list.sort((a, b) => b.price - a.price);
-  if (filterState.sort === 'rating') list.sort((a, b) => b.rating - a.rating);
   if (filterState.sort === 'fast') list.sort((a, b) => a.time - b.time);
 
   if (list.length === 0) {
@@ -332,9 +331,7 @@ function renderFoods() {
       <div class="food-body">
         <div class="food-name">${f.name}</div>
         <div class="food-meta">
-          <i class="fa-solid fa-star"></i> ${f.rating}
-          <span>•</span>
-          <i class="fa-solid fa-clock"></i> ${f.time} daq
+          <i class="fa-solid fa-clock"></i> ${f.time || 15} daq
         </div>
         <div class="food-foot">
           <span class="food-price">${formatPrice(f.price)}</span>
@@ -385,9 +382,7 @@ function renderFavorites() {
       <div class="food-body">
         <div class="food-name">${f.name}</div>
         <div class="food-meta">
-          <i class="fa-solid fa-star"></i> ${f.rating}
-          <span>•</span>
-          <i class="fa-solid fa-clock"></i> ${f.time} daq
+          <i class="fa-solid fa-clock"></i> ${f.time || 15} daq
         </div>
         <div class="food-foot">
           <span class="food-price">${formatPrice(f.price)}</span>
