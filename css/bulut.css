@@ -8,28 +8,28 @@
 
 /* ---------- Tokenlar ---------- */
 :root {
-    --bg-grad: linear-gradient(160deg, #eef0ff 0%, #f6f1ff 45%, #e9f6ff 100%);
-    --glass: rgba(255,255,255,.72);
-    --glass-b: rgba(255,255,255,.9);
+    --bg-grad: linear-gradient(180deg, #f1f3f7 0%, #eceff4 100%);
+    --glass: rgba(255,255,255,.92);
+    --glass-b: #e2e5ec;
     --solid: #ffffff;
     --modal-bg: rgba(255,255,255,.94);
-    --ink: #1d1b3a;
-    --text: #3d3b5e;
-    --mut: #6c6a8c;
-    --dim: #a09ec0;
-    --line: #e6e4f5;
-    --acc: #5b4bff;
-    --acc2: #8a63ff;
-    --acc-ink: #4b3bea;          /* urg'u rangidagi matn (AA kontrast) */
-    --acc-soft: #eceaff;
-    --btn-grad: linear-gradient(135deg, #5b4bff, #8a63ff);
+    --ink: #151a2b;
+    --text: #3a4157;
+    --mut: #687088;
+    --dim: #a2a8b9;
+    --line: #e6e9f0;
+    --acc: #4458f0;
+    --acc2: #5a6cf6;
+    --acc-ink: #3345dc;          /* urg'u rangidagi matn (AA kontrast) */
+    --acc-soft: #e7eafd;
+    --btn-grad: linear-gradient(135deg, #4458f0, #5a6cf6);
     --ok: #0f9d6b;   --okbg: #dcf5ea;
     --bad: #d63a52;  --badbg: #fde6ea;
     --warn: #c27a00; --warnbg: #fff1d6;
-    --sh: 0 12px 30px -18px rgba(60,50,160,.35);
-    --sh-lg: 0 30px 60px -30px rgba(40,30,120,.45);
-    --sh-acc: 0 8px 18px -8px var(--acc);
-    --overlay: rgba(29,27,58,.38);
+    --sh: 0 10px 28px -20px rgba(20,30,70,.28);
+    --sh-lg: 0 28px 56px -30px rgba(20,30,70,.38);
+    --sh-acc: 0 8px 18px -8px rgba(68,88,240,.7);
+    --overlay: rgba(21,26,43,.38);
     --hf: 'Outfit', system-ui, sans-serif;
     --bf: 'Inter', system-ui, sans-serif;
     --r: 18px;
@@ -38,27 +38,28 @@
     color-scheme: light;
 }
 html[data-theme="dark"] {
-    --bg-grad: linear-gradient(160deg, #12102b 0%, #1a1440 50%, #0f1c33 100%);
+    --bg-grad: linear-gradient(180deg, #0f121a 0%, #121725 100%);
     --glass: rgba(255,255,255,.06);
     --glass-b: rgba(255,255,255,.10);
-    --solid: #1c1842;
-    --modal-bg: rgba(27,23,64,.96);
-    --ink: #f0eeff;
-    --text: #c9c6ea;
-    --mut: #9a97c2;
-    --dim: #6f6c99;
-    --line: rgba(255,255,255,.10);
-    --acc: #8a7bff;
-    --acc2: #a98bff;
-    --acc-ink: #b4a9ff;
-    --acc-soft: rgba(138,123,255,.16);
-    --btn-grad: linear-gradient(135deg, #6a5cff, #8a63ff);
+    --solid: #1a1f2e;
+    --modal-bg: rgba(24,29,43,.97);
+    --ink: #eef1fa;
+    --text: #c3c9da;
+    --mut: #949bb0;
+    --dim: #687087;
+    --line: rgba(255,255,255,.09);
+    --acc: #7d8cff;
+    --acc2: #95a2ff;
+    --acc-ink: #a9b4ff;
+    --acc-soft: rgba(125,140,255,.15);
+    --btn-grad: linear-gradient(135deg, #4b5ef2, #6475f7);
+    --sh-acc: 0 8px 18px -8px rgba(80,100,245,.6);
     --ok: #3ddc9f;   --okbg: rgba(15,157,107,.20);
     --bad: #ff7a8e;  --badbg: rgba(214,58,82,.20);
     --warn: #ffc166; --warnbg: rgba(194,122,0,.22);
     --sh: 0 12px 30px -18px rgba(0,0,0,.65);
     --sh-lg: 0 30px 60px -28px rgba(0,0,0,.8);
-    --overlay: rgba(5,4,18,.6);
+    --overlay: rgba(5,7,14,.6);
     color-scheme: dark;
 }
 
@@ -122,7 +123,7 @@ body.dash-body {
 .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.06); }
 .btn-outline { background: var(--solid); color: var(--ink); border-color: var(--line); }
 .btn-outline:hover { border-color: var(--acc); color: var(--acc-ink); }
-.btn-light { background: #fff; color: #3b2fd6; box-shadow: 0 10px 24px -14px rgba(0,0,0,.45); }
+.btn-light { background: #fff; color: #3345dc; box-shadow: 0 10px 24px -14px rgba(0,0,0,.45); }
 .btn-light:hover { transform: translateY(-1px); }
 .btn-ghost-danger { background: transparent; color: var(--bad); border-color: transparent; }
 .btn-ghost-danger:hover { background: var(--badbg); }
@@ -312,9 +313,9 @@ body.dash-body {
     border-radius: 22px;
     color: #fff;
     background:
-        radial-gradient(120% 140% at 100% 0%, rgba(120,200,255,.45), transparent 55%),
-        linear-gradient(135deg, #5b4bff 0%, #7a55ff 55%, #4a8dff 120%);
-    box-shadow: 0 30px 60px -32px rgba(70,50,220,.7);
+        radial-gradient(120% 140% at 100% 0%, rgba(150,175,255,.40), transparent 55%),
+        linear-gradient(135deg, #3d50e8 0%, #4a5ef2 55%, #6a7cf8 120%);
+    box-shadow: 0 30px 60px -32px rgba(60,80,230,.65);
     margin-bottom: 22px;
 }
 .no-sub-hero-icon {
@@ -622,7 +623,7 @@ body.dash-body {
     max-width: calc(100vw - 32px);
     padding: 12px 20px;
     border-radius: 999px;
-    background: #1d1b3a; color: #fff;
+    background: #151a2b; color: #fff;
     font-size: 14px; font-weight: 500;
     box-shadow: 0 18px 40px -18px rgba(0,0,0,.6);
     opacity: 0; visibility: hidden;
@@ -633,11 +634,11 @@ body.dash-body {
 .toast i { font-size: 16px; }
 .toast.success i { color: #3ddc9f; }
 .toast.error i { color: #ff7a8e; }
-.toast.info i { color: #a99cff; }
-html[data-theme="dark"] .toast { background: #f0eeff; color: #1d1b3a; }
+.toast.info i { color: #9fabff; }
+html[data-theme="dark"] .toast { background: #eef1fa; color: #151a2b; }
 html[data-theme="dark"] .toast.success i { color: #0f9d6b; }
 html[data-theme="dark"] .toast.error i { color: #d63a52; }
-html[data-theme="dark"] .toast.info i { color: #5b4bff; }
+html[data-theme="dark"] .toast.info i { color: #4458f0; }
 
 /* ============================================================
    MOSLASHUVCHAN
