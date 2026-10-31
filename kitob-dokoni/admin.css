@@ -2043,3 +2043,15 @@ html { overflow-x: hidden; }
         overflow-y: auto;
     }
 }
+
+/* Muqova rasmi yuklash — oldindan ko'rish (rasm yuklangan nisbatda) */
+.cover-up { display: flex; flex-direction: column; gap: 10px; }
+.drop-zone { position: relative; }
+.drop-zone .cover-preview { display: none; }
+.drop-zone.has-img { padding: 12px; }
+.drop-zone.has-img .cover-preview { display: block; max-width: 100%; max-height: 360px; width: auto; height: auto; margin: 0 auto; border-radius: 10px; box-shadow: 0 8px 24px -12px rgba(0,0,0,.35); }
+.drop-zone.has-img .dz-empty { display: none; }
+.cover-acts { display: flex; gap: 10px; }
+.cover-acts .btn { flex: 1; justify-content: center; }
+.cover-acts .btn:disabled { opacity: .5; cursor: not-allowed; }
+.cover-hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; }

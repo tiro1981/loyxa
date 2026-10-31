@@ -343,13 +343,15 @@ function setupProductsPage() {
     const dz = document.getElementById('dropZone');
     const fi = document.getElementById('fileInput');
     dz.onclick = () => fi.click();
+    document.getElementById('coverPick').onclick = () => fi.click();
+    document.getElementById('coverClear').onclick = () => setCoverImage('');
     dz.ondragover = e => { e.preventDefault(); dz.classList.add('dragover'); };
     dz.ondragleave = () => dz.classList.remove('dragover');
     dz.ondrop = e => {
         e.preventDefault(); dz.classList.remove('dragover');
         if (e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]);
     };
-    fi.onchange = e => { if (e.target.files[0]) loadImageFile(e.target.files[0]); };
+    fi.onchange = e => { if (e.target.files[0]) loadImageFile(e.target.files[0]); fi.value = ''; };
 }
 
 function catLabel(id) {
@@ -357,9 +359,34 @@ function catLabel(id) {
     return c ? c.name : capitalize(id);
 }
 
+// Muqova rasmi — boshqa ilovalardagidek fayldan yuklanadi; nisbat saqlanib,
+// uzun tomoni 900px gacha kichraytiriladi (bulutga sig'ishi uchun)
+function setCoverImage(src) {
+    document.getElementById('pImage').value = src || '';
+    const prev = document.getElementById('coverPreview');
+    if (src) prev.src = src; else prev.removeAttribute('src');
+    document.getElementById('dropZone').classList.toggle('has-img', !!src);
+    document.getElementById('coverClear').disabled = !src;
+}
+
 function loadImageFile(file) {
+    if (!file.type || !file.type.startsWith('image/')) { toast('Faqat rasm fayllari', 'error'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast('Rasm hajmi 5MB dan oshmasin', 'error'); return; }
     const reader = new FileReader();
-    reader.onload = e => { document.getElementById('pImage').value = e.target.result; toast('Rasm yuklandi'); };
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            const scale = Math.min(1, 900 / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            setCoverImage(canvas.toDataURL('image/jpeg', 0.85));
+            toast('Rasm yuklandi');
+        };
+        img.onerror = () => toast("Rasmni o'qib bo'lmadi", 'error');
+        img.src = e.target.result;
+    };
     reader.readAsDataURL(file);
 }
 
@@ -437,7 +464,7 @@ window.openProductForm = function(id) {
         document.getElementById('pPrice').value = p.price;
         document.getElementById('pOld').value = p.oldPrice || '';
         document.getElementById('pStock').value = p.stock;
-        document.getElementById('pImage').value = p.image;
+        setCoverImage(p.image || '');
         document.getElementById('pPublisher').value = p.publisher || '';
         document.getElementById('pYear').value = p.year || '';
         document.getElementById('pPages').value = p.pages || '';
@@ -451,12 +478,14 @@ window.openProductForm = function(id) {
         document.getElementById('pId').value = '';
         document.getElementById('pActive').checked = true;
         document.querySelectorAll('#pSizes input').forEach(c => c.checked = (c.value === 'Qattiq muqova'));
+        setCoverImage('');
     }
     openModal('productModal');
 };
 
 function saveProductForm(e) {
     e.preventDefault();
+    if (!document.getElementById('pImage').value) { toast('Muqova rasmini yuklang', 'error'); return; }
     const id = document.getElementById('pId').value;
     const sizes = [...document.querySelectorAll('#pSizes input:checked')].map(i => i.value);
     const obj = {

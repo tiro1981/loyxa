@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css?v=5">
+    <link rel="stylesheet" href="admin.css?v=6">
 
     
     
@@ -576,7 +576,6 @@
                     </select>
                 </div>
                 <div class="form-row"><label>ISBN</label><input type="text" id="pIsbn" placeholder="978-9943-..."></div>
-                <div class="form-row full"><label>Muqova rasmi (URL) *</label><input type="url" id="pImage" required="" placeholder="https://..."></div>
                 <div class="form-row full">
                     <label>Muqova turi / format</label>
                     <div class="check-row" id="pSizes">
@@ -587,11 +586,22 @@
                     </div>
                 </div>
                 <div class="form-row full">
-                    <label>Muqova rasmini yuklash (drag &amp; drop)</label>
-                    <div class="drop-zone" id="dropZone">
-                        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
-                        <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
-                        <input type="file" id="fileInput" accept="image/*" hidden="">
+                    <label>Muqova rasmi *</label>
+                    <input type="hidden" id="pImage">
+                    <div class="cover-up">
+                        <div class="drop-zone" id="dropZone">
+                            <img class="cover-preview" id="coverPreview" alt="Muqova">
+                            <div class="dz-empty">
+                                <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="28" height="28"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
+                                <p>Rasmni bu yerga tashlang yoki <span>tanlash uchun bosing</span></p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden="">
+                        </div>
+                        <div class="cover-acts">
+                            <button type="button" class="btn btn-primary" id="coverPick">Rasm tanlash</button>
+                            <button type="button" class="btn btn-ghost" id="coverClear">O'chirish</button>
+                        </div>
+                        <small class="cover-hint">JPG, PNG yoki WEBP, 5MB gacha. Rasm yuklangan nisbatda saqlanadi — kitob muqovasi uchun tik (masalan 600x900px) tavsiya etiladi.</small>
                     </div>
                 </div>
                 <div class="form-row full"><label>Annotatsiya (tavsif)</label><textarea id="pDesc" rows="3" placeholder="Kitob haqida qisqacha..."></textarea></div>
@@ -712,7 +722,7 @@
           || "shop";
         window.__CLIENT_ID = CLIENT_ID;
         try { await Cloud.init("kitob", CLIENT_ID); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["script.js?v=13", "admin.js?v=7"]) {
+        for (const src of ["script.js?v=13", "admin.js?v=8"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();

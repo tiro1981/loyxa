@@ -44,6 +44,10 @@ window.Views.product = function (root, params) {
       .pdp-dock .stepper button{width:36px;height:36px}
       .pdp-add{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
       .pdp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+      /* Rasm bor bo'lsa — yuklangan nisbatda, kesilmasdan va cho'zilmasdan to'liq ko'rinadi */
+      .pdp-hero.has-img{height:auto;display:block;background:var(--surface-2)}
+      .pdp-hero.has-img .pdp-emoji{display:none}
+      .pdp-hero.has-img .pdp-img{position:static;display:block;width:100%;height:auto;max-height:72vh;object-fit:contain}
       .pdp-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 4px}
       .pi{display:flex;align-items:center;gap:11px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px}
       .pi-ic{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:18px;border-radius:11px;background:var(--surface-2)}
@@ -92,10 +96,10 @@ window.Views.product = function (root, params) {
   root.innerHTML = `
     ${Components.appbar({ back: true, title: "", rightHTML: favBtnHTML })}
 
-    <div class="pdp-hero" style="${Components.thumbStyle(p)}">
+    <div class="pdp-hero${p.image ? " has-img" : ""}" style="${Components.thumbStyle(p)}">
       ${disc ? `<span class="discount-badge">-${disc}%</span>` : ""}
       <span class="pdp-emoji">${p.emoji}</span>
-      ${p.image ? `<img class="pdp-img" src="${p.image}" alt="${p.name}" onerror="this.remove()" />` : ""}
+      ${p.image ? `<img class="pdp-img" src="${p.image}" alt="${p.name}" onerror="this.parentNode.classList.remove('has-img');this.remove()" />` : ""}
     </div>
 
     <div class="view-pad" style="padding-top:0;padding-bottom:120px">
