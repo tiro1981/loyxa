@@ -510,7 +510,6 @@ function _boAuthInit() {
             e.preventDefault();
             const login = clientForm.login.value.trim();
             const password = clientForm.password.value;
-            const loginDigits = digits(login);
 
             try {
                 // MUHIM: Cloud keshi faqat sahifa ochilganda bir marta yuklanadi. Server sekin
@@ -543,12 +542,8 @@ function _boAuthInit() {
                 }
 
                 const subs = boCloudGet('bo_subscriptions', []);
-                // Telefon (raqamlar bo'yicha) yoki foydalanuvchi nomi (katta-kichik harf farqsiz)
-                const candidates = subs.filter(s => {
-                    const byPhone = loginDigits.length >= 7 && digits(s.phone) === loginDigits;
-                    const byUsername = s.username && s.username.toLowerCase() === login.toLowerCase();
-                    return byPhone || byUsername;
-                });
+                // Faqat username bo'yicha (katta-kichik harf farqsiz) — telefon bilan kirish yo'q
+                const candidates = subs.filter(s => s.username && s.username.toLowerCase() === login.toLowerCase());
                 let user = null;
                 let subsChanged = false;
                 for (const c of candidates) {
