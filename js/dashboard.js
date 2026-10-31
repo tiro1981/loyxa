@@ -704,11 +704,8 @@ function _boDashboardInit() {
     }
     function formatDate(iso) {
         if (!iso) return '—';
-        // Brauzerlar 'uz-UZ' oy nomlarini "M10" deb chiqaradi — o'zimiz formatlaymiz
-        const MONTHS = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
-        const d = new Date(iso);
-        if (isNaN(d)) return '—';
-        return `${d.getDate()} ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`;
+        try { return new Date(iso).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric' }); }
+        catch { return '—'; }
     }
     function timeAgo(iso) {
         try {

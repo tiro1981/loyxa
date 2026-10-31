@@ -14,21 +14,9 @@
     <link rel="stylesheet" href="css/dashboard.css?v=10">
     <link rel="stylesheet" href="css/settings.css?v=7">
     <link rel="stylesheet" href="css/space.css?v=22">
-    <link rel="stylesheet" href="css/dash-theme.css?v=1">
-    <!-- Mavzu (qorong'i/yorug') — sahifa chizilishidan OLDIN qo'llanadi -->
-    <script>
-      (function () {
-        var t = 'dark';
-        try { t = localStorage.getItem('bo_dash_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
-        var h = document.documentElement;
-        h.setAttribute('data-dash-theme', t);
-        if (t === 'dark') h.setAttribute('data-theme', 'dark'); else h.removeAttribute('data-theme');
-        window.__dashTheme = t;
-      })();
-    </script>
+    <script>document.documentElement.setAttribute("data-theme", "dark");</script>
 </head>
 <body class="dash-body space" data-force-theme="dark" data-particles="auto" data-particles-opacity="0.35">
-    <script>document.body.dataset.forceTheme = window.__dashTheme;</script>
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
@@ -98,8 +86,8 @@
                 <p id="todayDate">Bugun: 19 may, 2026</p>
             </div>
             <div class="dash-header-right">
-                <button class="icon-btn dash-theme-btn" id="dashThemeBtn" type="button" title="Yorug' rejim" aria-label="Yorug' / qorong'i rejim">
-                    <i class="fa-solid fa-sun"></i>
+                <button class="icon-btn" data-theme-toggle title="Tungi rejim" aria-label="Theme toggle">
+                    <i class="fa-solid fa-moon"></i>
                 </button>
                 <div class="notif-wrap">
                     <button class="icon-btn" id="notifBtn" title="Bildirishnomalar" aria-label="Bildirishnomalar">
@@ -300,33 +288,12 @@
     <script>
       (async () => {
         try { await Cloud.init(); } catch (e) { console.error("[boot] Cloud.init:", e); }
-        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=18"]) {
+        for (const src of ["js/settings.js?v=12", "js/main.js?v=13", "js/dashboard.js?v=17"]) {
           await new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.body.appendChild(s); });
         }
       })();
     </script>
     <script>
-        // Qorong'i / yorug' rejim tugmasi
-        (function () {
-            const btn = document.getElementById('dashThemeBtn');
-            if (!btn) return;
-            const sync = () => {
-                const dark = document.documentElement.getAttribute('data-dash-theme') !== 'light';
-                btn.querySelector('i').className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-                btn.title = dark ? "Yorug' rejim" : "Qorong'i rejim";
-            };
-            btn.addEventListener('click', () => {
-                const next = document.documentElement.getAttribute('data-dash-theme') === 'light' ? 'dark' : 'light';
-                const h = document.documentElement;
-                h.setAttribute('data-dash-theme', next);
-                if (next === 'dark') h.setAttribute('data-theme', 'dark'); else h.removeAttribute('data-theme');
-                document.body.dataset.forceTheme = next;
-                try { localStorage.setItem('bo_dash_theme', next); } catch (e) {}
-                sync();
-            });
-            sync();
-        })();
-
         // App detail modal yopish
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('appDetailModal');
